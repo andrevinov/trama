@@ -1,0 +1,30 @@
+[project]
+name = "trama"
+version = "0.1.0"
+description = "Sistema de RPG de D&D 5.5e em Python, construído gradualmente a partir de regras determinísticas até a narração com IA."
+readme = "README.md"
+authors = [
+    {name = "André Carvalho",email = "me@andrev.me"}
+]
+requires-python = ">=3.14,<4.0"
+dependencies = [
+]
+
+[tool.poetry]
+packages = [{ include = "trama", from = "src" }]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit", "tests/integration"]
+addopts = "--strict-markers"
+markers = [
+    "live: testes que dependem de serviços externos, credenciais ou chamadas reais de IA",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.2.0,<10.0.0)"
+]

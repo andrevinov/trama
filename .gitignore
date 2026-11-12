@@ -1,0 +1,27 @@
+# Python e ferramentas de desenvolvimento
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+
+# Livros de referência locais
+/books/
+
+# Credenciais locais
+.env
+.env.*
+!.env.example
+.aws/
+
+# Arquivos do editor e do sistema
+.idea/
+.vscode/
+.DS_Store
