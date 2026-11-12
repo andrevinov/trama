@@ -1,0 +1,99 @@
+{
+  "width": 19,
+  "height": 11,
+  "start": [
+    3,
+    5
+  ],
+  "areas": [
+    {
+      "id": "cell",
+      "name": "Cela",
+      "x": 1,
+      "y": 2,
+      "width": 4,
+      "height": 7,
+      "description": "Uma cela de paredes de pedra, com uma grade ligando-a ao corredor."
+    },
+    {
+      "id": "corridor",
+      "name": "Corredor",
+      "x": 6,
+      "y": 1,
+      "width": 7,
+      "height": 9,
+      "description": "Um corredor de paredes de pedra com musgo e uma porta para a Sala dos Guardas. Mede 10,5 m de largura."
+    },
+    {
+      "id": "guard_room",
+      "name": "Sala dos Guardas",
+      "x": 14,
+      "y": 2,
+      "width": 4,
+      "height": 7,
+      "description": "Uma sala de pedra ocupada pelos guardas."
+    }
+  ],
+  "creatures": [
+    {
+      "id": "guard_1",
+      "name": "Guarda 1",
+      "position": [
+        15,
+        4
+      ],
+      "hostile": true
+    },
+    {
+      "id": "guard_2",
+      "name": "Guarda 2",
+      "position": [
+        15,
+        5
+      ],
+      "hostile": true
+    },
+    {
+      "id": "guard_3",
+      "name": "Guarda 3",
+      "position": [
+        15,
+        6
+      ],
+      "hostile": true
+    }
+  ],
+  "passages": [
+    {
+      "id": "cell_gate",
+      "name": "Grade da Cela",
+      "kind": "gate",
+      "position": [
+        5,
+        5
+      ],
+      "is_open": true,
+      "locked": false,
+      "connects": [
+        "cell",
+        "corridor"
+      ]
+    },
+    {
+      "id": "guard_door",
+      "name": "Porta da Sala dos Guardas",
+      "kind": "door",
+      "position": [
+        13,
+        5
+      ],
+      "is_open": false,
+      "locked": false,
+      "connects": [
+        "corridor",
+        "guard_room"
+      ]
+    }
+  ],
+  "speed_meters": 9.0
+}

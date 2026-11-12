@@ -1,8 +1,10 @@
 # Provas de conceito
 
-Experimentos pequenos, orientados pelo usuário, para validar partes do Trama antes de ampliar o sistema. Ainda não há experimentos implementados.
+Experimentos pequenos, orientados pelo usuário, para validar partes do Trama antes de ampliar o sistema.
 
-Crie uma pasta por experimento, por exemplo `pocs/movimento/` quando iniciarmos esse trabalho. Use Python, execute pelo Poetry e mantenha os dados do cenário junto do experimento.
+- [Movimento, ações e conversa](movimento/README.md): mapas Pygame, portas, visão e guardas estáticos; diálogo on/off com descrição inicial, execução até o impedimento e narração pela OpenAI. Inclui o cenário Cela/Corredor/Sala dos Guardas e o tabuleiro original 10×10.
+
+Crie uma pasta por experimento, como `pocs/movimento/`. Use Python, execute pelo Poetry e mantenha os dados do cenário junto do experimento.
 
 O README de cada prova de conceito deve registrar:
 

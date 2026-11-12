@@ -1,6 +1,12 @@
 # Testes live
 
-Esta pasta receberá testes que usam serviços externos, credenciais ou chamadas reais de IA. Nenhuma integração está implementada nesta etapa.
+Esta pasta contém testes com serviços externos, credenciais ou chamadas reais de IA.
+
+O cenário atual é `test_openai_movement.py`: oito chamadas à OpenAI (cinco de
+interpretação básica, uma de narração inicial e duas para a troca mista on/off), usando
+`OPENAI_API_KEY` e o modelo `gpt-5.6-luna` (ou `TRAMA_OPENAI_MODEL`). Só executa
+quando `RUN_OPENAI_LIVE_TESTS=1`; sem essa autorização, fica ignorado.
+Veja [a POC de movimento](../../pocs/movimento/README.md) para critérios e comando.
 
 Cada módulo de testes deve usar `@pytest.mark.live` nos testes ou `pytestmark = pytest.mark.live` no módulo. Documente as variáveis de ambiente exigidas, os serviços utilizados e os critérios de avaliação. As credenciais ficam no ambiente local e nunca devem ser versionadas.
 

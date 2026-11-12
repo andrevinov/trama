@@ -8,6 +8,8 @@ authors = [
 ]
 requires-python = ">=3.14,<4.0"
 dependencies = [
+    "pygame-ce (>=2.5.8,<3.0.0)",
+    "openai (>=3.49.0,<4.0.0)"
 ]
 
 [tool.poetry]
