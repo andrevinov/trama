@@ -1,3 +1,4 @@
+from conftest import scripted_responses, sourced_output, sourced_plan
 import json
 from dataclasses import replace
 from pathlib import Path
@@ -57,13 +58,15 @@ def test_reach_is_checked_without_automatic_movement(session):
     assert session.scene == session.initial_scene
 
 
-def test_dash_and_utilize_compete_for_the_same_action(session):
+def test_dash_and_utilize_compete_for_the_same_action(session, enter_turn_mode):
+    enter_turn_mode(session)
     to_door(session)
     session.execute(DoorIntent("open", "guard_door"))
     with pytest.raises(ActionError, match="já foi utilizada"):
         session.execute(DoorIntent("close", "guard_door"))
     assert session.scene.passages[1].is_open
-    session.next_turn()
+    for _ in range(4):
+        session.next_turn()
     session.execute(DoorIntent("close", "guard_door"))
     session.execute(DoorIntent("open", "guard_door"))
     result = session.execute(MovementIntent((MovementSegment("west", 1),), True, ""))
@@ -146,13 +149,14 @@ def test_open_intent_from_mock_api_is_validated_and_executed(session):
     client = Mock()
     payload = {"operation": "open", "target_id": "guard_door", "segments": [],
                "dash": False, "clarification": ""}
-    client.responses.create.return_value = SimpleNamespace(
+    client.responses.create.side_effect = scripted_responses(SimpleNamespace(
         status="completed", output=[], output_text=json.dumps({"steps": [payload]}),
-    )
+    ))
     intent = OpenAIIntentInterpreter(client).interpret("Abra a porta", session.interpreter_context()).steps[0]
     context = json.loads(client.responses.create.call_args.kwargs["input"])
     assert context["visible_creatures"] == []
-    assert "guard_1" not in json.dumps(context)
+    assert context["visible_creatures"] == []
+    assert "world" not in context and "player_sheet" not in context
     session.execute(intent)
     assert len(session.interpreter_context()["visible_creatures"]) == 3
 

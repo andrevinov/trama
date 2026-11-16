@@ -24,65 +24,96 @@ As dependências ficam em `pyproject.toml`, com versões resolvidas em `poetry.l
 Usamos Pygame Community Edition (`pygame-ce`) para a janela e o SDK oficial
 `openai` para interpretação dos prompts. O pytest faz parte do grupo de desenvolvimento.
 
-## Experimentar movimento
+## Executar o simulador
 
 ```bash
-poetry run python pocs/movimento/run.py
+poetry run python pocs/simulador/run.py --debug
 ```
 
-A janela mostra a **Cela**, o **Corredor** e a **Sala dos Guardas**, com o
-personagem na Cela. A grade começa aberta; a porta dos guardas, fechada e
-destrancada. O corredor ocupa 7 casas (10,5 m), aproximando os 10 m solicitados
-para preservar as casas de 1,5 m da demonstração.
+O cenário atual é uma **fuga de dungeon**: quatro celas, corredor iluminado por
+tochas com duas casas de largura, um guarda, banheiro e saída. O jogador é um
+**Guerreiro Humano 3, Campeão, Defesa**, em trapos, sem equipamento, com 28 PV e
+CA 11. A cela abre magicamente no início. Há caminhos de combate, disfarce,
+furtividade e resgate de outro prisioneiro.
 
-**Metros são a unidade padrão** das regras, dos arquivos de cenário, do contexto
-da IA e da tela. A velocidade inicial é 9 m por turno; cada casa custa 1,5 m,
-ou 3 m em terreno difícil. Entradas explícitas em pés são convertidas pelo
-código na convenção de D&D: 5 pés equivalem a 1,5 m.
+Objetos do mapa têm posição, fixação (`floor` ou `wall` com lado cardinal) e
+efeitos independentes sobre passagem e visão. As quatro tochas ficam na parede
+leste do corredor, desenhadas na borda das casas, sem bloquear movimento ou visão.
+Consulte o [formato dos objetos](pocs/simulador/README.md#objetos-do-mapa).
 
-Com `OPENAI_API_KEY` exportada, a IA começa descrevendo a cena. O painel de
-conversa recebe a resposta do narrador e mantém o histórico com rolagem.
-Digite uma ação e, se quiser, uma pergunta em off entre colchetes:
+A janela mantém mapa, conversa, Ficha e Inimigos. **Metros são a unidade padrão**;
+cada casa mede 1,5 m. Com `OPENAI_API_KEY` exportada, a IA descreve a abertura,
+interpreta mensagens e narra os resultados calculados. O modelo padrão é
+`gpt-5.6-terra`, configurável por `TRAMA_OPENAI_MODEL`. Sem chave, a janela abre
+para visualização e informa a configuração necessária.
+
+**Enter** envia e **Shift+Enter** insere uma nova linha. Falas entre colchetes
+são off, usadas para dúvidas, e não executam ações:
 
 ```text
-Ando 5 m para a direita.
-[Como funciona Dash?]
+Vou até a grade da Cela 4 e tento abri-la.
+[Como funciona investigar um cômodo?]
 ```
 
-**Enter** envia; **Shift+Enter** insere uma nova linha. Textos entre colchetes
-não executam ações. A IA narra o resultado em on e responde regras/dúvidas em
-off, também entre colchetes. Se não puder realizar nada, responde só em off.
+Os testes, a descoberta/coleta de itens, a roupa vestida, as chaves e as respostas
+do roteiro alteram o estado antes da narração. A ficha mostra o inventário em
+**Dados → Equipamento e treinamento**. A espada precisa ser encontrada e pega;
+o uniforme não concede armadura. O contexto do interpretador contém operações
+e objetos conhecidos. O Mundo conhece os segredos, que a narração deve preservar.
 
-O jogo executa o possível **até o primeiro impedimento**, preservando o progresso.
-Pedidos podem encadear movimento, abrir e fechar. Uma parede, porta fechada,
-guarda, limite do mapa ou saldo insuficiente interrompe a execução e as etapas
-seguintes. O off informa onde parou e por quê. Na grade atual, 5 m permitem andar
-4,5 m; o meio metro restante é explicado, sem arredondar para cima.
+O **modo narrado** não limita movimento por turno. O **modo por turnos** começa
+quando há conflito, usa iniciativa, ações, bônus e reações, e avança pela conversa.
+`Fico parado` ou `não faço mais nada`, como decisão de passar a vez, encerram o
+turno. Ataques de oportunidade continuam disponíveis. A execução para no primeiro
+impedimento e preserva o que já ocorreu; o off explica a causa.
 
-Cada abertura/reinício faz uma chamada para a descrição inicial; uma mensagem
-com ações usa normalmente duas (interpretação e narração), e uma mensagem só off
-usa uma. As chamadas à Responses API são potencialmente pagas. O modelo padrão
-é `gpt-5.6-luna`, configurável por `TRAMA_OPENAI_MODEL`. Sem a chave, a janela
-informa a configuração necessária. Falhas de narração não desfazem nem repetem
-ações já executadas.
+O **movimento contextual** prepara a aproximação necessária para investigar um
+cômodo, pegar um objeto, atacar em corpo a corpo, abrir/fechar, destrancar,
+escutar ou acordar o prisioneiro. Cada ação declara um requisito espacial; a
+aplicação calcula o percurso e revalida antes de executar. Alvo/arma inválidos ou
+falta de ação conhecida barram a tentativa antes de caminhar. A aproximação de
+um ataque que inicia combate vem depois da iniciativa, com movimento por turno.
 
-O Python valida o percurso e calcula seu custo antes de atualizar a posição.
-O saldo de movimento persiste entre pedidos; o botão **Novo turno** o renova.
-O código resolve destinos nomeados pelo menor caminho livre, respeitando paredes
-e passagens. “Até a porta” para numa casa adjacente; não abre a porta.
-Depois de se aproximar, envie **“abra a porta”** ou **“feche a porta”**.
-A primeira interação do turno é gratuita; a seguinte usa Utilize, que compartilha
-a ação com Dash. **Novo turno** também renova esses recursos.
+Uma operação já satisfeita retorna `already_satisfied`, sem deslocamento ou
+gasto. Dizer “sem sair do lugar” proíbe a aproximação contextual. Barreiras,
+oportunidades e respostas do Mundo podem interromper o trajeto. O motor preserva
+o progresso e não usa Dash, poderes ou abertura de outras portas automaticamente.
 
-O personagem usa visão normal humana. O cenário está iluminado, e a região clara
-do mapa indica o campo de visão atual, limitado por paredes e portas fechadas.
-Há **três guardas parados** na sala. Eles aparecem somente quando visíveis e
-suas casas não podem ser atravessadas. Abrir a porta revela os guardas; fechá-la
-volta a ocultá-los. A IA recebe somente as criaturas atualmente visíveis.
-O cenário original 10×10 continua disponível com
-`poetry run python pocs/movimento/run.py --scenario pocs/movimento/scenario.json`.
-Consulte [a prova de conceito](pocs/movimento/README.md) para preparação, referências
-de regras, exemplos, limitações e testes live opcionais.
+A rotina do banheiro e o auxílio do prisioneiro são específicos deste cenário.
+Consulte o [README do simulador](pocs/simulador/README.md) para mapa, exemplos,
+CDs, referências de D&D 2024, simplificações e critérios de sucesso. A IA escolhe
+as ações do guarda em combate; o código adjudica as interações de exploração.
+Abertura/reinício, mensagens e turnos de NPCs podem fazer chamadas pagas à API.
+
+O runner anterior também abre a dungeon por padrão. Os mapas anteriores foram
+preservados para regressões e podem ser abertos explicitamente:
+
+```bash
+poetry run python pocs/simulador/run.py --scenario pocs/movimento/cela_guardas.json
+```
+
+Os detalhes históricos estão na [POC de movimento](pocs/movimento/README.md).
+O [experimento de interpretação](pocs/interpretacao/README.md) continua separado.
+
+## Logs
+
+Os logs do simulador ficam em **`logs/trama.jsonl`**, com o mesmo formato
+JSON para todos os módulos e rotação automática. Para acompanhar prompts,
+respostas da IA, validações, rolagens e mudanças no jogo:
+
+```bash
+poetry run python pocs/simulador/run.py --debug
+```
+
+O modo normal registra mensagens completas da conversa, operações, resultados,
+erros e consumo de tokens. O
+debug acrescenta o conteúdo completo das chamadas e os detalhes das regras.
+Identificadores relacionam mensagem, chamadas à IA e operações, inclusive entre
+threads. Consulte [o contrato e os exemplos de logs](docs/logging.md).
+Para visualizar colunas e consultar tabelas de eventos, IA e erros, use o
+[add-on do lnav](tools/lnav/README.md), independente da engine.
+Ele mostra prévias específicas por evento; `|trama-detail` abre o texto completo
+ou JSON do evento selecionado na visão LOG (`q` retorna).
 
 ## Estrutura
 
@@ -105,15 +136,29 @@ As responsabilidades do código estão separadas:
 | `distances.py` | Metros, conversão de unidades na entrada e formatação |
 | `movement.py` | Regras e custos de movimento |
 | `scene.py` | Lugares, passagens, estados e opacidade do mapa |
-| `actions.py` | Abrir/fechar e orçamento de interações/ação |
+| `actions.py` | Abrir/fechar e orçamento de ação, ação bônus, reação e interação |
+| `dice.py` | Rolagens locais com aleatoriedade injetável |
+| `characters.py` | Fichas e recursos de Humano/Guerreiro 1–3/Campeão |
+| `combat.py` | Iniciativa, ordem de turnos e resolução de ataques básicos |
+| `reactions.py` / `application/travel.py` | Gatilho geométrico de oportunidade e coordenação de movimento, decisão e reação |
 | `vision.py` | Campo de visão normal e obscurecimento |
 | `creatures.py` | Criaturas posicionadas, sem comportamento |
 | `application/` | Intenções, caminhos, sessão e contexto para interpretação |
+| `application/preparation.py` | Contrato de requisitos espaciais e cálculo da aproximação, sem executar efeitos |
+| `application/dungeon.py` | Estado e adjudicação do cenário de fuga, sem SDK ou Pygame |
+| `simulator.py` | Composição do cenário, adaptadores e janela |
+| `application/encounter.py` / `sheets.py` | Recursos do encontro e projeções das fichas para UI/IA |
+| `application/sheet_options.py` | Consulta de disponibilidade, custos e recuperação para a ficha, sem executar ações |
 | `application/dialogue.py` / `conversation.py` | Canais on/off, histórico, execução ordenada e fatos para narração |
-| `infrastructure/` | Adaptadores separados para interpretar ações e narrar resultados |
+| `application/modes.py` | Modos narrado/por turnos e contrato fixo compartilhado |
+| `application/world.py` / `world_resolution.py` | Respostas do Mundo e validação das ações de NPCs |
+| `application/failures.py` | Dados estruturados dos impedimentos, sem dependência de IA ou visualização |
+| `infrastructure/` | Adaptadores separados para ação do Jogador, decisão do Mundo e narração |
 | `ui/` | Entrada e visualização Pygame, sem dependência do provedor de IA |
+| `observability.py` | Configuração de logs JSON, correlação e rotação; produtores de regras usam apenas `logging` padrão |
 
-As regras não importam umas às outras: a aplicação coordena seus resultados.
+Mapa e movimento não dependem das fichas; combate usa fichas e dados, sem conhecer
+Pygame ou OpenAI. A aplicação coordena os resultados e filtra o que é visível.
 Testes de fronteira protegem essa separação. O narrador já descreve a cena e os
 resultados implementados; a aventura completa ainda depende de outros incrementos.
 
@@ -131,15 +176,22 @@ Os testes live usam o marcador `live` e ficam fora da descoberta padrão. Consul
 [tests/live/README.md](tests/live/README.md) para as convenções. Os testes de
 movimento cobrem regras, integração com respostas simuladas e desenho da janela
 com driver SDL sem interface gráfica. A suíte padrão não faz chamadas de IA.
+Há uma [suíte live focada de movimento contextual](tests/live/README.md), com oito
+situações da dungeon. Para executar apenas ela, com chamadas pagas autorizadas:
+
+```bash
+RUN_OPENAI_LIVE_TESTS=1 poetry run pytest tests/live/test_contextual_movement.py -m live -v
+```
+
+Os resultados e logs completos ficam em `logs/live/contextual_movement/`.
+
 
 ## Estado atual
 
-Primeiro módulo implementado: movimento terrestre em grade, terreno difícil,
-bloqueios, diagonais e Dash, com interface Pygame e interpretação pela OpenAI.
-O mapa inclui lugares e passagens nomeados, seus estados e cálculo de percurso.
-Há interações de abrir/fechar, visão humana básica e três guardas estáticos.
-O fluxo de jogo inclui descrição inicial, mensagens on/off e narração após a
-execução completa ou parcial das ações.
-O escopo ainda é uma prova de conceito, sem motor completo de combate.
+Simulador narrado com mapa, visão, itens do cenário, testes de atributo, disfarce,
+furtividade, chaves, NPCs e uma base de combate por turnos com oportunidades.
+As regras reutilizáveis permanecem separadas da adjudicação específica da dungeon,
+da entrada/saída, da interpretação por IA e da visualização. O escopo e as
+limitações do encontro estão registrados no README do simulador.
 
 As orientações para agentes e contribuições estão em [AGENTS.md](AGENTS.md).

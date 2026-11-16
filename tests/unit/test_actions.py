@@ -50,3 +50,16 @@ def test_invalid_operations_do_not_spend_budget(operation, kwargs, message):
     with pytest.raises(ActionError, match=message):
         operate(operation, budget=budget, **kwargs)
     assert budget == ActionBudget()
+
+
+@pytest.mark.parametrize('operation,is_open', [('open', True), ('close', False)])
+def test_already_satisfied_ignores_reach_occupancy_and_exhausted_budget(operation, is_open):
+    budget = ActionBudget(True, True, True, True)
+    result = operate(operation, is_open=is_open, in_reach=False, occupied=True, budget=budget)
+    assert result.status == 'already_satisfied'
+    assert result.budget is budget
+    assert not result.changed
+
+
+def test_changed_door_reports_completed():
+    assert operate('open').status == 'completed'

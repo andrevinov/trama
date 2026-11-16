@@ -1,0 +1,6 @@
+# @synopsis: trama-events
+# @description: Tabela de eventos do Trama, com correlação, duração e motivo.
+;SELECT log_line, log_time, level, component, event,
+        substr(interaction_id, 1, 8) AS interaction, preview
+   FROM trama_events
+  ORDER BY log_line

@@ -1,0 +1,505 @@
+[
+  {
+    "id": "real_1",
+    "prompt": "Caminho tudo que for possível na direção da sala dos guardas.",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "move",
+          "target_id": "guard_room",
+          "segments": [],
+          "dash": false,
+          "clarification": ""
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Caminho tudo que for possível na direção da sala dos guardas.",
+          "kind": "execute",
+          "operations": [
+            "move"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "move",
+        "target_id": "guard_room",
+        "dash": false
+      }
+    ]
+  },
+  {
+    "id": "real_2",
+    "prompt": "Eu caminho até a direção da porta da sala dos guardas.",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "move",
+          "target_id": "guard_door",
+          "segments": [],
+          "dash": false,
+          "clarification": ""
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Eu caminho até a direção da porta da sala dos guardas.",
+          "kind": "execute",
+          "operations": [
+            "move"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "move",
+        "target_id": "guard_door",
+        "dash": false
+      }
+    ]
+  },
+  {
+    "id": "real_3",
+    "prompt": "Eu ando na direção da porta da sala dos guardas. Caminho até ela e fico de frente pra mesma.",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "move",
+          "target_id": "guard_door",
+          "segments": [],
+          "dash": false,
+          "clarification": ""
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Eu ando na direção da porta da sala dos guardas. Caminho até ela e fico de frente pra mesma.",
+          "kind": "execute",
+          "operations": [
+            "move"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "move",
+        "target_id": "guard_door",
+        "dash": false
+      }
+    ]
+  },
+  {
+    "id": "real_4",
+    "prompt": "Eu caminho em direção à porta da sala dos guardas e fico bem diante dela.",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "move",
+          "target_id": "guard_door",
+          "segments": [],
+          "dash": false,
+          "clarification": ""
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Eu caminho em direção à porta da sala dos guardas e fico bem diante dela.",
+          "kind": "execute",
+          "operations": [
+            "move"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "move",
+        "target_id": "guard_door",
+        "dash": false
+      }
+    ]
+  },
+  {
+    "id": "look",
+    "prompt": "Olho para a porta da sala dos guardas.",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "look",
+          "text": "Olho para a porta."
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Olho para a porta da sala dos guardas.",
+          "kind": "execute",
+          "operations": [
+            "look"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "look"
+      }
+    ]
+  },
+  {
+    "id": "second_wind",
+    "prompt": "Uso Retomar o Fôlego.",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "second_wind",
+          "target_id": null,
+          "weapon": "greatsword",
+          "use_inspiration": false
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Uso Retomar o Fôlego.",
+          "kind": "execute",
+          "operations": [
+            "second_wind"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "second_wind"
+      }
+    ]
+  },
+  {
+    "id": "negated_power",
+    "prompt": "Não uso Retomar o Fôlego; caminho até a porta.",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "move",
+          "target_id": "guard_door",
+          "segments": [],
+          "dash": false,
+          "clarification": ""
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Não uso Retomar o Fôlego",
+          "kind": "negated",
+          "operations": [],
+          "step_indices": []
+        },
+        {
+          "text": "caminho até a porta",
+          "kind": "execute",
+          "operations": [
+            "move"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "move",
+        "target_id": "guard_door",
+        "dash": false
+      }
+    ]
+  },
+  {
+    "id": "question",
+    "prompt": "Posso usar Retomar o Fôlego?",
+    "reference_plan": {
+      "steps": [],
+      "request_parts": [
+        {
+          "text": "Posso usar Retomar o Fôlego?",
+          "kind": "question",
+          "operations": [],
+          "step_indices": []
+        }
+      ]
+    },
+    "expected_steps": []
+  },
+  {
+    "id": "quoted_power",
+    "prompt": "Digo ao guarda: \"Use Retomar o Fôlego\".",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "speak",
+          "text": "Digo ao guarda para usar seu poder."
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Digo ao guarda: \"Use Retomar o Fôlego\".",
+          "kind": "execute",
+          "operations": [
+            "speak"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "speak"
+      }
+    ]
+  },
+  {
+    "id": "reported_power",
+    "prompt": "Digo que quero usar Retomar o Fôlego.",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "speak",
+          "text": "Digo que quero usar meu poder."
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Digo que quero usar Retomar o Fôlego.",
+          "kind": "execute",
+          "operations": [
+            "speak"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "speak"
+      }
+    ]
+  },
+  {
+    "id": "conditional_power",
+    "prompt": "Se eu me ferir, use Retomar o Fôlego.",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "move",
+          "target_id": null,
+          "segments": [],
+          "dash": false,
+          "clarification": "Esse uso condicional ainda não está implementado."
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Se eu me ferir, use Retomar o Fôlego.",
+          "kind": "conditional",
+          "operations": [
+            "clarify"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "clarify"
+      }
+    ]
+  },
+  {
+    "id": "move_open",
+    "prompt": "Corra até a porta e abra.",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "move",
+          "target_id": "guard_door",
+          "segments": [],
+          "dash": true,
+          "clarification": ""
+        },
+        {
+          "operation": "open",
+          "target_id": "guard_door",
+          "segments": [],
+          "dash": false,
+          "clarification": ""
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Corra até a porta e abra.",
+          "kind": "execute",
+          "operations": [
+            "move",
+            "dash",
+            "open"
+          ],
+          "step_indices": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "move",
+        "target_id": "guard_door",
+        "dash": true
+      },
+      {
+        "operation": "open",
+        "target_id": "guard_door"
+      }
+    ]
+  },
+  {
+    "id": "move_off",
+    "prompt": "Caminho até a porta. [Use Retomar o Fôlego.]",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "move",
+          "target_id": "guard_door",
+          "segments": [],
+          "dash": false,
+          "clarification": ""
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Caminho até a porta.",
+          "kind": "execute",
+          "operations": [
+            "move"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "move",
+        "target_id": "guard_door",
+        "dash": false
+      }
+    ]
+  },
+  {
+    "id": "real_5_terra",
+    "prompt": "Vou avança até a porta da sala dos guardas e ficar diante dela.",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "move",
+          "target_id": "guard_door",
+          "segments": [],
+          "dash": false,
+          "clarification": ""
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Vou avança até a porta da sala dos guardas e ficar diante dela.",
+          "kind": "execute",
+          "operations": [
+            "move"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "move",
+        "target_id": "guard_door",
+        "dash": false
+      }
+    ]
+  },
+  {
+    "id": "metric",
+    "prompt": "Ande 3 metros para o norte.",
+    "reference_plan": {
+      "steps": [
+        {
+          "operation": "move",
+          "target_id": null,
+          "segments": [
+            {
+              "direction": "north",
+              "distance": 3,
+              "unit": "meters"
+            }
+          ],
+          "dash": false,
+          "clarification": ""
+        }
+      ],
+      "request_parts": [
+        {
+          "text": "Ande 3 metros para o norte.",
+          "kind": "execute",
+          "operations": [
+            "move"
+          ],
+          "step_indices": [
+            0
+          ]
+        }
+      ]
+    },
+    "expected_steps": [
+      {
+        "operation": "move",
+        "segments": [
+          {
+            "direction": "north",
+            "meters": 3
+          }
+        ],
+        "dash": false
+      }
+    ]
+  }
+]

@@ -1,0 +1,64 @@
+{
+  "source": {
+    "interaction_id": "0062e0285c3a4de3ad32447782406755",
+    "timestamp": "2026-11-16T05:30:37.621+00:00",
+    "description": "Histórico real anterior ao pedido que falhou por falta de entrada contextual na Cela 4."
+  },
+  "messages": [
+    {
+      "role": "narrator",
+      "on": "Você está na Cela 1, entre uma cama de pedra e trapos de lã. A grade a leste está aberta para um corredor estreito, iluminado por tochas, que segue para o norte diante das outras celas.\n\nVocê acaba de ouvir o estalo da fechadura e o ranger de metal: a grade se abriu sem que ninguém estivesse próximo. Não sabe o que causou isso.",
+      "off": ""
+    },
+    {
+      "role": "player",
+      "on": "Eu confiro se a grade da cela está realmente destrancada.",
+      "off": ""
+    },
+    {
+      "role": "narrator",
+      "on": "De perto, você confirma: a grade está aberta, e o mecanismo não está travado. O corredor iluminado por tochas está acessível além dela.",
+      "off": ""
+    },
+    {
+      "role": "player",
+      "on": "Eu saio para fora da cela, no corredor, para ver o corredor.",
+      "off": ""
+    },
+    {
+      "role": "narrator",
+      "on": "Você atravessa a grade aberta e avança 6 m até o corredor. Tochas lançam luz sobre a passagem estreita; a oeste, alinham-se quatro celas. As grades das celas 2, 3 e 4 estão fechadas, enquanto a sua permanece aberta atrás de você.\n\nAo norte, vê uma porta fechada que dá para a Sala dos Guardas.",
+      "off": ""
+    },
+    {
+      "role": "player",
+      "on": "Eu ando devagar e tento espiar o que há na cela vizinha à minha.",
+      "off": ""
+    },
+    {
+      "role": "narrator",
+      "on": "Você avança devagar 6 m pelo corredor, sem chamar atenção, até parar diante da Grade da Cela 2. Pelas barras, vê um prisioneiro adormecido sobre uma cama de pedra, vestindo trapos semelhantes aos seus. A grade está fechada.",
+      "off": ""
+    },
+    {
+      "role": "player",
+      "on": "Ando mais e tento espiar o que há na próxima cela.",
+      "off": ""
+    },
+    {
+      "role": "narrator",
+      "on": "Você avança 6 m pelo corredor até a Grade da Cela 3. Ela está fechada, barrando sua entrada; através das barras, vê uma cela vazia, com uma cama e panos velhos.",
+      "off": "A tentativa de espiar a cela não foi realizada porque a Grade da Cela 3 fechada impediu a passagem para dentro. Você parou no corredor, diante dela.\nParei em Corredor (coluna 8, linha 14). Grade da Cela 3 está fechada e impede a passagem. As etapas seguintes não foram executadas."
+    },
+    {
+      "role": "player",
+      "on": "Vou até a próxima cela e testo se ela está trancada.",
+      "off": ""
+    },
+    {
+      "role": "narrator",
+      "on": "Você percorre 6 m pelo corredor até a Cela 4. Ao testar a grade, ela cede: não estava trancada e se abre para o interior.\n\nLá dentro, à luz das tochas, há uma cama de pedra e um monte de panos no chão.",
+      "off": ""
+    }
+  ]
+}

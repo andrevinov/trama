@@ -1,3 +1,4 @@
+from conftest import scripted_responses, sourced_output, sourced_plan
 """Pedidos com destinos nomeados, usando o cenário real e respostas fixas da API."""
 
 import json
@@ -37,13 +38,13 @@ def named_response(target, dash=False):
 ])
 def test_named_prompt_uses_map_context_and_python_route(session, prompt, target, dash, end, cost):
     client = Mock()
-    client.responses.create.return_value = named_response(target, dash)
+    client.responses.create.side_effect = scripted_responses(named_response(target, dash))
     interpreter = OpenAIIntentInterpreter(client)
     intent = interpreter.interpret(prompt, session.interpreter_context()).steps[0]
     result = session.execute(intent)
     assert result.state.position == Position(*end)
     assert result.cost_meters == cost
-    assert result.state.dash_used == dash
+    assert not result.state.dash_used
     context = json.loads(client.responses.create.call_args.kwargs["input"])
     assert context["character"]["current_area"] == "cell"
     assert {a["name"] for a in context["map"]["scene"]["areas"]} == {
@@ -57,19 +58,19 @@ def test_named_prompt_uses_map_context_and_python_route(session, prompt, target,
     assert door["connects"] == ["corridor", "guard_room"]
 
 
-def test_gate_then_running_to_door_share_turn_budget(session):
+def test_gate_then_running_to_door_without_turn_budget(session):
     session.execute(MovementIntent((), False, "", "cell_gate"))
     result = session.execute(MovementIntent((), True, "", "guard_door"))
     assert result.cost_meters == 12
-    assert result.state.spent_meters == 13.5
-    assert result.state.remaining_meters == 4.5
+    assert result.state.spent_meters == 0
+    assert session.interpreter_context()["character"]["remaining_meters"] is None
 
 
-def test_walking_to_door_stops_when_turn_budget_runs_out(session):
+def test_walking_to_door_does_not_stop_at_speed_in_narrated_mode(session):
     result = session.execute(MovementIntent((), False, "", "guard_door"))
-    assert "insuficiente" in result.stop_reason
-    assert session.state.position == Position(9, 5)
-    assert session.state.remaining_meters == 0
+    assert result.stop_reason is None
+    assert session.state.position == Position(12, 5)
+    assert session.state.spent_meters == 0
 
 
 def test_closed_door_never_opens_implicitly(session):

@@ -1,0 +1,20 @@
+# @synopsis: trama-detail [log_line]
+# @description: Abre o texto completo ou JSON do evento selecionado; q retorna.
+;SELECT CASE WHEN trim($__all__) = '' THEN log_msg_line()
+             WHEN trim($__all__) NOT GLOB '*[^0-9]*' THEN CAST($__all__ AS INTEGER)
+             ELSE raise_error('Informe somente um log_line inteiro, em base zero.') END AS detail_line
+;SELECT coalesce((SELECT event FROM trama_events WHERE log_line = $detail_line),
+                raise_error('Selecione uma linha do Trama na visão de log ou informe log_line.')) AS detail_event
+;SELECT printf('Trama — %s (log_line=%s)', event, log_line) || char(10) || char(10) ||
+        coalesce(full_text,
+                 CASE WHEN event LIKE 'conversation.%' THEN 'O texto não foi gravado neste evento antigo.' || char(10) || char(10) ELSE '' END ||
+                 json_pretty(raw_record)) AS detail_content
+   FROM trama_events WHERE log_line = $detail_line
+;SELECT printf('%s/trama-detail.txt', $LNAV_HOME_DIR) AS detail_path
+:eval :redirect-to "${detail_path}"
+;SELECT echoln($detail_content)
+:redirect-to
+:eval :open "${detail_path}"
+:switch-to-view text
+:rebuild
+:enable-word-wrap

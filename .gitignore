@@ -9,6 +9,9 @@ __pycache__/
 .coverage
 .coverage.*
 htmlcov/
+logs/
+*.log
+*.log.jsonl
 build/
 dist/
 

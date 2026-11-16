@@ -5,6 +5,9 @@
 """
 
 from decimal import Decimal
+import logging
+
+logger = logging.getLogger(__name__)
 
 CELL_METERS = Decimal("1.5")
 METERS_PER_FOOT = Decimal("0.3")
@@ -27,12 +30,15 @@ def feet_to_meters(value: int | float | Decimal) -> Decimal:
 
 def to_meters(value: int | float | Decimal, unit: str = "meters") -> Decimal:
     if unit == "meters":
-        return meters(value)
-    if unit == "feet":
-        return feet_to_meters(value)
-    if unit == "squares":
-        return meters(value) * CELL_METERS
-    raise ValueError("Unidade de distância desconhecida.")
+        result = meters(value)
+    elif unit == "feet":
+        result = feet_to_meters(value)
+    elif unit == "squares":
+        result = meters(value) * CELL_METERS
+    else:
+        raise ValueError("Unidade de distância desconhecida.")
+    logger.debug("distance.converted", extra={"data": {"value": value, "unit": unit, "result_meters": result}})
+    return result
 
 
 def meters_to_squares(value: int | float | Decimal) -> int:

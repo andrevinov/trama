@@ -1,0 +1,7 @@
+# @synopsis: trama-errors
+# @description: Tabela de avisos e erros com a causa mais específica.
+;SELECT log_line, log_time, level, component, event, error_type, reason,
+        substr(interaction_id, 1, 8) AS interaction, substr(operation_id, 1, 8) AS operation,
+        substr(ai_call_id, 1, 8) AS ai_call
+   FROM trama_errors
+  ORDER BY log_line

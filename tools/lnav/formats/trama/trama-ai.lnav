@@ -1,0 +1,6 @@
+# @synopsis: trama-ai
+# @description: Uma linha por chamada de IA, com status, tokens e falha.
+;SELECT log_line, log_time, task, model, status, duration_ms, input_tokens, output_tokens, total_tokens,
+        substr(interaction_id, 1, 8) AS interaction, substr(ai_call_id, 1, 8) AS ai_call, failure_reason
+   FROM trama_ai_calls
+  ORDER BY log_line

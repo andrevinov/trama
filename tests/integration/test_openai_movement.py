@@ -1,3 +1,4 @@
+from conftest import scripted_responses, sourced_output, sourced_plan
 import json
 from types import SimpleNamespace
 from unittest.mock import Mock
@@ -27,7 +28,7 @@ def payload(direction="north", squares=2, dash=False):
 
 def test_prompt_to_structured_intent_to_validated_position():
     client = Mock()
-    client.responses.create.return_value = response(payload())
+    client.responses.create.side_effect = scripted_responses(response(payload()))
     interpreter = OpenAIIntentInterpreter(client)
     session = GameSession(Grid(10, 10), MovementState(Position(4, 4)))
     intent = interpreter.interpret("Ande duas casas para cima", session.interpreter_context()).steps[0]
@@ -46,10 +47,11 @@ def test_prompt_to_structured_intent_to_validated_position():
     assert context["player_prompt"] == "Ande duas casas para cima"
 
 
-def test_model_cannot_override_budget():
+def test_model_cannot_override_budget(enter_turn_mode):
     client = Mock()
-    client.responses.create.return_value = response(payload("east", 5))
+    client.responses.create.side_effect = scripted_responses(response(payload("east", 5)))
     session = GameSession(Grid(10, 10), MovementState(Position(4, 4), speed_meters=3))
+    enter_turn_mode(session)
     intent = OpenAIIntentInterpreter(client).interpret("ande 5 casas à direita", session.interpreter_context()).steps[0]
     result = session.execute(intent)
     assert "insuficiente" in result.stop_reason
@@ -69,6 +71,7 @@ def test_model_cannot_override_budget():
     json.dumps({**payload(), "segments": [None]}),
     json.dumps({**payload(), "clarification": "Preciso perguntar antes"}),
 ])
+
 def test_malformed_external_output_is_rejected(text):
     with pytest.raises(InterpretationError, match="inválida"):
         parse_intent(text)
@@ -81,7 +84,7 @@ def test_malformed_external_output_is_rejected(text):
 ])
 def test_incomplete_or_refused_output_is_not_applied(status, output, match):
     client = Mock()
-    client.responses.create.return_value = response(payload(), status, output)
+    client.responses.create.side_effect = scripted_responses(response(payload(), status, output))
     with pytest.raises(InterpretationError, match=match):
         OpenAIIntentInterpreter(client).interpret("ande", build_context(Grid(10, 10), MovementState(Position(4, 4))))
 

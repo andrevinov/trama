@@ -52,23 +52,98 @@ class MovementIntent:
 class DoorIntent:
     operation: str
     target_id: str
+    allow_approach: bool = True
 
     def __post_init__(self) -> None:
-        if self.operation not in {"open", "close"} or not isinstance(self.target_id, str) or not self.target_id:
+        if (self.operation not in {"open", "close"} or not isinstance(self.target_id, str)
+                or not self.target_id or type(self.allow_approach) is not bool):
             raise ValueError("Intenção de porta inválida.")
 
 
-PlayerIntent = MovementIntent | DoorIntent
+@dataclass(frozen=True)
+class RuleIntent:
+    operation: str
+    target_id: str | None = None
+    weapon: str = "greatsword"
+    use_inspiration: bool = False
+    allow_approach: bool = True
+
+    def __post_init__(self) -> None:
+        if (self.operation not in {"start_combat", "end_turn", "attack", "second_wind", "action_surge"}
+                or self.weapon not in {"greatsword", "flail", "javelin", "longsword", "unarmed"}
+                or type(self.use_inspiration) is not bool or type(self.allow_approach) is not bool
+                or (self.target_id is not None and (not isinstance(self.target_id, str) or not self.target_id))
+                or (self.operation == "attack" and not self.target_id)
+                or (self.operation != "attack" and (self.target_id or self.use_inspiration))):
+            raise ValueError("Operação de combate inválida.")
+
+
+NARRATIVE_OPERATIONS = ("look", "speak", "wait", "challenge")
+
+
+@dataclass(frozen=True)
+class NarrativeIntent:
+    text: str
+    operation: str = "look"
+    target_id: str | None = None
+
+    def __post_init__(self):
+        if (not isinstance(self.text, str) or not self.text.strip() or len(self.text) > 2000
+                or self.operation not in NARRATIVE_OPERATIONS or self.target_id is not None):
+            raise ValueError("Intenção narrativa inválida.")
+
+
+SCENARIO_OPERATIONS = ("investigate", "take", "drop", "wear", "conceal", "unlock",
+                       "listen", "sneak", "wake", "deceive", "escape")
+
+
+@dataclass(frozen=True)
+class ScenarioIntent:
+    """Interação concreta; o cenário valida alvo, alcance e efeitos."""
+
+    operation: str
+    target_id: str
+    allow_approach: bool = True
+
+    def __post_init__(self):
+        if (self.operation not in SCENARIO_OPERATIONS or not isinstance(self.target_id, str)
+                or not self.target_id or type(self.allow_approach) is not bool):
+            raise ValueError("Interação de cenário inválida.")
+
+
+PlayerIntent = MovementIntent | DoorIntent | RuleIntent | NarrativeIntent | ScenarioIntent
+
+
+REQUEST_KINDS = ("execute", "question", "negated", "quoted", "narrative_detail", "unsupported", "conditional", "unclear")
+PLAN_OPERATIONS = ("move", "open", "close", "attack", "end_turn", "second_wind", "action_surge",
+                   *NARRATIVE_OPERATIONS, *SCENARIO_OPERATIONS, "clarify", "dash", "inspiration")
+
+
+@dataclass(frozen=True)
+class RequestPart:
+    text: str
+    kind: str
+    operations: tuple[str, ...] = ()
+    step_indices: tuple[int, ...] = ()
+
+    def __post_init__(self):
+        if (not isinstance(self.text, str) or not self.text.strip() or len(self.text) > 2000
+                or self.kind not in REQUEST_KINDS or len(self.operations) > 30 or len(self.step_indices) > 10
+                or any(op not in PLAN_OPERATIONS for op in self.operations)
+                or any(type(i) is not int or not 0 <= i < 10 for i in self.step_indices)):
+            raise ValueError("Origem de etapa inválida.")
 
 
 @dataclass(frozen=True)
 class ActionPlan:
     steps: tuple[PlayerIntent, ...]
+    request_parts: tuple[RequestPart, ...] = ()
 
     def __post_init__(self) -> None:
-        if (not 1 <= len(self.steps) <= 10
-                or not all(isinstance(step, (MovementIntent, DoorIntent)) for step in self.steps)):
-            raise ValueError("Um pedido deve conter entre 1 e 10 operações.")
+        if (len(self.steps) > 10 or (not self.steps and not self.request_parts)
+                or not all(isinstance(step, (MovementIntent, DoorIntent, RuleIntent, NarrativeIntent, ScenarioIntent)) for step in self.steps)
+                or len(self.request_parts) > 20 or not all(isinstance(p, RequestPart) for p in self.request_parts)):
+            raise ValueError("Plano deve conter até 10 operações e até 20 trechos de origem.")
 
 
 class InterpretationError(ValueError):

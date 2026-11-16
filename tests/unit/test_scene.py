@@ -44,9 +44,10 @@ def test_gate_can_be_crossed_to_enter_corridor():
     assert result.cost_meters == 4.5
 
 
-def test_run_to_closed_unlocked_door_stops_outside():
+def test_run_to_closed_unlocked_door_stops_outside(enter_turn_mode):
     scene = sample_scene()
     session = GameSession(scene.grid, MovementState(Position(1, 3)), scene)
+    enter_turn_mode(session)
     result = session.execute(MovementIntent((), True, "", "guard_door"))
     assert result.state.position == Position(6, 3)
     assert result.state.dash_used
@@ -93,9 +94,10 @@ def test_route_uses_lowest_movement_cost_not_fewest_squares():
     assert all(p not in grid.difficult for p in path)
 
 
-def test_named_route_still_requires_remaining_movement():
+def test_named_route_still_requires_remaining_movement(enter_turn_mode):
     scene = sample_scene()
     session = GameSession(scene.grid, MovementState(Position(1, 3), speed_meters=3), scene)
+    enter_turn_mode(session)
     result = session.execute(MovementIntent((), False, "", "guard_door"))
     assert "insuficiente" in result.stop_reason
     assert session.state.position == Position(3, 3)

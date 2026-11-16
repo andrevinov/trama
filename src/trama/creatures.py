@@ -1,8 +1,11 @@
 """Criaturas posicionadas no mundo; sem comportamento ou regras de combate."""
 
 from dataclasses import dataclass
+import logging
 
 from trama.spatial import Position
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -18,5 +21,7 @@ class Creature:
 
 
 def creatures_from_data(data: list[dict]) -> tuple[Creature, ...]:
-    return tuple(Creature(item["id"], item["name"], Position(*item["position"]),
+    result = tuple(Creature(item["id"], item["name"], Position(*item["position"]),
                           item.get("hostile", True)) for item in data)
+    logger.debug("creatures.loaded", extra={"data": {"creatures": result}})
+    return result

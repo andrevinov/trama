@@ -1,4 +1,5 @@
 import json
+from conftest import sourced_plan
 from decimal import Decimal
 from pathlib import Path
 from types import SimpleNamespace
@@ -39,7 +40,8 @@ def test_initial_narration_receives_only_visible_facts(conversation):
     assert context["perception"]["current_place"] == "Cela"
     assert context["perception"]["visible_creatures"] == []
     assert "Sala dos Guardas" not in {a["name"] for a in context["perception"]["visible_places"]}
-    assert "guard_1" not in json.dumps(context)
+    assert "guard_1" not in json.dumps(context["perception"])
+    assert len(context["world"]["npcs"]) == 3
 
 
 def test_mixed_prompt_keeps_off_out_of_current_and_historical_actions(conversation):
@@ -47,7 +49,7 @@ def test_mixed_prompt_keeps_off_out_of_current_and_historical_actions(conversati
     assert speech.on == "Entre no Corredor."
     context = conversation.interpretation_context()
     assert "Abra a porta" not in json.dumps(context)
-    report = conversation.execute(ActionPlan((MovementIntent((), False, "", "corridor"),)))
+    report = conversation.execute(sourced_plan(ActionPlan((MovementIntent((), False, "", "corridor"),)), speech.on))
     request = conversation.narration_context(speech, report)
     assert "Abra a porta" in request["player"]["off"]
     assert request["perception"]["current_place"] == "Corredor"
@@ -70,12 +72,12 @@ def test_off_only_does_not_change_game_state_and_cannot_produce_on(conversation)
 def test_five_meters_executes_four_and_half_and_reports_remainder(conversation):
     speech = conversation.prepare("Ande 5 m para a direita. [Quanto resta?]")
     plan = parse_plan(json.dumps({"steps": [movement(5)]}))
-    report = conversation.execute(plan)
+    report = conversation.execute(sourced_plan(plan, speech.on))
     assert report.progress
     assert report.events[0]["traveled_meters"] == 4.5
     assert "0,5 m" in report.stop_reason
     assert conversation.session.state.position == Position(6, 5)
-    assert conversation.session.state.spent_meters == Decimal("4.5")
+    assert conversation.session.state.spent_meters == 0
     request = conversation.narration_context(speech, report)
     final = conversation.finish(Speech("Você percorreu 4,5 m e entrou no corredor.", "Restam 4,5 m."), request)
     assert report.stop_reason in final.off
@@ -114,12 +116,13 @@ def test_move_open_enter_sequence_executes_in_order(conversation):
     assert report.stop_reason is None
     assert [e["operation"] for e in report.events] == ["move", "open", "move"]
     assert conversation.session.state.position == Position(14, 5)
-    assert conversation.session.state.spent_meters == Decimal("16.5")
+    assert conversation.session.state.spent_meters == 0
     assert len(conversation.narration_context(report=report)["perception"]["visible_creatures"]) == 3
     assert report.context()["reactions"] == []
 
 
-def test_no_rollback_and_no_later_action_after_budget_interruption(conversation):
+def test_no_rollback_and_no_later_action_after_budget_interruption(conversation, enter_turn_mode):
+    enter_turn_mode(conversation.session)
     report = conversation.execute(ActionPlan((
         MovementIntent((), False, "", "guard_door"), DoorIntent("open", "guard_door"),
     )))
@@ -139,7 +142,7 @@ def test_closed_door_stops_approach_instead_of_rejecting_entire_move(conversatio
 
 def test_impossible_first_operation_produces_only_off_and_skips_later_steps(conversation):
     before = conversation.session.state
-    report = conversation.execute(ActionPlan((DoorIntent("open", "guard_door"),
+    report = conversation.execute(ActionPlan((DoorIntent("open", "guard_door", allow_approach=False),
                                               MovementIntent((), False, "", "corridor"))))
     assert not report.progress
     assert report.unperformed_steps == 1

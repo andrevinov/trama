@@ -42,7 +42,44 @@
         15,
         4
       ],
-      "hostile": true
+      "hostile": true,
+      "sheet": {
+        "level": 1,
+        "subclass": null,
+        "fighting_style": "defense",
+        "armor": "chain_mail",
+        "abilities": {
+          "strength": 17,
+          "dexterity": 12,
+          "constitution": 15,
+          "intelligence": 10,
+          "wisdom": 13,
+          "charisma": 8
+        },
+        "fighter_skills": [
+          "perception",
+          "insight"
+        ],
+        "human_skill": "survival",
+        "skilled_choices": [
+          "acrobatics",
+          "history",
+          "investigation"
+        ],
+        "masteries": [
+          "greatsword",
+          "flail",
+          "javelin"
+        ],
+        "weapons": [
+          "greatsword",
+          "flail",
+          "javelin"
+        ],
+        "background": "soldier",
+        "human_origin_feat": "skilled",
+        "gaming_set": "dice"
+      }
     },
     {
       "id": "guard_2",
@@ -51,7 +88,44 @@
         15,
         5
       ],
-      "hostile": true
+      "hostile": true,
+      "sheet": {
+        "level": 1,
+        "subclass": null,
+        "fighting_style": "defense",
+        "armor": "chain_mail",
+        "abilities": {
+          "strength": 17,
+          "dexterity": 12,
+          "constitution": 15,
+          "intelligence": 10,
+          "wisdom": 13,
+          "charisma": 8
+        },
+        "fighter_skills": [
+          "perception",
+          "insight"
+        ],
+        "human_skill": "survival",
+        "skilled_choices": [
+          "acrobatics",
+          "history",
+          "investigation"
+        ],
+        "masteries": [
+          "greatsword",
+          "flail",
+          "javelin"
+        ],
+        "weapons": [
+          "greatsword",
+          "flail",
+          "javelin"
+        ],
+        "background": "soldier",
+        "human_origin_feat": "skilled",
+        "gaming_set": "dice"
+      }
     },
     {
       "id": "guard_3",
@@ -60,7 +134,44 @@
         15,
         6
       ],
-      "hostile": true
+      "hostile": true,
+      "sheet": {
+        "level": 1,
+        "subclass": null,
+        "fighting_style": "defense",
+        "armor": "chain_mail",
+        "abilities": {
+          "strength": 17,
+          "dexterity": 12,
+          "constitution": 15,
+          "intelligence": 10,
+          "wisdom": 13,
+          "charisma": 8
+        },
+        "fighter_skills": [
+          "perception",
+          "insight"
+        ],
+        "human_skill": "survival",
+        "skilled_choices": [
+          "acrobatics",
+          "history",
+          "investigation"
+        ],
+        "masteries": [
+          "greatsword",
+          "flail",
+          "javelin"
+        ],
+        "weapons": [
+          "greatsword",
+          "flail",
+          "javelin"
+        ],
+        "background": "soldier",
+        "human_origin_feat": "skilled",
+        "gaming_set": "dice"
+      }
     }
   ],
   "passages": [
@@ -95,5 +206,42 @@
       ]
     }
   ],
-  "speed_meters": 9.0
+  "speed_meters": 9.0,
+  "player": {
+    "level": 3,
+    "subclass": "champion",
+    "fighting_style": "defense",
+    "armor": "chain_mail",
+    "abilities": {
+      "strength": 17,
+      "dexterity": 12,
+      "constitution": 15,
+      "intelligence": 10,
+      "wisdom": 13,
+      "charisma": 8
+    },
+    "fighter_skills": [
+      "perception",
+      "insight"
+    ],
+    "human_skill": "survival",
+    "skilled_choices": [
+      "acrobatics",
+      "history",
+      "investigation"
+    ],
+    "masteries": [
+      "greatsword",
+      "flail",
+      "javelin"
+    ],
+    "weapons": [
+      "greatsword",
+      "flail",
+      "javelin"
+    ],
+    "background": "soldier",
+    "human_origin_feat": "skilled",
+    "gaming_set": "dice"
+  }
 }

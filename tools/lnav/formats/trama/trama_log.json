@@ -1,0 +1,149 @@
+{
+  "$schema": "https://lnav.org/schemas/format-v1.schema.json",
+  "trama_log": {
+    "title": "Trama — eventos do jogo e IA",
+    "description": "Envelope JSONL v1 do Trama: regras, diálogo, IA e erros.",
+    "file-type": "json",
+    "file-pattern": "(?i)(?:^|/)(?:trama[^/]*\\.jsonl(?:\\.[0-9]+)?$|trama/.*\\.jsonl(?:\\.[0-9]+)?$)",
+    "timestamp-field": "timestamp",
+    "timestamp-format": [
+      "%Y-%m-%dT%H:%M:%S.%f%z",
+      "%Y-%m-%dT%H:%M:%S%z"
+    ],
+    "convert-to-local-time": true,
+    "level-field": "level",
+    "body-field": "event",
+    "hide-extra": true,
+    "opid-field": "interaction_id",
+    "duration-field": "data/duration_ms",
+    "duration-divisor": 1000,
+    "line-format": [
+      {
+        "field": "__timestamp__",
+        "timestamp-format": "%Y-%m-%d %H:%M:%S.%L"
+      },
+      " │ ",
+      {
+        "field": "level",
+        "min-width": 8,
+        "max-width": 8,
+        "overflow": "truncate"
+      },
+      " │ ",
+      {
+        "field": "component",
+        "overflow": "abbrev",
+        "min-width": 34,
+        "max-width": 34
+      },
+      " │ ",
+      {
+        "field": "event",
+        "min-width": 34,
+        "max-width": 34,
+        "overflow": "truncate"
+      },
+      " │ #",
+      {
+        "field": "interaction_id",
+        "min-width": 8,
+        "max-width": 8,
+        "overflow": "truncate"
+      },
+      " │ ",
+      {
+        "field": "data",
+        "max-width": 120,
+        "overflow": "truncate"
+      },
+      {
+        "field": "error/message",
+        "prefix": " │ erro: ",
+        "default-value": "",
+        "max-width": 100,
+        "overflow": "truncate"
+      }
+    ],
+    "value": {
+      "schema_version": {
+        "kind": "integer",
+        "hidden": true
+      },
+      "timestamp": {
+        "kind": "timestamp",
+        "hidden": true
+      },
+      "level": {
+        "kind": "string",
+        "hidden": false
+      },
+      "component": {
+        "kind": "string",
+        "identifier": true,
+        "hidden": false
+      },
+      "event": {
+        "kind": "string",
+        "hidden": false
+      },
+      "session_id": {
+        "kind": "string",
+        "identifier": true,
+        "hidden": true
+      },
+      "interaction_id": {
+        "kind": "string",
+        "identifier": true,
+        "hidden": false
+      },
+      "operation_id": {
+        "kind": "string",
+        "identifier": true,
+        "hidden": true
+      },
+      "ai_call_id": {
+        "kind": "string",
+        "identifier": true,
+        "hidden": true
+      },
+      "data": {
+        "kind": "json",
+        "hidden": false
+      },
+      "error": {
+        "kind": "json",
+        "hidden": true
+      },
+      "data/duration_ms": {
+        "kind": "float",
+        "hidden": true
+      },
+      "data/usage/input_tokens": {
+        "kind": "integer",
+        "hidden": true
+      },
+      "data/usage/output_tokens": {
+        "kind": "integer",
+        "hidden": true
+      },
+      "data/usage/total_tokens": {
+        "kind": "integer",
+        "hidden": true
+      },
+      "error/message": {
+        "kind": "string",
+        "hidden": false
+      }
+    },
+    "sample": [
+      {
+        "line": "{\"schema_version\": 1, \"timestamp\": \"2026-11-13T12:20:06.135+00:00\", \"level\": \"INFO\", \"component\": \"trama.movement\", \"event\": \"movement.resolved\", \"session_id\": \"session-example\", \"interaction_id\": \"interaction-example\", \"operation_id\": \"operation-example\", \"ai_call_id\": null, \"data\": {\"cost_meters\": \"1.5\"}, \"error\": null}",
+        "level": "info"
+      },
+      {
+        "line": "{\"schema_version\": 1, \"timestamp\": \"2026-11-13T12:20:06.135+00:00\", \"level\": \"ERROR\", \"component\": \"trama.infrastructure.openai_intent_interpreter\", \"event\": \"ai.plan_rejected\", \"session_id\": \"session-example\", \"interaction_id\": \"interaction-example\", \"operation_id\": \"operation-example\", \"ai_call_id\": null, \"data\": {\"step_index\": 0}, \"error\": {\"type\": \"ValueError\", \"message\": \"Destino e segmentos não podem ser usados juntos.\", \"causes\": [], \"traceback\": \"ValueError: teste\"}}",
+        "level": "error"
+      }
+    ]
+  }
+}

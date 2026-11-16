@@ -1,0 +1,337 @@
+{
+  "title": "Simulador / Fuga da dungeon",
+  "width": 19,
+  "height": 25,
+  "start": [
+    3,
+    21
+  ],
+  "speed_meters": 9,
+  "areas": [
+    {
+      "id": "guard_room",
+      "name": "Sala dos Guardas",
+      "x": 7,
+      "y": 1,
+      "width": 7,
+      "height": 5,
+      "description": "Sala iluminada por tochas; uma mesa de madeira e um único guarda de serviço."
+    },
+    {
+      "id": "bathroom",
+      "name": "Banheiro",
+      "x": 15,
+      "y": 1,
+      "width": 3,
+      "height": 3,
+      "description": "Um pequeno banheiro, separado por uma porta de madeira."
+    },
+    {
+      "id": "outside",
+      "name": "Saída",
+      "x": 15,
+      "y": 5,
+      "width": 3,
+      "height": 2,
+      "description": "O caminho para fora da dungeon. Alcançá-lo conclui a fuga."
+    },
+    {
+      "id": "corridor",
+      "name": "Corredor",
+      "x": 7,
+      "y": 7,
+      "width": 2,
+      "height": 17,
+      "description": "Corredor com duas casas (3 m) de largura, iluminado por tochas. Quatro celas ficam a oeste."
+    },
+    {
+      "id": "cell_4",
+      "name": "Cela 4",
+      "x": 1,
+      "y": 8,
+      "width": 5,
+      "height": 3,
+      "description": "Uma cama de pedra e um monte de panos no chão."
+    },
+    {
+      "id": "cell_3",
+      "name": "Cela 3",
+      "x": 1,
+      "y": 12,
+      "width": 5,
+      "height": 3,
+      "description": "Uma cela vazia, com cama e panos velhos."
+    },
+    {
+      "id": "cell_2",
+      "name": "Cela 2",
+      "x": 1,
+      "y": 16,
+      "width": 5,
+      "height": 3,
+      "description": "Um prisioneiro dorme sobre uma cama de pedra."
+    },
+    {
+      "id": "cell_1",
+      "name": "Cela 1",
+      "x": 1,
+      "y": 20,
+      "width": 5,
+      "height": 3,
+      "description": "Sua cela: cama de pedra e trapos. É a mais distante da sala dos guardas."
+    }
+  ],
+  "passages": [
+    {
+      "id": "gate_4",
+      "name": "Grade da Cela 4",
+      "kind": "gate",
+      "position": [
+        6,
+        9
+      ],
+      "is_open": false,
+      "locked": false,
+      "connects": [
+        "cell_4",
+        "corridor"
+      ]
+    },
+    {
+      "id": "gate_3",
+      "name": "Grade da Cela 3",
+      "kind": "gate",
+      "position": [
+        6,
+        13
+      ],
+      "is_open": false,
+      "locked": true,
+      "connects": [
+        "cell_3",
+        "corridor"
+      ]
+    },
+    {
+      "id": "gate_2",
+      "name": "Grade da Cela 2",
+      "kind": "gate",
+      "position": [
+        6,
+        17
+      ],
+      "is_open": false,
+      "locked": true,
+      "connects": [
+        "cell_2",
+        "corridor"
+      ]
+    },
+    {
+      "id": "gate_1",
+      "name": "Grade da Cela 1",
+      "kind": "gate",
+      "position": [
+        6,
+        21
+      ],
+      "is_open": true,
+      "locked": false,
+      "connects": [
+        "cell_1",
+        "corridor"
+      ]
+    },
+    {
+      "id": "guard_door",
+      "name": "Porta da Sala dos Guardas",
+      "kind": "door",
+      "position": [
+        8,
+        6
+      ],
+      "is_open": false,
+      "locked": false,
+      "connects": [
+        "corridor",
+        "guard_room"
+      ]
+    },
+    {
+      "id": "bathroom_door",
+      "name": "Porta do Banheiro",
+      "kind": "door",
+      "position": [
+        14,
+        2
+      ],
+      "is_open": false,
+      "locked": false,
+      "connects": [
+        "guard_room",
+        "bathroom"
+      ]
+    },
+    {
+      "id": "exit_door",
+      "name": "Porta de Saída",
+      "kind": "door",
+      "position": [
+        14,
+        5
+      ],
+      "is_open": false,
+      "locked": false,
+      "connects": [
+        "guard_room",
+        "outside"
+      ]
+    }
+  ],
+  "player": {
+    "level": 3,
+    "subclass": "champion",
+    "fighting_style": "defense",
+    "armor": "none",
+    "weapons": [],
+    "masteries": [
+      "longsword",
+      "flail",
+      "javelin"
+    ]
+  },
+  "creatures": [
+    {
+      "id": "guard_1",
+      "name": "Guarda 1",
+      "position": [
+        10,
+        3
+      ],
+      "hostile": true,
+      "sheet": {
+        "level": 1,
+        "armor": "chain_mail",
+        "weapons": [
+          "longsword"
+        ]
+      }
+    }
+  ],
+  "dungeon": {
+    "prisoner_position": [
+      3,
+      17
+    ],
+    "guard_home": [
+      10,
+      3
+    ],
+    "bathroom_position": [
+      16,
+      2
+    ],
+    "table_position": [
+      11,
+      2
+    ],
+    "items": [
+      {
+        "id": "longsword",
+        "name": "Espada longa",
+        "position": [
+          3,
+          9
+        ],
+        "area": "cell_4",
+        "discovery": "search"
+      },
+      {
+        "id": "cleaner_uniform",
+        "name": "Roupa de empregado da limpeza",
+        "position": [
+          3,
+          8
+        ],
+        "area": "cell_4",
+        "discovery": "investigation"
+      },
+      {
+        "id": "cell_key",
+        "name": "Chave das celas",
+        "position": [
+          11,
+          2
+        ],
+        "area": "guard_room",
+        "discovery": "visible"
+      }
+    ]
+  },
+  "objects": [
+    {
+      "id": "torch_1",
+      "name": "Tocha 1",
+      "kind": "torch",
+      "position": [
+        8,
+        8
+      ],
+      "attachment": {
+        "surface": "wall",
+        "side": "east"
+      },
+      "blocks_movement": false,
+      "blocks_vision": false,
+      "description": "Tocha acesa, fixada à parede leste do corredor."
+    },
+    {
+      "id": "torch_2",
+      "name": "Tocha 2",
+      "kind": "torch",
+      "position": [
+        8,
+        12
+      ],
+      "attachment": {
+        "surface": "wall",
+        "side": "east"
+      },
+      "blocks_movement": false,
+      "blocks_vision": false,
+      "description": "Tocha acesa, fixada à parede leste do corredor."
+    },
+    {
+      "id": "torch_3",
+      "name": "Tocha 3",
+      "kind": "torch",
+      "position": [
+        8,
+        16
+      ],
+      "attachment": {
+        "surface": "wall",
+        "side": "east"
+      },
+      "blocks_movement": false,
+      "blocks_vision": false,
+      "description": "Tocha acesa, fixada à parede leste do corredor."
+    },
+    {
+      "id": "torch_4",
+      "name": "Tocha 4",
+      "kind": "torch",
+      "position": [
+        8,
+        20
+      ],
+      "attachment": {
+        "surface": "wall",
+        "side": "east"
+      },
+      "blocks_movement": false,
+      "blocks_vision": false,
+      "description": "Tocha acesa, fixada à parede leste do corredor."
+    }
+  ]
+}

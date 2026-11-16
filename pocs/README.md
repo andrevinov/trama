@@ -2,7 +2,9 @@
 
 Experimentos pequenos, orientados pelo usuário, para validar partes do Trama antes de ampliar o sistema.
 
-- [Movimento, ações e conversa](movimento/README.md): mapas Pygame, portas, visão e guardas estáticos; diálogo on/off com descrição inicial, execução até o impedimento e narração pela OpenAI. Inclui o cenário Cela/Corredor/Sala dos Guardas e o tabuleiro original 10×10.
+- [Simulador de fuga](simulador/README.md): cenário jogável atual, com quatro celas, itens, testes, disfarce, furtividade, prisioneiro e um guarda.
+- [Mapas anteriores de movimento, ações e conversa](movimento/README.md): mapas Pygame, portas, visão, fichas e guardas controlados pelo Mundo; diálogo on/off e modos narrado/por turnos. Inclui Cela/Corredor/Sala dos Guardas e o tabuleiro original 10×10.
+- [Interpretação de pedidos](interpretacao/README.md): comparação de contexto mínimo/completo com frases reais, expectativas objetivas e logs, sem executar planos. Inclui prévia offline e execução live explícita.
 
 Crie uma pasta por experimento, como `pocs/movimento/`. Use Python, execute pelo Poetry e mantenha os dados do cenário junto do experimento.
 

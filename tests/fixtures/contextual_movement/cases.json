@@ -1,0 +1,227 @@
+[
+  {
+    "id": "investigar-cela-do-log",
+    "stage": "storage_open",
+    "prompt": "Eu checo a cela, procurando por algo útil.",
+    "history": "investigation_history.json",
+    "rolls": [
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        20
+      ]
+    ],
+    "expected": "investigate"
+  },
+  {
+    "id": "pegar-espada-distante",
+    "stage": "known_sword",
+    "prompt": "Pego a espada longa.",
+    "rolls": [
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        20
+      ]
+    ],
+    "expected": "take"
+  },
+  {
+    "id": "atacar-com-aproximacao",
+    "stage": "disguised_standoff",
+    "prompt": "Ataco o Guarda 1 com a espada longa.",
+    "rolls": [
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        1
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        19
+      ],
+      [
+        20,
+        1
+      ],
+      [
+        20,
+        15
+      ],
+      [
+        8,
+        4
+      ],
+      [
+        8,
+        2
+      ]
+    ],
+    "expected": "attack"
+  },
+  {
+    "id": "ataque-com-movimento-insuficiente",
+    "stage": "combat_low_movement",
+    "prompt": "Ataco o Guarda 1 com a espada longa.",
+    "rolls": [
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        1
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        19
+      ],
+      [
+        20,
+        1
+      ]
+    ],
+    "expected": "short_movement"
+  },
+  {
+    "id": "ataque-guarda-vence-iniciativa",
+    "stage": "disguised_standoff",
+    "prompt": "Ataco o Guarda 1 com a espada longa.",
+    "rolls": [
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        1
+      ],
+      [
+        20,
+        1
+      ],
+      [
+        20,
+        2
+      ],
+      [
+        20,
+        20
+      ]
+    ],
+    "expected": "enemy_first"
+  },
+  {
+    "id": "investigar-grade-fechada",
+    "stage": "storage_closed",
+    "prompt": "Investigo a Cela 4, procurando algo útil.",
+    "rolls": [
+      [
+        20,
+        20
+      ]
+    ],
+    "expected": "closed_gate"
+  },
+  {
+    "id": "investigar-sem-sair-do-lugar",
+    "stage": "storage_open",
+    "prompt": "Investigo a Cela 4 sem sair do lugar.",
+    "rolls": [
+      [
+        20,
+        20
+      ]
+    ],
+    "expected": "no_movement"
+  },
+  {
+    "id": "investigar-com-ataque-de-oportunidade",
+    "stage": "combat_opportunity",
+    "prompt": "Investigo o banheiro.",
+    "rolls": [
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        1
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        20,
+        19
+      ],
+      [
+        20,
+        1
+      ],
+      [
+        20,
+        15
+      ],
+      [
+        8,
+        2
+      ],
+      [
+        8,
+        1
+      ]
+    ],
+    "expected": "opportunity"
+  }
+]

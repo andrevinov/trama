@@ -66,8 +66,9 @@ def test_all_map_boundaries(start, end):
     assert result.state.position == Position(*start)
 
 
-def test_exact_budget_and_exhaustion_across_prompts():
+def test_exact_budget_and_exhaustion_across_prompts(enter_turn_mode):
     session = GameSession(Grid(10, 10), MovementState(Position(4, 4)))
+    enter_turn_mode(session)
     session.execute(MovementIntent((MovementSegment("north", 3),), False, ""))
     session.execute(MovementIntent((MovementSegment("east", 3),), False, ""))
     assert session.state.remaining_meters == 0
@@ -83,16 +84,20 @@ def test_dash_adds_speed_after_movement_and_consumes_action():
     result = move(Grid(10, 10), state, (5, 4), (6, 4), dash=True)
     assert result.state.remaining_meters == 4.5
     assert result.state.dash_used
-    with pytest.raises(MovementError, match="já foi usada"):
-        move(Grid(10, 10), result.state, dash=True)
+    # O núcleo recebe permissões da aplicação: Surto de Ação permite outro Dash.
+    second = move(Grid(10, 10), result.state, dash=True)
+    assert second.state.remaining_meters == 10.5
+    assert second.state.dash_uses == 2
 
 
-def test_dash_alone_and_new_turn():
+def test_dash_alone_and_new_turn(enter_turn_mode):
     session = GameSession(Grid(10, 10), MovementState(Position(4, 4)))
+    enter_turn_mode(session)
     result = session.execute(MovementIntent((), True, ""))
     assert result.state.remaining_meters == 18
     session.execute(MovementIntent((MovementSegment("north", 2),), False, ""))
     position = session.state.position
+    session.next_turn()
     session.next_turn()
     assert session.state.position == position
     assert session.state.remaining_meters == 9
@@ -103,9 +108,10 @@ def test_dash_alone_and_new_turn():
     assert session.last_path == ()
 
 
-def test_request_preserves_progress_before_obstacle_including_dash():
+def test_request_preserves_progress_before_obstacle_including_dash(enter_turn_mode):
     grid = Grid(10, 10, blocked=frozenset({Position(7, 4)}))
     session = GameSession(grid, MovementState(Position(4, 4)))
+    enter_turn_mode(session)
     result = session.execute(MovementIntent((MovementSegment("east", 3),), True, ""))
     assert "bloqueada" in result.stop_reason
     assert session.state.position == Position(6, 4)

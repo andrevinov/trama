@@ -29,7 +29,7 @@ def test_real_prompt_moves_two_squares_north():
     result = session.execute(intent)
     assert result.state.position == Position(4, 2)
     assert result.cost_meters == 3
-    assert result.state.remaining_meters == 6
+    assert session.interpreter_context()["character"]["remaining_meters"] is None
     assert not result.state.dash_used
 
 
@@ -118,6 +118,6 @@ def test_real_mixed_message_with_partial_movement():
         reply = OpenAINarrator(client, model).narrate(request)
     final = conversation.finish(reply, request)
     assert session.state.position == Position(4, 1)
-    assert session.state.spent_meters == 4.5
+    assert session.state.spent_meters == 0
     assert final.on
     assert "0,5 m" in final.off

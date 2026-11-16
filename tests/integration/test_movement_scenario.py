@@ -19,13 +19,14 @@ from trama.movement import Grid, MovementError, MovementState, Position
     ([("northwest", 2)], False, (3, 3), 7.5, "bloqueada"),
     ([("north", 10)], False, (4, 0), 3, "limites"),
 ])
-def test_documented_scenario(segments, dash, expected_position, remaining, error):
+def test_documented_scenario(segments, dash, expected_position, remaining, error, enter_turn_mode):
     scenario = Path(__file__).resolve().parents[2] / "pocs/movimento/scenario.json"
     data = json.loads(scenario.read_text())
     grid = Grid(data["width"], data["height"],
                 frozenset(Position(*p) for p in data["blocked"]),
                 frozenset(Position(*p) for p in data["difficult"]))
     session = GameSession(grid, MovementState(Position(*data["start"]), data["speed_meters"]))
+    enter_turn_mode(session)
     intent = MovementIntent(tuple(MovementSegment(*s) for s in segments), dash, "")
     result = session.execute(intent)
     if error:

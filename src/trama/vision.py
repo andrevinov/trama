@@ -6,8 +6,11 @@ Essa discretização é uma aproximação explícita da regra geométrica do DMG
 """
 
 from dataclasses import dataclass
+import logging
 
 from trama.spatial import Grid, Position
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -75,4 +78,7 @@ def field_of_view(
         p for y in range(grid.height) for x in range(grid.width)
         if (p := Position(x, y)) not in dark and line_of_sight(origin, p, opaque | dark)
     )
-    return Visibility(visible, visible & dim)
+    result = Visibility(visible, visible & dim)
+    logger.debug("vision.calculated", extra={"data": {"origin": origin, "visible": visible,
+                 "lightly_obscured": result.lightly_obscured}})
+    return result
