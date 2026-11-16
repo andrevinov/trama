@@ -4,6 +4,9 @@ import json
 import logging
 
 from trama.application.modes import MODE_INSTRUCTIONS
+from trama.application.context_contracts import AIContext, ContextKind
+from trama.infrastructure.openai_config import DEFAULT_CONFIG, ResponseOptions
+from trama.infrastructure.call_budget import CallBudget
 from trama.application.world import PerceptionCheck, WorldAction, WorldError, WorldPlan, WorldReaction
 from trama.infrastructure.openai_json import DEFAULT_MODEL, request_json
 from trama.observability import log_context, new_id
@@ -150,13 +153,20 @@ def parse_world_plan(text: str) -> WorldPlan:
 
 
 class OpenAIWorldDirector:
-    def __init__(self, client, model: str = DEFAULT_MODEL):
+    def __init__(self, client, model: str = DEFAULT_MODEL, *, response_options: ResponseOptions = DEFAULT_CONFIG.world,
+                 budget: CallBudget | None = None):
         self.client, self.model = client, model
+        self.response_options = response_options
+        self.budget = budget
 
     def decide(self, context: dict) -> WorldPlan:
+        if isinstance(context, AIContext):
+            context.require(ContextKind.WORLD_ACTION, ContextKind.NPC_TURN)
         with log_context(ai_call_id=new_id()):
             text = request_json(self.client, model=self.model, instructions=INSTRUCTIONS,
-                                payload=context, schema=WORLD_SCHEMA, name="world_response", max_output_tokens=2000)
+                                payload=context, schema=WORLD_SCHEMA, name="world_response",
+                                max_output_tokens=self.response_options.max_output_tokens,
+                                reasoning_effort=self.response_options.reasoning_effort, budget=self.budget)
             plan = parse_world_plan(text)
             logger.info("ai.world_validated", extra={"data": {"reaction_count": len(plan.reactions)}})
             logger.debug("ai.world_decision", extra={"data": {"plan": plan}})

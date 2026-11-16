@@ -14,6 +14,9 @@ from trama.application.intents import (
 from trama.application.modes import MODE_INSTRUCTIONS
 from trama.application.authorization import PlanAuthorizationError, validate_player_plan
 from trama.application.interpretation_context import compact_context
+from trama.application.context_contracts import AIContext, ContextKind
+from trama.infrastructure.openai_config import DEFAULT_CONFIG, ResponseOptions
+from trama.infrastructure.call_budget import CallBudget
 from trama.distances import CELL_METERS, to_meters
 from trama.observability import log_context, new_id
 
@@ -315,8 +318,9 @@ def parse_plan(text: str, *, require_sources: bool = False) -> ActionPlan:
 
 
 class OpenAIIntentInterpreter:
-    def __init__(self, client: OpenAI, model: str = DEFAULT_MODEL, *, context_mode: str = "minimal",
-                 max_corrections: int = 1, schema_order: str = "operation-first") -> None:
+    def __init__(self, client: OpenAI, model: str = DEFAULT_MODEL, *, context_mode: str = DEFAULT_CONFIG.context_mode,
+                 max_corrections: int = DEFAULT_CONFIG.max_corrections, schema_order: str = DEFAULT_CONFIG.schema_order,
+                 response_options: ResponseOptions = DEFAULT_CONFIG.interpretation, budget: CallBudget | None = None) -> None:
         if context_mode not in {"minimal", "full"} or type(max_corrections) is not int or max_corrections not in (0, 1):
             raise ValueError("Use contexto minimal/full e no máximo uma correção.")
         self.client = client
@@ -325,6 +329,8 @@ class OpenAIIntentInterpreter:
         self.max_corrections = max_corrections
         self.schema_order = schema_order
         self.schema = action_plan_schema(schema_order)
+        self.response_options = response_options
+        self.budget = budget
 
     def interpret(self, prompt: str, context: dict) -> ActionPlan:
         return self._interpret(prompt, context)
@@ -332,7 +338,10 @@ class OpenAIIntentInterpreter:
     def _interpret(self, prompt: str, context: dict) -> ActionPlan:
         if not prompt.strip() or len(prompt) > 2000:
             raise InterpretationError("Digite um pedido com 1 a 2000 caracteres.")
-        selected = compact_context(context) if self.context_mode == "minimal" else context
+        if isinstance(context, AIContext):
+            context.require(ContextKind.INTERPRETATION)
+        selected = (context if isinstance(context, AIContext) or self.context_mode == "full"
+                    else compact_context(context))
         payload = {**selected, "player_prompt": prompt}
         for attempt in range(1, self.max_corrections + 2):
             with log_context(ai_call_id=new_id()):
@@ -340,7 +349,9 @@ class OpenAIIntentInterpreter:
                             "context_mode": self.context_mode, "schema_order": self.schema_order}})
                 try:
                     text = request_json(self.client, model=self.model, instructions=INSTRUCTIONS,
-                                        payload={**payload, "interpretation_attempt": attempt}, schema=self.schema, name="action_plan")
+                                        payload={**payload, "interpretation_attempt": attempt}, schema=self.schema, name="action_plan",
+                                        max_output_tokens=self.response_options.max_output_tokens,
+                                        reasoning_effort=self.response_options.reasoning_effort, budget=self.budget)
                 except OpenAIRequestError as error:
                     raise InterpretationError(str(error)) from error
                 plan = parse_plan(text, require_sources=True)

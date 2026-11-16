@@ -1,19 +1,16 @@
-"""Janela da POC. Rede em thread separada; estado e desenho na thread principal."""
+"""Entrada, desenho e agenda de workers; a coordenação do jogo pertence a GameFlow."""
 
 from queue import Empty, Queue
 from threading import Thread
-from contextvars import copy_context
 import logging
 
 import pygame
 
-from trama.application.intents import ActionPlan, IntentInterpreter, InterpretationError, RuleIntent
-from trama.application.dialogue import Narrator, NarrationError, Speech
-from trama.application.conversation import Conversation, ExecutionReport
+from trama.application.intents import IntentInterpreter
+from trama.application.dialogue import Narrator
+from trama.application.game_flow import GameFlow, FlowStatus, ProviderResult
 from trama.application.session import GameSession
-from trama.application.authorization import PlanAuthorizationError, validate_player_plan
-from trama.application.world import WorldDirector, WorldPlan, WorldError
-from trama.application.travel import TravelExecutor
+from trama.application.world import WorldDirector
 from trama.spatial import Position
 from trama.distances import CELL_METERS, format_meters
 from trama.ui.text import word_lines
@@ -95,22 +92,15 @@ class MovementWindow:
     def __init__(
         self, session: GameSession, interpreter: IntentInterpreter | None,
         model: str, narrator: Narrator | None = None, world_director: WorldDirector | None = None,
+        *, flow: GameFlow | None = None,
     ) -> None:
         self.cell_size = min(CELL_SIZE, 460 // session.grid.width, (380 if session.map_view()["compact"] else 460) // session.grid.height)
         if self.cell_size < 12:
             raise ValueError("O mapa é grande demais para esta janela.")
-        self.session = session
-        self.interpreter = interpreter
-        self.narrator = narrator
-        self.world_director = world_director
-        self.player_plan: ActionPlan | None = None
-        self.resume_player = False
-        self.npc_turns = 0
-        self.conversation = Conversation(session)
-        self.speech = Speech()
-        self.report = ExecutionReport()
-        self.narration_request: dict | None = None
-        self.stage = "interpret"
+        if flow is not None and (flow.session is not session or flow.interpreter is not interpreter
+                or flow.narrator is not narrator or flow.world_director is not world_director):
+            raise ValueError('A janela deve receber a sessão e os serviços do fluxo composto.')
+        self.flow = flow if flow is not None else GameFlow(session, interpreter, narrator, world_director)
         self.scroll = 0
         self.active_tab = "Jogo"
         self.sheet_scroll = 0
@@ -121,206 +111,93 @@ class MovementWindow:
         self._chat_lines = []
         self.model = model
         self.input = PromptInput()
-        self.pending = False
-        self.interaction_id: str | None = None
-        self.results: Queue[ActionPlan | Speech | Exception] = Queue()
-        self.message = "Digite um pedido abaixo e pressione Enter. Cada casa mede 1,5 m."
-        if interpreter is None:
-            self.message = "Configure OPENAI_API_KEY no ambiente e reinicie para enviar pedidos."
-        self.failed = False
-        self.last_prompt = ""
+        self.results: Queue[tuple[str, ProviderResult | Exception]] = Queue()
+        self._dispatched_request_id: str | None = None
+        self._configuration_hint = ("Configure OPENAI_API_KEY no ambiente e reinicie para enviar pedidos."
+                                    if interpreter is None else "")
         self.send_button = pygame.Rect(878, 798, 130, 56)
         self.reset_button = pygame.Rect(362, 550, 150, 42)
         self.input_rect = pygame.Rect(32, 798, 830, 56)
         self.reaction_buttons = {True: pygame.Rect(568, 210, 204, 26),
                                  False: pygame.Rect(780, 210, 208, 26)}
 
-    def _worker(self, operation) -> None:
-        self.pending = True
+    @property
+    def session(self):
+        return self.flow.session
+
+    @property
+    def conversation(self):
+        return self.flow.conversation
+
+    @property
+    def report(self):
+        return self.flow.report
+
+    @property
+    def pending(self) -> bool:
+        return self.flow.pending
+
+    @property
+    def stage(self):
+        return self.flow.stage
+
+    @property
+    def failed(self) -> bool:
+        return self.flow.status == FlowStatus.FAILED
+
+    @property
+    def interaction_id(self):
+        return self.flow.interaction_id
+
+    @property
+    def message(self) -> str:
+        if self.flow.message:
+            return " ".join(p for p in (self.flow.message, self._configuration_hint if self.failed else "") if p)
+        return self._configuration_hint or "Digite um pedido abaixo e pressione Enter. Cada casa mede 1,5 m."
+
+    def _dispatch_pending(self) -> None:
+        request = self.flow.pending_request
+        if request is None or request.id == self._dispatched_request_id:
+            return
+        self._dispatched_request_id = request.id
+
         def run() -> None:
-            try:
-                self.results.put(operation())
-            except Exception as error:
-                logger.exception("ui.worker_failed", extra={"data": {"stage": self.stage}})
-                self.results.put(error)
-        context = copy_context()
-        Thread(target=context.run, args=(run,), daemon=True).start()
+            self.results.put((request.id, request.run()))
+
+        try:
+            Thread(target=run, daemon=True).start()
+        except Exception as error:
+            # A falha de agendamento também é entregue ao fluxo na thread dona.
+            self.results.put((request.id, error))
 
     def start(self) -> None:
-        self.interaction_id = new_id()
-        with log_context(interaction_id=self.interaction_id):
-            self._start()
-
-    def _start(self) -> None:
-        logger.info("ui.initial_description_requested")
-        if self.narrator is not None:
-            self._request_narration(self.conversation.narration_context(initial=True))
-        elif not self.conversation.messages:
-            self.conversation.failure("Configure OPENAI_API_KEY e reinicie para conversar com o narrador.")
-
-    def _request_narration(self, context: dict) -> None:
-        self.narration_request = context
-        self.stage = "narrate"
-        self.message = "O narrador está respondendo…"
-        if self.narrator is not None:
-            self._worker(lambda: self.narrator.narrate(context))
-        else:
-            # Resultado local explícito quando o provedor não está configurado.
-            details = self._execution_summary()
-            self._finish(Speech(off="Narrador indisponível. " + details))
-
-    def _execution_summary(self) -> str:
-        parts = []
-        for event in self.report.events:
-            if event["operation"] == "move":
-                parts.append(f"Percorrido {format_meters(event['traveled_meters'])}, custo de {format_meters(event['cost_meters'])}.")
-            elif "summary" in event:
-                parts.append(event["summary"])
-            elif event["changed"]:
-                parts.append(f"{event['target']}: {'aberta' if event['is_open'] else 'fechada'}.")
-        return " ".join(parts)
-
-    def _finish(self, reply: Speech) -> None:
-        self.conversation.finish(reply, self.narration_request)
-        self.pending = False
-        self.failed = False
-        self.scroll = 0
-        self.message = "Resposta recebida."
+        if self.flow.start():
+            with log_context(interaction_id=self.interaction_id):
+                logger.info("ui.initial_description_requested")
+            self._dispatch_pending()
 
     def submit(self) -> None:
-        if self.pending or not self.input.text.strip():
+        text = self.input.text
+        if not self.flow.submit(text):
             return
-        self.interaction_id = new_id()
         with log_context(interaction_id=self.interaction_id):
-            self._submit()
-
-    def _submit(self) -> None:
-        logger.info("ui.message_submitted", extra={"data": {"length": len(self.input.text)}})
-        try:
-            self.speech = self.conversation.prepare(self.input.text)
-        except ValueError as error:
-            logger.warning("ui.message_rejected", extra={"data": {"reason": str(error)}}, exc_info=True)
-            self.conversation.failure(str(error))
-            self.message, self.failed = str(error), True
-            self.scroll = 0
-            return
-        self.last_prompt = self.input.text.strip()
-        if self.session.pending_opportunity and self.speech.on:
-            self.message = "Escolha Atacar (reação) ou Deixar passar para continuar o movimento."
-            self.conversation.failure(self.message)
-            return
-        if self.speech.on and self.interpreter is None:
-            logger.warning("ui.interpreter_unavailable")
-            self.message = "Configure OPENAI_API_KEY no ambiente e reinicie para enviar pedidos."
-            self.conversation.failure(self.message)
-            self.failed = True
-            self.scroll = 0
-            return
-        self.input = PromptInput()
+            logger.info("ui.message_submitted", extra={"data": {"length": len(text)}})
+        if not self.failed:
+            self.input = PromptInput()
         self.scroll = 0
-        self.failed = False
-        self.report = ExecutionReport()
-        self.player_plan = None
-        self.npc_turns = 0
-        if not self.speech.on:
-            self._request_narration(self.conversation.narration_context(self.speech))
-            return
-        if self._npc_active() and self.world_director is not None:
-            self.resume_player = True
-            self._request_npc_turn()
-        else:
-            self._request_interpretation()
-
-    def _request_interpretation(self):
-        context = self.conversation.interpretation_context()
-        self.stage = "interpret"
-        self.message = "Interpretando a ação…"
-        self._worker(lambda: self.interpreter.interpret(self.speech.on, context))
-
-    def _npc_active(self):
-        combat = self.session.encounter.combat
-        return combat is not None and combat.active_id != self.session.encounter.player_id
-
-    def _request_npc_turn(self):
-        if self._npc_active() and self.world_director is not None and self.session.encounter.states[self.session.encounter.player_id].hp > 0:
-            if self.npc_turns >= len(self.session.creatures):
-                self.conversation.failure("O Mundo excedeu a sequência de turnos de NPCs; nenhum turno foi repetido.")
-                self.pending = False
-                return
-            self.stage = "npc_turn"
-            self.message = "O Mundo está resolvendo o turno dos guardas…"
-            context = self.conversation.world_context()
-            self._worker(lambda: self.world_director.decide(context))
-        elif self.resume_player:
-            self.resume_player = False
-            self._request_interpretation()
-        else:
-            self._request_narration(self.conversation.narration_context(self.speech, self.report))
+        self._dispatch_pending()
 
     def poll(self) -> None:
-        with log_context(interaction_id=self.interaction_id):
-            self._poll()
-
-    def _poll(self) -> None:
         try:
-            result = self.results.get_nowait()
+            request_id, result = self.results.get_nowait()
         except Empty:
+            self._dispatch_pending()
             return
-        if isinstance(result, ActionPlan) and self.speech.on:
-            try:
-                validate_player_plan(self.speech.on, result, self.conversation.interpretation_context(), stage="pre_world")
-            except PlanAuthorizationError as error:
-                result = error
-        if isinstance(result, Exception):
-            logger.error("ui.request_failed", extra={"data": {"stage": self.stage}},
-                         exc_info=(type(result), result, result.__traceback__))
-            self.pending = False
-            self.failed = True
-            reason = str(result) if isinstance(result, (InterpretationError, NarrationError, WorldError)) else "Falha no serviço de IA."
-            if self.stage in {"narrate", "npc_turn"}:
-                # A narração falhar não desfaz nem repete as ações já realizadas.
-                reason += " " + self._execution_summary()
-                if self.report.stop_reason:
-                    reason += " " + self.report.stop_reason
-            self.message = reason.strip()
-            self.conversation.failure(self.message)
+        if request_id == self._dispatched_request_id:
+            self._dispatched_request_id = None
+        if self.flow.receive(request_id, result) and not self.pending:
             self.scroll = 0
-            return
-        if isinstance(result, Speech):
-            self._finish(result)
-            return
-        if isinstance(result, ActionPlan):
-            self.player_plan = result
-            if not result.steps:
-                self.report = self.conversation.execute(result, player_prompt=self.speech.on)
-                self._request_narration(self.conversation.narration_context(self.speech, self.report))
-                return
-            if self.world_director is not None:
-                context = self.conversation.world_context(result)
-                self.stage = "world"
-                self.message = "O Mundo está avaliando sua resposta…"
-                self._worker(lambda: self.world_director.decide(context))
-                return
-            result = WorldPlan()
-        if isinstance(result, WorldPlan):
-            try:
-                if self.stage == "npc_turn":
-                    npc_report = self.conversation.execute_npc_turn(result)
-                    self.report = self.report.merge(npc_report)
-                    if not self.session.pending_opportunity:
-                        self.npc_turns += 1
-                    if npc_report.stop_reason:
-                        # Erro ou reação pendente pausa o turno, sem repetir ações já realizadas.
-                        self._request_narration(self.conversation.narration_context(self.speech, self.report))
-                        return
-                else:
-                    self.report = self.report.merge(self.conversation.execute(self.player_plan, result, player_prompt=self.speech.on or None))
-                self._request_npc_turn()
-            except (WorldError, PlanAuthorizationError) as error:
-                self.pending = False
-                self.failed = True
-                self.message = str(error)
-                self.conversation.failure(self.message)
+        self._dispatch_pending()
 
     def handle_event(self, event: pygame.event.Event) -> bool:
         if event.type == pygame.QUIT:
@@ -371,34 +248,18 @@ class MovementWindow:
         return True
 
     def _choose_opportunity(self, accept: bool) -> None:
-        self.interaction_id = new_id()
-        with log_context(interaction_id=self.interaction_id):
-            continuation = self.conversation.pending_npc_turn
-            if continuation is None:
-                raise WorldError("Não há movimento de NPC para continuar.")
-            event = TravelExecutor(self.session).resolve(accept)
-            self.speech = self.conversation.prepare("Faço o ataque de oportunidade." if accept else "Deixo passar sem usar a reação.")
-            self.report = ExecutionReport(world_events=(event,))
-            report = self.conversation.execute_npc_turn(continuation)
-            self.report = self.report.merge(report)
-            if not self.session.pending_opportunity:
-                self.npc_turns += 1
-            if report.stop_reason:
-                self._request_narration(self.conversation.narration_context(self.speech, self.report))
-            else:
-                self._request_npc_turn()
+        if self.flow.choose_opportunity(accept):
+            self.scroll = 0
+            self._dispatch_pending()
 
     def _reset(self) -> None:
         with log_context(interaction_id=new_id(), operation_id=new_id()):
             logger.info("ui.reset_requested")
-            self.session.reset()
-            self.failed = False
-            self.message = "Cenário reiniciado."
-            self.conversation = Conversation(self.session)
-            self.report = ExecutionReport()
-            self.character_panel = CharacterPanel()
-            self.sheet_scroll = 0
-        self.start()
+            self.flow.reset()
+        self.character_panel = CharacterPanel()
+        self.sheet_scroll = 0
+        self.scroll = 0
+        self._dispatch_pending()
 
     def _draw_conversation(self, screen: pygame.Surface, font) -> None:
         pygame.draw.rect(screen, PANEL, (550, 252, 458, 438), border_radius=10)
@@ -659,7 +520,8 @@ class MovementWindow:
 
 
 def run_window(session: GameSession, interpreter: IntentInterpreter | None, model: str,
-               narrator: Narrator | None = None, world_director: WorldDirector | None = None) -> None:
+               narrator: Narrator | None = None, world_director: WorldDirector | None = None,
+               *, flow: GameFlow | None = None) -> None:
     pygame.display.init()
     pygame.font.init()
     try:
@@ -668,7 +530,7 @@ def run_window(session: GameSession, interpreter: IntentInterpreter | None, mode
         pygame.key.start_text_input()
         pygame.key.set_text_input_rect(pygame.Rect(32, 798, 830, 56))
         pygame.key.set_repeat(400, 35)
-        window = MovementWindow(session, interpreter, model, narrator, world_director)
+        window = MovementWindow(session, interpreter, model, narrator, world_director, flow=flow)
         window.start()
         clock = pygame.time.Clock()
         running = True

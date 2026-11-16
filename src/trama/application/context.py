@@ -1,4 +1,8 @@
-"""Traduz o estado validado para dados de interpretação, filtrando criaturas ocultas."""
+"""Projeção espacial base usada pela sessão, com criaturas filtradas pela visão.
+
+GameSession e DungeonSession acrescentam fichas e fatos do cenário. Conversation
+produz e valida as projeções de cada fase antes de entregá-las aos adaptadores.
+"""
 
 from trama.actions import ActionBudget
 from trama.creatures import Creature

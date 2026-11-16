@@ -3,6 +3,148 @@
 O usuário controla o Jogador. A IA controla o Mundo. O Python valida regras e
 altera o estado; a narração descreve o retorno do Mundo e os resultados reais.
 
+## Coordenador de aplicação
+
+`application/game_flow.py` implementa `GameFlow`, extraído da coordenação da
+janela. Recebe a sessão e os contratos de interpretador, diretor do Mundo e
+narrador. Não importa Pygame, CLI ou SDK, nem redefine regras de movimento,
+combate ou contexto: delega a `Conversation`, à sessão e ao executor de viagens.
+
+As projeções publicadas por `Conversation` são `AIContext` validados por fase.
+O marcador de tipo fica fora do JSON e acompanha os snapshots dos workers.
+Veja [campos, limites de informação e revisão dos contratos](ai-contexts.md).
+
+**Estado da adoção:** os passos 4 e 5 disponibilizam o coordenador e o conectam
+à janela. O simulador já usa `GameFlow` para a partida real; a UI não conserva
+uma sequência alternativa de interpretação, execução, NPCs e narração. Os oito
+casos contextuais já usam a entrada sem janela sobre esse fluxo. As outras
+cinco suítes mantêm a cobertura parcial/experimental documentada no inventário.
+
+| Entrada pública | Comportamento |
+| --- | --- |
+| `start()` | Solicita a descrição inicial uma vez, a partir de `idle`. |
+| `submit(text)` | Separa on/off e conduz a mensagem. Ignora entrada vazia ou envio durante uma chamada pendente. |
+| `pending_request` | Pedido externo escolhido pelo fluxo, com id, etapa, prompt quando aplicável e snapshot do contexto. |
+| `pending_request.run()` | Chama apenas o adaptador com cópia do contexto; devolve resposta ou exceção, sem alterar sessão/conversa. Pode rodar em worker. |
+| `receive(id, result)` | Valida tipo/etapa e aplica o resultado na thread dona; escolhe a próxima etapa. Resultados antigos ou duplicados são ignorados. |
+| `check_owner()` | Confere a thread dona antes de uma agenda síncrona despachar pedidos. |
+| `choose_opportunity(accept)` | Resolve aceitar/recusar e retoma somente as ações restantes do NPC. |
+| `reset()` | Restaura sessão e conversa, invalida pedidos antigos e solicita nova abertura. Não cancela a chamada de rede já iniciada; sua resposta deixa de ser aplicável. |
+
+`start`, `submit`, `receive`, `choose_opportunity` e `reset` devem rodar na thread
+que construiu o fluxo; outra thread recebe `GameFlowError` antes de alterar o
+estado. O consumidor só agenda o pedido já escolhido, sem selecionar etapas:
+
+```python
+request = flow.pending_request
+if request is not None:
+    result = request.run()              # pode executar no worker
+    flow.receive(request.id, result)    # de volta à thread dona
+```
+
+Esse trecho agenda **uma chamada**. Cada pedido deve ser despachado uma vez;
+repetir `run()` faria outra chamada ao provedor. A proteção de `receive` impede
+aplicar duas vezes o resultado, sem prometer eliminar custo de chamadas que um
+consumidor repetiu. O coordenador não cria threads, filas nem um loop de eventos.
+Os logs `game_flow.*` e os adaptadores mantêm os identificadores de correlação
+mesmo quando a chamada é executada em outra thread.
+
+As etapas externas são `interpret`, `world`, `npc_turn` e `narrate`. `FlowStatus`
+informa a situação da interação:
+
+| Status | Significado |
+| --- | --- |
+| `idle` | Fluxo recém-criado, sem interação iniciada. |
+| `pending` | Há uma chamada externa a agendar/aguardar. |
+| `awaiting_reaction` | A resposta foi entregue e o movimento aguarda escolha de oportunidade. |
+| `completed` | A resposta da interação foi entregue. Não significa sucesso de toda ação nem vitória no jogo. |
+| `failed` | Erro de entrada, contrato ou serviço, disponível em `error`, `message` e na conversa. Efeitos anteriores permanecem. |
+
+`report.status` e seus impedimentos informam se a ação física foi concluída ou
+barrada. Assim, uma ação bloqueada pode ter sua explicação narrada e a interação
+terminar em `completed`. `awaiting_reaction` também é uma propriedade: continua
+verdadeira quando uma falha de narração deixou uma escolha legítima pendente.
+Os booleanos retornados por entradas indicam que foram recebidas/processadas,
+não que a ação teve sucesso; leia `status`, `report` e `error`.
+
+O fluxo mantém as seguintes decisões:
+
+- Pergunta exclusivamente off só narra; não interpreta nem avança NPCs.
+- Plano sem etapas, validado como pergunta/negação, segue para narração sem
+  consultar o Mundo. O adaptador conserva a política existente de correção de
+  interpretação; o coordenador não acrescenta retries.
+- Um NPC já ativo é resolvido antes de interpretar o pedido on recebido. O
+  pedido original é preservado se houver pausa para reação e perguntas off.
+- Depois da execução do jogador, resolve os turnos de NPCs até devolver o
+  controle, encontrar impedimento ou o jogador ficar com 0 PV. Há um limite de
+  sequência pelo número de criaturas, como proteção contra turnos repetidos.
+- Uma oportunidade pendente pausa a continuação. Resolver a escolha preserva
+  os efeitos parciais e remove somente o impedimento de escolha já resolvido;
+  outros impedimentos continuam no relatório. Não pede um novo plano para
+  repetir o trecho do NPC que já foi executado.
+- Falha de narração não desfaz nem repete execução. Falha numa decisão de NPC
+  mantém o turno pendente e os efeitos dos NPCs anteriores, sem repetir chamadas
+  automaticamente.
+
+Sem interpretador, pedidos on recebem erro explícito. Sem narrador, a execução
+pode fornecer um resumo local em off, identificado como indisponibilidade; a
+abertura informa o erro de configuração. Sem diretor do Mundo, o fluxo usa uma
+resposta vazia para a ação do jogador, sem inventar ações ou avançar NPCs por ele.
+
+`tests/integration/test_game_flow.py` cobre esses caminhos com os construtores e
+regras reais, rolagens controladas e adaptadores locais. Também verifica a
+correção do interpretador real com transporte simulado, separação de threads,
+snapshots, correlação e proteção contra resultados repetidos/anteriores ao reset.
+Não há chamadas pagas nesses testes.
+
+## Execução sem janela
+
+`application/game_runner.py` agenda os pedidos públicos do mesmo coordenador
+de forma síncrona. `game.runner`, na composição compartilhada, conduz abertura,
+mensagens, reações e reinício até a resposta ou espera, sem interpretar ações
+ou tomar decisões de NPCs por conta própria. Escolhas de oportunidade continuam
+sendo entradas explícitas. Veja a [API e os pontos de parada](headless-runner.md).
+Sua adoção pelos oito casos live foi concluída no [passo 10](contextual-live-flow.md).
+
+## Integração com a janela
+
+`MovementWindow` cria um `GameFlow` com a sessão e os adaptadores recebidos pelo
+simulador. Abertura, envio de texto, escolha de oportunidade e reinício delegam,
+respectivamente, a `start`, `submit`, `choose_opportunity` e `reset` do fluxo.
+Sessão, conversa, relatório, etapa, pendência e erro são projeções de leitura
+desse mesmo objeto, sem cópias mutáveis na janela.
+
+A UI agenda cada `pending_request.id` uma vez em uma thread. O worker executa
+apenas `request.run()` e coloca `(id, resultado)` na fila. `poll`, na thread
+principal, entrega esse par a `flow.receive` e agenda o próximo pedido que o
+próprio fluxo produzir. Não inspeciona o tipo de plano para decidir a sequência,
+não constrói contextos e não executa ações ou turnos por conta própria.
+
+A identificação continua válida quando há resultados duplicados ou atrasados:
+o fluxo ignora o que já não corresponde ao pedido atual. Uma falha ao criar o
+worker também é entregue ao fluxo, evitando deixar a janela pendente sem uma
+thread que possa responder. Os botões de envio/reinício permanecem bloqueados
+durante chamadas, enquanto navegação das abas e consultas da ficha continuam
+disponíveis. Entrada inválida mantém o texto para edição; resposta ou falha
+reposiciona a conversa para mostrar o retorno.
+
+Reiniciar restaura o estado pelo fluxo e limpa o estado visual da ficha e da
+rolagem. Resultados já em trânsito não substituem a abertura da nova partida.
+A apresentação continua consultando mapa, visão, ficha e inimigos pelas APIs
+de leitura existentes. O comando para executar o simulador não mudou.
+
+Os eventos de entrada permanecem em `ui.*`; decisão de próxima etapa e falhas
+de processamento/provedor ficam em `game_flow.*`. A correlação acompanha os
+pedidos externos e a execução local, sem gerar logs a cada frame.
+
+`tests/integration/test_window_game_flow.py` verifica delegação pela UI real,
+despacho único, threads, reset e respostas antigas, falha de agendamento e
+conversa off durante oportunidade. Compara também relatórios e contextos do
+caminho da janela com a entrada direta do fluxo, ignorando apenas o id aleatório
+da execução e mantendo expectativas independentes de posição. Os testes
+anteriores de desenho, turnos, erros e ficha continuam como regressões; planos
+não são mais injetados na fila da janela para contornar a entrada do jogador.
+
 ## Fluxo de uma mensagem
 
 1. A aplicação separa falas on/off. Somente o on pode propor ação.
@@ -28,7 +170,7 @@ Descrição inicial e perguntas exclusivamente off fazem somente a chamada de
 narração. Uma mensagem com ação faz normalmente três chamadas. Cada turno de NPC
 acrescenta outra decisão do Mundo. Não há chamadas extras para gerar logs.
 Uma pergunta reconhecida na mensagem on pode retornar um plano sem etapas:
-nesse caso, após interpretar, a janela solicita a resposta off do narrador sem
+nesse caso, após interpretar, o fluxo solicita a resposta off do narrador sem
 consultar o Mundo. Postura, como ficar de frente para a sala, é detalhe narrativo
 sem custo; não impede movimento nem adiciona uma regra de orientação.
 

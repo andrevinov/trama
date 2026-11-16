@@ -5,17 +5,13 @@ import os
 from pathlib import Path
 
 import pytest
-from openai import OpenAI
 
 from trama.application.conversation import Conversation
 from trama.application.interpretation_evaluation import evaluate_plan
 from trama.application.intents import RuleIntent
-from trama.application.session import GameSession
-from trama.creatures import creatures_from_data
-from trama.infrastructure.openai_intent_interpreter import OpenAIIntentInterpreter
-from trama.movement import MovementState
-from trama.scene import Scene
-from trama.spatial import Position
+from trama.application.scenarios import build_session
+from trama.infrastructure.openai_config import OpenAIConfig
+from trama.infrastructure.openai_services import open_services
 
 pytestmark = [pytest.mark.live, pytest.mark.skipif(os.environ.get("RUN_OPENAI_LIVE_TESTS") != "1",
                                                 reason="Requer autorização explícita de chamadas pagas.")]
@@ -41,15 +37,17 @@ def test_real_semantic_interpretation(prompt, expected, tmp_path, capture_logs, 
     if not os.environ.get("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY não configurada")
     data = json.loads((Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json").read_text())
-    scene = Scene.from_data(data).with_passage("guard_door", True)
-    session = GameSession(scene.grid, MovementState(Position(14, 5)), scene,
-                          creatures_from_data(data["creatures"]), roller=dice(20, 19, 1, 1))
+    data['start'] = [14, 5]
+    next(p for p in data['passages'] if p['id'] == 'guard_door')['is_open'] = True
+    session = build_session(data, roller=dice(20, 19, 1, 1))
     session.execute(RuleIntent("start_combat"))
     session.execute(RuleIntent("attack", "guard_1"))
     resources, position = session.encounter.states.copy(), session.state
-    with capture_logs(log_file=tmp_path / "trace.jsonl"), OpenAI(timeout=30, max_retries=0) as client:
-        plan = OpenAIIntentInterpreter(client, max_corrections=0).interpret(prompt, Conversation(session).interpretation_context())
+    config = OpenAIConfig.from_env().for_experiment("semantic_first_attempt", max_corrections=0)
+    with capture_logs(log_file=tmp_path / "trace.jsonl"), open_services(config) as services:
+        plan = services.interpreter.interpret(prompt, Conversation(session).interpretation_context())
     result = evaluate_plan(expected, plan)
+    result["configuration"] = services.metadata
     (tmp_path / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
     assert result["matches_expected"], f"Resultado divergente; evidências em {tmp_path}"
     assert session.encounter.states == resources and session.state == position

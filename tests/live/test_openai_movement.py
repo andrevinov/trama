@@ -1,15 +1,14 @@
 """Chamada paga opcional; execução e critérios em pocs/movimento/README.md."""
 
 import os
+from pathlib import Path
 
 import pytest
-from openai import OpenAI
 
-from trama.application.session import GameSession
+from trama.application.scenarios import build_session, load_session
 from trama.application.intents import DoorIntent, MovementIntent
-from trama.creatures import creatures_from_data
-from trama.infrastructure.openai_intent_interpreter import DEFAULT_MODEL, OpenAIIntentInterpreter
-from trama.movement import Grid, MovementState, Position
+from trama.infrastructure.openai_services import open_services
+from trama.spatial import Position
 
 pytestmark = [
     pytest.mark.live,
@@ -21,9 +20,9 @@ pytestmark = [
 def test_real_prompt_moves_two_squares_north():
     if not os.environ.get("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY não configurada")
-    session = GameSession(Grid(10, 10), MovementState(Position(4, 4)))
-    with OpenAI(timeout=30, max_retries=0) as client:
-        interpreter = OpenAIIntentInterpreter(client, os.environ.get("TRAMA_OPENAI_MODEL", DEFAULT_MODEL))
+    session = build_session({'width': 10, 'height': 10, 'start': [4, 4]})
+    with open_services() as services:
+        interpreter = services.interpreter
         intent = interpreter.interpret("Ande exatamente duas casas para o norte, sem correr.",
                                        session.interpreter_context()).steps[0]
     result = session.execute(intent)
@@ -38,19 +37,12 @@ def test_real_prompt_moves_two_squares_north():
     ("Correr até a porta da Sala dos Guardas", "guard_door", True, (12, 5), 13.5),
 ])
 def test_real_named_destination(prompt, target, dash, end, cost):
-    import json
-    from pathlib import Path
-    from trama.scene import Scene
-
     if not os.environ.get("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY não configurada")
     scenario = Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json"
-    data = json.loads(scenario.read_text())
-    scene = Scene.from_data(data)
-    session = GameSession(scene.grid, MovementState(Position(*data["start"])), scene,
-                          creatures_from_data(data["creatures"]))
-    with OpenAI(timeout=30, max_retries=0) as client:
-        interpreter = OpenAIIntentInterpreter(client, os.environ.get("TRAMA_OPENAI_MODEL", DEFAULT_MODEL))
+    session = load_session(scenario)
+    with open_services() as services:
+        interpreter = services.interpreter
         intent = interpreter.interpret(prompt, session.interpreter_context()).steps[0]
     assert intent.target_id == target
     assert intent.dash == dash
@@ -61,24 +53,17 @@ def test_real_named_destination(prompt, target, dash, end, cost):
 
 @pytest.mark.parametrize("operation", ["open", "close"])
 def test_real_door_operation(operation):
-    import json
-    from pathlib import Path
-    from trama.scene import Scene
-
     if not os.environ.get("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY não configurada")
     scenario = Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json"
-    data = json.loads(scenario.read_text())
-    scene = Scene.from_data(data)
-    session = GameSession(scene.grid, MovementState(Position(*data["start"])), scene,
-                          creatures_from_data(data["creatures"]))
+    session = load_session(scenario)
     session.execute(MovementIntent((), True, "", "guard_door"))
     if operation == "close":
         session.execute(DoorIntent("open", "guard_door"))
         session.next_turn()
     prompt = "Abra a porta da Sala dos Guardas" if operation == "open" else "Feche a porta da Sala dos Guardas"
-    with OpenAI(timeout=30, max_retries=0) as client:
-        interpreter = OpenAIIntentInterpreter(client, os.environ.get("TRAMA_OPENAI_MODEL", DEFAULT_MODEL))
+    with open_services() as services:
+        interpreter = services.interpreter
         intent = interpreter.interpret(prompt, session.interpreter_context()).steps[0]
     assert intent == DoorIntent(operation, "guard_door")
     session.execute(intent)
@@ -88,34 +73,31 @@ def test_real_door_operation(operation):
 
 def test_real_initial_narration():
     from trama.application.conversation import Conversation
-    from trama.infrastructure.openai_narrator import OpenAINarrator
 
     if not os.environ.get("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY não configurada")
-    session = GameSession(Grid(10, 10), MovementState(Position(4, 4)))
+    session = build_session({'width': 10, 'height': 10, 'start': [4, 4]})
     conversation = Conversation(session)
     request = conversation.narration_context(initial=True)
-    with OpenAI(timeout=30, max_retries=0) as client:
-        reply = OpenAINarrator(client, os.environ.get("TRAMA_OPENAI_MODEL", DEFAULT_MODEL)).narrate(request)
+    with open_services() as services:
+        reply = services.narrator.narrate(request)
     assert reply.on
     assert session.state == session.initial_state
 
 
 def test_real_mixed_message_with_partial_movement():
     from trama.application.conversation import Conversation
-    from trama.infrastructure.openai_narrator import OpenAINarrator
 
     if not os.environ.get("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY não configurada")
-    session = GameSession(Grid(10, 10), MovementState(Position(4, 4)))
+    session = build_session({'width': 10, 'height': 10, 'start': [4, 4]})
     conversation = Conversation(session)
     speech = conversation.prepare("Ande 5 m para o norte. [Quanto movimento me resta?]")
-    with OpenAI(timeout=30, max_retries=0) as client:
-        model = os.environ.get("TRAMA_OPENAI_MODEL", DEFAULT_MODEL)
-        plan = OpenAIIntentInterpreter(client, model).interpret(speech.on, conversation.interpretation_context())
+    with open_services() as services:
+        plan = services.interpreter.interpret(speech.on, conversation.interpretation_context())
         report = conversation.execute(plan)
         request = conversation.narration_context(speech, report)
-        reply = OpenAINarrator(client, model).narrate(request)
+        reply = services.narrator.narrate(request)
     final = conversation.finish(reply, request)
     assert session.state.position == Position(4, 1)
     assert session.state.spent_meters == 0

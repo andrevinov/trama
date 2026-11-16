@@ -146,6 +146,12 @@ As responsabilidades do código estão separadas:
 | `application/` | Intenções, caminhos, sessão e contexto para interpretação |
 | `application/preparation.py` | Contrato de requisitos espaciais e cálculo da aproximação, sem executar efeitos |
 | `application/dungeon.py` | Estado e adjudicação do cenário de fuga, sem SDK ou Pygame |
+| `application/scenarios.py` | Leitura e construção compartilhadas de cenários, sem CLI, Pygame ou SDK |
+| `application/game_flow.py` | Coordenação de mensagens e turnos usada pela janela; pedidos externos separados da mutação da sessão |
+| `application/game_runner.py` | Agenda síncrona do mesmo fluxo, com observação dos pedidos e pausa para escolhas explícitas |
+| `application/context_contracts.py` | Contratos e validação das seis fases de contexto, sem dependência de provedor ou referência em disco |
+| `bootstrap.py` | Composição compartilhada de cenário, sessão, serviços e fluxo |
+| `infrastructure/openai_config.py` / `openai_services.py` | Configuração explícita e criação/fechamento do cliente e adaptadores de IA |
 | `simulator.py` | Composição do cenário, adaptadores e janela |
 | `application/encounter.py` / `sheets.py` | Recursos do encontro e projeções das fichas para UI/IA |
 | `application/sheet_options.py` | Consulta de disponibilidade, custos e recuperação para a ficha, sem executar ações |
@@ -173,7 +179,9 @@ poetry run pytest tests/live -m live
 ```
 
 Os testes live usam o marcador `live` e ficam fora da descoberta padrão. Consulte
-[tests/live/README.md](tests/live/README.md) para as convenções. Os testes de
+[a política obrigatória](docs/live-tests-policy.md),
+[o plano de compartilhamento do fluxo com o simulador](docs/live-tests-plan.md)
+e [tests/live/README.md](tests/live/README.md) para as convenções. Os testes de
 movimento cobrem regras, integração com respostas simuladas e desenho da janela
 com driver SDL sem interface gráfica. A suíte padrão não faz chamadas de IA.
 Há uma [suíte live focada de movimento contextual](tests/live/README.md), com oito
@@ -184,6 +192,53 @@ RUN_OPENAI_LIVE_TESTS=1 poetry run pytest tests/live/test_contextual_movement.py
 ```
 
 Os resultados e logs completos ficam em `logs/live/contextual_movement/`.
+O [relatório do primeiro experimento pelo fluxo compartilhado](docs/experiments/step12-20261116T205209Z.md)
+registra oito aprovações mecânicas em uma execução por caso, 33 chamadas reais e
+as ressalvas encontradas na revisão das narrações; não demonstra repetibilidade.
+Os oito arranjos têm [preparação reproduzível](docs/live-test-preparation.md):
+cenário/variações, operações públicas, dados e pré-condições declaradas. O saldo
+de movimento e o disfarce são produzidos pelo motor. O histórico registrado passa
+pela mesma entrada validada das mensagens normais, preservando on/off sem
+executar ações ou substituir a memória mecânica.
+
+O simulador, os live tests e a POC de interpretação compartilham o carregador
+em `application/scenarios.py`: `load_session(path)` lê o JSON e chama
+`build_session(data)`. Variações declaradas nos dados passam por esse mesmo
+construtor, que delega ao mapa, às fichas e às sessões reais. Não há outro
+construtor de mapas nos live tests. Esse reúso já está implementado. O coordenador
+`GameFlow`, sem Pygame/SDK, já coordena a janela real: mensagens, turnos de NPCs,
+reações, narração e reinício. A UI apenas agenda pedidos em workers e entrega
+os resultados ao fluxo na thread principal, além de exibir o jogo. Os oito casos
+contextuais já adotam essa entrada; as demais suítes mantêm seus limites parciais. Consulte a
+[API do coordenador](docs/game-flow.md#coordenador-de-aplicação).
+
+A [composição dos serviços](docs/service-composition.md) agora é compartilhada
+pelo simulador, POC e live tests. Ela resolve os mesmos padrões de modelo,
+timeout/retries, limites por fase e correções, registrando a configuração efetiva.
+Variantes experimentais são identificadas nas evidências. A CLI entrega o fluxo
+já composto à janela e a suíte contextual usa a agenda sem janela.
+
+A [execução sem janela](docs/headless-runner.md) está disponível em `game.runner`:
+abertura, mensagens, escolhas de oportunidade e reinício passam pelo mesmo
+`GameFlow`. O runner para em falhas e escolhas pendentes, sem repetir efeitos ou
+decidir pelo jogador. Os oito casos live já usam essa API, incluindo resolução
+do guarda que vence iniciativa. Veja [cobertura, orçamento e evidências](docs/contextual-live-flow.md).
+
+A [demonstração offline de regressões](docs/regression-detection.md) verifica que
+janela e runner não aprovam efeitos ausentes apenas por produzirem resultados
+iguais. São controles positivos/negativos para movimento, Surto seguido de ataque,
+turno de NPC, oportunidade e narração sem deslocamento, com transporte simulado.
+
+As projeções por fase têm [contratos explícitos](docs/ai-contexts.md). O pytest
+padrão confere mudanças em campos, textos de contexto, instruções e esquemas
+contra uma referência revisada, reconstruindo os dados pela aplicação. Para
+conferir separadamente, sem chamadas externas:
+
+```bash
+poetry run python tools/context_contracts.py --check
+```
+
+A referência serve somente à revisão; a aplicação nunca a usa como entrada da IA.
 
 
 ## Estado atual

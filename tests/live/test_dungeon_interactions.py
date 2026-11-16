@@ -6,15 +6,11 @@ import os
 from pathlib import Path
 
 import pytest
-from openai import OpenAI
 
 from trama.application.conversation import Conversation
-from trama.application.dialogue import Speech
-from trama.application.dungeon import DungeonSession
+from trama.application.scenarios import load_session
 from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, MovementSegment
-from trama.infrastructure.openai_intent_interpreter import DEFAULT_MODEL, OpenAIIntentInterpreter
-from trama.infrastructure.openai_narrator import OpenAINarrator
-from trama.infrastructure.openai_world_director import OpenAIWorldDirector
+from trama.infrastructure.openai_services import open_services
 
 pytestmark = [pytest.mark.live,
     pytest.mark.skipif(os.environ.get('RUN_OPENAI_LIVE_TESTS') != '1',
@@ -26,32 +22,29 @@ def test_real_open_leave_and_observe_corridor(closed, tmp_path, capture_logs):
     if not os.environ.get('OPENAI_API_KEY'):
         pytest.skip('OPENAI_API_KEY não configurada')
     scenario = Path(__file__).resolve().parents[2] / 'pocs/simulador/dungeon.json'
-    session = DungeonSession.from_data(json.loads(scenario.read_text()))
+    session = load_session(scenario)
     conversation = Conversation(session)
     if closed:
         # Congela uma situação produzida pelo motor, sem prompt alternativo de teste.
         setup = conversation.execute(ActionPlan((MovementIntent((), False, '', 'gate_1'),
             DoorIntent('close', 'gate_1'), MovementIntent((MovementSegment('west', 2),), False, ''))))
         assert setup.status == 'completed'
-        conversation.finish(Speech('Você fechou a grade da cela e voltou para junto da cama.'),
-                            conversation.narration_context(report=setup))
     resources_before = deepcopy(session.encounter.states)
     speech = conversation.prepare('Eu abro a grade da cela devagar e saio para olhar o corredor.')
     interpretation_context = conversation.interpretation_context()
-    model = os.environ.get('TRAMA_OPENAI_MODEL', DEFAULT_MODEL)
     with capture_logs() as stream:
         try:
-            with OpenAI(timeout=30, max_retries=0) as client:
-                plan = OpenAIIntentInterpreter(client, model).interpret(speech.on, interpretation_context)
+            with open_services() as services:
+                plan = services.interpreter.interpret(speech.on, interpretation_context)
                 world_context = conversation.world_context(plan)
-                world = OpenAIWorldDirector(client, model).decide(world_context)
+                world = services.world_director.decide(world_context)
                 report = conversation.execute(plan, world)
                 narration_context = conversation.narration_context(speech, report)
-                reply = conversation.finish(OpenAINarrator(client, model).narrate(narration_context), narration_context)
+                reply = conversation.finish(services.narrator.narrate(narration_context), narration_context)
         finally:
             (tmp_path / 'trace.jsonl').write_text(stream.getvalue())
     (tmp_path / 'interaction.json').write_text(json.dumps({
-        'model': model, 'interpretation_context': interpretation_context, 'world_context': world_context,
+        'model': services.config.model, 'configuration': services.metadata, 'interpretation_context': interpretation_context, 'world_context': world_context,
         'execution': report.context(), 'narration_context': narration_context,
         'reply': {'on': reply.on, 'off': reply.off}}, ensure_ascii=False, indent=2))
     assert report.status == 'completed'
@@ -74,29 +67,28 @@ def test_real_investigation_enters_cell_contextually(tmp_path, capture_logs, dic
     if not os.environ.get('OPENAI_API_KEY'):
         pytest.skip('OPENAI_API_KEY não configurada')
     scenario = Path(__file__).resolve().parents[2] / 'pocs/simulador/dungeon.json'
-    session = DungeonSession.from_data(json.loads(scenario.read_text()), roller=dice(20, 20))
+    session = load_session(scenario, roller=dice(20, 20))
     conversation = Conversation(session)
     setup = conversation.execute(ActionPlan((MovementIntent((), False, '', 'gate_4'), DoorIntent('open', 'gate_4'))))
     assert session.state.position.x == 7 and session.state.position.y == 9
-    model = os.environ.get('TRAMA_OPENAI_MODEL', DEFAULT_MODEL)
     with capture_logs() as stream:
         try:
-            with OpenAI(timeout=30, max_retries=0) as client:
-                narrator = OpenAINarrator(client, model)
+            with open_services() as services:
+                narrator = services.narrator
                 setup_context = conversation.narration_context(report=setup)
                 conversation.finish(narrator.narrate(setup_context), setup_context)
                 speech = conversation.prepare('Eu checo a cela, procurando por algo útil.')
                 interpretation_context = conversation.interpretation_context()
-                plan = OpenAIIntentInterpreter(client, model).interpret(speech.on, interpretation_context)
+                plan = services.interpreter.interpret(speech.on, interpretation_context)
                 world_context = conversation.world_context(plan)
-                world = OpenAIWorldDirector(client, model).decide(world_context)
+                world = services.world_director.decide(world_context)
                 report = conversation.execute(plan, world)
                 context = conversation.narration_context(speech, report)
                 reply = conversation.finish(narrator.narrate(context), context)
         finally:
             (tmp_path / 'trace.jsonl').write_text(stream.getvalue())
     (tmp_path / 'investigation.json').write_text(json.dumps({
-        'model': model, 'interpretation_context': interpretation_context, 'world_context': world_context,
+        'model': services.config.model, 'configuration': services.metadata, 'interpretation_context': interpretation_context, 'world_context': world_context,
         'execution': report.context(), 'narration_context': context,
         'reply': {'on': reply.on, 'off': reply.off}}, ensure_ascii=False, indent=2))
     assert report.status == 'completed'

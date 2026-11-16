@@ -8,28 +8,31 @@ from openai import (
     OpenAI, RateLimitError,
 )
 from trama.observability import current_context, log_context, new_id
+from trama.infrastructure.openai_config import DEFAULT_MODEL, DEFAULT_RESPONSE
+from trama.infrastructure.call_budget import CallBudget
 
 logger = logging.getLogger(__name__)
-
-DEFAULT_MODEL = "gpt-5.6-terra"
-
 
 class OpenAIRequestError(ValueError):
     pass
 
 
 def request_json(client: OpenAI, *, model: str, instructions: str, payload: dict,
-                 schema: dict, name: str, max_output_tokens: int = 1000) -> str:
+                 schema: dict, name: str, max_output_tokens: int = DEFAULT_RESPONSE.max_output_tokens,
+                 reasoning_effort: str = DEFAULT_RESPONSE.reasoning_effort,
+                 budget: CallBudget | None = None) -> str:
     with log_context(ai_call_id=current_context().get("ai_call_id") or new_id()):
         started = perf_counter()
         logger.info("ai.request_started", extra={"data": {"model": model, "task": name,
-                    "max_output_tokens": max_output_tokens, "reasoning_effort": "low"}})
-        parameters = {"model": model, "reasoning": {"effort": "low"}, "max_output_tokens": max_output_tokens,
+                    "max_output_tokens": max_output_tokens, "reasoning_effort": reasoning_effort}})
+        parameters = {"model": model, "reasoning": {"effort": reasoning_effort}, "max_output_tokens": max_output_tokens,
                       "instructions": instructions, "input": json.dumps(payload, ensure_ascii=False),
                       "text": {"format": {"type": "json_schema", "name": name,
                                           "strict": True, "schema": schema}}, "store": False}
         logger.debug("ai.request_payload", extra={"data": {"request": parameters}})
         try:
+            if budget is not None:
+                budget.reserve()
             response = _create_response(client, parameters)
             logger.info("ai.response_received", extra={"data": {
                 "model": model, "task": name, "duration_ms": round((perf_counter() - started) * 1000, 3),

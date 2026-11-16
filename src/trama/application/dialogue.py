@@ -9,6 +9,10 @@ class Speech:
     on: str = ""
     off: str = ""
 
+    def __post_init__(self):
+        if not isinstance(self.on, str) or not isinstance(self.off, str):
+            raise ValueError('Os canais on/off devem conter texto.')
+
     @property
     def text(self) -> str:
         return "\n\n".join(part for part in (self.on, f"[{self.off}]" if self.off else "") if part)
@@ -48,6 +52,21 @@ def split_speech(text: str) -> Speech:
 class DialogueMessage:
     role: str
     speech: Speech
+
+    def __post_init__(self):
+        if (self.role not in ('player', 'narrator') or not isinstance(self.speech, Speech)
+                or not (self.speech.on.strip() or self.speech.off.strip())):
+            raise ValueError('Mensagem deve identificar player/narrator e conter fala on ou off.')
+        if self.role == 'player' and len(self.speech.on) + len(self.speech.off) > 2000:
+            raise ValueError('A mensagem do jogador excede 2000 caracteres.')
+
+    @classmethod
+    def from_data(cls, data: dict) -> 'DialogueMessage':
+        """Lê histórico registrado sem reinterpretar texto nem aceitar instruções de sistema."""
+        if (not isinstance(data, dict) or not {'role', 'on'} <= data.keys()
+                or data.keys() - {'role', 'on', 'off'}):
+            raise ValueError('Histórico deve conter somente role, on e off opcional.')
+        return cls(data['role'], Speech(data['on'], data.get('off', '')))
 
 
 class NarrationError(ValueError):

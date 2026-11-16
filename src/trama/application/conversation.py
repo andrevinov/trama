@@ -1,6 +1,7 @@
 """Coordena diálogo, execução e fatos para o narrador. Não faz chamadas de rede."""
 
 from dataclasses import asdict, dataclass, field, replace
+from collections.abc import Iterable
 from copy import deepcopy
 import json
 import logging
@@ -18,6 +19,7 @@ from trama.application.world_resolution import WorldExecutor
 from trama.application.modes import GameMode
 from trama.application.authorization import PlanAuthorizationError, validate_player_plan
 from trama.application.interpretation_context import compact_context
+from trama.application.context_contracts import AIContext, ContextKind
 from trama.application.failures import ExecutionFailure, action_failure, action_reference
 from trama.application.preparation import prepare_movement
 from trama.observability import new_id
@@ -74,6 +76,21 @@ class Conversation:
         self._preceding_execution = None
         self._reset_version = session.reset_version
 
+    def extend_history(self, messages: Iterable[DialogueMessage]) -> None:
+        """Acrescenta falas validadas, sem executar ações ou substituir a memória mecânica.
+
+        Usado tanto por mensagens novas quanto por um histórico registrado. O lote
+        inteiro é validado antes da inclusão; papéis e canais são preservados.
+        """
+        validated = []
+        for message in messages:
+            if not isinstance(message, DialogueMessage):
+                raise ValueError('Use DialogueMessage para acrescentar histórico.')
+            validated.append(DialogueMessage(message.role, message.speech))
+        self.messages.extend(validated)
+        logger.debug('conversation.history_appended', extra={'data': {
+            'count': len(validated), 'roles': [m.role for m in validated]}})
+
     def _sync_reset(self) -> None:
         if self._reset_version != self.session.reset_version:
             self._last_execution = self._preceding_execution = None
@@ -119,14 +136,14 @@ class Conversation:
         speech = split_speech(raw)
         if not speech.on and not speech.off:
             raise ValueError("A mensagem está vazia.")
-        self.messages.append(DialogueMessage("player", speech))
+        self.extend_history((DialogueMessage("player", speech),))
         logger.info("conversation.message_accepted", extra={"data": {"text": raw, "speaker": "player",
                     "has_on": bool(speech.on), "has_off": bool(speech.off)}})
         logger.debug("conversation.speech_split", extra={"data": {"speech": speech}})
         return speech
 
-    def interpretation_context(self) -> dict:
-        return compact_context(self._full_context())
+    def interpretation_context(self) -> AIContext:
+        return AIContext(ContextKind.INTERPRETATION, compact_context(self._full_context()))
 
     def _full_context(self) -> dict:
         context = self.session.interpreter_context()
@@ -135,7 +152,7 @@ class Conversation:
                                       for m in self.messages[-12:] if m.speech.on]
         return context
 
-    def world_context(self, plan: ActionPlan | None = None) -> dict:
+    def world_context(self, plan: ActionPlan | None = None) -> AIContext:
         context = self._full_context()
         steps = []
         for intent in plan.steps if plan else ():
@@ -166,7 +183,7 @@ class Conversation:
         context["player_plan"] = json.loads(json.dumps(steps, default=float))
         context["player_request_parts"] = [asdict(p) for p in plan.request_parts] if plan else []
         context["phase"] = "player_action" if plan else "npc_turn"
-        return context
+        return AIContext(ContextKind.WORLD_ACTION if plan else ContextKind.NPC_TURN, context)
 
     def execute(self, plan: ActionPlan, world: WorldPlan = WorldPlan(), *, player_prompt: str | None = None) -> ExecutionReport:
         self._sync_reset()
@@ -401,7 +418,7 @@ class Conversation:
     def narration_context(
         self, speech: Speech = Speech(), report: ExecutionReport = ExecutionReport(),
         *, initial: bool = False,
-    ) -> dict:
+    ) -> AIContext:
         context = self.session.interpreter_context()
         self._sync_reset()
         # O narrador descreve a percepção atual, não o mapa arquitetônico inteiro.
@@ -426,7 +443,7 @@ class Conversation:
         previous = self._last_execution
         if previous and report.execution_id == previous["execution_id"]:
             previous = self._preceding_execution
-        return {
+        result = {
             "phase": "initial" if initial else "reply",
             "allow_on": initial or report.progress or report.narrative_interaction or report.status == "already_satisfied" or any(e.get("perceptible") for e in report.world_events),
             "player": {"on": speech.on, "off": speech.off},
@@ -460,6 +477,9 @@ class Conversation:
                 "POC: casas inteiras; uma fração restante não é executada nem arredondada para cima.",
             ],
         }
+        kind = (ContextKind.NARRATION_INITIAL if initial else ContextKind.NARRATION_OFF
+                if speech.off and not speech.on else ContextKind.NARRATION_RESULT)
+        return AIContext(kind, result)
 
     def finish(self, reply: Speech, context: dict) -> Speech:
         on = reply.on if context["allow_on"] else ""
@@ -478,7 +498,7 @@ class Conversation:
         if not on and not off:
             off = "Nenhuma ação foi realizada."
         final = Speech(on, off)
-        self.messages.append(DialogueMessage("narrator", final))
+        self.extend_history((DialogueMessage("narrator", final),))
         logger.info("conversation.reply_delivered", extra={"data": {"text": final.text, "speaker": "narrator",
                     "has_on": bool(on), "has_off": bool(off)}})
         logger.debug("conversation.reply", extra={"data": {"speech": final}})
@@ -486,6 +506,6 @@ class Conversation:
 
     def failure(self, explanation: str) -> Speech:
         reply = Speech(off=explanation)
-        self.messages.append(DialogueMessage("narrator", reply))
+        self.extend_history((DialogueMessage("narrator", reply),))
         logger.info("conversation.local_reply", extra={"data": {"text": reply.text, "speaker": "narrator", "speech": reply}})
         return reply

@@ -15,14 +15,11 @@ import openai
 
 from trama.application.dialogue import split_speech
 from trama.application.interpretation_evaluation import evaluate_plan, summarize_plan
-from trama.application.session import GameSession
-from trama.characters import sheet_from_data
-from trama.creatures import creatures_from_data
-from trama.infrastructure.openai_intent_interpreter import DEFAULT_MODEL, OpenAIIntentInterpreter, InterpretationError, parse_plan
-from trama.movement import MovementState
+from trama.application.scenarios import load_session
+from trama.infrastructure.openai_intent_interpreter import InterpretationError, parse_plan
+from trama.infrastructure.openai_config import OpenAIConfig
+from trama.infrastructure.openai_services import open_services
 from trama.observability import close_logging, configure_logging, log_context
-from trama.scene import Scene
-from trama.spatial import Position
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -42,25 +39,22 @@ def interaction_records(trace_path: Path, interaction: str) -> list[dict]:
 
 
 def scenario_context() -> dict:
-    data = json.loads((ROOT / "pocs/movimento/cela_guardas.json").read_text())
-    scene = Scene.from_data(data)
-    session = GameSession(scene.movement_grid, MovementState(Position(*data["start"])), scene,
-                          creatures_from_data(data["creatures"]),
-                          player_sheet=sheet_from_data(data["player"], id="player", name="Jogador"),
-                          enemy_sheets=tuple(sheet_from_data(c["sheet"], id=c["id"], name=c["name"]) for c in data["creatures"]))
+    session = load_session(ROOT / "pocs/movimento/cela_guardas.json")
     return session.interpreter_context()
 
 
 def run_case(client, *, case: dict, context: dict, mode: str, model: str,
-             max_corrections: int, trace_path: Path, schema_order: str = "operation-first") -> dict:
+             max_corrections: int, trace_path: Path, schema_order: str = "operation-first",
+             config: OpenAIConfig | None = None) -> dict:
     interaction = uuid4().hex
     started = perf_counter()
     error = None
     returned = None
-    with log_context(interaction_id=interaction):
+    settings = (config or OpenAIConfig.from_env()).for_experiment('interpretation_comparison',
+        model=model, context_mode=mode, max_corrections=max_corrections, schema_order=schema_order)
+    with log_context(interaction_id=interaction), open_services(settings, client=client) as services:
         try:
-            returned = OpenAIIntentInterpreter(client, model, context_mode=mode, max_corrections=max_corrections,
-                                              schema_order=schema_order).interpret(
+            returned = services.interpreter.interpret(
                 split_speech(case["prompt"]).on, deepcopy(context))
         except InterpretationError as failure:
             error = {"type": type(failure).__name__, "message": str(failure)}
@@ -80,6 +74,7 @@ def run_case(client, *, case: dict, context: dict, mode: str, model: str,
     return {
         "case_id": case["id"], "prompt": case["prompt"], "context_mode": mode, "model": model,
         "schema_order": schema_order,
+        "configuration": services.metadata,
         "interaction_id": interaction, "expected": case["expected_steps"], "candidates": candidates,
         "raw_outputs": outputs, "returned": summarize_plan(returned) if returned else None,
         "passed": final_match and error is None, "first_attempt_correct": bool(candidates and candidates[0]["matches_expected"]),
@@ -116,9 +111,12 @@ def main():
     parser.add_argument("--schema-order", choices=("operation-first", "legacy", "both"), default="operation-first",
                         help="Compara a ordem das propriedades, mantendo o restante da chamada igual.")
     parser.add_argument("--max-corrections", type=int, choices=(0, 1), default=0)
-    parser.add_argument("--model", default=os.environ.get("TRAMA_OPENAI_MODEL", DEFAULT_MODEL))
+    parser.add_argument("--model", help="Modelo alternativo para este experimento.")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
+    config = OpenAIConfig.from_env()
+    if args.model is not None:
+        config = config.for_experiment('interpretation_comparison', model=args.model)
     if not 1 <= args.repeat <= 20:
         parser.error("--repeat deve estar entre 1 e 20.")
     cases = json.loads(args.cases.read_text())
@@ -147,8 +145,10 @@ def main():
     configure_logging(level="DEBUG", log_file=trace, stream=stream, max_bytes=50_000_000)
     try:
         context = scenario_context()
-        with openai.OpenAI(timeout=30, max_retries=0) as client:
-            metadata = {"requested_model": args.model, "sdk_version": openai.__version__,
+        with open_services(config) as services:
+            client = services.client
+            metadata = {"requested_model": config.model, "sdk_version": openai.__version__,
+                        "configuration": services.metadata,
                         "provider_host": urlsplit(str(client.base_url)).hostname,
                         "contexts": modes, "schema_orders": schema_orders, "max_corrections": args.max_corrections,
                         "max_calls": limit, "repeat": args.repeat}
@@ -159,8 +159,9 @@ def main():
                         # Alterna a ordem para não favorecer sempre uma variante por cache/tempo.
                         ordered_variants = variants if repetition % 2 == 0 else list(reversed(variants))
                         for mode, schema_order in ordered_variants:
-                            result = run_case(client, case=case, context=context, mode=mode, model=args.model,
-                                              max_corrections=args.max_corrections, trace_path=trace, schema_order=schema_order)
+                            result = run_case(client, case=case, context=context, mode=mode, model=config.model,
+                                              max_corrections=args.max_corrections, trace_path=trace, schema_order=schema_order,
+                                              config=config)
                             result["repetition"] = repetition + 1
                             results.append(result)
                             result_file.write(json.dumps(result, ensure_ascii=False) + "\n")

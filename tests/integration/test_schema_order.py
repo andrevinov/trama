@@ -1,3 +1,4 @@
+from trama.infrastructure import openai_services
 """Regressões da ordem do discriminador no contrato de saída estruturada."""
 
 import json
@@ -70,7 +71,7 @@ def test_schema_comparison_runner_records_separate_results_and_preserves_other_p
     manager = Mock()
     manager.__enter__ = Mock(return_value=client)
     manager.__exit__ = Mock(return_value=False)
-    monkeypatch.setattr(experiment["openai"], "OpenAI", Mock(return_value=manager))
+    monkeypatch.setattr(openai_services, "OpenAI", Mock(return_value=client))
     monkeypatch.setenv("OPENAI_API_KEY", "offline-test-key")
     monkeypatch.setenv("RUN_OPENAI_LIVE_TESTS", "1")
     output = tmp_path / "comparison"

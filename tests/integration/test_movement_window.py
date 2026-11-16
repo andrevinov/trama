@@ -6,6 +6,7 @@ import pytest
 
 from trama.application.session import GameSession
 from trama.application.intents import ActionPlan, MovementIntent, MovementSegment
+from trama.application.dialogue import Speech
 from trama.infrastructure.openai_intent_interpreter import InterpretationError
 from trama.movement import Grid, MovementState, Position
 from trama.ui.movement_window import ACCENT, CELL_SIZE, GRID_ORIGIN, WINDOW_SIZE, MovementWindow
@@ -22,6 +23,22 @@ def screen(monkeypatch):
 
 def make_session():
     return GameSession(Grid(10, 10), MovementState(Position(4, 4)))
+
+
+class FixedInterpreter:
+    """Respostas locais explícitas; mensagens passam pela entrada real do fluxo."""
+    def __init__(self, *plans):
+        self.plans = iter(plans)
+        self.calls = []
+
+    def interpret(self, prompt, context):
+        self.calls.append((prompt, context))
+        return sourced_plan(next(self.plans), prompt)
+
+
+class FixedNarrator:
+    def narrate(self, context):
+        return Speech(on="Descrição do cenário.")
 
 
 def test_typing_prompt_async_interpretation_validation_and_rendering(screen):
@@ -61,10 +78,14 @@ def test_typing_prompt_async_interpretation_validation_and_rendering(screen):
 
 
 def test_interpretation_failure_keeps_window_and_state_usable(screen):
-    window = MovementWindow(make_session(), None, "simulado")
-    window.results.put(InterpretationError("Serviço indisponível"))
-    window.pending = True
-    window.poll()
+    class FailedInterpreter:
+        def interpret(self, prompt, context):
+            raise InterpretationError("Serviço indisponível")
+
+    window = MovementWindow(make_session(), FailedInterpreter(), "simulado")
+    window.input.insert("Ando para o norte.")
+    window.submit()
+    pump(window)
     assert window.failed
     assert not window.pending
     assert window.session.state == window.session.initial_state
@@ -82,13 +103,16 @@ def test_missing_credentials_does_not_start_a_request(screen):
 
 
 def test_edit_unicode_input_and_recover_from_invalid_movement(screen):
-    window = MovementWindow(make_session(), None, "simulado")
+    interpreter = FixedInterpreter(ActionPlan((MovementIntent((MovementSegment("east", 20),), False, ""),)))
+    window = MovementWindow(make_session(), interpreter, "simulado")
     window.input.insert("vá para o sul")
     window.input.handle(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_a, mod=pygame.KMOD_CTRL))
     window.input.insert("ação")
     assert window.input.text == "ação"
-    window.results.put(ActionPlan((MovementIntent((MovementSegment("east", 20),), False, ""),)))
-    window.poll()
+    window.input.handle(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_a, mod=pygame.KMOD_CTRL))
+    window.input.insert("Ande vinte casas para leste.")
+    window.submit()
+    pump(window)
     assert not window.failed
     assert "limites" in window.conversation.messages[-1].speech.off
     assert window.session.state.position == Position(9, 4)
@@ -138,7 +162,9 @@ def test_door_actions_update_rendered_visibility_and_hide_guards(screen):
     scene = Scene.from_data(data)
     session = GameSession(scene.grid, MovementState(Position(*data["start"])), scene,
                           creatures_from_data(data["creatures"]))
-    window = MovementWindow(session, None, "simulado")
+    interpreter = FixedInterpreter(ActionPlan((DoorIntent("open", "guard_door"),)),
+                                   ActionPlan((DoorIntent("close", "guard_door"),)))
+    window = MovementWindow(session, interpreter, "simulado")
 
     def guards_drawn():
         window.draw(screen)
@@ -154,14 +180,16 @@ def test_door_actions_update_rendered_visibility_and_hide_guards(screen):
 
     assert guards_drawn() == 0
     session.execute(MovementIntent((), True, "", "guard_door"))
-    window.results.put(ActionPlan((DoorIntent("open", "guard_door"),)))
-    window.poll()
+    window.input.insert("Abra a porta da Sala dos Guardas.")
+    window.submit()
+    pump(window)
     assert not window.failed
     assert "aberta" in window.conversation.messages[-1].speech.off
     assert guards_drawn() == 3
     session.next_turn()
-    window.results.put(ActionPlan((DoorIntent("close", "guard_door"),)))
-    window.poll()
+    window.input.insert("Feche a porta da Sala dos Guardas.")
+    window.submit()
+    pump(window)
     assert "fechada" in window.conversation.messages[-1].speech.off
     assert guards_drawn() == 0
 
@@ -183,9 +211,10 @@ def test_window_displays_meter_speed_budget_grid_and_execution_message(screen, m
 
     monkeypatch.setattr(pygame.font, "Font", RecordingFont)
     session = make_session()
-    window = MovementWindow(session, None, "simulado")
-    window.results.put(ActionPlan((MovementIntent((MovementSegment("east", 1),), False, ""),)))
-    window.poll()
+    window = MovementWindow(session, FixedInterpreter(ActionPlan((MovementIntent((MovementSegment("east", 1),), False, ""),))), "simulado")
+    window.input.insert("Ande uma casa para leste.")
+    window.submit()
+    pump(window)
     window.draw(screen)
     assert "Velocidade: 9 m" in rendered
     assert "Movimento sem limite de turno" in rendered
@@ -494,8 +523,9 @@ def test_conversation_scroll_and_multiline_input(screen):
 
 
 def test_sheet_tab_scrolls_and_can_be_opened_while_waiting(screen, monkeypatch):
-    window = MovementWindow(make_session(), None, "simulado")
-    window.pending = True
+    window = MovementWindow(make_session(), None, "simulado", FixedNarrator())
+    window.start()
+    assert window.pending
     window.handle_event(pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=window.tabs["Ficha"].center, button=1))
     assert window.active_tab == "Ficha"
     old = window.session.state
@@ -523,9 +553,10 @@ def test_sheet_sections_and_click_details_preserve_game_state(screen, monkeypatc
             return getattr(self.font, name)
 
     monkeypatch.setattr(pygame.font, "Font", RecordingFont)
-    window = MovementWindow(make_session(), None, "simulado")
+    window = MovementWindow(make_session(), None, "simulado", FixedNarrator())
     window.active_tab = "Ficha"
-    window.pending = True  # Consulta deve funcionar mesmo durante uma chamada à IA.
+    window.start()  # Consulta deve funcionar mesmo durante uma chamada à IA.
+    assert window.pending
     before = (window.session.state, window.session.budget, window.session.encounter.states.copy())
     window.draw(screen)
     assert any("Guerreiro 3" in text for text in rendered)
@@ -582,14 +613,29 @@ def test_opportunity_buttons_resume_npc_without_new_interpretation(screen, dice,
     from trama.application.world import WorldAction, WorldPlan, WorldReaction
     from trama.creatures import Creature
 
+    from trama.application.intents import RuleIntent
+
     session = GameSession(Grid(8, 8), MovementState(Position(2, 3)),
-                          creatures=(Creature("g1", "Guarda 1", Position(3, 3)),), roller=dice(1, 2, 20))
+                          creatures=(Creature("g1", "Guarda 1", Position(3, 3)),), roller=dice(20, 19, 1))
     session.encounter.start(("g1",))
-    window = MovementWindow(session, None, "simulado")
     world = WorldPlan((WorldReaction(0, 0, (
         WorldAction("g1", "move", "O guarda recua.", destination=Position(5, 3)),
     )),))
-    window.report = window.conversation.execute_npc_turn(world)
+    class Director:
+        def __init__(self):
+            self.calls = []
+
+        def decide(self, context):
+            self.calls.append(context)
+            return WorldPlan() if context['phase'] == 'player_action' else world
+
+    director = Director()
+    interpreter = FixedInterpreter(ActionPlan((RuleIntent('end_turn'),)))
+    window = MovementWindow(session, interpreter, "simulado", world_director=director)
+    window.input.insert('Encerro meu turno.')
+    window.submit()
+    for _ in range(3):
+        pump(window)
     assert session.pending_opportunity
     window.draw(screen)
     session.encounter.roller = dice(1) if accept else dice()
@@ -598,6 +644,7 @@ def test_opportunity_buttons_resume_npc_without_new_interpretation(screen, dice,
     assert session.creatures[0].position == Position(5, 3)
     assert session.encounter.combat.active_id == "player"
     assert session.encounter.states["g1"].hp == (9 if accept else 12)
+    assert len(interpreter.calls) == 1 and len(director.calls) == 2
     assert window.conversation.messages[0].speech.on
     window.draw(screen)
 
@@ -640,9 +687,11 @@ def test_combat_report_fallback_and_failed_narration_preserve_resolved_attack(sc
     session = GameSession(Grid(10, 10), MovementState(Position(4, 4)),
                           creatures=(Creature("g1", "Guarda 1", Position(5, 4)),), roller=dice(15, 16, 10, 15, 1, 2))
     session.execute(RuleIntent("start_combat"))
-    window = MovementWindow(session, None, "simulado", FailedNarrator())
-    window.results.put(ActionPlan((RuleIntent("attack", "g1", "flail"),)))
-    window.poll()
+    interpreter = FixedInterpreter(ActionPlan((RuleIntent("attack", "g1", "flail"),)))
+    window = MovementWindow(session, interpreter, "simulado", FailedNarrator())
+    window.input.insert('Ataco o Guarda 1 com o mangual.')
+    window.submit()
+    pump(window)
     pump(window)
     assert window.failed and not window.pending
     assert session.encounter.states["g1"].hp == 7 and not session.budget.action_available

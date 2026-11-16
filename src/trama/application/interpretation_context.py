@@ -1,4 +1,8 @@
-"""Projeção pequena para interpretação; o contexto do Mundo permanece completo."""
+"""Projeção pequena para interpretação; o contexto do Mundo permanece completo.
+
+Conversation envolve o resultado em AIContext validado. O adaptador preserva
+essa projeção já preparada; este helper também atende os experimentos com dict.
+"""
 
 from copy import deepcopy
 

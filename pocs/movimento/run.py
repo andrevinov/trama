@@ -7,7 +7,7 @@ from pathlib import Path
 
 from openai import OpenAI
 
-from trama.simulator import load_session
+from trama.application.scenarios import load_session
 from trama.infrastructure.openai_intent_interpreter import DEFAULT_MODEL, OpenAIIntentInterpreter
 from trama.infrastructure.openai_narrator import OpenAINarrator
 from trama.infrastructure.openai_world_director import OpenAIWorldDirector

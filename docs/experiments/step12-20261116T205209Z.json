@@ -1,0 +1,445 @@
+{
+  "schema_version": 1,
+  "plan_and_provenance": {
+    "experiment_id": "step12-20261116T205209Z",
+    "planned_at_utc": "2026-11-16T20:52:09.371822+00:00",
+    "authorization": "Usuário solicitou executar o passo 12 do plano; oito casos contextuais, uma repetição, até 41 chamadas lógicas ao SDK.",
+    "repetitions_per_case": 1,
+    "max_sdk_calls_total": 41,
+    "normal_sdk_calls_total": 33,
+    "case_ids": [
+      "investigar-cela-do-log",
+      "pegar-espada-distante",
+      "atacar-com-aproximacao",
+      "ataque-com-movimento-insuficiente",
+      "ataque-guarda-vence-iniciativa",
+      "investigar-grade-fechada",
+      "investigar-sem-sair-do-lugar",
+      "investigar-com-ataque-de-oportunidade"
+    ],
+    "case_budgets": {
+      "investigar-cela-do-log": 5,
+      "pegar-espada-distante": 5,
+      "atacar-com-aproximacao": 5,
+      "ataque-com-movimento-insuficiente": 5,
+      "ataque-guarda-vence-iniciativa": 6,
+      "investigar-grade-fechada": 5,
+      "investigar-sem-sair-do-lugar": 5,
+      "investigar-com-ataque-de-oportunidade": 5
+    },
+    "configuration": {
+      "model": "gpt-5.6-terra",
+      "timeout_seconds": 30,
+      "max_retries": 0,
+      "context_mode": "minimal",
+      "max_corrections": 1,
+      "schema_order": "operation-first",
+      "interpretation": {
+        "max_output_tokens": 1000,
+        "reasoning_effort": "low"
+      },
+      "narration": {
+        "max_output_tokens": 1000,
+        "reasoning_effort": "low"
+      },
+      "world": {
+        "max_output_tokens": 2000,
+        "reasoning_effort": "low"
+      },
+      "experiment": null,
+      "profile": "application_default",
+      "differences_from_default": {}
+    },
+    "git_head": "3d3e2f0cb6987046faee8e57eb11310fd2e48248",
+    "worktree_dirty": true,
+    "source_sha256": {
+      "docs/contracts/ai-contexts.json": "ed68e8c51cef5eb1c7307ae12bb87e6594be80d3b4949371e997b3578824bb39",
+      "pocs/simulador/dungeon.json": "e471c79fc2f4c5b24711a271aa4c5f4225151afe79dd6dc23eaca192a5e01c03",
+      "poetry.lock": "3e0d4c7e0822f302a2ae65e28ca95b9067122b841e7b60eaa3f7094b4aae286d",
+      "pyproject.toml": "364b8c3935ae6e04b5775355d6faebe9c3ea8f2c9a33bb77a5679f0a71bb363d",
+      "src/trama/__init__.py": "b7de8624c94f685e85d305fb705a3b9b09910b0f4c65f3d994b698434854ace9",
+      "src/trama/actions.py": "872a9122e79cbdd7abedfe55cb0198260931f0313bfd81647f995c0fb38bbfe6",
+      "src/trama/application/__init__.py": "dfdecab8feeff40e6b3ae7e847fb81cd903ed9fdbfb40c16eeb98e21f458a411",
+      "src/trama/application/authorization.py": "98856b36f3b68d006f517d64edbf39ad94c9db00e4a501d235ab383f9c1869ba",
+      "src/trama/application/context.py": "709e08a11b865bd35130d9d00c4dbb2ef0350daeb64d52c4376e90d8c4b96fa4",
+      "src/trama/application/context_contracts.py": "2e2ac6e7efe4c3d42185b63d81271da43a8bcd17d11b42b726dc374fce669911",
+      "src/trama/application/conversation.py": "31e927676138534709fd5e04de31c07e3bcdd34dd5dc5a5c6a430b4b8ef7744f",
+      "src/trama/application/dialogue.py": "1af24be962ef96c3fd1f9a25c4016698533dbe4fc0f5213d6bd8ef6043c04224",
+      "src/trama/application/dungeon.py": "ca803741e0ebe1607443363f02181bbe9d02e54e6836938521f999be6089bfc4",
+      "src/trama/application/encounter.py": "93085d5b68e463ef084bd9d82aee2738647db33286b004d6b399ed4fb566ed2b",
+      "src/trama/application/failures.py": "0a2e590ca411a9ce9b8cad8a55db16ba4ca5bee297f6fd1840274bb24d8cacce",
+      "src/trama/application/game_flow.py": "8d031ce685cab24c17f8e7400ddce7600db912e4605a67d12593f5df8f7f8ca0",
+      "src/trama/application/game_runner.py": "4d83926d0f8fc38ea81969d6229da7860ca0a6cc146fe19d5fde89a3c78473a5",
+      "src/trama/application/intents.py": "b100911da1a04ad456ad95da9e3c1bc49e9ac0e0d564605372978a933a6028e8",
+      "src/trama/application/interpretation_context.py": "63cdf7cd838abec35bca0214abd3759600348c92365f242b8677a906c02e3e98",
+      "src/trama/application/interpretation_evaluation.py": "b3f63b208ab871c3d0f71fbe62194aaa0e9e42e3027ae2cc12161e3acf779d30",
+      "src/trama/application/modes.py": "0f4ba86b8d718855c1d7421db8f285b14968a4c33d0c1ac2d15ba0c62f3b3b90",
+      "src/trama/application/preparation.py": "bb9181d07c4cbb23fa1e97a9d9e0141b79e6a9bcae6c084bb1d633ac58ba263f",
+      "src/trama/application/routing.py": "c3de58ca870dcd099b1e248a608ba9b479096ab6fc7e0879800eabe4b601ec2f",
+      "src/trama/application/scenarios.py": "7a680444228374b48f404353d3f503868c541a38a85b054ddd02040b84077ff4",
+      "src/trama/application/session.py": "b7915634156800e0efddca386e8ce5d7bc310e79f0617cde155015b3c85b2277",
+      "src/trama/application/sheet_options.py": "c1fb12d899a2ab1927e85ec37171ac5974f2848e2ee396899cebf7a83b9ed6d5",
+      "src/trama/application/sheets.py": "a08cfdbdf2f5b264ec03a7c5aad56bb4b0d924828c4d09dce097b45c7b96264a",
+      "src/trama/application/travel.py": "7871aa21ac9e7edd91d8b80b29f14abea7f3b788f1f7ea36d5adf68a07c0d84d",
+      "src/trama/application/world.py": "40692a481809281f948bc4b7f183ea64600c2d6b787dac8380e9902166bd5ce1",
+      "src/trama/application/world_resolution.py": "d75bccce89683ae348ba8a8199821546ec1a943be62186a0d0632d48bfa1cd5a",
+      "src/trama/bootstrap.py": "bd1a1bb11d7ce7d8b5bb8807639df8770edff5dcfaa596cb22be79a1ad9442f4",
+      "src/trama/characters.py": "ff5d7d382c392a9d5193558f351002306c737d83de44513fc4c1182673ed510e",
+      "src/trama/combat.py": "1d0111c9cbe1371201cdb36afa963b1735e1100f69803f4eb5ee77b5c1778c89",
+      "src/trama/creatures.py": "b22b9bd1bf84cdd9b1ed4d474c684eadcc7298e0dad310bbf5ac4e13445cc0a5",
+      "src/trama/dice.py": "3faf048f1f8933d267b46836e255877b1f6834fb6dfbef1d8331a87caf0c7f8c",
+      "src/trama/distances.py": "89c41c9f610f47282a4d087bbb35fff0d1af959910b3d849e4a5b6dc0dc3ade4",
+      "src/trama/infrastructure/__init__.py": "fd15575e6196181e44e3bb3a09389ffb3d40537febcbf85e18d7c7031d758995",
+      "src/trama/infrastructure/call_budget.py": "95b541be03a089f4ce6df13a5395db67317b103f6b3df673f952650d6f57f01d",
+      "src/trama/infrastructure/openai_config.py": "38a1c9d71007c69d01f699aca6475cc1e42ecf299df6802a82f08b91ae09c594",
+      "src/trama/infrastructure/openai_intent_interpreter.py": "a6a3f639b613b3ccddaaa4160552afe62fc34e96a69477d284de10d70355cc9f",
+      "src/trama/infrastructure/openai_json.py": "ceecb5669ca7da8133d1125121886f9d44db01b45ce0f6d48075ec448008d026",
+      "src/trama/infrastructure/openai_narrator.py": "96f64ad258b48a419388b7b11cc223fa4b0507765deec7bf23f534f71625140c",
+      "src/trama/infrastructure/openai_services.py": "fa54b15a77f5cc6fefad29f7732feb64785bb21df176eb52e424279f8d15e26a",
+      "src/trama/infrastructure/openai_world_director.py": "838498785d2f103bc9abecd0a2d9795bc91ade34fe82a5bc4fddfcf8d6bacd25",
+      "src/trama/movement.py": "2b136bbd415043f69439777f960e1d6cb5bfa92ed82ff53419f20b4955fcf092",
+      "src/trama/observability.py": "f184a85a038cebdc9f149acdddbeab461ebbc0a528a1dad50ec05fdfd60acd1d",
+      "src/trama/reactions.py": "99bc8eee62bd8be774216b9c62228f3c4ff129677984a139f2750e54a7867b45",
+      "src/trama/scene.py": "c701d558cf955f605f7143c196b4d4603228fcf8389d0a9a9dfb9c6149f2447b",
+      "src/trama/simulator.py": "8b9379538dbbccda3c92018ea81f51eafdd896ad894aeb862ce699addf30a858",
+      "src/trama/spatial.py": "3df8b61c2963033d0c60c221b4fb3b353d3c0d64cdebeb00ad7879b6d6128835",
+      "src/trama/ui/__init__.py": "d57b4f45443dd3c1806cf6c5c222fd2c94c2b925db98d1176330525b37159618",
+      "src/trama/ui/character_panel.py": "9ad6d6537496a567202ae85bdfb00a9629675235e93d2a10b1e99628614b053f",
+      "src/trama/ui/movement_window.py": "0a1a9060ec94eedbb70913b9b5a71d45b0d0a7f253381073e010da7f40c83767",
+      "src/trama/ui/text.py": "9b08daeca6d0edeb33f1cf50076cd03977a508947c4d9e5a7bb8d63abb1da5dc",
+      "src/trama/vision.py": "3af71db3810d2efd6704c7a7630aab6dba2435195830ea806ab4be6dbae6b90c",
+      "tests/conftest.py": "0d8c03ee445909d83e0771d30ad92fcde1f205da1ab3bdf54182a6cf12d0c663",
+      "tests/fixtures/contextual_movement/cases.json": "3b359e59d2ee1a0e80be5d519429206835afce6e3996e8905112c567a37bb1a9",
+      "tests/fixtures/contextual_movement/investigation_history.json": "bd42c2f7bcc44862a60794372a287f81e65529d9baa4f338a0d0e4da44a98e3b",
+      "tests/fixtures/contextual_movement/preparations.json": "eaab6ed2823a33f52b16cfab7221668e593822639ed6658c2290f7140e17b08a",
+      "tests/live/conftest.py": "2c8353f8b659372e4269779dd4855f893f840b06b0028106ee4ab1be7699bcae",
+      "tests/live/test_contextual_movement.py": "9707c8e01a5a8e4b7757489bb724d4753a3c4490fcb82538c61b90f168048a70"
+    },
+    "selection": "tests/live/test_contextual_movement.py -m live",
+    "stop_policy": "Teto por caso no transporte. Falhas/inconclusivos são preservados, sem rerun ou mudança de critério/configuração.",
+    "results": {
+      "status": "reviewed",
+      "pytest_exit_code": 0,
+      "summary": "summary.json",
+      "summary_sha256": "e59f907306c256f9fc40456bc6df9ffa49a2e5f6ee4d740238de8833bdb28337",
+      "outcomes": {
+        "passed": 8
+      },
+      "sdk_calls": 33,
+      "source_hashes_verified": true,
+      "reruns": 0,
+      "manual_review": "manual-review.json",
+      "report": "docs/experiments/step12-20261116T205209Z.md"
+    }
+  },
+  "measured_results": {
+    "experiment_id": "step12-20261116T205209Z",
+    "reviewed_at_utc": "2026-11-16T20:56:09.546628+00:00",
+    "pytest": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "8",
+      "time": "82.833",
+      "timestamp": "2026-11-16T17:52:25.231452-03:00",
+      "hostname": "linux-rocks"
+    },
+    "outcomes": {
+      "passed": 8
+    },
+    "sdk_calls": 33,
+    "response_count": 33,
+    "responses_with_usage": 33,
+    "tasks": {
+      "narrator_reply": 16,
+      "action_plan": 8,
+      "world_response": 9
+    },
+    "response_models": {
+      "gpt-5.6-terra": 33
+    },
+    "usage": {
+      "input_tokens": 331806,
+      "output_tokens": 2801,
+      "total_tokens": 334607,
+      "cached_input_tokens": 66785,
+      "cache_write_tokens": 264922,
+      "reasoning_tokens": 307
+    },
+    "response_duration_ms_sum": 76628.262,
+    "first_response_at_utc": "2026-11-16T20:52:31.006+00:00",
+    "last_response_at_utc": "2026-11-16T20:53:48.052+00:00",
+    "first_event_at_utc": "2026-11-16T20:52:25.606+00:00",
+    "last_event_at_utc": "2026-11-16T20:53:48.055+00:00",
+    "source_hashes_verified": true,
+    "cases": [
+      {
+        "case_id": "investigar-cela-do-log",
+        "outcome": "passed",
+        "sdk_calls": 4,
+        "interpretation_attempts": 1,
+        "usage": {
+          "input_tokens": 39607,
+          "output_tokens": 326,
+          "total_tokens": 39933,
+          "cached_input_tokens": 1939,
+          "cache_write_tokens": 37656,
+          "reasoning_tokens": 14
+        },
+        "before": [
+          8,
+          10
+        ],
+        "after": [
+          6,
+          10
+        ],
+        "artifact": "20261116T205225-f1e12730/investigar-cela-do-log/result.json",
+        "trace": "20261116T205225-f1e12730/investigar-cela-do-log/trace.jsonl",
+        "sha256": {
+          "result.json": "c2ca546f6e0cd55add9a03983a08efc483dd34629a6773701e62a10a3c75fa5d",
+          "trace.jsonl": "2286941b2b666554e4b9ea652b39c1330d2abb5251ca33099a3201b06e6ee83c"
+        }
+      },
+      {
+        "case_id": "pegar-espada-distante",
+        "outcome": "passed",
+        "sdk_calls": 4,
+        "interpretation_attempts": 1,
+        "usage": {
+          "input_tokens": 39027,
+          "output_tokens": 267,
+          "total_tokens": 39294,
+          "cached_input_tokens": 8991,
+          "cache_write_tokens": 30024,
+          "reasoning_tokens": 14
+        },
+        "before": [
+          8,
+          10
+        ],
+        "after": [
+          5,
+          10
+        ],
+        "artifact": "20261116T205225-f1e12730/pegar-espada-distante/result.json",
+        "trace": "20261116T205225-f1e12730/pegar-espada-distante/trace.jsonl",
+        "sha256": {
+          "result.json": "1fa82ade091e2941ce0f231a4f5ecaab4b715fb6f33d13f8f70a0cf2df899d04",
+          "trace.jsonl": "629f4e4bd6bdb905a85cde165a3d97d30ffc5e26e069c530c258b7b3eea34d79"
+        }
+      },
+      {
+        "case_id": "atacar-com-aproximacao",
+        "outcome": "passed",
+        "sdk_calls": 4,
+        "interpretation_attempts": 1,
+        "usage": {
+          "input_tokens": 42107,
+          "output_tokens": 303,
+          "total_tokens": 42410,
+          "cached_input_tokens": 8991,
+          "cache_write_tokens": 33104,
+          "reasoning_tokens": 0
+        },
+        "before": [
+          9,
+          8
+        ],
+        "after": [
+          10,
+          5
+        ],
+        "artifact": "20261116T205225-f1e12730/atacar-com-aproximacao/result.json",
+        "trace": "20261116T205225-f1e12730/atacar-com-aproximacao/trace.jsonl",
+        "sha256": {
+          "result.json": "84681f98aeabb4ed278ab5121f026759987456170b61096ab0190551954f0e08",
+          "trace.jsonl": "460706c79a83f389c0143ab482eda518006b8297bb36e7c50a8006078c4cbad5"
+        }
+      },
+      {
+        "case_id": "ataque-com-movimento-insuficiente",
+        "outcome": "passed",
+        "sdk_calls": 4,
+        "interpretation_attempts": 1,
+        "usage": {
+          "input_tokens": 40374,
+          "output_tokens": 352,
+          "total_tokens": 40726,
+          "cached_input_tokens": 8991,
+          "cache_write_tokens": 31371,
+          "reasoning_tokens": 44
+        },
+        "before": [
+          9,
+          8
+        ],
+        "after": [
+          9,
+          7
+        ],
+        "artifact": "20261116T205225-f1e12730/ataque-com-movimento-insuficiente/result.json",
+        "trace": "20261116T205225-f1e12730/ataque-com-movimento-insuficiente/trace.jsonl",
+        "sha256": {
+          "result.json": "62e2cf25257d51efbc8159c468fe21aaeb826abc9fa485458fe71881366a3179",
+          "trace.jsonl": "84dc47bb713256e21a5f07e57cdf90438834a012a3312f16f603e934f7d00b19"
+        }
+      },
+      {
+        "case_id": "ataque-guarda-vence-iniciativa",
+        "outcome": "passed",
+        "sdk_calls": 5,
+        "interpretation_attempts": 1,
+        "usage": {
+          "input_tokens": 53749,
+          "output_tokens": 587,
+          "total_tokens": 54336,
+          "cached_input_tokens": 10900,
+          "cache_write_tokens": 42834,
+          "reasoning_tokens": 165
+        },
+        "before": [
+          9,
+          8
+        ],
+        "after": [
+          9,
+          8
+        ],
+        "artifact": "20261116T205225-f1e12730/ataque-guarda-vence-iniciativa/result.json",
+        "trace": "20261116T205225-f1e12730/ataque-guarda-vence-iniciativa/trace.jsonl",
+        "sha256": {
+          "result.json": "29cdbf13d21a749a427d189fd09c018a19df23a542a138b23d561d76feb471b3",
+          "trace.jsonl": "180631fe59cb5360336ddb0e599357e03b3a907ceeb44cb34deb581e1083daef"
+        }
+      },
+      {
+        "case_id": "investigar-grade-fechada",
+        "outcome": "passed",
+        "sdk_calls": 4,
+        "interpretation_attempts": 1,
+        "usage": {
+          "input_tokens": 38862,
+          "output_tokens": 292,
+          "total_tokens": 39154,
+          "cached_input_tokens": 8991,
+          "cache_write_tokens": 29859,
+          "reasoning_tokens": 15
+        },
+        "before": [
+          8,
+          10
+        ],
+        "after": [
+          8,
+          10
+        ],
+        "artifact": "20261116T205225-f1e12730/investigar-grade-fechada/result.json",
+        "trace": "20261116T205225-f1e12730/investigar-grade-fechada/trace.jsonl",
+        "sha256": {
+          "result.json": "1cb9265b0080532c527f6efa76bf9119fe73fef37996cad07d4267bcc9760398",
+          "trace.jsonl": "4fdc8c985717f791a4a4e8afd28603cff332c1473ca3f85b30493d41f1a1a854"
+        }
+      },
+      {
+        "case_id": "investigar-sem-sair-do-lugar",
+        "outcome": "passed",
+        "sdk_calls": 4,
+        "interpretation_attempts": 1,
+        "usage": {
+          "input_tokens": 38610,
+          "output_tokens": 277,
+          "total_tokens": 38887,
+          "cached_input_tokens": 8991,
+          "cache_write_tokens": 29607,
+          "reasoning_tokens": 17
+        },
+        "before": [
+          8,
+          10
+        ],
+        "after": [
+          8,
+          10
+        ],
+        "artifact": "20261116T205225-f1e12730/investigar-sem-sair-do-lugar/result.json",
+        "trace": "20261116T205225-f1e12730/investigar-sem-sair-do-lugar/trace.jsonl",
+        "sha256": {
+          "result.json": "d9658e80475482f2330b40cdde19bbc8a87c81d01e6c1475066e729a2a788b6d",
+          "trace.jsonl": "35d8076b3dbeeba496bd60b28ac8ae7b139ff008f614db588f7c86b273f4a9e9"
+        }
+      },
+      {
+        "case_id": "investigar-com-ataque-de-oportunidade",
+        "outcome": "passed",
+        "sdk_calls": 4,
+        "interpretation_attempts": 1,
+        "usage": {
+          "input_tokens": 39470,
+          "output_tokens": 397,
+          "total_tokens": 39867,
+          "cached_input_tokens": 8991,
+          "cache_write_tokens": 30467,
+          "reasoning_tokens": 38
+        },
+        "before": [
+          12,
+          4
+        ],
+        "after": [
+          16,
+          3
+        ],
+        "artifact": "20261116T205225-f1e12730/investigar-com-ataque-de-oportunidade/result.json",
+        "trace": "20261116T205225-f1e12730/investigar-com-ataque-de-oportunidade/trace.jsonl",
+        "sha256": {
+          "result.json": "110c2cdd14728dfec082c2e400a33791559201d8f9358099ec5986fb895c9947",
+          "trace.jsonl": "9f63a5de0dc9bb383b361f55a5cd9a32786e8691e4b6641f70b79c175a949988"
+        }
+      }
+    ]
+  },
+  "manual_review": {
+    "completed_at_utc": "2026-11-16T20:58:42.158819+00:00",
+    "reviewer": "Codex; leitura dos textos completos e comparação com relatórios/estados",
+    "scope": {
+      "openings": 8,
+      "final_replies": 8
+    },
+    "verdict": "mechanics_passed_with_narrative_caveats",
+    "automated_semantic_certification": false,
+    "repetitions_per_case": 1,
+    "notes_by_case": {
+      "investigar-cela-do-log": [
+        "Efeitos centrais conferidos. Resultado 22/CD 15 foi narrado em on."
+      ],
+      "pegar-espada-distante": [
+        "Efeitos centrais conferidos. Redação sugere origem dentro da cela, embora partida seja corredor."
+      ],
+      "atacar-com-aproximacao": [
+        "Efeitos centrais conferidos. PV/explicação de turno aparecem em on."
+      ],
+      "ataque-com-movimento-insuficiente": [
+        "Progresso parcial e ausência de ataque conferidos. Interrupção explicada em off."
+      ],
+      "ataque-guarda-vence-iniciativa": [
+        "Movimento, erro e fim do turno do guarda conferidos. Vulnerável pode sugerir condição não concedida pelo motor."
+      ],
+      "investigar-grade-fechada": [
+        "Ausência de progresso e barreira explicadas em off, sem abertura implícita."
+      ],
+      "investigar-sem-sair-do-lugar": [
+        "Restrição explícita respeitada; ausência de movimento/teste explicada em off."
+      ],
+      "investigar-com-ataque-de-oportunidade": [
+        "Movimento, oportunidade, dano e investigação conferidos. Valores de dano/PV aparecem em on."
+      ]
+    },
+    "general_notes": [
+      "Algumas aberturas retomam o evento passado da abertura mágica da cela; não houve nova alteração de porta.",
+      "Uma amostra por caso não mede repetibilidade. Outras suítes live e interface Pygame não executadas."
+    ]
+  },
+  "raw_artifacts": "logs/live/contextual_movement/step12-20261116T205209Z (local, ignorado pelo Git)"
+}

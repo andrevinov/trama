@@ -20,6 +20,18 @@ visualização, mas não interpreta mensagens. Abertura/reinício e mensagens us
 chamadas potencialmente pagas à Responses API. O runner anterior também abre
 esta dungeon por padrão; o cenário antigo pode ser escolhido explicitamente.
 
+## Carregamento compartilhado
+
+O runner usa `trama.application.scenarios.load_session(path)`, que lê o JSON e
+delega a `build_session(data)`. Os live tests usam essas mesmas entradas: arquivos
+originais via `load_session`, ou dados com variações explícitas via `build_session`.
+Ambas preservam os validadores de mapa, fixação/bloqueios de objetos, passagens,
+fichas e posições. `roller=` injeta os dados controlados sem trocar suas regras.
+
+Esse módulo não depende da CLI, do Pygame ou do SDK. Dungeon, mapas nomeados
+anteriores e grades simples compartilham a seleção do tipo de sessão. A API
+anterior `trama.simulator.load_session` continua disponível por compatibilidade.
+
 ## Cenário e estado inicial
 
 Os dados estão em [dungeon.json](dungeon.json), com posições internas em base 0.
@@ -199,6 +211,11 @@ cenário sobre a sessão existente. Movimento, fichas, dados, iniciativa, geomet
 e visão reutilizam seus módulos. O Pygame recebe `map_view()` e as projeções da
 ficha; não consulta o estado privado da dungeon. Os adaptadores recebem as
 operações suportadas e contexto construído da mesma sessão que será executada.
+
+A janela usa `GameFlow` para abertura, mensagens, turnos dos NPCs, oportunidades,
+narração e reinício. Mantém somente entrada, desenho e a agenda de chamadas em
+workers; os resultados são identificados e aplicados pelo fluxo na thread
+principal. Não há mais uma coordenação de jogo paralela no código do Pygame.
 
 No momento, a decisão em exploração desse roteiro é adjudicada pelo código.
 O diretor de Mundo recebe a orientação de não duplicar testes, rotina ou

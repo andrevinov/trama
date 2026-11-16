@@ -1,3 +1,4 @@
+from trama.infrastructure import openai_services
 from conftest import scripted_responses, sourced_output, sourced_plan
 import json
 from pathlib import Path
@@ -17,7 +18,7 @@ def experiment():
 
 def test_preview_never_constructs_client_even_when_credentials_exist(experiment, monkeypatch, capsys):
     constructor = Mock(side_effect=AssertionError("Não deve criar cliente na prévia"))
-    monkeypatch.setattr(experiment["openai"], "OpenAI", constructor)
+    monkeypatch.setattr(openai_services, "OpenAI", constructor)
     monkeypatch.setenv("OPENAI_API_KEY", "not-a-real-key")
     monkeypatch.setenv("RUN_OPENAI_LIVE_TESTS", "1")
     monkeypatch.setattr("sys.argv", ["run.py", "--case", "real_4"])
@@ -29,7 +30,7 @@ def test_preview_never_constructs_client_even_when_credentials_exist(experiment,
 
 def test_live_needs_explicit_gate_before_client_or_output_files(experiment, monkeypatch, tmp_path):
     constructor = Mock(side_effect=AssertionError("Não deve criar cliente sem autorização"))
-    monkeypatch.setattr(experiment["openai"], "OpenAI", constructor)
+    monkeypatch.setattr(openai_services, "OpenAI", constructor)
     monkeypatch.delenv("RUN_OPENAI_LIVE_TESTS", raising=False)
     monkeypatch.setenv("OPENAI_API_KEY", "not-a-real-key")
     output = tmp_path / "experiment"
@@ -75,7 +76,7 @@ def test_experiment_live_loop_can_be_exercised_with_fake_sdk(experiment, monkeyp
     manager = Mock()
     manager.__enter__ = Mock(return_value=client)
     manager.__exit__ = Mock(return_value=False)
-    monkeypatch.setattr(experiment["openai"], "OpenAI", Mock(return_value=manager))
+    monkeypatch.setattr(openai_services, "OpenAI", Mock(return_value=client))
     monkeypatch.setenv("RUN_OPENAI_LIVE_TESTS", "1")
     monkeypatch.setenv("OPENAI_API_KEY", "not-a-real-key")
     output = tmp_path / "experiment"

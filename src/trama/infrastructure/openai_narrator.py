@@ -6,6 +6,9 @@ import logging
 from openai import OpenAI
 
 from trama.application.dialogue import NarrationError, Speech
+from trama.application.context_contracts import AIContext, ContextKind
+from trama.infrastructure.openai_config import DEFAULT_CONFIG, ResponseOptions
+from trama.infrastructure.call_budget import CallBudget
 from trama.application.modes import MODE_INSTRUCTIONS
 from trama.infrastructure.openai_json import DEFAULT_MODEL, OpenAIRequestError, request_json
 from trama.observability import log_context, new_id
@@ -106,9 +109,12 @@ breve em off. Mantenha cada resposta concisa, com poucos parágrafos.
 
 
 class OpenAINarrator:
-    def __init__(self, client: OpenAI, model: str = DEFAULT_MODEL) -> None:
+    def __init__(self, client: OpenAI, model: str = DEFAULT_MODEL, *, response_options: ResponseOptions = DEFAULT_CONFIG.narration,
+                 budget: CallBudget | None = None) -> None:
         self.client = client
         self.model = model
+        self.response_options = response_options
+        self.budget = budget
 
     def narrate(self, context: dict) -> Speech:
         with log_context(ai_call_id=new_id()):
@@ -116,8 +122,12 @@ class OpenAINarrator:
 
     def _narrate(self, context: dict) -> Speech:
         try:
+            if isinstance(context, AIContext):
+                context.require(ContextKind.NARRATION_INITIAL, ContextKind.NARRATION_RESULT, ContextKind.NARRATION_OFF)
             text = request_json(self.client, model=self.model, instructions=INSTRUCTIONS,
-                                payload=context, schema=NARRATION_SCHEMA, name="narrator_reply")
+                                payload=context, schema=NARRATION_SCHEMA, name="narrator_reply",
+                                max_output_tokens=self.response_options.max_output_tokens,
+                                reasoning_effort=self.response_options.reasoning_effort, budget=self.budget)
             value = json.loads(text)
             if (not isinstance(value, dict) or set(value) != {"on", "off"}
                     or not all(isinstance(value[key], str) and len(value[key]) <= 8000 for key in value)):

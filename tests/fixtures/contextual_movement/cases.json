@@ -1,7 +1,6 @@
 [
   {
     "id": "investigar-cela-do-log",
-    "stage": "storage_open",
     "prompt": "Eu checo a cela, procurando por algo útil.",
     "history": "investigation_history.json",
     "rolls": [
@@ -14,11 +13,51 @@
         20
       ]
     ],
-    "expected": "investigate"
+    "expected": "investigate",
+    "scenario": "pocs/simulador/dungeon.json",
+    "setup": [
+      "walk_past_cells",
+      "approach_open_storage"
+    ],
+    "preparation_rolls": 1,
+    "preconditions": {
+      "position": [
+        8,
+        10
+      ],
+      "area": "corridor",
+      "mode": "narrated",
+      "spent_meters": 0,
+      "remaining_meters": 9,
+      "inventory": [],
+      "discovered": [],
+      "clothing": "rags",
+      "weapons": [],
+      "passages.gate_4.is_open": true,
+      "passages.gate_4.locked": false,
+      "passages.gate_2.is_open": false,
+      "passages.gate_2.locked": true,
+      "passages.guard_door.is_open": false,
+      "passages.bathroom_door.is_open": false,
+      "resources.player.hp": 28,
+      "resources.player.action_surge_uses": 1,
+      "resources.player.second_wind_uses": 2,
+      "budgets.player.action_used": false,
+      "budgets.guard_1.reaction_used": false,
+      "prisoner_awake": false,
+      "prisoner_free": false,
+      "escaped": false,
+      "pending_opportunity": false,
+      "disguise": "untested",
+      "sword_concealed": false,
+      "guard_alert": false,
+      "combat": null
+    },
+    "choices": [],
+    "max_sdk_calls": 5
   },
   {
     "id": "pegar-espada-distante",
-    "stage": "known_sword",
     "prompt": "Pego a espada longa.",
     "rolls": [
       [
@@ -30,11 +69,55 @@
         20
       ]
     ],
-    "expected": "take"
+    "expected": "take",
+    "scenario": "pocs/simulador/dungeon.json",
+    "setup": [
+      "walk_past_cells",
+      "approach_open_storage",
+      "discover_and_leave"
+    ],
+    "preparation_rolls": 2,
+    "preconditions": {
+      "position": [
+        8,
+        10
+      ],
+      "area": "corridor",
+      "mode": "narrated",
+      "spent_meters": 0,
+      "remaining_meters": 9,
+      "inventory": [],
+      "discovered": [
+        "cleaner_uniform",
+        "longsword"
+      ],
+      "clothing": "rags",
+      "weapons": [],
+      "passages.gate_4.is_open": true,
+      "passages.gate_4.locked": false,
+      "passages.gate_2.is_open": false,
+      "passages.gate_2.locked": true,
+      "passages.guard_door.is_open": false,
+      "passages.bathroom_door.is_open": false,
+      "resources.player.hp": 28,
+      "resources.player.action_surge_uses": 1,
+      "resources.player.second_wind_uses": 2,
+      "budgets.player.action_used": false,
+      "budgets.guard_1.reaction_used": false,
+      "prisoner_awake": false,
+      "prisoner_free": false,
+      "escaped": false,
+      "pending_opportunity": false,
+      "disguise": "untested",
+      "sword_concealed": false,
+      "guard_alert": false,
+      "combat": null
+    },
+    "choices": [],
+    "max_sdk_calls": 5
   },
   {
     "id": "atacar-com-aproximacao",
-    "stage": "disguised_standoff",
     "prompt": "Ataco o Guarda 1 com a espada longa.",
     "rolls": [
       [
@@ -78,11 +161,60 @@
         2
       ]
     ],
-    "expected": "attack"
+    "expected": "attack",
+    "scenario": "pocs/simulador/dungeon.json",
+    "setup": [
+      "walk_past_cells",
+      "approach_open_storage",
+      "prepare_disguise"
+    ],
+    "preparation_rolls": 4,
+    "preconditions": {
+      "position": [
+        9,
+        8
+      ],
+      "area": "corridor",
+      "mode": "narrated",
+      "spent_meters": 0,
+      "remaining_meters": 9,
+      "inventory": [
+        "cleaner_uniform",
+        "longsword"
+      ],
+      "discovered": [
+        "cleaner_uniform",
+        "longsword"
+      ],
+      "clothing": "cleaner_uniform",
+      "weapons": [
+        "longsword"
+      ],
+      "passages.gate_4.is_open": true,
+      "passages.gate_4.locked": false,
+      "passages.gate_2.is_open": false,
+      "passages.gate_2.locked": true,
+      "passages.guard_door.is_open": true,
+      "passages.bathroom_door.is_open": false,
+      "resources.player.hp": 28,
+      "resources.player.action_surge_uses": 1,
+      "resources.player.second_wind_uses": 2,
+      "budgets.player.action_used": false,
+      "budgets.guard_1.reaction_used": false,
+      "prisoner_awake": false,
+      "prisoner_free": false,
+      "escaped": false,
+      "pending_opportunity": false,
+      "disguise": "accepted",
+      "sword_concealed": true,
+      "guard_alert": false,
+      "combat": null
+    },
+    "choices": [],
+    "max_sdk_calls": 5
   },
   {
     "id": "ataque-com-movimento-insuficiente",
-    "stage": "combat_low_movement",
     "prompt": "Ataco o Guarda 1 com a espada longa.",
     "rolls": [
       [
@@ -114,11 +246,63 @@
         1
       ]
     ],
-    "expected": "short_movement"
+    "expected": "short_movement",
+    "scenario": "pocs/simulador/dungeon.json",
+    "setup": [
+      "walk_past_cells",
+      "approach_open_storage",
+      "prepare_disguise",
+      "start_combat",
+      "spend_seven_and_half_meters"
+    ],
+    "preparation_rolls": 7,
+    "preconditions": {
+      "position": [
+        9,
+        8
+      ],
+      "area": "corridor",
+      "mode": "turn_based",
+      "spent_meters": 7.5,
+      "remaining_meters": 1.5,
+      "inventory": [
+        "cleaner_uniform",
+        "longsword"
+      ],
+      "discovered": [
+        "cleaner_uniform",
+        "longsword"
+      ],
+      "clothing": "cleaner_uniform",
+      "weapons": [
+        "longsword"
+      ],
+      "passages.gate_4.is_open": true,
+      "passages.gate_4.locked": false,
+      "passages.gate_2.is_open": false,
+      "passages.gate_2.locked": true,
+      "passages.guard_door.is_open": true,
+      "passages.bathroom_door.is_open": false,
+      "resources.player.hp": 28,
+      "resources.player.action_surge_uses": 1,
+      "resources.player.second_wind_uses": 2,
+      "budgets.player.action_used": false,
+      "budgets.guard_1.reaction_used": false,
+      "prisoner_awake": false,
+      "prisoner_free": false,
+      "escaped": false,
+      "pending_opportunity": false,
+      "disguise": "accepted",
+      "sword_concealed": true,
+      "guard_alert": false,
+      "combat.active_id": "player",
+      "combat.round": 1
+    },
+    "choices": [],
+    "max_sdk_calls": 5
   },
   {
     "id": "ataque-guarda-vence-iniciativa",
-    "stage": "disguised_standoff",
     "prompt": "Ataco o Guarda 1 com a espada longa.",
     "rolls": [
       [
@@ -150,11 +334,66 @@
         20
       ]
     ],
-    "expected": "enemy_first"
+    "expected": "enemy_first",
+    "scenario": "pocs/simulador/dungeon.json",
+    "setup": [
+      "walk_past_cells",
+      "approach_open_storage",
+      "prepare_disguise"
+    ],
+    "preparation_rolls": 4,
+    "preconditions": {
+      "position": [
+        9,
+        8
+      ],
+      "area": "corridor",
+      "mode": "narrated",
+      "spent_meters": 0,
+      "remaining_meters": 9,
+      "inventory": [
+        "cleaner_uniform",
+        "longsword"
+      ],
+      "discovered": [
+        "cleaner_uniform",
+        "longsword"
+      ],
+      "clothing": "cleaner_uniform",
+      "weapons": [
+        "longsword"
+      ],
+      "passages.gate_4.is_open": true,
+      "passages.gate_4.locked": false,
+      "passages.gate_2.is_open": false,
+      "passages.gate_2.locked": true,
+      "passages.guard_door.is_open": true,
+      "passages.bathroom_door.is_open": false,
+      "resources.player.hp": 28,
+      "resources.player.action_surge_uses": 1,
+      "resources.player.second_wind_uses": 2,
+      "budgets.player.action_used": false,
+      "budgets.guard_1.reaction_used": false,
+      "prisoner_awake": false,
+      "prisoner_free": false,
+      "escaped": false,
+      "pending_opportunity": false,
+      "disguise": "accepted",
+      "sword_concealed": true,
+      "guard_alert": false,
+      "combat": null
+    },
+    "choices": [],
+    "max_sdk_calls": 6,
+    "optional_world_rolls": [
+      [
+        20,
+        1
+      ]
+    ]
   },
   {
     "id": "investigar-grade-fechada",
-    "stage": "storage_closed",
     "prompt": "Investigo a Cela 4, procurando algo útil.",
     "rolls": [
       [
@@ -162,11 +401,51 @@
         20
       ]
     ],
-    "expected": "closed_gate"
+    "expected": "closed_gate",
+    "scenario": "pocs/simulador/dungeon.json",
+    "setup": [
+      "walk_past_cells",
+      "approach_closed_storage"
+    ],
+    "preparation_rolls": 1,
+    "preconditions": {
+      "position": [
+        8,
+        10
+      ],
+      "area": "corridor",
+      "mode": "narrated",
+      "spent_meters": 0,
+      "remaining_meters": 9,
+      "inventory": [],
+      "discovered": [],
+      "clothing": "rags",
+      "weapons": [],
+      "passages.gate_4.is_open": false,
+      "passages.gate_4.locked": false,
+      "passages.gate_2.is_open": false,
+      "passages.gate_2.locked": true,
+      "passages.guard_door.is_open": false,
+      "passages.bathroom_door.is_open": false,
+      "resources.player.hp": 28,
+      "resources.player.action_surge_uses": 1,
+      "resources.player.second_wind_uses": 2,
+      "budgets.player.action_used": false,
+      "budgets.guard_1.reaction_used": false,
+      "prisoner_awake": false,
+      "prisoner_free": false,
+      "escaped": false,
+      "pending_opportunity": false,
+      "disguise": "untested",
+      "sword_concealed": false,
+      "guard_alert": false,
+      "combat": null
+    },
+    "choices": [],
+    "max_sdk_calls": 5
   },
   {
     "id": "investigar-sem-sair-do-lugar",
-    "stage": "storage_open",
     "prompt": "Investigo a Cela 4 sem sair do lugar.",
     "rolls": [
       [
@@ -174,11 +453,51 @@
         20
       ]
     ],
-    "expected": "no_movement"
+    "expected": "no_movement",
+    "scenario": "pocs/simulador/dungeon.json",
+    "setup": [
+      "walk_past_cells",
+      "approach_open_storage"
+    ],
+    "preparation_rolls": 1,
+    "preconditions": {
+      "position": [
+        8,
+        10
+      ],
+      "area": "corridor",
+      "mode": "narrated",
+      "spent_meters": 0,
+      "remaining_meters": 9,
+      "inventory": [],
+      "discovered": [],
+      "clothing": "rags",
+      "weapons": [],
+      "passages.gate_4.is_open": true,
+      "passages.gate_4.locked": false,
+      "passages.gate_2.is_open": false,
+      "passages.gate_2.locked": true,
+      "passages.guard_door.is_open": false,
+      "passages.bathroom_door.is_open": false,
+      "resources.player.hp": 28,
+      "resources.player.action_surge_uses": 1,
+      "resources.player.second_wind_uses": 2,
+      "budgets.player.action_used": false,
+      "budgets.guard_1.reaction_used": false,
+      "prisoner_awake": false,
+      "prisoner_free": false,
+      "escaped": false,
+      "pending_opportunity": false,
+      "disguise": "untested",
+      "sword_concealed": false,
+      "guard_alert": false,
+      "combat": null
+    },
+    "choices": [],
+    "max_sdk_calls": 5
   },
   {
     "id": "investigar-com-ataque-de-oportunidade",
-    "stage": "combat_opportunity",
     "prompt": "Investigo o banheiro.",
     "rolls": [
       [
@@ -196,6 +515,10 @@
       [
         20,
         1
+      ],
+      [
+        20,
+        20
       ],
       [
         20,
@@ -222,6 +545,64 @@
         1
       ]
     ],
-    "expected": "opportunity"
+    "expected": "opportunity",
+    "scenario": "pocs/simulador/dungeon.json",
+    "setup": [
+      "walk_past_cells",
+      "approach_open_storage",
+      "prepare_disguise",
+      "approach_guard_side",
+      "reveal_sword"
+    ],
+    "passage_variations": {
+      "bathroom_door": {
+        "is_open": true
+      }
+    },
+    "preparation_rolls": 8,
+    "preconditions": {
+      "position": [
+        12,
+        4
+      ],
+      "area": "guard_room",
+      "mode": "turn_based",
+      "spent_meters": 0,
+      "remaining_meters": 9,
+      "inventory": [
+        "cleaner_uniform",
+        "longsword"
+      ],
+      "discovered": [
+        "cleaner_uniform",
+        "longsword"
+      ],
+      "clothing": "cleaner_uniform",
+      "weapons": [
+        "longsword"
+      ],
+      "passages.gate_4.is_open": true,
+      "passages.gate_4.locked": false,
+      "passages.gate_2.is_open": false,
+      "passages.gate_2.locked": true,
+      "passages.guard_door.is_open": true,
+      "passages.bathroom_door.is_open": true,
+      "resources.player.hp": 28,
+      "resources.player.action_surge_uses": 1,
+      "resources.player.second_wind_uses": 2,
+      "budgets.player.action_used": false,
+      "budgets.guard_1.reaction_used": false,
+      "prisoner_awake": false,
+      "prisoner_free": false,
+      "escaped": false,
+      "pending_opportunity": false,
+      "disguise": "failed",
+      "sword_concealed": false,
+      "guard_alert": true,
+      "combat.active_id": "player",
+      "combat.round": 1
+    },
+    "choices": [],
+    "max_sdk_calls": 5
   }
 ]

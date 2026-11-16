@@ -1,5 +1,11 @@
 # Interpretação de pedidos e autorização
 
+A criação do cliente e dos adaptadores usa a
+[composição compartilhada](../../docs/service-composition.md). Cada variante
+registra `configuration`, incluindo timeout/retries, parâmetros por fase e
+diferenças do padrão, identificada como `interpretation_comparison`.
+As instruções e os critérios do experimento permanecem os mesmos.
+
 ## Objetivo e escopo
 
 Medir se a IA preserva a intenção do Jogador, comparando contexto mínimo e
