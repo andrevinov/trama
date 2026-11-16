@@ -1,0 +1,139 @@
+# Experimento live contextual — 20261116T205209Z
+
+[Evidências](../README.md) · [Cobertura atual](../../sistema/qualidade/cobertura-atual.md)
+
+Os caminhos literais dentro do manifesto são os registrados na execução original;
+a reorganização documental não altera as fontes ou os resultados medidos.
+
+## Plano registrado antes das chamadas
+
+- Escopo: os oito casos de movimento contextual, uma execução de cada, sem rerun.
+- Configuração: padrão da aplicação; modelo `gpt-5.6-terra`, raciocínio `low`, timeout 30 s, retries 0, uma correção permitida.
+- Saída: até 1000 tokens por interpretação/narração e 2000 por decisão do Mundo.
+- Limite: 41 chamadas lógicas ao SDK no total; previsão normal de 33. Não há teto monetário nem preço presumido.
+- Critérios e dados: os arquivos atuais da suíte, preservados sem alterações durante a execução.
+- Resultado inconclusivo: orçamento esgotado ou escolha ausente; não conta como aprovação.
+- Revisão: estados/recursos/percursos e textos completos, separando falha funcional, serviço e execução incompleta.
+- Autorização: solicitação do usuário para executar o passo 12.
+
+O HEAD é `3d3e2f0cb6987046faee8e57eb11310fd2e48248` com alterações locais; o manifesto registra SHA-256 dos fontes, contratos, cenário e fixtures efetivos.
+
+Manifesto local: [experiment.json](../../../logs/live/contextual_movement/step12-20261116T205209Z/experiment.json).
+
+## Resultado
+
+Execução única em **16/11/2026, 17:52:25–17:53:48 (-03:00)**:
+**8 passed em 82,83 s**. Não houve falha funcional automática, falha de serviço,
+skip ou resultado inconclusivo. Nenhum caso foi repetido; não foram alterados
+prompts, critérios, fixtures ou código para obter aprovação.
+
+Foram **33 chamadas ao SDK**, com 33 respostas completas do modelo
+`gpt-5.6-terra`: 16 narrações (abertura e resultado de cada caso), oito
+interpretações e nove decisões do Mundo (incluindo o turno adicional do guarda).
+Cada interpretação usou uma tentativa, sem correção; o SDK tinha retries zero.
+O consumo ficou abaixo do teto declarado de 41 chamadas.
+
+As 33 respostas informaram uso: **331.806 tokens de entrada e 2.801 de saída**,
+totalizando **334.607 tokens**. A entrada inclui tokens em cache, não representa
+somente entrada nova. Os campos adicionais de cache/raciocínio estão no resumo;
+não devem ser somados novamente ao total. Não calculamos preço ou valor cobrado.
+
+## Resultados por caso
+
+Coordenadas abaixo seguem a tela: coluna/linha, começando em 1. As rolagens
+e condições iniciais foram fixadas antes da execução, com preparação pelo motor.
+
+| Caso | Efeito observado e conferido | Chamadas | Avaliação automática |
+| --- | --- | ---: | --- |
+| `investigar-cela-do-log` | Do corredor (8,10) à Cela 4 (6,10), 3 m; investigação 22 contra CD 15 descobre espada e uniforme, sem coletá-los. Histórico registrado foi preservado. | 4 | Passou |
+| `pegar-espada-distante` | De (8,10) a (5,10), 4,5 m; coleta somente a espada já descoberta, adicionando-a ao inventário/equipamento. | 4 | Passou |
+| `atacar-com-aproximacao` | Iniciativa antes da aproximação; jogador vence, percorre 4,5 m até (10,5), ataca uma vez e causa 7 de dano: guarda de 12 para 5 PV. Ação consumida. | 4 | Passou |
+| `ataque-com-movimento-insuficiente` | Com apenas 1,5 m disponível, vai de (9,8) a (9,7), esgota movimento e para. Nenhum ataque, dano ou consumo de ação; não usa Dash/Surto por conta própria. | 4 | Passou |
+| `ataque-guarda-vence-iniciativa` | Jogador permanece em (9,8), sem ataque gratuito. Guarda vence, caminha 4,5 m até (9,7), ataca e erra (d20 opcional fixado em 1); encerra o turno e devolve o controle ao jogador. | 5 | Passou |
+| `investigar-grade-fechada` | Grade fechada impede entrar; posição (8,10) preservada, sem investigação, descoberta ou abertura/destrancamento indevido. | 4 | Passou |
+| `investigar-sem-sair-do-lugar` | `allow_approach=False` respeita a restrição explícita; posição (8,10) preservada, sem investigação remota. | 4 | Passou |
+| `investigar-com-ataque-de-oportunidade` | De (12,4) a (16,3), 6 m; exatamente uma oportunidade do guarda causa 5 de dano (28 → 23 PV), gasta a reação dele e permite concluir a investigação. Ação do jogador consumida. | 4 | Passou |
+
+Nos oito casos, o plano recebido contém a operação pedida e a política de
+aproximação esperada. A aplicação resolve deslocamentos, iniciativa, alcance,
+rolagens e recursos. As respostas do Mundo não acrescentaram reações antecipadas
+nessa amostra; no caso em que vence a iniciativa, o guarda recebeu uma decisão
+própria de turno e executou movimento/ataque/fim de turno. Isso cobre esse caminho,
+sem demonstrar todas as possíveis interferências do Mundo durante uma caminhada.
+
+## Revisão humana das narrações
+
+Foram lidas as oito aberturas e as oito respostas finais, comparando posição,
+itens, portas, dano e ordem de eventos com os registros da aplicação. Os efeitos
+centrais descritos correspondem ao que foi executado. As respostas impedidas
+explicam em off a ausência de progresso; a resposta com movimento insuficiente
+descreve o trecho percorrido e explica por que não houve ataque.
+
+Há ressalvas semânticas que **não reprovam os critérios automáticos atuais**:
+
+- Na investigação, “resultado de Investigação de 22 contra CD 15” apareceu em
+  `on`. PV e dano também apareceram em `on` em respostas de combate. A separação
+  entre descrição do mundo e explicação das regras ainda não é consistente.
+- Ao pegar a espada, a frase “Você atravessa 4,5 m da Cela 4 até os panos” sugere
+  origem dentro da cela, embora o movimento tenha começado no corredor. A
+  distância e o destino mecânicos estão certos; a redação da origem é imprecisa.
+- Depois do erro do guarda, a descrição o chama de “vulnerável ao seu
+  contra-ataque”. Não há condição mecânica adicional registrada por esse erro;
+  o adjetivo pode sugerir uma vantagem que o motor não concedeu.
+- Algumas aberturas retomam o episódio da abertura mágica da cela, já passado,
+  em vez de priorizar apenas a situação preparada. Isso não corresponde a uma
+  nova abertura de porta e não alterou o estado.
+
+Portanto, o resultado é **aprovação mecânica dos oito casos com ressalvas de
+narração**, não certificação semântica integral. Não houve correção de prompts
+ou novas chamadas para tentar melhorar esses textos dentro deste experimento.
+
+## Evidências e proveniência
+
+O [registro versionável](manifesto.json) contém o plano prévio,
+configuração efetiva, resumo por caso, uso informado pelo provedor, revisão humana
+e hashes dos artefatos/fontes. O HEAD sozinho não descreve a árvore executada:
+ela tinha alterações locais. Os **61 arquivos** registrados por SHA-256 foram
+conferidos novamente após a bateria e estavam inalterados.
+
+Os artefatos brutos permanecem localmente em
+`logs/live/contextual_movement/step12-20261116T205209Z/`, ignorados pelo Git:
+
+- [Resumo agregado](../../../logs/live/contextual_movement/step12-20261116T205209Z/summary.json).
+- [Resultado JUnit](../../../logs/live/contextual_movement/step12-20261116T205209Z/junit.xml).
+- Subpasta `20261116T205225-f1e12730/<caso>/`: `result.json` registra
+  preparação, planos, contextos, aberturas/respostas completas, relatórios,
+  estados, dados e orçamento; `trace.jsonl` preserva os pedidos e respostas reais
+  com ids de correlação. O registro versionável contém caminhos e hashes de
+  ambos por caso. Esses arquivos locais não acompanham um clone do repositório.
+
+Comando utilizado, sem seleção ou repetição posterior:
+
+```bash
+RUN_OPENAI_LIVE_TESTS=1 \
+TRAMA_CONTEXTUAL_ARTIFACTS=logs/live/contextual_movement/step12-20261116T205209Z \
+poetry run pytest tests/live/test_contextual_movement.py -m live -v --tb=short \
+  --junitxml=logs/live/contextual_movement/step12-20261116T205209Z/junit.xml
+```
+
+Antes das chamadas, a verificação dos contratos de contexto passou com
+`poetry run python tools/context_contracts.py --check`. Os critérios foram os
+existentes; não foi introduzido um prompt ou construtor de mapa exclusivo para
+esta execução. Não houve mudança de código nesta etapa.
+
+## Cobertura e limites
+
+Os oito casos usam `open_game`/`game.runner`, carregador da dungeon, configuração,
+contextos, esquemas e adaptadores reais, compartilhados com o simulador. Rolagens,
+entradas e situação inicial pertencem às fixtures; as expectativas são
+independentes. A preparação usa operações determinísticas e não avalia como a
+IA teria chegado àquela situação a partir da cela inicial.
+
+Foi observada **uma resposta por situação**. Não medimos frequência de falhas nem
+repetibilidade; não afirmamos que a IA responderá sempre da mesma forma. A bateria
+não testa renderização/eventos/threads do Pygame, uma partida completa, todas as
+decisões do Mundo ou as outras cinco suítes live. Surto de Ação seguido de ataque
+continua coberto pela demonstração offline, sem execução live nesta etapa.
+
+O passo 12 está concluído como experimento executado, revisado e documentado.
+As ressalvas acima permanecem registradas para orientar alterações futuras.

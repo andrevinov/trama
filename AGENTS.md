@@ -23,8 +23,8 @@ O Trama será um sistema de RPG de D&D 5.5e com IA narrando para o jogador como 
 - Coloque testes isolados em `tests/unit/` e testes de integração local em `tests/integration/`.
 - Mantenha a suíte padrão independente de rede, credenciais e modelos de IA. Use dados fixos e aleatoriedade controlada nos cenários que exigirem resultados reproduzíveis.
 - Coloque testes com serviços externos ou modelos reais em `tests/live/` e marque-os com `@pytest.mark.live`. Execute-os explicitamente, seguindo as instruções do cenário.
-- Antes de criar, alterar ou executar testes live, leia obrigatoriamente [a política dos live tests](docs/live-tests-policy.md). Siga suas regras de reúso do fluxo, construção de cenários/contextos, critérios independentes e evidências; consulte [o plano de adoção](docs/live-tests-plan.md) para identificar o que ainda não foi migrado.
-- Ao alterar contextos, instruções ou esquemas da IA, siga [os contratos de contexto](docs/ai-contexts.md) e execute `poetry run python tools/context_contracts.py --check`. Uma mudança intencional exige revisão do diff e justificativa em `--update --reason`; não atualize a referência automaticamente para ocultar uma regressão.
+- Antes de criar, alterar ou executar testes live, leia obrigatoriamente [a política dos live tests](docs/sistema/qualidade/politica-live-tests.md). Siga suas regras de reúso do fluxo, construção de cenários/contextos, critérios independentes e evidências; consulte [a cobertura atual](docs/sistema/qualidade/cobertura-atual.md) para identificar os limites de cada suíte.
+- Ao alterar contextos, instruções ou esquemas da IA, siga [os contratos de contexto](docs/sistema/ia/contextos-e-contratos.md) e execute `poetry run python tools/context_contracts.py --check`. Uma mudança intencional exige revisão do diff e justificativa em `--update --reason`; não atualize a referência automaticamente para ocultar uma regressão.
 - Não execute chamadas pagas de IA apenas para validar uma alteração local; siga o escopo autorizado para o experimento.
 - Nunca versione chaves, tokens ou arquivos com segredos. Documente as variáveis necessárias sem registrar seus valores.
 - Execute os testes pertinentes às mudanças e relate o resultado, incluindo verificações que não puderam ser realizadas.
@@ -44,5 +44,5 @@ O Trama será um sistema de RPG de D&D 5.5e com IA narrando para o jogador como 
 - Rodar testes locais: `poetry run pytest`.
 - Rodar testes live: `poetry run pytest tests/live -m live`, com o ambiente exigido pelo cenário.
 - Verificar os metadados: `poetry check`.
-- Atualize o README quando a estrutura ou as instruções de uso mudarem.
-- Este bootstrap ainda não contém regras ou cenários. Não crie funcionalidades apenas para preencher as pastas reservadas.
+- Atualize o README quando a estrutura ou as instruções de uso mudarem. Siga [a política de documentação](docs/sistema/qualidade/documentacao.md): tier 1 para visão geral, tier 2 para módulos e tier 3 para contratos e detalhes; mantenha roadmaps e evidências nos arquivos próprios.
+- Não crie funcionalidades ou documentos vazios apenas para preencher pastas; descreva as capacidades e os limites efetivamente implementados.

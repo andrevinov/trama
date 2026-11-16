@@ -1,44 +1,25 @@
 # Testes live
 
 Antes de criar, alterar ou executar um caso, leia a
-[política obrigatória dos live tests](../../docs/live-tests-policy.md).
-O [plano de adoção](../../docs/live-tests-plan.md) descreve como compartilhar
+[política obrigatória dos live tests](../../docs/sistema/qualidade/politica-live-tests.md).
+O [plano de adoção](../../docs/roadmaps/implementados/2026-11-16-live-tests-compartilhados/plano.md) descreve como compartilhar
 carregamento, contextos e coordenação com o simulador. O carregamento já foi
 compartilhado em `application/scenarios.py`. `GameFlow` já coordena a janela real
 e tem regressões offline; os oito casos contextuais já usam essa entrada pela
 agenda sem janela. As outras suítes mantêm os limites descritos em cada cenário.
 
-O passo 9 já disponibiliza a [execução sem janela](../../docs/headless-runner.md)
-em `game.runner`. A migração dos oito casos contextuais foi concluída no passo
-10, conforme a [cobertura efetiva](../../docs/contextual-live-flow.md). O runner não escolhe reações:
-uma escolha ausente deve ser tratada como limite declarado/inconclusivo, jamais
-como recusa automática. Seu `max_requests` limita despachos de fluxo por
-invocação, não chamadas individuais do SDK nem custo monetário.
-
-O [inventário de cobertura](../../docs/live-tests-audit.md) classifica os seis
-arquivos e os 38 casos atuais, incluindo preparação, configuração e lacunas.
-A suíte contextual cobre o fluxo completo para a interação avaliada a partir de
-estado preparado. As outras cinco são contratos parciais/experimentos, sem
-declaração de cobertura de uma partida inteira.
-
-O passo 11 disponibiliza a [prova offline dos critérios](../../docs/regression-detection.md):
-17 verificações com transporte simulado e controles positivos/negativos. Elas
-reutilizam o avaliador live para movimento, NPC e oportunidade, sem acrescentar
-uma suíte paga de poderes ou certificar semanticamente todas as falas.
-
-O [experimento do passo 12](../../docs/experiments/step12-20261116T205209Z.md),
-em 16/11/2026, executou somente os oito casos contextuais: **8 passed**, uma vez
-cada, 33 chamadas reais com `gpt-5.6-terra`/`low`, sem correções ou reruns.
-Foram informados 331.806 tokens de entrada e 2.801 de saída. A revisão das 16
-narrações encontrou ressalvas espaciais e de separação on/off, registradas junto
-dos resultados. As outras cinco suítes não foram executadas nessa bateria;
-essa amostra não mede repetibilidade.
+A [cobertura atual](../../docs/sistema/qualidade/cobertura-atual.md) classifica os
+seis arquivos e distingue fluxo completo, contratos parciais e experimentos.
+A [execução sem janela](../../docs/sistema/interfaces/execucao-sem-janela.md) usa
+o mesmo coordenador. Escolhas ausentes não equivalem a recusa automática.
+O [experimento contextual](../../docs/evidencias/2026-11-16-movimento-contextual/relatorio.md)
+registra a amostra real já executada, com ressalvas de narração.
 
 `load_session(path)` lê os arquivos pelo caminho da aplicação;
 `build_session(data)` aceita as variações de dados antes de construir/validar.
 Os testes não constroem `Grid`, `Scene`, fichas ou sessões por conta própria.
 As duas suítes de experimento chegam ao mesmo carregador pela POC de interpretação.
-Simulador e todas as suítes usam a [composição compartilhada dos serviços](../../docs/service-composition.md)
+Simulador e todas as suítes usam a [composição compartilhada dos serviços](../../docs/sistema/ia/integracao-openai.md)
 para resolver modelo, timeout/retries, parâmetros por fase e política de correção.
 Não constroem clientes/adaptadores por conta própria. `configurations.json`, no
 diretório temporário de cada caso, registra a configuração emitida inclusive em
@@ -48,10 +29,10 @@ experimentos, com diferenças em relação ao padrão. A suíte semântica agora
 respeita `TRAMA_OPENAI_MODEL`, mantendo zero correções como experimento explícito.
 Os oito arranjos contextuais já têm preparação declarada por operações públicas,
 pré-condições e histórico validado, e agora delegam a sequência ao runner real.
-Consulte a [preparação reproduzível](../../docs/live-test-preparation.md).
+Consulte a [preparação reproduzível](../../docs/sistema/qualidade/preparacao-de-cenarios.md).
 
 As projeções reais de `Conversation` agora usam os
-[contratos de contexto por fase](../../docs/ai-contexts.md). Antes de alterar
+[contratos de contexto por fase](../../docs/sistema/ia/contextos-e-contratos.md). Antes de alterar
 contextos, instruções ou esquemas, confira a referência com
 `poetry run python tools/context_contracts.py --check`. Esse comando e o teste
 offline correspondente reconstroem os contratos atuais, sem chamadas externas.
@@ -60,94 +41,25 @@ o arquivo é somente evidência de revisão.
 
 ## Suíte focada: movimento contextual no simulador
 
-[test_contextual_movement.py](test_contextual_movement.py) contém oito testes
-live novos, sem incluir a bateria anterior de poderes, turnos ou interpretação.
-Todos usam a dungeon de `pocs/simulador/dungeon.json`, `open_game`, `game.runner`
-e os três adaptadores reais: interpretação, decisão do Mundo e narração. Instruções,
-esquemas e contextos são os de produção, construídos durante a execução.
-
-| Caso | O que verifica |
-| --- | --- |
-| `investigar-cela-do-log` | Reproduz “Eu checo a cela, procurando por algo útil.” e o histórico real da falha. Entra na Cela 4, investiga e descobre os itens, sem coletá-los. |
-| `pegar-espada-distante` | Aproxima-se da espada já descoberta e a coloca no inventário/equipamento real. |
-| `atacar-com-aproximacao` | Declara apenas ataque, resolve iniciativa antes da caminhada, aproxima 4,5 m e consome a ação para golpear com a espada longa. |
-| `ataque-com-movimento-insuficiente` | Tem só 1,5 m disponível: percorre esse trecho, para antes do alcance e preserva a ação. Não usa Dash ou Surto de Ação automaticamente. |
-| `ataque-guarda-vence-iniciativa` | O guarda vence: não há aproximação nem golpe gratuito do jogador. O fluxo resolve o turno do guarda e deve devolver o controle ao jogador; resposta de NPC incompleta reprova. |
-| `investigar-grade-fechada` | A grade barra a investigação. Não atravessa nem abre/destranca por conta própria. |
-| `investigar-sem-sair-do-lugar` | A restrição impede a aproximação; não há movimento nem investigação remota. |
-| `investigar-com-ataque-de-oportunidade` | Sair do alcance para investigar o banheiro provoca a reação: aplica 5 de dano, gasta a reação do guarda e continua a caminhada/investigação. O evento deve chegar ao relatório do narrador. |
-
-As condições e os dados ficam em
-[tests/fixtures/contextual_movement](../fixtures/contextual_movement/README.md).
-As preparações usam o motor real; não enviamos um texto de regras alternativo
-para facilitar as respostas. As frases dos casos ficam congeladas como entradas
-do jogador. Mudanças no contexto e nas instruções da aplicação chegam aos testes.
-O saldo de 1,5 m é produzido por uma caminhada real de 7,5 m; o reconhecimento
-da espada pelo guarda vem de um teste real de Percepção. As pré-condições e os
-dados da preparação são conferidos antes de qualquer chamada ao modelo. O
-histórico do log usa a mesma entrada validada da conversa normal, preservando
-on/off sem executar as ações descritas. A abertura real descreve a situação
-preparada; o histórico registrado é acrescentado depois dela para preservar
-a janela da regressão. Não é uma conversa inteira gerada desde a primeira cela.
-
-Os critérios avaliam efeitos, posição, custos, iniciativa e recursos, sem exigir
-frases ou microetapas idênticas. Também reprovam poderes não pedidos, coleta de
-outros itens, mudanças indevidas de portas ou troca de alvo. A narração precisa
-ser não vazia e descrever em on ações concluídas. O texto completo fica disponível
-para auditoria; não há um segundo modelo julgando o texto nem comparação literal
-de respostas. Passar os casos não garante todos os possíveis pedidos em produção.
-
-### Executar somente estes oito testes
-
-Exige `OPENAI_API_KEY`; respeita `TRAMA_OPENAI_MODEL` e o padrão da aplicação.
-São **33 chamadas normalmente, até 41** contando abertura, o turno do NPC e uma
-correção por interpretação. O limite declarado por caso é imposto no transporte
-compartilhado antes de cada chamada lógica ao SDK. Com retries zero esses são
-os tetos de tentativas; configurações alternativas registram também o limite
-superior de tentativas HTTP. Não é um teto monetário.
-Não há chamadas de IA durante a preparação dos cenários.
-
-As fixtures atuais têm `choices=[]`. Oportunidade sem escolha declarada e
-orçamento esgotado ficam registrados como `inconclusive` e reprovam o pytest,
-sem recusa automática ou repetição até passar. Veja
-[orçamento, histórico, evidências e limites](../../docs/contextual-live-flow.md).
+Os oito casos usam o fluxo completo da interação a partir de condições preparadas.
+Consulte [casos, orçamento, critérios e artefatos](../../docs/sistema/qualidade/movimento-contextual-live.md).
+Exige `OPENAI_API_KEY` e autorização do experimento:
 
 ```bash
 RUN_OPENAI_LIVE_TESTS=1 poetry run pytest tests/live/test_contextual_movement.py -m live -v
 ```
 
-Para selecionar um caso:
-
-```bash
-RUN_OPENAI_LIVE_TESTS=1 poetry run pytest tests/live/test_contextual_movement.py -m live -k pegar-espada-distante -v
-```
-
-Coletar os testes não usa a API:
+Uma execução prevê 33 chamadas normais, até 41 com correções nos padrões atuais.
+O teto é imposto antes do SDK; não é limite monetário. Coleta sem chamadas:
 
 ```bash
 poetry run pytest tests/live/test_contextual_movement.py --collect-only -q
 ```
 
-Cada execução salva os resultados de forma persistente, inclusive falhas, em:
-
-```text
-logs/live/contextual_movement/<execução>/<caso>/trace.jsonl
-logs/live/contextual_movement/<execução>/<caso>/result.json
-```
-
-`trace.jsonl` usa os logs DEBUG da aplicação: prompts, esquemas, respostas,
-consumo de tokens, operações e rolagens. `result.json` inclui o modelo, os
-contextos efetivos, plano, estado antes/depois, resultado, preparações declaradas,
-histórico registrado com origem, dados usados (incluindo os da preparação) e
-critérios que falharam. Os identificadores correlacionam as chamadas da troca.
-`TRAMA_CONTEXTUAL_ARTIFACTS` pode escolher outro diretório de saída.
-
-A suíte padrão continua offline. A checagem local dos cenários e dos critérios é:
-
-```bash
-poetry run pytest tests/integration/test_contextual_live_scenarios.py
-```
-
+As condições estão nas [fixtures](../fixtures/contextual_movement/README.md).
+Os logs persistem em `logs/live/contextual_movement/`; configuração alternativa
+de saída usa `TRAMA_CONTEXTUAL_ARTIFACTS`. Falhas e inconclusivos reprovam e são
+preservados, sem repetir até passar.
 
 `test_semantic_interpretation.py` contém onze casos: Surto de Ação seguido de
 ataque, dois retornos por coordenadas com postura, pergunta, negação e seis casos

@@ -1,7 +1,7 @@
 # Situações congeladas de movimento contextual
 
-Leia a [política](../../../docs/live-tests-policy.md) e a
-[preparação reproduzível](../../../docs/live-test-preparation.md) antes de alterar
+Leia a [política](../../../docs/sistema/qualidade/politica-live-tests.md) e a
+[preparação reproduzível](../../../docs/sistema/qualidade/preparacao-de-cenarios.md) antes de alterar
 as fixtures. O arranjo não contém instruções de sistema, esquemas de resposta,
 respostas simuladas de IA ou regras alternativas.
 
@@ -72,7 +72,7 @@ o caso de iniciativa prevê 5 e teto de 6. No total: 33 normais/41 máximas, com
 uma correção por interpretação e retries padrão zero. O teto é aplicado antes
 de cada chamada lógica ao SDK, incluindo correções. Orçamento esgotado e escolha
 ausente são inconclusivos e reprovam; `choices=[]` nunca significa recusar reação.
-Não há teto monetário. Consulte a [migração e seus limites](../../../docs/contextual-live-flow.md).
+Não há teto monetário. Consulte a [migração e seus limites](../../../docs/sistema/qualidade/movimento-contextual-live.md).
 
 A checagem local em `tests/integration/test_contextual_live_scenarios.py` verifica
 as preparações e os critérios, inclusive arranjos propositalmente inválidos.

@@ -1,7 +1,7 @@
 # Interpretação de pedidos e autorização
 
 A criação do cliente e dos adaptadores usa a
-[composição compartilhada](../../docs/service-composition.md). Cada variante
+[composição compartilhada](../../docs/sistema/ia/integracao-openai.md). Cada variante
 registra `configuration`, incluindo timeout/retries, parâmetros por fase e
 diferenças do padrão, identificada como `interpretation_comparison`.
 As instruções e os critérios do experimento permanecem os mesmos.
@@ -81,27 +81,10 @@ conserva respostas originais e consumo informado por chamada.
 
 ## Ordem das propriedades
 
-O jogo usa `operation-first`: todas as variantes de ação começam por `operation`.
-O formato antigo de movimento/portas começava por `segments`; os demais, por
-`operation`. A documentação de [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs#key-ordering)
-informa que a saída segue a ordem das chaves do esquema. O formato `legacy` é
-mantido somente para controle no experimento; o jogo não alterna entre eles.
-
-Na comparação local real de 15/11/2026, com Terra, seis chamadas e sem correções:
-
-| Pedido | `legacy` | `operation-first` |
-| --- | --- | --- |
-| Olhar para a porta | `look`, correto | `look`, correto |
-| Usar Retomar o Fôlego | `second_wind`, correto | `second_wind`, correto |
-| “Vou avança até a porta da sala dos guardas e ficar diante dela.” | `challenge`, incorreto | `move` para `guard_door`, correto |
-
-As requisições de cada par diferiram somente na ordem de `properties`. As
-evidências locais estão em `logs/interpretacao/schema-order-terra-20261115/`.
-O replay determinístico da resposta corrigida chegou à coluna 13, linha 6,
-percorrendo 13,5 m e mantendo a porta fechada. Esse resultado é uma amostra de
-três pedidos; não prova confiabilidade para toda linguagem natural. A checagem
-descrita acima foi feita com o contrato anterior. O contrato atual também exige
-request_parts; esses resultados históricos não são uma medição do novo contrato.
+A aplicação usa `operation-first`; `legacy` é controle experimental.
+Veja a [interpretação atual](../../docs/sistema/ia/interpretacao-do-jogador.md)
+e o [registro histórico de 15/11/2026](../../docs/evidencias/2026-11-15-ordem-esquema/relatorio.md),
+medido com contrato anterior. Não se infere sucesso do contrato atual dessa comparação.
 
 ## Critérios de sucesso e simplificações
 
@@ -116,10 +99,10 @@ Aprovar estes casos não garante qualquer frase ou atualização do modelo.
 A IA interpreta a linguagem e retorna request_parts com trechos e classificações.
 A validação é declarativa, sem lista de verbos: verifica origens, cobertura das
 etapas e referências. A equivalência semântica é avaliada pelas expectativas dos
-casos, não pelo validador. Veja [o contrato e suas limitações](../../docs/action-authorization.md).
+casos, não pelo validador. Veja [o contrato e suas limitações](../../docs/sistema/aplicacao/planos-e-validacao.md).
 Uma pergunta pode produzir zero etapas; posturas são detalhes narrativos sem custo.
 As regressões locais das frases de combate ficam em tests/integration/test_semantic_interpretation.py;
-os cinco casos reais opcionais estão em tests/live/test_semantic_interpretation.py.
+os casos reais opcionais estão em tests/live/test_semantic_interpretation.py.
 
 ## Testes
 
