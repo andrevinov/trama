@@ -19,7 +19,7 @@ from trama.scene import Scene
 
 @pytest.fixture
 def session():
-    scenario = Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json"
+    scenario = Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/legacy_cell_and_guards.json"
     data = json.loads(scenario.read_text())
     scene = Scene.from_data(data)
     return GameSession(scene.grid, MovementState(Position(*data["start"]), data["speed_meters"]), scene)

@@ -5,3 +5,4 @@
 Arquivo datado de iniciativas concluídas. A data corresponde à conclusão da implementação.
 
 - [16/11/2026 — Live tests compartilhados](2026-11-16-live-tests-compartilhados/plano.md): plano concluído e [auditoria histórica](2026-11-16-live-tests-compartilhados/auditoria-historica.md).
+- [16/11/2026 — Consolidação do simulador](2026-11-16-consolidacao-do-simulador/plano.md): sete passos concluídos, situações e análises compartilhadas, evidências preservadas e entradas antigas removidas.

@@ -18,6 +18,16 @@ fluxo completo. Os dados e as escolhas de cada fixture continuam explícitos.
 | `test_interpretation_experiment.py` | 6 | Experimento de contexto/primeira resposta. | Não executa efeitos. |
 | `test_schema_order.py` | 3 | Experimento de ordem de propriedades. | Variante antiga é controle; não verifica o fluxo do jogo. |
 
+Os oito casos contextuais usam o catálogo e `open_situation`, também acessíveis
+na janela com `--situation ID`. Somente mensagens, escolhas, orçamento e critérios
+independentes continuam nas fixtures dos testes. A preparação determinística
+compartilhada não é uma interpretação live das ações usadas para montar o arranjo.
+
+As suítes de comparação de contexto e ordem de esquema importam o módulo
+`trama.analysis.interpretation` e leem as fixtures de interpretação, sem executar
+scripts de POCs. Seus artefatos declaram `scope=interpreter_contract`. A migração
+de dependências preserva o escopo parcial, as variantes e os critérios anteriores.
+
 A coleta offline pode conferir quantidades sem consultar serviços:
 
 ```bash
@@ -40,6 +50,11 @@ bateria e não recebem aprovação por ela.
 Essa evidência é datada, não uma medição contínua ou garantia de repetibilidade.
 O relatório e o manifesto conservam configuração e proveniência; os logs brutos
 permanecem locais e não acompanham um clone do repositório.
+
+O [inventário de preservação](../../evidencias/2026-11-16-preservacao-das-analises/relatorio.md)
+relaciona os arquivos e seus hashes, inclusive o lote exploratório anterior e a
+comparação de esquema. A conferência offline preserva erros e ressalvas; não é
+nova avaliação do modelo ou certificação do código atual.
 
 ## Cobertura local e lacunas
 

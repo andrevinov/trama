@@ -10,13 +10,13 @@ correlação. Não há dependência nova, serviço de logs ou alteração nas re
 
 ```bash
 # INFO: conversa, operações e resultados do jogo, consumo de IA, avisos e erros.
-poetry run python pocs/simulador/run.py
+poetry run trama-simulator
 
 # DEBUG: inclui prompts completos, contexto, decisões e detalhes das regras.
-poetry run python pocs/simulador/run.py --debug
+poetry run trama-simulator --debug
 
 # Arquivo específico para investigar um caso.
-poetry run python pocs/simulador/run.py --debug --log-file logs/caso-porta.jsonl
+poetry run trama-simulator --debug --log-file logs/caso-porta.jsonl
 
 # Acompanhar o arquivo, inclusive após rotação.
 tail -F logs/trama.jsonl

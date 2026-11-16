@@ -19,7 +19,7 @@ from trama.scene import Scene
 from trama.spatial import Position
 
 ROOT = Path(__file__).resolve().parents[2]
-CASES = json.loads((ROOT / "pocs/interpretacao/cases.json").read_text())
+CASES = json.loads((ROOT / "tests/fixtures/interpretation/cases.json").read_text())
 WALK = {"steps": [{"operation": "move", "segments": [], "dash": False, "clarification": "", "target_id": "guard_door"}]}
 WIND = {"steps": [{"operation": "second_wind", "target_id": None, "weapon": "greatsword", "use_inspiration": False}]}
 LOOK = {"steps": [{"operation": "look", "text": "Olhar para a porta e ficar de frente para ela."}]}
@@ -31,7 +31,7 @@ def response(value):
 
 @pytest.fixture
 def session(dice):
-    data = json.loads((ROOT / "pocs/movimento/cela_guardas.json").read_text())
+    data = json.loads((ROOT / "tests/fixtures/scenarios/legacy_cell_and_guards.json").read_text())
     scene = Scene.from_data(data)
     return GameSession(scene.grid, MovementState(Position(*data["start"])), scene,
                        creatures_from_data(data["creatures"]), roller=dice())

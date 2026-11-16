@@ -21,7 +21,7 @@ from trama.spatial import Position
 
 @pytest.fixture
 def conversation():
-    data = json.loads((Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json").read_text())
+    data = json.loads((Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/legacy_cell_and_guards.json").read_text())
     scene = Scene.from_data(data)
     session = GameSession(scene.grid, MovementState(Position(*data["start"])), scene,
                           creatures_from_data(data["creatures"]))

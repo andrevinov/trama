@@ -21,7 +21,7 @@ from trama.infrastructure.openai_intent_interpreter import parse_intent
 from trama.spatial import Position
 from conftest import sourced_plan
 
-SCENARIO = Path(__file__).resolve().parents[2] / 'pocs/simulador/dungeon.json'
+SCENARIO = Path(__file__).resolve().parents[2] / 'src/trama/scenarios/dungeon_escape.json'
 
 
 def dungeon(roller=None):

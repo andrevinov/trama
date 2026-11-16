@@ -11,8 +11,9 @@ instruções/esquemas atuais. Somente `client.responses.create` é substituído 
 um transporte local com respostas explícitas. Um espião transparente registra o
 plano que o adaptador realmente devolveu; não o reconstrói da expectativa.
 
-As situações da dungeon vêm das mesmas fixtures e operações públicas da suíte
-live. O caso de Surto usa o mapa legado real, com posição/porta declaradas antes
+As situações da dungeon vêm do catálogo da aplicação compartilhado com a suíte
+live; os atalhos locais delegam sua preparação a `Situation`, por operações públicas.
+O caso de Surto usa o mapa legado real, com posição/porta declaradas antes
 da construção. Iniciativa e primeiro ataque são resolvidos por operações reais,
 com dados injetados pelo contrato da aplicação.
 

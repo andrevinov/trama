@@ -17,7 +17,7 @@ e reutilizado para o mesmo `game.flow`. Exemplo com os serviços reais configura
 ```python
 from trama.bootstrap import open_game
 
-with open_game('pocs/simulador/dungeon.json') as game:
+with open_game('src/trama/scenarios/dungeon_escape.json') as game:
     opening = game.runner.start()
     result = game.runner.submit('Saio da cela e observo o corredor.')
     print(result.reply.text if result.reply else result.status)
@@ -26,6 +26,11 @@ with open_game('pocs/simulador/dungeon.json') as game:
 Um consumidor que já possui um fluxo pode usar `GameRunner(flow)`. A janela
 continua recebendo esse mesmo tipo de fluxo pela composição, sem depender do
 runner ou da infraestrutura de IA.
+
+Para um estado intermediário reproduzível, use `open_situation(load_situation(id))`
+em vez de preparar a conversa no consumidor. Essa é também a entrada de
+`trama-simulator --situation ID`; `game.runner.reset()` refaz a situação e suas
+rolagens. Veja o [catálogo e seus limites](../simulador/carregamento-de-cenarios.md#situações-reproduzíveis).
 
 | Método do runner | Entrada correspondente no fluxo |
 | --- | --- |

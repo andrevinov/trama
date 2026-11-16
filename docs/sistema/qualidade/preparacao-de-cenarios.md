@@ -6,33 +6,40 @@ As condições dos testes são preparadas com operações reais e pré-condiçõ
 
 ## Dados, execução e expectativas
 
+O [catálogo da aplicação](../../../src/trama/scenarios/situations.json) declara
+cenário/variação, planos de preparação, dados, pré-condições e histórico registrado.
+A [seleção de situações](../simulador/carregamento-de-cenarios.md#situações-reproduzíveis)
+permite abrir esses mesmos estados pela CLI, com `--situation ID`.
+
 O [arranjo de movimento contextual](../../../tests/fixtures/contextual_movement/README.md)
-tem cenário/variação, preparações, dados, mensagem e pré-condições declaradas.
-`build_case` é um helper de teste: lê esses dados, instancia as intenções da
-aplicação, chama operações públicas e compara observações com expectativas.
-Não constrói outro mapa nem implementa outra resolução de jogo. Não foi movido
-para `src/` para aparentar compartilhamento.
+conserva somente identificação, mensagem avaliada, escolhas, limite de chamadas e
+critério de sucesso. Não há outra cópia de preparações ou condições iniciais no
+teste. `build_case` permanece como atalho local para verificações dos critérios;
+ele delega a preparação a `Situation`, sem interpretar ou resolver regras próprias.
 
-O caminho efetivo é:
+O caminho efetivo da CLI e da suíte live contextual é:
 
-1. Ler o cenário real e aplicar variações declaradas aos dados.
-2. Usar `application.scenarios.build_session` e seus validadores reais.
-3. Injetar dados pelo contrato `Roller`, sem substituir testes de habilidade,
-   resolução de ataque ou iniciativa.
-4. Executar planos declarados por `Conversation.execute`.
-5. Conferir status, etapas pendentes, efeitos de preparação e ausência de escolhas
-   não declaradas. O início de conflito pode ser um término esperado específico;
-   outros impedimentos não são ignorados.
-6. Conferir a quantidade de dados de preparação e as pré-condições explícitas.
-7. No caminho live migrado, pedir a abertura por `game.runner.start` e depois
-   acrescentar o histórico registrado pela entrada validada, quando houver.
-8. Enviar a mensagem avaliada por `game.runner.submit` e observar o resultado,
-   preservando os critérios. O arranjo local isolado pode apenas preparar o estado.
+1. `load_situation(id)` lê o catálogo empacotado e valida a declaração.
+2. `open_situation` lê o recurso de cenário e aplica as variações declaradas.
+3. A composição compartilhada chama `build_session`, com os validadores reais e
+   um `ScriptedRoller` estrito, sem substituir resolução de regras.
+4. O `GameFlow` executa a preparação injetada por `Situation.initialize`: planos
+   declarados passam por `Conversation.execute`.
+5. A aplicação confere status, efeitos exigidos, dados consumidos, ausência de
+   etapas/escolhas pendentes e todas as pré-condições. Uma falha impede a abertura.
+6. Janela ou `game.runner.start` pede a descrição inicial. O fluxo acrescenta o
+   histórico registrado após a resposta concluída, preservando sua janela recente.
+7. A mensagem avaliada passa por `game.runner.submit`; a aplicação coordena a
+   interação e o teste observa efeitos e compara critérios independentes.
+
+Reiniciar pelo fluxo limpa a sessão e a conversa, repõe os dados e refaz a mesma
+preparação. O histórico registrado não se acumula entre reinícios. Sem situação
+selecionada, o simulador segue usando a dungeon inicial e rolagens aleatórias.
 
 As pré-condições incluem posição em base 1, área, modo, saldo de movimento,
 descoberta/inventário/equipamento, roupa/disfarce, portas, iniciativa, recursos e
 ausência de oportunidade pendente. Mudanças no motor podem invalidar o arranjo.
-O teste deve falhar nessa etapa, antes de consultar um modelo.
+A abertura da situação deve falhar nessa etapa, antes de consultar um modelo.
 
 No caso de saldo de movimento, o jogador caminha 7,5 m no turno vigente e volta
 à mesma posição. No caso de oportunidade, revelar a espada provoca um teste real
@@ -78,10 +85,11 @@ integralmente gerada ao vivo desde o início.
 ## Verificação e limites
 
 ```bash
-poetry run pytest tests/integration/test_contextual_live_scenarios.py tests/integration/test_conversation_history.py tests/unit/test_dialogue.py -q
+poetry run pytest tests/integration/test_simulator_situations.py tests/integration/test_contextual_live_scenarios.py tests/integration/test_conversation_history.py tests/unit/test_dialogue.py -q
 ```
 
-As regressões locais verificam os oito arranjos, dados inválidos/inesperados,
+As regressões locais verificam os oito arranjos na CLI e sem janela, reinício,
+dados inválidos/inesperados,
 pré-condições impossíveis, omissão da caminhada/abertura, investigação mal-sucedida
 e preservação dos canais/memória. Um teste de fronteira proíbe atribuições
 diretas aos campos de estado/histórico nos arquivos live atuais.

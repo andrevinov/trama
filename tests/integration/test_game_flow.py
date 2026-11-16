@@ -93,7 +93,7 @@ def npc_plan(*actions):
 
 
 def test_opening_only_narrates_and_records_history_once():
-    session = load_session(ROOT / 'pocs/simulador/dungeon.json')
+    session = load_session(ROOT / 'src/trama/scenarios/dungeon_escape.json')
     narrator = Narrator(Speech(on='Você ouve sua cela abrir.'))
     flow = GameFlow(session, narrator=narrator)
     assert flow.start()
@@ -127,7 +127,7 @@ def test_mixed_message_executes_then_narrates_real_state():
 
 
 def test_contextual_investigation_uses_real_dungeon_and_report(dice):
-    data = json.loads((ROOT / 'pocs/simulador/dungeon.json').read_text())
+    data = json.loads((ROOT / 'src/trama/scenarios/dungeon_escape.json').read_text())
     data['start'] = [7, 9]
     next(p for p in data['passages'] if p['id'] == 'gate_4')['is_open'] = True
     session = build_session(data, roller=dice(20))

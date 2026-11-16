@@ -18,7 +18,10 @@ registra a amostra real já executada, com ressalvas de narração.
 `load_session(path)` lê os arquivos pelo caminho da aplicação;
 `build_session(data)` aceita as variações de dados antes de construir/validar.
 Os testes não constroem `Grid`, `Scene`, fichas ou sessões por conta própria.
-As duas suítes de experimento chegam ao mesmo carregador pela POC de interpretação.
+As duas suítes de experimento importam `trama.analysis.interpretation` diretamente;
+casos e expectativas estão em `tests/fixtures/interpretation/`. Não carregam
+scripts ou dados de POCs. O [escopo parcial](../../docs/sistema/qualidade/analise-de-interpretacao.md)
+continua identificado como `interpreter_contract`, sem executar efeitos do jogo.
 Simulador e todas as suítes usam a [composição compartilhada dos serviços](../../docs/sistema/ia/integracao-openai.md)
 para resolver modelo, timeout/retries, parâmetros por fase e política de correção.
 Não constroem clientes/adaptadores por conta própria. `configurations.json`, no
@@ -27,8 +30,10 @@ falhas de inicialização; os artefatos persistentes também incluem os parâmet
 efetivos. Variantes de modelo/correção/contexto/esquema são marcadas como
 experimentos, com diferenças em relação ao padrão. A suíte semântica agora
 respeita `TRAMA_OPENAI_MODEL`, mantendo zero correções como experimento explícito.
-Os oito arranjos contextuais já têm preparação declarada por operações públicas,
-pré-condições e histórico validado, e agora delegam a sequência ao runner real.
+Os oito arranjos contextuais vêm do catálogo da aplicação e usam `open_situation`,
+com a mesma preparação, pré-condições, histórico e reinício disponíveis na CLI
+por `--situation ID`. Frases, escolhas, limites e critérios continuam nas fixtures.
+A sequência avaliada é conduzida pelo runner real.
 Consulte a [preparação reproduzível](../../docs/sistema/qualidade/preparacao-de-cenarios.md).
 
 As projeções reais de `Conversation` agora usam os
@@ -77,7 +82,12 @@ sem correções (cinco de interpretação básica, uma de narração inicial e d
 para a troca mista on/off), usando
 `OPENAI_API_KEY` e o modelo `gpt-5.6-terra` (ou `TRAMA_OPENAI_MODEL`). Só executa
 quando `RUN_OPENAI_LIVE_TESTS=1`; sem essa autorização, fica ignorado.
-Veja [a POC de movimento](../../pocs/movimento/README.md) para critérios e comando.
+Veja os [mapas e critérios preservados](../fixtures/scenarios/README.md).
+Para executar somente esses sete casos, com autorização explícita:
+
+```bash
+RUN_OPENAI_LIVE_TESTS=1 poetry run pytest tests/live/test_openai_movement.py -m live -v
+```
 
 Cada módulo de testes deve usar `@pytest.mark.live` nos testes ou `pytestmark = pytest.mark.live` no módulo. Documente as variáveis de ambiente exigidas, os serviços utilizados e os critérios de avaliação. As credenciais ficam no ambiente local e nunca devem ser versionadas.
 
@@ -89,7 +99,7 @@ poetry run pytest tests/live -m live
 
 O comando padrão `poetry run pytest` descobre apenas `tests/unit/` e `tests/integration/`.
 
-Ao transformar uma prova de conceito em teste live, reutilize o código do sistema e os cenários pertinentes. Verifique resultados estruturados e invariantes do jogo; avalie a narração com critérios definidos pelo experimento, sem exigir frases idênticas do modelo.
+Ao derivar um teste live do simulador, use o carregador, as situações e o fluxo compartilhados. Verifique resultados estruturados e invariantes do jogo; avalie a narração com critérios definidos pelo experimento, sem exigir frases idênticas do modelo. Identifique explicitamente as análises parciais.
 
 
 ## Dungeon: abrir, sair e observar
@@ -97,7 +107,7 @@ Ao transformar uma prova de conceito em teste live, reutilize o código do siste
 `test_dungeon_interactions.py` repete a mensagem da sessão que revelou a falha:
 “Eu abro a grade da cela devagar e saio para olhar o corredor.” Há dois casos:
 grade já aberta e grade fechada após uma sequência executada pelo motor.
-Ambos carregam `pocs/simulador/dungeon.json` e usam `Conversation`, contextos,
+Ambos carregam `src/trama/scenarios/dungeon_escape.json` e usam `Conversation`, contextos,
 instruções, esquemas, intérprete, diretor e narrador da aplicação, sem versões
 alternativas do prompt de sistema.
 

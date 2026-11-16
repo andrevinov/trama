@@ -152,7 +152,7 @@ def test_changed_application_defaults_reach_simulator_window_and_live_compositio
 
     monkeypatch.setattr(simulator, 'run_window', window)
     monkeypatch.setattr('sys.argv', ['simulador', '--log-file', str(tmp_path / 'ui.jsonl')])
-    simulator.main(ROOT / 'pocs/simulador/dungeon.json')
+    simulator.main()
     assert windows[0].model == 'new-application-model'
     support = runpy.run_path(str(ROOT / 'tests/live/test_contextual_movement.py'))
     case = next(c for c in support['CASES'] if c['expected'] == 'investigate')

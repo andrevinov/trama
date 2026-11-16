@@ -29,12 +29,12 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def dungeon():
-    return DungeonSession.from_data(json.loads((ROOT / 'pocs/simulador/dungeon.json').read_text()))
+    return DungeonSession.from_data(json.loads((ROOT / 'src/trama/scenarios/dungeon_escape.json').read_text()))
 
 
 @pytest.fixture
 def prison(dice):
-    data = json.loads((ROOT / 'pocs/movimento/cela_guardas.json').read_text())
+    data = json.loads((ROOT / 'tests/fixtures/scenarios/legacy_cell_and_guards.json').read_text())
     scene = Scene.from_data(data)
     return GameSession(scene.grid, MovementState(Position(*data['start'])), scene,
                        creatures_from_data(data['creatures']), roller=dice())

@@ -161,7 +161,8 @@ Não existem botões para iniciar combate ou renovar turno.
 
 PHB 2024: Playing the Game (exploração, interação social, combate e iniciativa),
 D20 Tests / Ability Checks (CD determinada pelo mestre), perícia Perception
-(Wisdom), e regras de movimento/ações já documentadas na POC. O modo narrado
+(Wisdom), e regras de [movimento](../regras/movimento.md) e
+[ações](../regras/acoes.md). O modo narrado
 sem orçamento artificial e os pontos de interrupção são decisões de fluxo
 solicitadas pelo usuário. Não há motor completo de condições, morte, surpresa,
 viagem ou audição neste incremento.

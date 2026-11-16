@@ -21,7 +21,7 @@ from trama.spatial import Position
 
 @pytest.fixture
 def session():
-    path = Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json"
+    path = Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/legacy_cell_and_guards.json"
     data = json.loads(path.read_text())
     scene = Scene.from_data(data)
     return GameSession(scene.grid, MovementState(Position(*data["start"])), scene,

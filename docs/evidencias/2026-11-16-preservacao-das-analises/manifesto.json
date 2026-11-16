@@ -1,0 +1,404 @@
+{
+  "schema_version": 1,
+  "kind": "historical_preservation_inventory",
+  "registered_at_utc": "2026-11-16T22:15:41.805884+00:00",
+  "new_ai_calls": 0,
+  "notes": [
+    "Inventário produzido depois das execuções; não é plano prévio nem nova medição.",
+    "Relatórios e manifesto originais foram preservados sem alterações.",
+    "Relocações são referências históricas; a verificação não compara fontes atuais com hashes históricos.",
+    "Logs continuam locais e ignorados pelo Git; o inventário registra metadados, não distribui esses conteúdos."
+  ],
+  "experiments": [
+    {
+      "id": "schema-order-terra-20261115",
+      "observed_on": "2026-11-15",
+      "scope": "interpreter_contract",
+      "versioned_artifacts": [
+        {
+          "path": "docs/evidencias/2026-11-15-ordem-esquema/relatorio.md",
+          "bytes": 1696,
+          "sha256": "136a8cea0fce613febed5a1acfca66c8670469536a475d9cfb1920079e2bd83c",
+          "hash_origin": "preservation_inventory"
+        }
+      ],
+      "local_artifacts": [
+        {
+          "path": "logs/interpretacao/schema-order-terra-20261115/metadata.json",
+          "bytes": 259,
+          "sha256": "2308437a29540a9c681d6b00bc2680b623328936f366f27dffe92932cc20672a",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/interpretacao/schema-order-terra-20261115/results.jsonl",
+          "bytes": 7543,
+          "sha256": "a5052df018d3b31496a3e1f42cd7cb8dd746b8fcdf607142424998f60dc085dd",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/interpretacao/schema-order-terra-20261115/summary.json",
+          "bytes": 555,
+          "sha256": "3904f8bb9b4df81a5e932693beb8952959716fbb71529f745b5a86ea54a1a142",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/interpretacao/schema-order-terra-20261115/trace.jsonl",
+          "bytes": 105059,
+          "sha256": "de3b7e9cc04c10bfbd5ae53a054d43e908c321019b61effb3a90b3b39e38ba92",
+          "hash_origin": "preservation_inventory"
+        }
+      ],
+      "limitations": [
+        "Contrato anterior ao atual; três pedidos em duas variantes, com uma interpretação incorreta na variante legacy.",
+        "Não há snapshot completo dos fontes nem manifesto de hashes registrado antes dessa execução.",
+        "Os hashes dos quatro artefatos foram registrados na preservação, sem provar integridade desde 15/11."
+      ],
+      "recorded_results": {
+        "extracted_from": [
+          "logs/interpretacao/schema-order-terra-20261115/metadata.json",
+          "logs/interpretacao/schema-order-terra-20261115/summary.json"
+        ],
+        "metadata": {
+          "requested_model": "gpt-5.6-terra",
+          "sdk_version": "3.49.0",
+          "provider_host": "api.openai.com",
+          "contexts": [
+            "minimal"
+          ],
+          "schema_orders": [
+            "legacy",
+            "operation-first"
+          ],
+          "max_corrections": 0,
+          "max_calls": 6,
+          "repeat": 1
+        },
+        "summary": {
+          "minimal": {
+            "legacy": {
+              "cases": 3,
+              "passed": 2,
+              "first_attempt_correct": 2,
+              "authorization_rejected": 1,
+              "calls": 3,
+              "tokens": {
+                "input_tokens": 7280,
+                "output_tokens": 103,
+                "total_tokens": 7383
+              }
+            },
+            "operation-first": {
+              "cases": 3,
+              "passed": 3,
+              "first_attempt_correct": 3,
+              "authorization_rejected": 0,
+              "calls": 3,
+              "tokens": {
+                "input_tokens": 7280,
+                "output_tokens": 100,
+                "total_tokens": 7380
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "20261116T115849-43931618",
+      "observed_on": "2026-11-16",
+      "scope": "historical_contextual_exploration",
+      "versioned_artifacts": [],
+      "local_artifacts": [
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/atacar-com-aproximacao/result.json",
+          "bytes": 137641,
+          "sha256": "4c5ba56cfc422c826afa679e95a990b04e476cf1162bcfeb6fc320b0f6278529",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/atacar-com-aproximacao/trace.jsonl",
+          "bytes": 255821,
+          "sha256": "4a62ddb464f2d68e7da0a90d22a875df8e6d277e5eba4a3d1d58bd746501748a",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/ataque-com-movimento-insuficiente/result.json",
+          "bytes": 132825,
+          "sha256": "c3da1fcc1ebc862aefd93339aba06ac57f73f571b4e5ae3e31ddd74b93ca8cff",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/ataque-com-movimento-insuficiente/trace.jsonl",
+          "bytes": 248418,
+          "sha256": "a6b8c5842de932714da93641ba10c503fdd139f9796de378d01de06059d2c1cb",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/ataque-guarda-vence-iniciativa/result.json",
+          "bytes": 136408,
+          "sha256": "c9e66fa8cd9b920fe52396329090112b0eec0eb2815f2b88fee46ec0ac3026a8",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/ataque-guarda-vence-iniciativa/trace.jsonl",
+          "bytes": 238868,
+          "sha256": "a480a66d47a8b1d0251cba8bda800d545f6d943fe886286321a19b9eb1d58de0",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/investigar-cela-do-log/result.json",
+          "bytes": 131241,
+          "sha256": "8653c6dc66a15d0731c4e5f4f61fb1af2508610d5f1130bd3010be59ec4c201e",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/investigar-cela-do-log/trace.jsonl",
+          "bytes": 185643,
+          "sha256": "f56ce6b7eb9dd34bfff8ded2643fa11fd48d3306644cdd2b8c8ad90b74c223ff",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/investigar-com-ataque-de-oportunidade/result.json",
+          "bytes": 131546,
+          "sha256": "b735706cf5f66a57dfc93517411e0643d7bc67e82de9032fa76f00db926d9340",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/investigar-com-ataque-de-oportunidade/trace.jsonl",
+          "bytes": 278588,
+          "sha256": "838e04098dd0d242c3a0abdc10888162cb464a8872f7ad029e48741611d31063",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/investigar-grade-fechada/result.json",
+          "bytes": 126083,
+          "sha256": "d1251423b6c4865630e7169a415a0de50d5e3fd123b012f82008d93d1e53015b",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/investigar-grade-fechada/trace.jsonl",
+          "bytes": 171738,
+          "sha256": "4da55ee943aae6b5cdc9e34df77b66437d1fd871ac4cbefdfb6476d81ce3048a",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/investigar-sem-sair-do-lugar/result.json",
+          "bytes": 123677,
+          "sha256": "335f8454a974eed981bdcf87ce2f1fd366628f6a2dc223c62348a8484b5212fa",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/investigar-sem-sair-do-lugar/trace.jsonl",
+          "bytes": 167535,
+          "sha256": "8430831b4e68655cb7705214bd25a1bade7021dcfde49e73d463cb425c77df27",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/pegar-espada-distante/result.json",
+          "bytes": 125907,
+          "sha256": "d7a25992ee63efae069afc8974b393480116c71e5715c6632cb8e93b37837f26",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/20261116T115849-43931618/pegar-espada-distante/trace.jsonl",
+          "bytes": 203323,
+          "sha256": "de3e29232fd87df64e6fd768deb82a50811767abcc817fb2220082265fc62044",
+          "hash_origin": "preservation_inventory"
+        }
+      ],
+      "limitations": [
+        "Lote exploratório anterior à bateria revisada; preservado separadamente, sem nova avaliação de narração.",
+        "Não há manifesto prévio de fontes; não se atribui o contrato, a configuração ou a aprovação da bateria posterior a este lote.",
+        "Os hashes dos dezesseis artefatos foram registrados na preservação."
+      ]
+    },
+    {
+      "id": "step12-20261116T205209Z",
+      "observed_on": "2026-11-16",
+      "scope": "prepared_game_flow",
+      "versioned_artifacts": [
+        {
+          "path": "docs/evidencias/2026-11-16-movimento-contextual/relatorio.md",
+          "bytes": 9251,
+          "sha256": "0b9a0bbc6a18c4052e239c690402a74d8a01efc88c1088095672cbfd031f8752",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "docs/evidencias/2026-11-16-movimento-contextual/manifesto.json",
+          "bytes": 19474,
+          "sha256": "f0d525fe99d51a4c91e0cd3e68c6e4fc09755d81c47b96b644dfcfecfc88f4af",
+          "hash_origin": "preservation_inventory"
+        }
+      ],
+      "local_artifacts": [
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/atacar-com-aproximacao/result.json",
+          "bytes": 444611,
+          "sha256": "84681f98aeabb4ed278ab5121f026759987456170b61096ab0190551954f0e08",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/atacar-com-aproximacao/trace.jsonl",
+          "bytes": 320227,
+          "sha256": "460706c79a83f389c0143ab482eda518006b8297bb36e7c50a8006078c4cbad5",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/ataque-com-movimento-insuficiente/result.json",
+          "bytes": 428047,
+          "sha256": "62e2cf25257d51efbc8159c468fe21aaeb826abc9fa485458fe71881366a3179",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/ataque-com-movimento-insuficiente/trace.jsonl",
+          "bytes": 320710,
+          "sha256": "84dc47bb713256e21a5f07e57cdf90438834a012a3312f16f603e934f7d00b19",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/ataque-guarda-vence-iniciativa/result.json",
+          "bytes": 536635,
+          "sha256": "29cdbf13d21a749a427d189fd09c018a19df23a542a138b23d561d76feb471b3",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/ataque-guarda-vence-iniciativa/trace.jsonl",
+          "bytes": 353792,
+          "sha256": "180631fe59cb5360336ddb0e599357e03b3a907ceeb44cb34deb581e1083daef",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/investigar-cela-do-log/result.json",
+          "bytes": 416612,
+          "sha256": "c2ca546f6e0cd55add9a03983a08efc483dd34629a6773701e62a10a3c75fa5d",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/investigar-cela-do-log/trace.jsonl",
+          "bytes": 243823,
+          "sha256": "2286941b2b666554e4b9ea652b39c1330d2abb5251ca33099a3201b06e6ee83c",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/investigar-com-ataque-de-oportunidade/result.json",
+          "bytes": 421964,
+          "sha256": "110c2cdd14728dfec082c2e400a33791559201d8f9358099ec5986fb895c9947",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/investigar-com-ataque-de-oportunidade/trace.jsonl",
+          "bytes": 345584,
+          "sha256": "9f63a5de0dc9bb383b361f55a5cd9a32786e8691e4b6641f70b79c175a949988",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/investigar-grade-fechada/result.json",
+          "bytes": 407815,
+          "sha256": "1cb9265b0080532c527f6efa76bf9119fe73fef37996cad07d4267bcc9760398",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/investigar-grade-fechada/trace.jsonl",
+          "bytes": 231071,
+          "sha256": "4fdc8c985717f791a4a4e8afd28603cff332c1473ca3f85b30493d41f1a1a854",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/investigar-sem-sair-do-lugar/result.json",
+          "bytes": 401851,
+          "sha256": "d9658e80475482f2330b40cdde19bbc8a87c81d01e6c1475066e729a2a788b6d",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/investigar-sem-sair-do-lugar/trace.jsonl",
+          "bytes": 226379,
+          "sha256": "35d8076b3dbeeba496bd60b28ac8ae7b139ff008f614db588f7c86b273f4a9e9",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/pegar-espada-distante/result.json",
+          "bytes": 407704,
+          "sha256": "1fa82ade091e2941ce0f231a4f5ecaab4b715fb6f33d13f8f70a0cf2df899d04",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/20261116T205225-f1e12730/pegar-espada-distante/trace.jsonl",
+          "bytes": 262863,
+          "sha256": "629f4e4bd6bdb905a85cde165a3d97d30ffc5e26e069c530c258b7b3eea34d79",
+          "hash_origin": "original_manifest"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/experiment.json",
+          "bytes": 8835,
+          "sha256": "03b0a48096fe50bb165ae78150db69b451de4ac5fe7d863358fbecb42ac60b35",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/junit.xml",
+          "bytes": 1365,
+          "sha256": "3bf190c57b6b99b9f1d07c06ad3dc5d4bf299bff099040c485d2158dc7683ca7",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/manual-review.json",
+          "bytes": 1727,
+          "sha256": "ceb75709fe097918ee33d4ad82e741ebc752336618e27690bf97b3293b169e65",
+          "hash_origin": "preservation_inventory"
+        },
+        {
+          "path": "logs/live/contextual_movement/step12-20261116T205209Z/summary.json",
+          "bytes": 7838,
+          "sha256": "e59f907306c256f9fc40456bc6df9ffa49a2e5f6ee4d740238de8833bdb28337",
+          "hash_origin": "preservation_inventory"
+        }
+      ],
+      "limitations": [
+        "Oito casos, uma execução por caso; aprovação mecânica com ressalvas narrativas registradas no relatório original.",
+        "Os dezesseis arquivos de resultado/log (oito pares) foram conferidos com os hashes já registrados no manifesto original.",
+        "O HEAD original tinha alterações locais; hashes dos fontes não constituem uma cópia recuperável desses fontes.",
+        "A reorganização e os hashes atuais não certificam o simulador ou os contratos atuais."
+      ]
+    }
+  ],
+  "source_relocations": [
+    {
+      "original_path": "pocs/movimento/scenario.json",
+      "current_path": "tests/fixtures/scenarios/simple_grid.json",
+      "relation": "identical_bytes_at_preservation",
+      "sha256": "a6ff5ca4f7ed7f3dde77b1495d430dd8b83a4bca9aa5eb6696ffb07e0561cfcc"
+    },
+    {
+      "original_path": "pocs/movimento/cela_guardas.json",
+      "current_path": "tests/fixtures/scenarios/legacy_cell_and_guards.json",
+      "relation": "identical_bytes_at_preservation",
+      "sha256": "ad7c745c0bef368372da39e8c6f56472c0ccf6c39029150ce9f2d71b6c7ca6d3"
+    },
+    {
+      "original_path": "pocs/simulador/dungeon.json",
+      "current_path": "src/trama/scenarios/dungeon_escape.json",
+      "relation": "identical_bytes_at_preservation",
+      "sha256": "e471c79fc2f4c5b24711a271aa4c5f4225151afe79dd6dc23eaca192a5e01c03"
+    },
+    {
+      "original_path": "pocs/interpretacao/cases.json",
+      "current_path": "tests/fixtures/interpretation/cases.json",
+      "relation": "identical_bytes_at_preservation",
+      "sha256": "c776a9eb2314b1dde1b3474977a7d87092298276e76600292102b80898442166"
+    },
+    {
+      "original_path": "pocs/movimento/run.py",
+      "current_path": "src/trama/simulator.py",
+      "relation": "independent_runner_removed_not_byte_equivalent"
+    },
+    {
+      "original_path": "pocs/interpretacao/run.py",
+      "current_path": "src/trama/analysis/interpretation.py",
+      "relation": "refactored_not_byte_equivalent"
+    },
+    {
+      "original_path": "tests/fixtures/contextual_movement/preparations.json",
+      "current_path": "src/trama/scenarios/situations.json",
+      "relation": "incorporated_with_situations_not_byte_equivalent"
+    }
+  ]
+}

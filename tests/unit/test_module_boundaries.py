@@ -31,13 +31,18 @@ import pytest
     ("application/failures", {"trama.spatial"}),
     ("application/scenarios", {"trama.application.dungeon", "trama.application.session", "trama.characters",
                                "trama.creatures", "trama.dice", "trama.movement", "trama.scene", "trama.spatial"}),
+    ("application/situations", {"trama.application.dialogue", "trama.application.intents", "trama.observability"}),
+    ("analysis/interpretation", {"trama.application.dialogue", "trama.application.interpretation_evaluation",
+                                 "trama.application.scenarios", "trama.infrastructure.openai_intent_interpreter",
+                                 "trama.infrastructure.openai_config", "trama.infrastructure.openai_services",
+                                 "trama.observability"}),
     ("application/game_flow", {"trama.application.authorization", "trama.application.conversation",
                                "trama.application.dialogue", "trama.application.intents", "trama.application.session",
                                "trama.application.travel", "trama.application.world", "trama.distances", "trama.observability"}),
     ("application/game_runner", {"trama.application.conversation", "trama.application.dialogue",
                                 "trama.application.game_flow", "trama.observability"}),
     ("observability", set()),
-    ("bootstrap", {"trama.application.game_flow", "trama.application.game_runner", "trama.application.scenarios", "trama.application.session", "trama.dice",
+    ("bootstrap", {"trama.application.game_flow", "trama.application.game_runner", "trama.application.scenarios", "trama.application.session", "trama.application.situations", "trama.dice",
                    "trama.infrastructure.openai_config", "trama.infrastructure.openai_services", "trama.infrastructure.call_budget"}),
     ("infrastructure/call_budget", set()),
     ("infrastructure/openai_config", set()),
@@ -76,9 +81,9 @@ def test_pygame_interface_delegates_game_decisions_to_flow():
     assert not functions & {'Conversation', 'ExecutionReport', 'TravelExecutor', 'validate_player_plan'}
 
 
-def test_live_suites_and_interpretation_poc_use_shared_scenario_construction():
+def test_live_suites_and_interpretation_analysis_use_shared_scenario_construction():
     root = Path(__file__).resolve().parents[2]
-    sources = [*sorted((root / 'tests/live').glob('test_*.py')), root / 'pocs/interpretacao/run.py']
+    sources = [*sorted((root / 'tests/live').glob('test_*.py')), root / 'src/trama/analysis/interpretation.py']
     constructors = {'GameSession', 'DungeonSession', 'Scene', 'Grid', 'MovementState', 'sheet_from_data', 'creatures_from_data'}
     for source in sources:
         tree = ast.parse(source.read_text())
@@ -101,7 +106,8 @@ def test_live_preparation_does_not_assign_game_state_or_history_directly():
 
 def test_simulator_live_tests_and_experiment_do_not_compose_openai_clients_or_adapters():
     root = Path(__file__).resolve().parents[2]
-    sources = [root / 'src/trama/simulator.py', root / 'pocs/interpretacao/run.py',
+    sources = [root / 'src/trama/simulator.py',
+               root / 'src/trama/analysis/interpretation.py', root / 'tools/analyze_interpretation.py',
                *sorted((root / 'tests/live').glob('test_*.py'))]
     constructors = {'OpenAI', 'OpenAIIntentInterpreter', 'OpenAINarrator', 'OpenAIWorldDirector'}
     for source in sources:
@@ -110,6 +116,21 @@ def test_simulator_live_tests_and_experiment_do_not_compose_openai_clients_or_ad
             if isinstance(node, ast.Call):
                 name = node.func.id if isinstance(node.func, ast.Name) else node.func.attr if isinstance(node.func, ast.Attribute) else None
                 assert name not in constructors, (source, node.lineno)
+
+
+def test_tests_and_tools_do_not_depend_on_poc_scripts_or_data():
+    root = Path(__file__).resolve().parents[2]
+    assert not (root / 'pocs').exists(), 'O simulador oficial substituiu as entradas independentes.'
+    sources = [p for folder in ('tests', 'tools', 'src') for p in (root / folder).rglob('*.py')]
+    prefixes = ('/'.join(('pocs', '')), '\\'.join(('pocs', '')))
+    for source in sources:
+        for node in ast.walk(ast.parse(source.read_text())):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                assert not any(prefix in node.value for prefix in prefixes), (source, node.lineno)
+            elif isinstance(node, ast.ImportFrom):
+                assert not (node.module and node.module.split('.')[0] == 'pocs'), (source, node.lineno)
+            elif isinstance(node, ast.Import):
+                assert all(name.name.split('.')[0] != 'pocs' for name in node.names), (source, node.lineno)
 
 
 def test_headless_runner_only_schedules_public_flow_requests():

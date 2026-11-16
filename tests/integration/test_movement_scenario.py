@@ -20,7 +20,7 @@ from trama.movement import Grid, MovementError, MovementState, Position
     ([("north", 10)], False, (4, 0), 3, "limites"),
 ])
 def test_documented_scenario(segments, dash, expected_position, remaining, error, enter_turn_mode):
-    scenario = Path(__file__).resolve().parents[2] / "pocs/movimento/scenario.json"
+    scenario = Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/simple_grid.json"
     data = json.loads(scenario.read_text())
     grid = Grid(data["width"], data["height"],
                 frozenset(Position(*p) for p in data["blocked"]),

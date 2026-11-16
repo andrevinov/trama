@@ -23,7 +23,7 @@ Exemplo de composição para uma entrada de aplicação:
 ```python
 from trama.bootstrap import open_game
 
-with open_game('pocs/simulador/dungeon.json') as game:
+with open_game('src/trama/scenarios/dungeon_escape.json') as game:
     flow = game.flow
     configuration = game.services.metadata
     # A janela agenda os pedidos de flow; game.runner oferece a agenda sem janela.
@@ -36,6 +36,29 @@ já abertos. Nenhuma dessas funções executa chamadas ou conduz um loop de NPCs
 
 A composição disponibiliza o fluxo e suas agendas sem executar mensagens.
 A configuração e o fechamento do cliente são descritos em [Integração OpenAI](../ia/integracao-openai.md).
+
+`open_situation(situation, ...)` usa essa mesma composição com dados do
+[catálogo do simulador](../simulador/carregamento-de-cenarios.md#situações-reproduzíveis).
+Ela injeta as rolagens e uma preparação determinística no `GameFlow`, que a
+executa ao compor e ao reiniciar a sessão. O fluxo acrescenta o histórico
+registrado após a abertura concluída. Sem situação, esses parâmetros são vazios
+e a partida mantém seu início normal. Uma falha na preparação fecha os serviços
+e impede entregar uma partida inválida à janela ou ao runner.
+
+## Entradas e agendas compartilhadas
+
+O comando `trama-simulator` usa `open_game` e entrega `game.flow` à janela.
+Os mapas antigos são arquivos selecionados por `--scenario`; o runner que
+montava serviços separadamente foi removido.
+
+`game.runner` agenda os pedidos do mesmo tipo de fluxo, incluindo interpretação,
+Mundo, turnos de NPCs, pausas para reação e narração. Isso é compartilhamento da
+coordenação; não exige que o runner abra Pygame. Testes parciais de adaptadores
+continuam com o escopo declarado e não são apresentados como partidas completas.
+
+O cliente criado pela composição é fechado ao sair do contexto, inclusive se
+carregar o cenário ou abrir a janela falhar. A política para cliente injetado,
+pertencente ao chamador, continua na referência dos serviços.
 
 ## Relações e verificação
 

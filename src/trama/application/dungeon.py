@@ -1,7 +1,7 @@
 """Adjudicação do cenário de fuga, sem SDK ou interface.
 
 As CDs, a rotina do guarda e as consequências sociais são decisões de mestre
-registradas em pocs/simulador/README.md; não são novas regras universais.
+registradas em docs/sistema/simulador/fuga-da-dungeon.md; não são novas regras universais.
 """
 
 from copy import deepcopy

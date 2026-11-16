@@ -126,7 +126,7 @@ def test_named_scene_is_sent_to_interpreter_and_large_map_is_drawn(screen):
     from pathlib import Path
     from trama.scene import Scene
 
-    data = json.loads((Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json").read_text())
+    data = json.loads((Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/legacy_cell_and_guards.json").read_text())
     scene = Scene.from_data(data)
     session = GameSession(scene.grid, MovementState(Position(*data["start"])), scene)
 
@@ -158,7 +158,7 @@ def test_door_actions_update_rendered_visibility_and_hide_guards(screen):
     from trama.scene import Scene
     from trama.ui.movement_window import RED
 
-    data = json.loads((Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json").read_text())
+    data = json.loads((Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/legacy_cell_and_guards.json").read_text())
     scene = Scene.from_data(data)
     session = GameSession(scene.grid, MovementState(Position(*data["start"])), scene,
                           creatures_from_data(data["creatures"]))
@@ -337,7 +337,7 @@ def test_separate_player_world_and_narration_requests_execute_in_main_thread(scr
     from trama.infrastructure.openai_narrator import OpenAINarrator
     from trama.scene import Scene
 
-    data = json.loads((Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json").read_text())
+    data = json.loads((Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/legacy_cell_and_guards.json").read_text())
     scene = Scene.from_data(data)
     session = GameSession(scene.grid, MovementState(Position(*data["start"])), scene, creatures_from_data(data["creatures"]))
     client = Mock()

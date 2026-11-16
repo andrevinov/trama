@@ -15,13 +15,13 @@ from trama.application.scenarios import build_session, load_dungeon, load_sessio
 from trama.spatial import Position
 
 ROOT = Path(__file__).resolve().parents[2]
-DUNGEON = ROOT / 'pocs/simulador/dungeon.json'
+DUNGEON = ROOT / 'src/trama/scenarios/dungeon_escape.json'
 
 
 @pytest.mark.parametrize('scenario,dimensions,start,enemies,armor', [
-    ('pocs/simulador/dungeon.json', (19, 25), (3, 21), 1, 11),
-    ('pocs/movimento/cela_guardas.json', (19, 11), (3, 5), 3, 17),
-    ('pocs/movimento/scenario.json', (10, 10), (4, 4), 0, 17),
+    ('src/trama/scenarios/dungeon_escape.json', (19, 25), (3, 21), 1, 11),
+    ('tests/fixtures/scenarios/legacy_cell_and_guards.json', (19, 11), (3, 5), 3, 17),
+    ('tests/fixtures/scenarios/simple_grid.json', (10, 10), (4, 4), 0, 17),
 ])
 def test_existing_scenarios_keep_geometry_characters_and_equipment(scenario, dimensions, start, enemies, armor):
     session = load_session(ROOT / scenario)
@@ -31,7 +31,7 @@ def test_existing_scenarios_keep_geometry_characters_and_equipment(scenario, dim
     assert session.encounter.player_sheet.level == 3
     assert session.encounter.player_sheet.armor_class == armor
     assert session.encounter.states['player'].hp == 28
-    if scenario == 'pocs/simulador/dungeon.json':
+    if scenario == 'src/trama/scenarios/dungeon_escape.json':
         assert isinstance(session, DungeonSession)
         assert len(session.scene.objects) == 4
         assert session.encounter.player_sheet.weapons == ()
@@ -99,7 +99,7 @@ def test_invalid_variations_cannot_bypass_existing_validators(variation, tmp_pat
 
 def test_roller_is_injected_into_real_encounter(dice):
     roller = dice(20, 19, 1, 1)
-    data = json.loads((ROOT / 'pocs/movimento/cela_guardas.json').read_text())
+    data = json.loads((ROOT / 'tests/fixtures/scenarios/legacy_cell_and_guards.json').read_text())
     data['start'] = [14, 5]
     next(p for p in data['passages'] if p['id'] == 'guard_door')['is_open'] = True
     session = build_session(data, roller=roller)
@@ -111,7 +111,7 @@ def test_roller_is_injected_into_real_encounter(dice):
 def test_dungeon_compatibility_entry_uses_shared_loader():
     assert isinstance(load_dungeon(DUNGEON), DungeonSession)
     with pytest.raises(ValueError, match='não é uma dungeon'):
-        load_dungeon(ROOT / 'pocs/movimento/scenario.json')
+        load_dungeon(ROOT / 'tests/fixtures/scenarios/simple_grid.json')
 
 
 def test_file_errors_are_not_replaced_by_another_scenario(tmp_path):
@@ -138,7 +138,7 @@ def test_simulator_cli_uses_shared_construction_without_real_window_or_service(m
     monkeypatch.delenv('OPENAI_API_KEY', raising=False)
     monkeypatch.setattr(sys, 'argv', ['simulador', '--scenario', str(DUNGEON),
                                     '--log-file', str(tmp_path / 'cli.jsonl')])
-    simulator.main(DUNGEON)
+    simulator.main()
     assert len(builds) == len(windows) == 1
     assert windows[0] is builds[0]
     assert len(windows[0].scene.objects) == 4

@@ -1,14 +1,13 @@
 from conftest import scripted_responses, sourced_output, sourced_plan
 from dataclasses import replace
 import json
-from pathlib import Path
-import runpy
 from types import SimpleNamespace
 from unittest.mock import Mock
 
 from openai import APIConnectionError
 import pytest
 
+from trama import simulator
 from trama.application.conversation import Conversation
 from trama.application.dialogue import Speech
 from trama.application.intents import RuleIntent
@@ -209,15 +208,15 @@ def test_rejected_operation_records_reason_without_commit_or_dice(capture_logs, 
 
 
 def test_cli_debug_creates_jsonl_and_records_startup_failure(capture_logs, monkeypatch, tmp_path):
-    module = runpy.run_path(str(Path(__file__).resolve().parents[2] / "pocs/movimento/run.py"))
     path = tmp_path / "debug.jsonl"
     missing = tmp_path / "missing.json"
-    monkeypatch.setattr("sys.argv", ["run.py", "--debug", "--log-file", str(path), "--scenario", str(missing)])
+    monkeypatch.setattr("sys.argv", ["trama-simulator", "--debug", "--log-file", str(path), "--scenario", str(missing)])
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     with capture_logs(), pytest.raises(FileNotFoundError):
-        module["main"]()
+        simulator.main()
     records = [json.loads(line) for line in path.read_text().splitlines()]
-    assert [r["event"] for r in records] == ["app.started", "app.failed", "app.stopped"]
+    assert [r["event"] for r in records] == ["app.started", "ai.services_configured", "app.failed", "app.stopped"]
     assert records[0]["data"]["debug"]
-    assert records[1]["error"]["type"] == "FileNotFoundError"
+    assert records[1]["data"]["enabled"] is False
+    assert records[2]["error"]["type"] == "FileNotFoundError"
     assert len({r["session_id"] for r in records}) == 1

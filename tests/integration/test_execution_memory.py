@@ -24,7 +24,7 @@ from trama.spatial import Grid, Position
 
 @pytest.fixture
 def blocked_guard(dice):
-    data = json.loads((Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json").read_text())
+    data = json.loads((Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/legacy_cell_and_guards.json").read_text())
     scene = Scene.from_data(data).with_passage("guard_door", True)
     creatures = tuple(replace(c, position=Position(13, 5)) if c.id == "guard_2" else
                       replace(c, position=Position(14, 6)) if c.id == "guard_3" else c

@@ -160,7 +160,7 @@ Instruções e contexto completos enviados ao modelo continuam exclusivos do
 modo debug; os textos da conversa ficam também em INFO:
 
 ```bash
-poetry run python pocs/simulador/run.py --debug
+poetry run trama-simulator --debug
 ```
 
 O add-on não recupera conteúdo ausente de logs antigos. Sua detecção automática

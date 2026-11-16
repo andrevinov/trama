@@ -1,7 +1,5 @@
 """Oito regressões live de movimento contextual no simulador real da dungeon."""
 
-from collections import deque
-from copy import deepcopy
 from dataclasses import asdict
 from datetime import datetime, timezone
 import json
@@ -13,10 +11,9 @@ import pytest
 
 from trama.application.authorization import step_operations
 from trama.application.conversation import Conversation
-from trama.application.dialogue import DialogueMessage
 from trama.application.scenarios import build_session
-from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, MovementSegment, ScenarioIntent, RuleIntent
-from trama.bootstrap import compose_game, open_game
+from trama.application.situations import Situation, ScriptedRoller, load_situation, situation_state
+from trama.bootstrap import compose_game, open_situation
 from trama.application.game_flow import FlowStage
 from trama.application.game_runner import RunStatus
 from trama.infrastructure.call_budget import CallBudget
@@ -24,8 +21,9 @@ from trama.observability import log_context
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ROOT / 'tests/fixtures/contextual_movement'
-CASES = json.loads((FIXTURES / 'cases.json').read_text())
-PREPARATIONS = json.loads((FIXTURES / 'preparations.json').read_text())
+CASES = [{**load_situation(case['id']).data, **case}
+         for case in json.loads((FIXTURES / 'cases.json').read_text())]
+PREPARATIONS = load_situation(CASES[0]['id']).preparations
 RUN_ID = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S') + '-' + uuid4().hex[:8]
 
 pytestmark = [pytest.mark.live,
@@ -33,80 +31,18 @@ pytestmark = [pytest.mark.live,
                        reason='Defina RUN_OPENAI_LIVE_TESTS=1 para autorizar chamadas pagas.')]
 
 
-class FrozenRoller:
-    """Fixa valor e tipo de cada dado, incluindo a preparação do cenário."""
-    def __init__(self, rolls, optional_tail=()):
-        if any(not isinstance(r, list) or len(r) != 2 or
-               any(type(n) is not int for n in r) or r[0] < 2 or not 1 <= r[1] <= r[0] for r in [*rolls, *optional_tail]):
-            raise ValueError('Cada rolagem deve declarar [faces, valor] válidos.')
-        self.pending = deque(tuple(r) for r in rolls)
-        self.optional_tail = deque(tuple(r) for r in optional_tail)
-        self.used = []
-        self.optional_used = []
-
-    def roll(self, sides):
-        queue = self.pending if self.pending else self.optional_tail
-        assert queue, f'Rolagem não prevista: d{sides}.'
-        expected_sides, value = queue[0]
-        assert sides == expected_sides, f'Esperava d{expected_sides}, recebeu d{sides}.'
-        queue.popleft()
-        if queue is self.optional_tail:
-            self.optional_used.append([sides, value])
-        self.used.append([sides, value])
-        return value
+# Nomes mantidos para as verificações locais de critérios; a implementação é a
+# mesma usada ao selecionar --situation na aplicação.
+FrozenRoller = ScriptedRoller
+snapshot = situation_state
 
 
-def snapshot(session):
-    area = session.scene.area_at(session.state.position)
-    return {
-        'position': [session.state.position.x + 1, session.state.position.y + 1],
-        'area': area.id if area else None, 'mode': session.mode.value,
-        'spent_meters': float(session.state.spent_meters),
-        'remaining_meters': float(session.state.remaining_meters), 'dash_used': session.state.dash_used,
-        'combat': session.combat_context(),
-        'creatures': {c.id: [c.position.x + 1, c.position.y + 1] for c in session.creatures},
-        'resources': {id: asdict(state) for id, state in session.encounter.states.items()},
-        'budgets': {id: asdict(budget) for id, budget in session.encounter.budgets.items()},
-        'inventory': sorted(session.dungeon.inventory), 'discovered': sorted(session.dungeon.discovered),
-        'clothing': session.dungeon.clothing, 'weapons': list(session.encounter.player_sheet.weapons),
-        'passages': {p.id: {'is_open': p.is_open, 'locked': p.locked} for p in session.scene.passages},
-        'last_attack': deepcopy(session.encounter.last_attacks.get('player')),
-        'prisoner_awake': session.dungeon.prisoner_awake,
-        'prisoner_free': session.dungeon.prisoner_free,
-        'escaped': session.dungeon.escaped,
-        'disguise': session.dungeon.disguise, 'guard_alert': session.dungeon.guard_alert,
-        'sword_concealed': session.dungeon.sword_concealed,
-        'pending_opportunity': session.pending_opportunity is not None,
-    }
-
-
-def declared_intent(data):
-    """Desserializa a entrada da fixture nos construtores reais, sem regras próprias."""
-    values = dict(data)
-    kind = values.pop('intent')
-    if kind == 'movement':
-        values['segments'] = tuple(MovementSegment(**s) for s in values.get('segments', []))
-        return MovementIntent(dash=False, clarification='', **values)
-    return {'door': DoorIntent, 'scenario': ScenarioIntent, 'rule': RuleIntent}[kind](**values)
-
-
-def check_preconditions(case, actual):
-    """Igualdades declaradas pelo caso; nunca gera expectativas a partir do motor."""
-    for path, expected in case['preconditions'].items():
-        value = actual
-        for key in path.split('.'):
-            assert isinstance(value, dict) and key in value, f'{case["id"]}: pré-condição desconhecida {path}.'
-            value = value[key]
-        assert value == expected, f'{case["id"]}: pré-condição {path}: esperado {expected!r}, obtido {value!r}.'
+def situation_for_case(case):
+    return Situation({k: v for k, v in case.items() if k in Situation.fields}, PREPARATIONS)
 
 
 def case_data(case):
-    data = json.loads((ROOT / case['scenario']).read_text())
-    for id, variation in case.get('passage_variations', {}).items():
-        passage = next(p for p in data['passages'] if p['id'] == id)
-        assert not variation.keys() - {'is_open', 'locked'}, 'Variação de passagem desconhecida.'
-        passage.update(variation)  # Dados anteriores à construção; validadores reais abaixo.
-    return data
+    return situation_for_case(case).scenario_data()
 
 
 def build_case(case, *, services=None):
@@ -119,27 +55,13 @@ def build_case(case, *, services=None):
 
 
 def prepare_case(case, conversation, roller, *, with_history=True):
-    """Aplica preparação determinística na conversa já criada pelo fluxo."""
-    session = conversation.session
-    for preparation in case['setup']:
-        for index, declared in enumerate(PREPARATIONS[preparation]):
-            report = conversation.execute(ActionPlan(tuple(declared_intent(s) for s in declared['steps'])))
-            assert report.status == declared['expected_status'], (f'Preparação inválida de {case["id"]}, '
-                f'{preparation}[{index}]: {report.stop_reason}')
-            assert not report.failures and report.unperformed_steps == 0, 'Preparação deixou ações inválidas ou não executadas.'
-            operations = {e['operation'] for e in report.world_events}
-            assert set(declared.get('expected_world_operations', [])) <= operations, 'Faltou um efeito esperado na preparação.'
-            assert not session.pending_opportunity and not conversation.pending_npc_turn, 'Preparação exige escolha/retomada não declarada.'
-    assert len(roller.used) == case['preparation_rolls'], 'A preparação consumiu uma sequência de dados diferente.'
-    check_preconditions(case, snapshot(session))
+    situation_for_case(case).prepare(conversation, roller)
     if with_history:
         restore_history(case, conversation)
 
 
 def restore_history(case, conversation):
-    if case.get('history'):
-        history = json.loads((FIXTURES / case['history']).read_text())['messages']
-        conversation.extend_history(DialogueMessage.from_data(m) for m in history)
+    situation_for_case(case).restore_history(conversation)
 
 
 def evaluate(case, before, after, report, plan, roller, requests=None):
@@ -289,18 +211,17 @@ def test_live_contextual_movement(case, capture_logs):
         choices = case['choices']
         assert isinstance(choices, list) and all(type(c) is bool for c in choices), 'Escolhas devem ser booleanos explícitos.'
         roller = FrozenRoller(case['rolls'], case.get('optional_world_rolls', []))
-        data = case_data(case)
-        with capture_logs(log_file=output / 'trace.jsonl'), log_context(session_id=evidence['session_id']), open_game(data, roller=roller, budget=budget) as game:
+        situation = situation_for_case(case)
+        evidence['stage'] = 'preparation'
+        evidence['preparation'] = {name: PREPARATIONS[name] for name in case['setup']}
+        if case.get('history'):
+            evidence['registered_history'] = case['history']
+        evidence['preparation_interaction_id'] = uuid4().hex
+        with capture_logs(log_file=output / 'trace.jsonl'), log_context(
+                session_id=evidence['session_id'], interaction_id=evidence['preparation_interaction_id']), open_situation(
+                situation, roller=roller, budget=budget) as game:
             evidence['configuration'] = game.services.metadata
             evidence['model'] = game.services.config.model
-            evidence['source_initial'] = snapshot(game.flow.session)
-            evidence['stage'] = 'preparation'
-            evidence['preparation'] = {name: PREPARATIONS[name] for name in case['setup']}
-            if case.get('history'):
-                evidence['registered_history'] = json.loads((FIXTURES / case['history']).read_text())
-            evidence['preparation_interaction_id'] = uuid4().hex
-            with log_context(interaction_id=evidence['preparation_interaction_id']):
-                prepare_case(case, game.flow.conversation, roller, with_history=False)
             evidence['preparation_dice_used'] = list(roller.used)
             evidence['initial'] = snapshot(game.flow.session)
             evidence['stage'] = 'opening'
@@ -308,8 +229,6 @@ def test_live_contextual_movement(case, capture_logs):
             observe_run(evidence, 'opening', opening, game.flow)
             require_complete(evidence, opening, budget)
             assert opening.reply and opening.reply.on.strip(), 'Abertura sem descrição em on.'
-            # A janela recente do caso de regressão preserva o registro original.
-            restore_history(case, game.flow.conversation)
             before = evidence['before'] = snapshot(game.flow.session)
             evidence['stage'] = 'action'
             result = game.runner.submit(case['prompt'])

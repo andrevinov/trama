@@ -1,4 +1,4 @@
-"""Chamada paga opcional; execução e critérios em pocs/movimento/README.md."""
+"""Chamada paga opcional; execução e critérios em tests/live/README.md."""
 
 import os
 from pathlib import Path
@@ -39,7 +39,7 @@ def test_real_prompt_moves_two_squares_north():
 def test_real_named_destination(prompt, target, dash, end, cost):
     if not os.environ.get("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY não configurada")
-    scenario = Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json"
+    scenario = Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/legacy_cell_and_guards.json"
     session = load_session(scenario)
     with open_services() as services:
         interpreter = services.interpreter
@@ -55,7 +55,7 @@ def test_real_named_destination(prompt, target, dash, end, cost):
 def test_real_door_operation(operation):
     if not os.environ.get("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY não configurada")
-    scenario = Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json"
+    scenario = Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/legacy_cell_and_guards.json"
     session = load_session(scenario)
     session.execute(MovementIntent((), True, "", "guard_door"))
     if operation == "close":

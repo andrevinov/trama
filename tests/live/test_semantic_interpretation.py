@@ -36,7 +36,7 @@ pytestmark = [pytest.mark.live, pytest.mark.skipif(os.environ.get("RUN_OPENAI_LI
 def test_real_semantic_interpretation(prompt, expected, tmp_path, capture_logs, dice):
     if not os.environ.get("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY não configurada")
-    data = json.loads((Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json").read_text())
+    data = json.loads((Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/legacy_cell_and_guards.json").read_text())
     data['start'] = [14, 5]
     next(p for p in data['passages'] if p['id'] == 'guard_door')['is_open'] = True
     session = build_session(data, roller=dice(20, 19, 1, 1))

@@ -21,9 +21,6 @@ from trama.infrastructure.openai_config import OpenAIConfig
 from trama.infrastructure.openai_services import open_services
 from trama.observability import close_logging, configure_logging, log_context
 
-ROOT = Path(__file__).resolve().parents[2]
-
-
 def interaction_records(trace_path: Path, interaction: str) -> list[dict]:
     rotations = [p for p in trace_path.parent.glob(trace_path.name + ".*") if p.suffix[1:].isdigit()]
     paths = sorted(rotations, key=lambda p: int(p.suffix[1:]), reverse=True) + [trace_path]
@@ -38,8 +35,9 @@ def interaction_records(trace_path: Path, interaction: str) -> list[dict]:
     return records
 
 
-def scenario_context() -> dict:
-    session = load_session(ROOT / "pocs/movimento/cela_guardas.json")
+def scenario_context(scenario: str | Path) -> dict:
+    """Projeção da sessão real usada por este experimento parcial do adaptador."""
+    session = load_session(scenario)
     return session.interpreter_context()
 
 
@@ -72,6 +70,7 @@ def run_case(client, *, case: dict, context: dict, mode: str, model: str,
                 candidates.append({"matches_expected": False, "actual": None})
     final_match = evaluate_plan(case["expected_steps"], returned)["matches_expected"] if returned else False
     return {
+        "scope": "interpreter_contract",
         "case_id": case["id"], "prompt": case["prompt"], "context_mode": mode, "model": model,
         "schema_order": schema_order,
         "configuration": services.metadata,
@@ -101,10 +100,13 @@ def summarize_results(results: list[dict]) -> dict:
     return summary
 
 
-def main():
+def main(argv: list[str] | None = None, *, default_cases: Path | None = None,
+         default_scenario: Path | None = None):
     parser = argparse.ArgumentParser(description="Compara interpretação com contexto mínimo/completo, sem executar ações.")
     parser.add_argument("--live", action="store_true", help="Executa chamadas reais; exige RUN_OPENAI_LIVE_TESTS=1.")
-    parser.add_argument("--cases", type=Path, default=Path(__file__).with_name("cases.json"))
+    parser.add_argument("--cases", type=Path, default=default_cases, required=default_cases is None)
+    parser.add_argument("--scenario", type=Path, default=default_scenario, required=default_scenario is None,
+                        help="Cenário carregado pela aplicação; não executa planos.")
     parser.add_argument("--case", action="append", dest="case_ids", help="Seleciona um caso por id; pode repetir.")
     parser.add_argument("--repeat", type=int, default=1)
     parser.add_argument("--context", choices=("minimal", "full", "both"), default="both")
@@ -113,7 +115,7 @@ def main():
     parser.add_argument("--max-corrections", type=int, choices=(0, 1), default=0)
     parser.add_argument("--model", help="Modelo alternativo para este experimento.")
     parser.add_argument("--output", type=Path)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     config = OpenAIConfig.from_env()
     if args.model is not None:
         config = config.for_experiment('interpretation_comparison', model=args.model)
@@ -130,13 +132,14 @@ def main():
     variants = [(mode, order) for mode in modes for order in schema_orders]
     limit = len(cases) * len(variants) * args.repeat * (1 + args.max_corrections)
     if not args.live:
-        print(json.dumps({"live": False, "case_ids": [c["id"] for c in cases], "contexts": modes,
+        print(json.dumps({"scope": "interpreter_contract", "live": False,
+                          "case_ids": [c["id"] for c in cases], "contexts": modes,
                           "schema_orders": schema_orders,
                           "repeat": args.repeat, "max_calls_if_live": limit}, ensure_ascii=False, indent=2))
         return
     if os.environ.get("RUN_OPENAI_LIVE_TESTS") != "1" or not os.environ.get("OPENAI_API_KEY"):
         parser.error("Para chamadas reais, exporte OPENAI_API_KEY e defina RUN_OPENAI_LIVE_TESTS=1.")
-    output = args.output or ROOT / "logs/interpretacao" / (datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid4().hex[:8])
+    output = args.output or Path("logs/interpretacao") / (datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid4().hex[:8])
     output.mkdir(parents=True, exist_ok=False)
     trace = output / "trace.jsonl"
     results = []
@@ -144,10 +147,11 @@ def main():
     stream = io.StringIO()
     configure_logging(level="DEBUG", log_file=trace, stream=stream, max_bytes=50_000_000)
     try:
-        context = scenario_context()
+        context = scenario_context(args.scenario)
         with open_services(config) as services:
             client = services.client
-            metadata = {"requested_model": config.model, "sdk_version": openai.__version__,
+            metadata = {"scope": "interpreter_contract", "context_source": "session.interpreter_context",
+                        "requested_model": config.model, "sdk_version": openai.__version__,
                         "configuration": services.metadata,
                         "provider_host": urlsplit(str(client.base_url)).hostname,
                         "contexts": modes, "schema_orders": schema_orders, "max_corrections": args.max_corrections,

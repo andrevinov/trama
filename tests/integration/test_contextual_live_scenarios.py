@@ -12,6 +12,7 @@ import runpy
 import pytest
 
 from trama.application.intents import ActionPlan, RuleIntent, ScenarioIntent
+from trama.application.situations import SituationError
 from trama.infrastructure import openai_services
 
 SUPPORT = runpy.run_path(str(Path(__file__).resolve().parents[1] / 'live/test_contextual_movement.py'))
@@ -157,7 +158,7 @@ def test_invalid_preparation_fails_before_interacting_with_any_model(defect):
         case['rolls'][0] = [8, 8]
     else:
         case['rolls'][1] = [20, 1]
-    with pytest.raises(AssertionError):
+    with pytest.raises(SituationError):
         SUPPORT['build_case'](case)
 
 
@@ -166,11 +167,11 @@ def test_fixed_dice_reject_invalid_values_types_and_unplanned_rolls():
         with pytest.raises(ValueError):
             SUPPORT['FrozenRoller'](rolls)
     roller = SUPPORT['FrozenRoller']([[20, 10]])
-    with pytest.raises(AssertionError, match='Esperava d20'):
+    with pytest.raises(SituationError, match='Esperava d20'):
         roller.roll(8)
     assert not roller.used and list(roller.pending) == [(20, 10)]
     assert roller.roll(20) == 10
-    with pytest.raises(AssertionError, match='não prevista'):
+    with pytest.raises(SituationError, match='não prevista'):
         roller.roll(20)
 
 
@@ -348,7 +349,7 @@ def test_precondition_failure_stops_before_opening_or_any_sdk_call(monkeypatch, 
     case['preconditions']['resources.player.hp'] = 999
     client = install_client(case, monkeypatch)
     monkeypatch.setenv('TRAMA_CONTEXTUAL_ARTIFACTS', str(tmp_path))
-    with pytest.raises(AssertionError, match='pré-condição'):
+    with pytest.raises(SituationError, match='pré-condição'):
         SUPPORT['test_live_contextual_movement'](case, capture_logs)
     evidence = json.loads(next(tmp_path.rglob('result.json')).read_text())
     assert evidence['stage'] == 'preparation' and evidence['outcome'] == 'failed'

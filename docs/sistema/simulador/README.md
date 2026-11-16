@@ -23,12 +23,14 @@ disfarces, rotina de NPCs ou magia.
 
 | Parte | Responsabilidade | Código ou dados de referência |
 | --- | --- | --- |
-| Entrada do simulador | Ler opções de execução, configurar logs e entregar a partida à janela. | [simulator.py](../../../src/trama/simulator.py), [run.py](../../../pocs/simulador/run.py) |
+| Entrada do simulador | O comando `trama-simulator` lê opções, configura logs e entrega a partida à janela. | [simulator.py](../../../src/trama/simulator.py), [registro do comando](../../../pyproject.toml) |
 | Composição da partida | Reunir sessão, serviços e fluxo; disponibilizar a agenda sem janela. | [bootstrap.py](../../../src/trama/bootstrap.py) |
 | Carregamento de cenários | Ler dados, selecionar o tipo de sessão e delegar aos construtores e validadores reais. | [scenarios.py](../../../src/trama/application/scenarios.py) |
+| Situações reproduzíveis | Preparar estados intermediários por operações reais, rolagens e pré-condições; reutilizar ao reiniciar. | [situations.py](../../../src/trama/application/situations.py), [catálogo](../../../src/trama/scenarios/situations.json) |
 | Adjudicação da dungeon | Manter estado e resolver interações e respostas específicas da fuga. | [dungeon.py](../../../src/trama/application/dungeon.py) |
-| Cenário atual | Definir arquitetura, participantes, objetos e condições iniciais da aventura. | [dungeon.json](../../../pocs/simulador/dungeon.json) |
-| Experimentos e mapas anteriores | Preservar situações para exploração, comparação e regressão. | [Catálogo de POCs](../../../pocs/README.md) |
+| Cenário atual | Definir arquitetura, participantes, objetos e condições iniciais da aventura. | [dungeon_escape.json](../../../src/trama/scenarios/dungeon_escape.json) |
+| Cenários de regressão | Preservar os mapas anteriores como dados para os mesmos construtores. | [Fixtures de cenários](../../../tests/fixtures/scenarios/README.md) |
+| Análises parciais | Comparar aspectos da interpretação, com escopo parcial identificado. | [Análise de interpretação](../qualidade/analise-de-interpretacao.md) |
 
 ## O cenário atual
 
@@ -62,7 +64,13 @@ do cenário.
 
 ## Uso e documentos de tier 3
 
-A execução a partir da raiz usa `poetry run python pocs/simulador/run.py`.
+A execução oficial usa `poetry run trama-simulator`, após instalar o projeto.
+O cenário padrão acompanha o pacote e o executável instalado funciona também
+fora da raiz do repositório. A única entrada jogável é `trama-simulator`, também
+disponível por `python -m trama.simulator`, com a mesma implementação.
+`--situation ID` abre uma situação do catálogo compartilhado com os oito casos
+live contextuais. A seleção é alternativa a `--scenario`; veja os identificadores
+no [formato de cenários](carregamento-de-cenarios.md#situações-reproduzíveis).
 Configuração de serviços, controles e formas de diagnóstico têm suas próprias
 referências. Abertura, mensagens e reinício podem chamar a API real.
 
@@ -72,6 +80,8 @@ referências. Abertura, mensagens e reinício podem chamar a API real.
 | Executar e diagnosticar o simulador | [execucao](execucao.md) |
 | Carregamento e formato de cenários | [carregamento-de-cenarios](carregamento-de-cenarios.md) |
 
-Os dados e as instruções locais permanecem junto da POC. Os detalhes gerais do
-motor são acessados pelos índices relacionados, distinguindo capacidade
-reutilizável de comportamento exclusivo desta aventura.
+O cenário jogável fica em `src/trama/scenarios/`; os mapas anteriores ficam em
+`tests/fixtures/scenarios/` e podem ser abertos pelo mesmo comando com `--scenario`.
+Análises parciais usam o módulo importável em `src/trama/analysis/` e ferramentas
+em `tools/`; suas entradas e critérios ficam nas fixtures correspondentes.
+Os detalhes gerais do motor permanecem nos índices relacionados.

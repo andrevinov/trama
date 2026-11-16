@@ -129,7 +129,7 @@ def test_new_production_field_reaches_real_request_and_changes_review(contexts, 
     output = {'request_parts': [{'text': prompt, 'kind': 'execute', 'operations': ['look'], 'step_indices': [0]}],
               'steps': [{'operation': 'look', 'text': prompt}]}
     client = client_answer(output)
-    flow = GameFlow(load_session(ROOT / 'pocs/simulador/dungeon.json'), interpreter_module.OpenAIIntentInterpreter(client))
+    flow = GameFlow(load_session(ROOT / 'src/trama/scenarios/dungeon_escape.json'), interpreter_module.OpenAIIntentInterpreter(client))
     flow.submit(prompt)
     request = flow.pending_request
     result = request.run()
@@ -214,7 +214,7 @@ def test_reference_is_review_only_and_never_read_to_build_runtime_context(monkey
         return read(path, *args, **kwargs)
 
     monkeypatch.setattr(Path, 'read_text', forbid_reference)
-    flow = GameFlow(load_session(ROOT / 'pocs/simulador/dungeon.json'))
+    flow = GameFlow(load_session(ROOT / 'src/trama/scenarios/dungeon_escape.json'))
     context = flow.conversation.narration_context(initial=True)
     assert isinstance(context, AIContext)
     assert context['perception']['current_place'] == 'Cela 1'
@@ -230,7 +230,7 @@ def test_invalid_opening_contract_is_reported_without_network_or_crashing_window
 
     monkeypatch.setattr(Conversation, 'narration_context', invalid)
     narrator = Mock()
-    flow = GameFlow(load_session(ROOT / 'pocs/simulador/dungeon.json'), narrator=narrator)
+    flow = GameFlow(load_session(ROOT / 'src/trama/scenarios/dungeon_escape.json'), narrator=narrator)
     flow.start()
     assert flow.status == FlowStatus.FAILED and not flow.pending
     assert isinstance(flow.error, ContextError)

@@ -5,23 +5,27 @@ Leia a [política](../../../docs/sistema/qualidade/politica-live-tests.md) e a
 as fixtures. O arranjo não contém instruções de sistema, esquemas de resposta,
 respostas simuladas de IA ou regras alternativas.
 
-`cases.json` declara, por caso:
+`cases.json` declara somente identificação, mensagem do jogador, escolhas,
+limite de chamadas e critério independente de resultado. A situação com o mesmo
+`id` vem do [catálogo da aplicação](../../../src/trama/scenarios/situations.json).
+Esse catálogo mantém cenário/variações, preparações, dados, pré-condições e o
+histórico registrado. Não há mais `preparations.json` exclusivo dos testes.
 
-- Caminho do cenário e variações de passagens anteriores à construção.
-- Sequência de preparações em `setup` e quantidade de dados usada nessa fase.
-- Pré-condições de posição, portas, itens, disfarce, combate e recursos.
-- Mensagem do jogador, histórico registrado opcional, dados e critério de resultado.
-- Escolhas explícitas em `choices` e teto compartilhado em `max_sdk_calls`.
+`Situation` desserializa os planos pelos construtores reais e executa
+`Conversation.execute`. `open_situation` é a composição usada tanto na CLI como
+nos oito casos live. Não há regras, map builder ou execução alternativa no teste.
+A preparação é refeita também ao reiniciar.
 
-`preparations.json` contém planos declarados de movimento, porta, cenário e regra.
-O helper desserializa as entradas usando os construtores reais das intenções e
-as executa por `Conversation.execute`. Não decide regras, alcance, movimento
-contextual, custos, CDs ou dano.
+Para abrir a situação da regressão na janela:
 
-A dungeon de `pocs/simulador/dungeon.json` é construída por
-`application.scenarios.build_session`, também usado por `load_session` no
-simulador. A porta do banheiro aberta é uma variação explícita dos dados e passa
-pelos mesmos validadores. Não há um map builder exclusivo dos testes.
+```bash
+poetry run trama-simulator --situation investigar-cela-do-log --debug
+```
+
+Os identificadores e limites estão na
+[referência do simulador](../../../docs/sistema/simulador/carregamento-de-cenarios.md#situações-reproduzíveis).
+As sequências de dados são finitas e estritas; a preparação é determinística,
+mas as respostas dos modelos continuam podendo variar.
 
 O caso com pouco movimento inicia combate e percorre um circuito legal de cinco
 casas, retornando à mesma posição e gastando 7,5 m. Não atribui o saldo. No caso
@@ -47,8 +51,9 @@ Se esperar, esse dado pode sobrar; ele é registrado separadamente. A sequência
 obrigatória original continua exigida. O critério agora inclui a execução do
 turno do guarda e devolução do controle ao Jogador, sem ataque gratuito deste.
 
-`investigation_history.json` preserva as mensagens reais anteriores à falha de
-16/11/2026, com origem identificada. A leitura usa `DialogueMessage.from_data` e
+`investigation_history.json` preserva como registro de origem as mensagens reais anteriores à falha de
+16/11/2026, com origem identificada. O catálogo contém essas mensagens
+para reprodução na aplicação; o arquivo local conserva a evidência original. A leitura usa `DialogueMessage.from_data` e
 `Conversation.extend_history`, a mesma entrada usada pelas mensagens novas da
 aplicação. Papéis e canais são preservados, incluindo off; off não entra no
 contexto de interpretação. O pedido atual é acrescentado por
@@ -62,7 +67,7 @@ e demais condições mecânicas são verificados separadamente.
 
 Os artefatos guardam também as preparações declaradas, o histórico com origem e
 os dados usados na preparação. As operações e rolagens reais ficam nos logs.
-A coordenação agora usa `open_game`/`game.runner`, da própria aplicação. A
+A coordenação agora usa `open_situation`/`game.runner`, da própria aplicação. A
 preparação é validada antes da primeira chamada à IA; a abertura descreve a
 situação preparada. O histórico registrado é acrescentado depois da abertura
 para preservar a janela da regressão. Os critérios continuam independentes.

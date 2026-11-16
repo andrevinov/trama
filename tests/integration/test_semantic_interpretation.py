@@ -74,7 +74,7 @@ def test_original_surge_request_executes_both_steps_and_uses_real_last_target(di
     (13, "Eu retorno para (13,6) e fico de frente pra sala dos guardas."),
 ])
 def test_original_coordinate_requests_move_and_preserve_posture_as_narrative(dice, target, prompt):
-    data = json.loads((Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json").read_text())
+    data = json.loads((Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/legacy_cell_and_guards.json").read_text())
     scene = Scene.from_data(data).with_passage("guard_door", True)
     session = GameSession(scene.grid, MovementState(Position(14, 5)), scene,
                           creatures_from_data(data["creatures"]), roller=dice(20, 19, 1))

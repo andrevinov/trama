@@ -29,7 +29,7 @@ Defesa só acrescenta CA com armadura; roupa de limpeza não é armadura.
 | Mente Tática (2) | +1d10 a teste de atributo falho; consome Retomar o Fôlego só se converter em sucesso |
 | Crítico Aprimorado (3) | Armas e ataques desarmados têm crítico com 19–20 natural |
 | Atleta Notável (3) | Vantagem em iniciativa e Força (Atletismo); movimento imediato de até metade da velocidade após crítico, sem ataques de oportunidade |
-| Savage Attacker | Uma vez por turno, duas rolagens dos dados de dano da arma; a POC escolhe automaticamente a maior |
+| Savage Attacker | Uma vez por turno, duas rolagens dos dados de dano da arma; o recorte atual escolhe automaticamente a maior |
 
 
 ## Uso e recuperação

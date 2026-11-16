@@ -4,7 +4,7 @@ Tier 3 · [Simulador](README.md) · [Visão geral](../../../README.md)
 
 ## Cenário e estado inicial
 
-Os dados estão em [dungeon.json](../../../pocs/simulador/dungeon.json), com posições internas em base 0.
+Os dados estão em [dungeon_escape.json](../../../src/trama/scenarios/dungeon_escape.json), com posições internas em base 0.
 Na tela e nos contextos da IA, colunas/linhas começam em 1. Cada casa mede 1,5 m.
 
 - Quatro celas ao longo de um corredor de duas casas (3 m), iluminado por tochas.
@@ -139,6 +139,8 @@ No momento, a decisão em exploração desse roteiro é adjudicada pelo código.
 O diretor de Mundo recebe a orientação de não duplicar testes, rotina ou
 iniciativa; a IA narra os fatos produzidos e resolve o turno do guarda em combate.
 Descobertas e respostas são fatos estruturados em `execution.reactions`.
+O contexto `scenario` declara as operações adicionais ao interpretador;
+`world.scenario` contém estado completo, segredos e decisões de mestre.
 O interpretador recebe o conhecimento do jogador; o Mundo conhece os segredos.
 
 Logs `dungeon.*` registram testes, descobertas, inventário, disfarce, ruídos,
@@ -169,14 +171,3 @@ entrada contextual, descritas em
 [tests/live/README.md](../../../tests/live/README.md); outros cenários live serão
 derivados depois da validação do encontro. Nenhuma
 chamada paga é necessária para executar as regressões locais.
-
-## Cenário do simulador
-
-A dungeon de quatro celas usa `DungeonSession` sobre a sessão existente. Suas
-interações e respostas do roteiro são adjudicadas no código e publicadas em
-`execution.reactions`. O contexto `scenario` declara as operações adicionais ao
-interpretador; `world.scenario` contém estado completo, segredos e decisões de
-mestre. Na exploração, o diretor é instruído a não duplicar essas respostas.
-Os turnos de combate do guarda continuam passando pelo diretor e pelo executor
-do Mundo. A interface consome uma projeção `map_view()`, sem acessar o estado
-privado do cenário. Veja [escopo e regras da dungeon](../../../pocs/simulador/README.md).

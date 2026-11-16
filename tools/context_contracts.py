@@ -49,7 +49,7 @@ def action(conversation, prompt, intent):
 def sample_contexts():
     """Observa projeções reais nos seis tipos de contexto; não simula respostas de IA."""
     samples = []
-    c = Conversation(load_session(ROOT / 'pocs/simulador/dungeon.json', roller=ReviewRoller(20, 20)))
+    c = Conversation(load_session(ROOT / 'src/trama/scenarios/dungeon_escape.json', roller=ReviewRoller(20, 20)))
     samples.append(c.narration_context(initial=True))
     # Preparação mecânica até a grade aberta: os dados e as regras são os da aplicação.
     c.execute(ActionPlan((MovementIntent((), False, '', 'gate_4'), DoorIntent('open', 'gate_4'))))
@@ -60,13 +60,13 @@ def sample_contexts():
     samples.append(c.interpretation_context())  # Itens conhecidos, lista não vazia.
     samples.append(c.narration_context(c.prepare('[O que descobri?]')))
 
-    data = json.loads((ROOT / 'pocs/simulador/dungeon.json').read_text())
+    data = json.loads((ROOT / 'src/trama/scenarios/dungeon_escape.json').read_text())
     data['start'] = [9, 3]
     npc = Conversation(build_session(data, roller=ReviewRoller(1, 2, 20)))
     npc.session.execute(RuleIntent('start_combat'))
     samples.append(npc.world_context())  # NPC ativo com as extensões da dungeon.
 
-    data = json.loads((ROOT / 'pocs/movimento/cela_guardas.json').read_text())
+    data = json.loads((ROOT / 'tests/fixtures/scenarios/legacy_cell_and_guards.json').read_text())
     data['start'] = [14, 5]
     next(p for p in data['passages'] if p['id'] == 'guard_door')['is_open'] = True
     c = Conversation(build_session(data, roller=ReviewRoller(20, 19, 1, 1)))

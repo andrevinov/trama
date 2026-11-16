@@ -2,18 +2,18 @@
 
 Tier 3 · [Qualidade](README.md) · [Visão geral](../../../README.md)
 
-Os oito casos de `test_contextual_movement.py` usam `open_game` e `game.runner`.
+Os oito casos de `test_contextual_movement.py` usam `open_situation` e `game.runner`, como a seleção `--situation` na CLI.
 O teste declara entradas e observa o fluxo compartilhado; a aplicação escolhe
 interpretação, Mundo, execução, NPCs e narração. Não há outro loop de NPCs no teste.
 
 ## O que acontece em cada caso
 
-1. Ler cenário, variações, dados e entradas declaradas da fixture.
+1. Ler a situação do catálogo da aplicação e as entradas/critérios da fixture.
 2. Compor a partida pelo mesmo carregador, configuração e adaptadores do simulador.
 3. Preparar a situação pela conversa do fluxo, usando operações públicas reais;
    conferir os dados consumidos e todas as pré-condições antes de consultar IA.
 4. Pedir a descrição inicial da situação preparada por `game.runner.start()`.
-5. Acrescentar o histórico registrado, quando houver, pela entrada validada.
+5. Deixar o fluxo acrescentar o histórico registrado após a abertura, quando houver.
 6. Enviar a frase original por `game.runner.submit()`. O `GameFlow` escolhe todas
    as etapas, incluindo validação, NPCs e narração dos fatos executados.
 7. Responder somente a escolhas explicitamente declaradas em `choices`.
@@ -71,7 +71,7 @@ Os arquivos persistentes continuam em
 `logs/live/contextual_movement/<execução>/<caso>/`. `result.json` guarda:
 
 - Configuração efetiva, cenário/caso e preparações declaradas.
-- Estado original, situação preparada e estado ao final de cada interação.
+- Situação preparada e estado ao final de cada interação; estado anterior à preparação nos logs `situation.preparation_started`.
 - Abertura, mensagem e retomadas em `runs`, com seus ids de correlação reais.
 - Etapas, contextos, planos/respostas, relatório, falas e erros observados do runner.
 - Dados obrigatórios/opcionais usados e restantes; escolhas consumidas.

@@ -21,7 +21,7 @@ pytestmark = [pytest.mark.live,
 def test_real_open_leave_and_observe_corridor(closed, tmp_path, capture_logs):
     if not os.environ.get('OPENAI_API_KEY'):
         pytest.skip('OPENAI_API_KEY não configurada')
-    scenario = Path(__file__).resolve().parents[2] / 'pocs/simulador/dungeon.json'
+    scenario = Path(__file__).resolve().parents[2] / 'src/trama/scenarios/dungeon_escape.json'
     session = load_session(scenario)
     conversation = Conversation(session)
     if closed:
@@ -66,7 +66,7 @@ def test_real_investigation_enters_cell_contextually(tmp_path, capture_logs, dic
     """Histórico narrado e prompts vêm dos adaptadores reais da aplicação."""
     if not os.environ.get('OPENAI_API_KEY'):
         pytest.skip('OPENAI_API_KEY não configurada')
-    scenario = Path(__file__).resolve().parents[2] / 'pocs/simulador/dungeon.json'
+    scenario = Path(__file__).resolve().parents[2] / 'src/trama/scenarios/dungeon_escape.json'
     session = load_session(scenario, roller=dice(20, 20))
     conversation = Conversation(session)
     setup = conversation.execute(ActionPlan((MovementIntent((), False, '', 'gate_4'), DoorIntent('open', 'gate_4'))))

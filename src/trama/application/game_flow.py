@@ -14,7 +14,7 @@ from typing import Callable
 
 from trama.application.authorization import validate_player_plan
 from trama.application.conversation import Conversation, ExecutionReport
-from trama.application.dialogue import Narrator, Speech
+from trama.application.dialogue import DialogueMessage, Narrator, Speech
 from trama.application.intents import ActionPlan, IntentInterpreter
 from trama.application.session import GameSession
 from trama.application.travel import TravelExecutor
@@ -72,7 +72,9 @@ class FlowRequest:
 
 class GameFlow:
     def __init__(self, session: GameSession, interpreter: IntentInterpreter | None = None,
-                 narrator: Narrator | None = None, world_director: WorldDirector | None = None) -> None:
+                 narrator: Narrator | None = None, world_director: WorldDirector | None = None,
+                 *, setup: Callable[[Conversation], None] | None = None,
+                 initial_history: tuple[DialogueMessage, ...] = ()) -> None:
         self.session = session
         self.interpreter = interpreter
         self.narrator = narrator
@@ -95,6 +97,10 @@ class GameFlow:
         self._npc_turns = 0
         self._deferred_speech: Speech | None = None
         self._paused_report: ExecutionReport | None = None
+        self._setup = setup
+        self._initial_history = initial_history
+        if self._setup is not None:
+            self._setup(self.conversation)
 
     @property
     def pending(self) -> bool:
@@ -284,6 +290,8 @@ class GameFlow:
 
     def _finish(self, reply: Speech):
         self.reply = self.conversation.finish(reply, self._narration_context)
+        if self._narration_context and self._narration_context['phase'] == 'initial':
+            self.conversation.extend_history(self._initial_history)
         self.status = FlowStatus.AWAITING_REACTION if self.session.pending_opportunity else FlowStatus.COMPLETED
         self.message = 'Resposta recebida.'
         logger.info('game_flow.reply_delivered', extra={'data': {'status': self.status}})
@@ -330,4 +338,10 @@ class GameFlow:
         self._npc_turns = 0
         self._deferred_speech = None
         self._paused_report = None
+        try:
+            if self._setup is not None:
+                self._setup(self.conversation)
+        except Exception as error:
+            self._fail(error)
+            return
         self.start()

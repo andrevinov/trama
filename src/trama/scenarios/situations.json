@@ -1,0 +1,835 @@
+{
+  "schema_version": 1,
+  "preparations": {
+    "walk_past_cells": [
+      {
+        "steps": [
+          {
+            "intent": "movement",
+            "target_id": "gate_2"
+          }
+        ],
+        "expected_status": "completed"
+      },
+      {
+        "steps": [
+          {
+            "intent": "movement",
+            "target_id": "gate_3"
+          }
+        ],
+        "expected_status": "completed"
+      }
+    ],
+    "approach_open_storage": [
+      {
+        "steps": [
+          {
+            "intent": "movement",
+            "target_id": "gate_4"
+          },
+          {
+            "intent": "door",
+            "operation": "open",
+            "target_id": "gate_4"
+          }
+        ],
+        "expected_status": "completed"
+      }
+    ],
+    "approach_closed_storage": [
+      {
+        "steps": [
+          {
+            "intent": "movement",
+            "target_id": "gate_4"
+          }
+        ],
+        "expected_status": "completed"
+      }
+    ],
+    "discover_and_leave": [
+      {
+        "steps": [
+          {
+            "intent": "scenario",
+            "operation": "investigate",
+            "target_id": "cell_4"
+          },
+          {
+            "intent": "movement",
+            "target_id": "corridor"
+          }
+        ],
+        "expected_status": "completed"
+      }
+    ],
+    "prepare_disguise": [
+      {
+        "steps": [
+          {
+            "intent": "scenario",
+            "operation": "investigate",
+            "target_id": "cell_4"
+          },
+          {
+            "intent": "scenario",
+            "operation": "take",
+            "target_id": "longsword"
+          },
+          {
+            "intent": "scenario",
+            "operation": "take",
+            "target_id": "cleaner_uniform"
+          },
+          {
+            "intent": "scenario",
+            "operation": "wear",
+            "target_id": "cleaner_uniform"
+          },
+          {
+            "intent": "scenario",
+            "operation": "conceal",
+            "target_id": "longsword"
+          },
+          {
+            "intent": "movement",
+            "target_id": "guard_door"
+          },
+          {
+            "intent": "door",
+            "operation": "open",
+            "target_id": "guard_door"
+          }
+        ],
+        "expected_status": "completed"
+      }
+    ],
+    "start_combat": [
+      {
+        "steps": [
+          {
+            "intent": "rule",
+            "operation": "start_combat"
+          }
+        ],
+        "expected_status": "completed"
+      }
+    ],
+    "spend_seven_and_half_meters": [
+      {
+        "steps": [
+          {
+            "intent": "movement",
+            "segments": [
+              {
+                "direction": "west",
+                "squares": 1
+              },
+              {
+                "direction": "south",
+                "squares": 1
+              },
+              {
+                "direction": "northeast",
+                "squares": 1
+              },
+              {
+                "direction": "south",
+                "squares": 1
+              },
+              {
+                "direction": "north",
+                "squares": 1
+              }
+            ]
+          }
+        ],
+        "expected_status": "completed"
+      }
+    ],
+    "approach_guard_side": [
+      {
+        "steps": [
+          {
+            "intent": "movement",
+            "segments": [
+              {
+                "direction": "north",
+                "squares": 2
+              },
+              {
+                "direction": "east",
+                "squares": 3
+              },
+              {
+                "direction": "north",
+                "squares": 2
+              }
+            ]
+          }
+        ],
+        "expected_status": "completed"
+      }
+    ],
+    "reveal_sword": [
+      {
+        "steps": [
+          {
+            "intent": "scenario",
+            "operation": "drop",
+            "target_id": "longsword"
+          },
+          {
+            "intent": "scenario",
+            "operation": "take",
+            "target_id": "longsword"
+          }
+        ],
+        "expected_status": "blocked",
+        "expected_world_operations": [
+          "start_conflict"
+        ]
+      }
+    ]
+  },
+  "situations": [
+    {
+      "id": "investigar-cela-do-log",
+      "history": {
+        "source": {
+          "interaction_id": "0062e0285c3a4de3ad32447782406755",
+          "timestamp": "2026-11-16T05:30:37.621+00:00",
+          "description": "Histórico real anterior ao pedido que falhou por falta de entrada contextual na Cela 4."
+        },
+        "messages": [
+          {
+            "role": "narrator",
+            "on": "Você está na Cela 1, entre uma cama de pedra e trapos de lã. A grade a leste está aberta para um corredor estreito, iluminado por tochas, que segue para o norte diante das outras celas.\n\nVocê acaba de ouvir o estalo da fechadura e o ranger de metal: a grade se abriu sem que ninguém estivesse próximo. Não sabe o que causou isso.",
+            "off": ""
+          },
+          {
+            "role": "player",
+            "on": "Eu confiro se a grade da cela está realmente destrancada.",
+            "off": ""
+          },
+          {
+            "role": "narrator",
+            "on": "De perto, você confirma: a grade está aberta, e o mecanismo não está travado. O corredor iluminado por tochas está acessível além dela.",
+            "off": ""
+          },
+          {
+            "role": "player",
+            "on": "Eu saio para fora da cela, no corredor, para ver o corredor.",
+            "off": ""
+          },
+          {
+            "role": "narrator",
+            "on": "Você atravessa a grade aberta e avança 6 m até o corredor. Tochas lançam luz sobre a passagem estreita; a oeste, alinham-se quatro celas. As grades das celas 2, 3 e 4 estão fechadas, enquanto a sua permanece aberta atrás de você.\n\nAo norte, vê uma porta fechada que dá para a Sala dos Guardas.",
+            "off": ""
+          },
+          {
+            "role": "player",
+            "on": "Eu ando devagar e tento espiar o que há na cela vizinha à minha.",
+            "off": ""
+          },
+          {
+            "role": "narrator",
+            "on": "Você avança devagar 6 m pelo corredor, sem chamar atenção, até parar diante da Grade da Cela 2. Pelas barras, vê um prisioneiro adormecido sobre uma cama de pedra, vestindo trapos semelhantes aos seus. A grade está fechada.",
+            "off": ""
+          },
+          {
+            "role": "player",
+            "on": "Ando mais e tento espiar o que há na próxima cela.",
+            "off": ""
+          },
+          {
+            "role": "narrator",
+            "on": "Você avança 6 m pelo corredor até a Grade da Cela 3. Ela está fechada, barrando sua entrada; através das barras, vê uma cela vazia, com uma cama e panos velhos.",
+            "off": "A tentativa de espiar a cela não foi realizada porque a Grade da Cela 3 fechada impediu a passagem para dentro. Você parou no corredor, diante dela.\nParei em Corredor (coluna 8, linha 14). Grade da Cela 3 está fechada e impede a passagem. As etapas seguintes não foram executadas."
+          },
+          {
+            "role": "player",
+            "on": "Vou até a próxima cela e testo se ela está trancada.",
+            "off": ""
+          },
+          {
+            "role": "narrator",
+            "on": "Você percorre 6 m pelo corredor até a Cela 4. Ao testar a grade, ela cede: não estava trancada e se abre para o interior.\n\nLá dentro, à luz das tochas, há uma cama de pedra e um monte de panos no chão.",
+            "off": ""
+          }
+        ]
+      },
+      "rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "scenario": "dungeon_escape.json",
+      "setup": [
+        "walk_past_cells",
+        "approach_open_storage"
+      ],
+      "preparation_rolls": 1,
+      "preconditions": {
+        "position": [
+          8,
+          10
+        ],
+        "area": "corridor",
+        "mode": "narrated",
+        "spent_meters": 0,
+        "remaining_meters": 9,
+        "inventory": [],
+        "discovered": [],
+        "clothing": "rags",
+        "weapons": [],
+        "passages.gate_4.is_open": true,
+        "passages.gate_4.locked": false,
+        "passages.gate_2.is_open": false,
+        "passages.gate_2.locked": true,
+        "passages.guard_door.is_open": false,
+        "passages.bathroom_door.is_open": false,
+        "resources.player.hp": 28,
+        "resources.player.action_surge_uses": 1,
+        "resources.player.second_wind_uses": 2,
+        "budgets.player.action_used": false,
+        "budgets.guard_1.reaction_used": false,
+        "prisoner_awake": false,
+        "prisoner_free": false,
+        "escaped": false,
+        "pending_opportunity": false,
+        "disguise": "untested",
+        "sword_concealed": false,
+        "guard_alert": false,
+        "combat": null
+      }
+    },
+    {
+      "id": "pegar-espada-distante",
+      "rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "scenario": "dungeon_escape.json",
+      "setup": [
+        "walk_past_cells",
+        "approach_open_storage",
+        "discover_and_leave"
+      ],
+      "preparation_rolls": 2,
+      "preconditions": {
+        "position": [
+          8,
+          10
+        ],
+        "area": "corridor",
+        "mode": "narrated",
+        "spent_meters": 0,
+        "remaining_meters": 9,
+        "inventory": [],
+        "discovered": [
+          "cleaner_uniform",
+          "longsword"
+        ],
+        "clothing": "rags",
+        "weapons": [],
+        "passages.gate_4.is_open": true,
+        "passages.gate_4.locked": false,
+        "passages.gate_2.is_open": false,
+        "passages.gate_2.locked": true,
+        "passages.guard_door.is_open": false,
+        "passages.bathroom_door.is_open": false,
+        "resources.player.hp": 28,
+        "resources.player.action_surge_uses": 1,
+        "resources.player.second_wind_uses": 2,
+        "budgets.player.action_used": false,
+        "budgets.guard_1.reaction_used": false,
+        "prisoner_awake": false,
+        "prisoner_free": false,
+        "escaped": false,
+        "pending_opportunity": false,
+        "disguise": "untested",
+        "sword_concealed": false,
+        "guard_alert": false,
+        "combat": null
+      }
+    },
+    {
+      "id": "atacar-com-aproximacao",
+      "rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          19
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          15
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          8,
+          2
+        ]
+      ],
+      "scenario": "dungeon_escape.json",
+      "setup": [
+        "walk_past_cells",
+        "approach_open_storage",
+        "prepare_disguise"
+      ],
+      "preparation_rolls": 4,
+      "preconditions": {
+        "position": [
+          9,
+          8
+        ],
+        "area": "corridor",
+        "mode": "narrated",
+        "spent_meters": 0,
+        "remaining_meters": 9,
+        "inventory": [
+          "cleaner_uniform",
+          "longsword"
+        ],
+        "discovered": [
+          "cleaner_uniform",
+          "longsword"
+        ],
+        "clothing": "cleaner_uniform",
+        "weapons": [
+          "longsword"
+        ],
+        "passages.gate_4.is_open": true,
+        "passages.gate_4.locked": false,
+        "passages.gate_2.is_open": false,
+        "passages.gate_2.locked": true,
+        "passages.guard_door.is_open": true,
+        "passages.bathroom_door.is_open": false,
+        "resources.player.hp": 28,
+        "resources.player.action_surge_uses": 1,
+        "resources.player.second_wind_uses": 2,
+        "budgets.player.action_used": false,
+        "budgets.guard_1.reaction_used": false,
+        "prisoner_awake": false,
+        "prisoner_free": false,
+        "escaped": false,
+        "pending_opportunity": false,
+        "disguise": "accepted",
+        "sword_concealed": true,
+        "guard_alert": false,
+        "combat": null
+      }
+    },
+    {
+      "id": "ataque-com-movimento-insuficiente",
+      "rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          19
+        ],
+        [
+          20,
+          1
+        ]
+      ],
+      "scenario": "dungeon_escape.json",
+      "setup": [
+        "walk_past_cells",
+        "approach_open_storage",
+        "prepare_disguise",
+        "start_combat",
+        "spend_seven_and_half_meters"
+      ],
+      "preparation_rolls": 7,
+      "preconditions": {
+        "position": [
+          9,
+          8
+        ],
+        "area": "corridor",
+        "mode": "turn_based",
+        "spent_meters": 7.5,
+        "remaining_meters": 1.5,
+        "inventory": [
+          "cleaner_uniform",
+          "longsword"
+        ],
+        "discovered": [
+          "cleaner_uniform",
+          "longsword"
+        ],
+        "clothing": "cleaner_uniform",
+        "weapons": [
+          "longsword"
+        ],
+        "passages.gate_4.is_open": true,
+        "passages.gate_4.locked": false,
+        "passages.gate_2.is_open": false,
+        "passages.gate_2.locked": true,
+        "passages.guard_door.is_open": true,
+        "passages.bathroom_door.is_open": false,
+        "resources.player.hp": 28,
+        "resources.player.action_surge_uses": 1,
+        "resources.player.second_wind_uses": 2,
+        "budgets.player.action_used": false,
+        "budgets.guard_1.reaction_used": false,
+        "prisoner_awake": false,
+        "prisoner_free": false,
+        "escaped": false,
+        "pending_opportunity": false,
+        "disguise": "accepted",
+        "sword_concealed": true,
+        "guard_alert": false,
+        "combat.active_id": "player",
+        "combat.round": 1
+      }
+    },
+    {
+      "id": "ataque-guarda-vence-iniciativa",
+      "rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          2
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "scenario": "dungeon_escape.json",
+      "setup": [
+        "walk_past_cells",
+        "approach_open_storage",
+        "prepare_disguise"
+      ],
+      "preparation_rolls": 4,
+      "preconditions": {
+        "position": [
+          9,
+          8
+        ],
+        "area": "corridor",
+        "mode": "narrated",
+        "spent_meters": 0,
+        "remaining_meters": 9,
+        "inventory": [
+          "cleaner_uniform",
+          "longsword"
+        ],
+        "discovered": [
+          "cleaner_uniform",
+          "longsword"
+        ],
+        "clothing": "cleaner_uniform",
+        "weapons": [
+          "longsword"
+        ],
+        "passages.gate_4.is_open": true,
+        "passages.gate_4.locked": false,
+        "passages.gate_2.is_open": false,
+        "passages.gate_2.locked": true,
+        "passages.guard_door.is_open": true,
+        "passages.bathroom_door.is_open": false,
+        "resources.player.hp": 28,
+        "resources.player.action_surge_uses": 1,
+        "resources.player.second_wind_uses": 2,
+        "budgets.player.action_used": false,
+        "budgets.guard_1.reaction_used": false,
+        "prisoner_awake": false,
+        "prisoner_free": false,
+        "escaped": false,
+        "pending_opportunity": false,
+        "disguise": "accepted",
+        "sword_concealed": true,
+        "guard_alert": false,
+        "combat": null
+      },
+      "optional_world_rolls": [
+        [
+          20,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "investigar-grade-fechada",
+      "rolls": [
+        [
+          20,
+          20
+        ]
+      ],
+      "scenario": "dungeon_escape.json",
+      "setup": [
+        "walk_past_cells",
+        "approach_closed_storage"
+      ],
+      "preparation_rolls": 1,
+      "preconditions": {
+        "position": [
+          8,
+          10
+        ],
+        "area": "corridor",
+        "mode": "narrated",
+        "spent_meters": 0,
+        "remaining_meters": 9,
+        "inventory": [],
+        "discovered": [],
+        "clothing": "rags",
+        "weapons": [],
+        "passages.gate_4.is_open": false,
+        "passages.gate_4.locked": false,
+        "passages.gate_2.is_open": false,
+        "passages.gate_2.locked": true,
+        "passages.guard_door.is_open": false,
+        "passages.bathroom_door.is_open": false,
+        "resources.player.hp": 28,
+        "resources.player.action_surge_uses": 1,
+        "resources.player.second_wind_uses": 2,
+        "budgets.player.action_used": false,
+        "budgets.guard_1.reaction_used": false,
+        "prisoner_awake": false,
+        "prisoner_free": false,
+        "escaped": false,
+        "pending_opportunity": false,
+        "disguise": "untested",
+        "sword_concealed": false,
+        "guard_alert": false,
+        "combat": null
+      }
+    },
+    {
+      "id": "investigar-sem-sair-do-lugar",
+      "rolls": [
+        [
+          20,
+          20
+        ]
+      ],
+      "scenario": "dungeon_escape.json",
+      "setup": [
+        "walk_past_cells",
+        "approach_open_storage"
+      ],
+      "preparation_rolls": 1,
+      "preconditions": {
+        "position": [
+          8,
+          10
+        ],
+        "area": "corridor",
+        "mode": "narrated",
+        "spent_meters": 0,
+        "remaining_meters": 9,
+        "inventory": [],
+        "discovered": [],
+        "clothing": "rags",
+        "weapons": [],
+        "passages.gate_4.is_open": true,
+        "passages.gate_4.locked": false,
+        "passages.gate_2.is_open": false,
+        "passages.gate_2.locked": true,
+        "passages.guard_door.is_open": false,
+        "passages.bathroom_door.is_open": false,
+        "resources.player.hp": 28,
+        "resources.player.action_surge_uses": 1,
+        "resources.player.second_wind_uses": 2,
+        "budgets.player.action_used": false,
+        "budgets.guard_1.reaction_used": false,
+        "prisoner_awake": false,
+        "prisoner_free": false,
+        "escaped": false,
+        "pending_opportunity": false,
+        "disguise": "untested",
+        "sword_concealed": false,
+        "guard_alert": false,
+        "combat": null
+      }
+    },
+    {
+      "id": "investigar-com-ataque-de-oportunidade",
+      "rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          19
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          15
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          8,
+          1
+        ]
+      ],
+      "scenario": "dungeon_escape.json",
+      "setup": [
+        "walk_past_cells",
+        "approach_open_storage",
+        "prepare_disguise",
+        "approach_guard_side",
+        "reveal_sword"
+      ],
+      "passage_variations": {
+        "bathroom_door": {
+          "is_open": true
+        }
+      },
+      "preparation_rolls": 8,
+      "preconditions": {
+        "position": [
+          12,
+          4
+        ],
+        "area": "guard_room",
+        "mode": "turn_based",
+        "spent_meters": 0,
+        "remaining_meters": 9,
+        "inventory": [
+          "cleaner_uniform",
+          "longsword"
+        ],
+        "discovered": [
+          "cleaner_uniform",
+          "longsword"
+        ],
+        "clothing": "cleaner_uniform",
+        "weapons": [
+          "longsword"
+        ],
+        "passages.gate_4.is_open": true,
+        "passages.gate_4.locked": false,
+        "passages.gate_2.is_open": false,
+        "passages.gate_2.locked": true,
+        "passages.guard_door.is_open": true,
+        "passages.bathroom_door.is_open": true,
+        "resources.player.hp": 28,
+        "resources.player.action_surge_uses": 1,
+        "resources.player.second_wind_uses": 2,
+        "budgets.player.action_used": false,
+        "budgets.guard_1.reaction_used": false,
+        "prisoner_awake": false,
+        "prisoner_free": false,
+        "escaped": false,
+        "pending_opportunity": false,
+        "disguise": "failed",
+        "sword_concealed": false,
+        "guard_alert": true,
+        "combat.active_id": "player",
+        "combat.round": 1
+      }
+    }
+  ]
+}

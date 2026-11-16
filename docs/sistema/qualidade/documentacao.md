@@ -55,7 +55,13 @@ Elas registram o que foi observado com uma configuração e estado específicos.
 Retenha proveniência, falhas, inconclusivos e limites da amostra; uma nova
 implementação não reescreve os resultados antigos como se tivessem sido medidos nela.
 
-READMEs de POCs, testes e ferramentas mantêm objetivo, escopo, simplificações,
+Na reorganização de arquivos, preserve os caminhos literais e os hashes dos
+registros originais. Documente relocações em registro separado e distinga bytes
+preservados de refatorações. O [inventário das análises](../../evidencias/2026-11-16-preservacao-das-analises/relatorio.md)
+mostra esse procedimento; `tools/check_evidence.py` confere integridade sem
+recalcular expectativas ou atualizar os hashes aprovados.
+
+Referências do simulador e READMEs de testes e ferramentas mantêm objetivo, escopo, simplificações,
 preparação, comandos e critérios locais, com links para a referência técnica.
 Dados e fixtures permanecem nos locais que a aplicação efetivamente utiliza.
 

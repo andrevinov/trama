@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def at_storage(roller, *, opened=True):
-    s = DungeonSession.from_data(json.loads((ROOT / 'pocs/simulador/dungeon.json').read_text()), roller=roller)
+    s = DungeonSession.from_data(json.loads((ROOT / 'src/trama/scenarios/dungeon_escape.json').read_text()), roller=roller)
     s.state = replace(s.state, position=Position(7, 9))  # Coluna 8, linha 10, como no log.
     if opened:
         s.scene = s.scene.with_passage('gate_4', True)

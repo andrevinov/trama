@@ -49,7 +49,7 @@ a frase. A qualidade da interpretação é avaliada por expectativas independent
 e pelos efeitos executados. Consulte a
 [política live](../qualidade/politica-live-tests.md).
 
-A [POC de interpretação](../../../pocs/interpretacao/README.md) mede variantes sem
+A [análise parcial de interpretação](../qualidade/analise-de-interpretacao.md) mede variantes sem
 executar planos. Seus resultados datados ficam nas evidências históricas e
 não são garantia de desempenho do contrato atual. Mudanças de instruções ou
 esquema passam pela [revisão de contratos](contextos-e-contratos.md#como-revisar-uma-mudança).

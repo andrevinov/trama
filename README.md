@@ -176,7 +176,8 @@ ainda não têm resolução completa. As limitações estão nos
 [documentos do cenário](docs/sistema/simulador/fuga-da-dungeon.md#simplificações-deliberadas) e das
 [regras exercitadas](docs/sistema/regras/movimento.md#referências-e-limites).
 
-Os mapas anteriores continuam disponíveis para regressão e experimentação.
+Os [mapas anteriores](tests/fixtures/scenarios/README.md) continuam disponíveis
+como fixtures de regressão, carregáveis pelo mesmo simulador com `--scenario`.
 O cenário de fuga é uma aplicação concreta do motor; o objetivo do Trama é
 ampliar gradualmente as capacidades reutilizáveis para outras aventuras.
 
@@ -186,8 +187,14 @@ Use Python 3.14 e Poetry. Na raiz do repositório:
 
 ```bash
 poetry install
-poetry run python pocs/simulador/run.py
+poetry run trama-simulator
 ```
+
+O comando é instalado pelo Poetry. O cenário padrão acompanha o pacote e não
+depende de arquivos externos ao pacote. O executável instalado também pode ser
+usado fora da raiz; caminhos fornecidos em `--scenario` e `--log-file` são
+relativos ao diretório de onde ele é chamado. Os detalhes estão em
+[execução do simulador](docs/sistema/simulador/execucao.md).
 
 A conversa utiliza o SDK oficial da OpenAI e a Responses API, autenticados por
 `OPENAI_API_KEY` exportada no ambiente. `TRAMA_OPENAI_MODEL` permite escolher o
@@ -206,7 +213,7 @@ Consulte os [controles](docs/sistema/interfaces/pygame.md#controles) e os
 Para acompanhar também os pedidos completos enviados à IA e as respostas:
 
 ```bash
-poetry run python pocs/simulador/run.py --debug
+poetry run trama-simulator --debug
 ```
 
 O simulador registra eventos estruturados em `logs/trama.jsonl`. O formato
@@ -236,11 +243,24 @@ de criar, alterar ou executar um caso, leia a
 [instruções da suíte](tests/live/README.md). Aberturas, mensagens, reinícios e
 turnos de NPCs também podem fazer chamadas pagas durante o uso do simulador.
 
+As [análises parciais de interpretação](docs/sistema/qualidade/analise-de-interpretacao.md)
+usam um módulo importável e fixtures compartilhadas, sem dependência de scripts
+de POCs. A ferramenta `tools/analyze_interpretation.py` oferece uma prévia offline;
+seus resultados são identificados como contrato parcial do interpretador.
+
 Os oito casos de movimento contextual usam o carregamento, os contextos, os
 adaptadores e o fluxo compartilhados com o simulador. As demais suítes live
 mantêm os limites parciais ou experimentais descritos na documentação. A
-preparação das situações e as expectativas pertencem aos testes; as regras e a
-coordenação do trecho avaliado pertencem à aplicação.
+preparação dessas situações agora faz parte da aplicação e pode ser aberta na
+janela, com os mesmos dados dos testes:
+
+```bash
+poetry run trama-simulator --situation investigar-cela-do-log --debug
+```
+
+O [catálogo de situações](docs/sistema/simulador/carregamento-de-cenarios.md#situações-reproduzíveis)
+declara operações, dados e pré-condições. Mensagens avaliadas, limites e critérios
+independentes continuam nos testes. Reiniciar refaz a situação selecionada.
 
 Compartilhar o fluxo aproxima o teste da experiência real. Critérios
 independentes verificam se os efeitos esperados aconteceram, e a revisão dos
@@ -254,11 +274,12 @@ registra resultados, configuração e ressalvas de narração.
 | Local | Conteúdo |
 | --- | --- |
 | `src/trama/` | Regras e representação do mundo; aplicação, adaptadores de infraestrutura, interface e composição. |
+| `src/trama/scenarios/` | Cenários distribuídos com o pacote; a dungeon é o padrão do comando oficial. |
+| `src/trama/analysis/` | Diagnóstico parcial da interpretação, usando carregadores, serviços e contratos da aplicação. |
 | `tests/unit/` | Verificações isoladas. |
 | `tests/integration/` | Integração local e regressões sem serviços externos. |
 | `tests/live/` | Avaliações explícitas com serviços externos e modelos reais. |
 | `tests/fixtures/` | Dados e situações compartilhados entre testes. |
-| `pocs/` | Simulador e experimentos, com cenários e instruções locais. |
 | `docs/sistema/` | Índices de tier 2 e referências específicas de tier 3 de cada área. |
 | `docs/roadmaps/` | Planos por estado e arquivo datado de implementações. |
 | `docs/evidencias/` | Relatórios e manifestos datados de experimentos. |
@@ -286,6 +307,11 @@ deve ser explicado pelos documentos do sistema. Os
 [roadmaps](docs/roadmaps/README.md) ficam separados por estado:
 não implementados, em implementação e implementados em arquivo datado.
 [Evidências](docs/evidencias/README.md) preservam os resultados dos experimentos.
+
+As análises históricas têm um inventário de preservação, separado dos contratos
+atuais. `poetry run python tools/check_evidence.py` confere os documentos e logs
+disponíveis; `--require-local` exige também todos os arquivos locais registrados.
+Essa verificação de integridade não executa IA nem avalia o comportamento atual.
 As [convenções de manutenção](docs/sistema/qualidade/documentacao.md) descrevem
 como acrescentar assuntos e manter a navegação entre os três tiers.
 

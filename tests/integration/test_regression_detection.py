@@ -114,7 +114,7 @@ def observe(entry, case, control, tmp_path, capture_logs):
     client.responses.create.side_effect = create
     surge = case == 'surge'
     if surge:
-        data = json.loads((ROOT / 'pocs/movimento/cela_guardas.json').read_text())
+        data = json.loads((ROOT / 'tests/fixtures/scenarios/legacy_cell_and_guards.json').read_text())
         data['start'] = [14, 5]
         next(p for p in data['passages'] if p['id'] == 'guard_door')['is_open'] = True
         roller = LIVE['FrozenRoller']([[20, 20], [20, 19], [20, 1], [20, 1], [20, 1]])

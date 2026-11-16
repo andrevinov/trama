@@ -131,7 +131,7 @@ def test_door_options_follow_reach_and_interaction_budget(dice):
     import json
     from pathlib import Path
 
-    data = json.loads((Path(__file__).resolve().parents[2] / "pocs/movimento/cela_guardas.json").read_text())
+    data = json.loads((Path(__file__).resolve().parents[2] / "tests/fixtures/scenarios/legacy_cell_and_guards.json").read_text())
     scene = Scene.from_data(data)
     session = GameSession(scene.grid, MovementState(Position(*data["start"])), scene,
                           creatures=(Creature("g1", "Guarda", Position(15, 4)),), roller=dice())

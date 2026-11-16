@@ -24,7 +24,7 @@ from trama.scene import Scene
 from trama.spatial import Position
 from trama.ui.movement_window import ACCENT, GOLD, GRID_ORIGIN, WINDOW_SIZE, MovementWindow
 
-SCENARIO = Path(__file__).resolve().parents[2] / 'pocs/simulador/dungeon.json'
+SCENARIO = Path(__file__).resolve().parents[2] / 'src/trama/scenarios/dungeon_escape.json'
 
 
 def corridor_scene(*, blocks_movement, blocks_vision):

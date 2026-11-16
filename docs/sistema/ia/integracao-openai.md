@@ -61,7 +61,7 @@ variante mesmo quando ela coincide com o padrão. Um modelo alternativo por
 `TRAMA_OPENAI_MODEL` também é identificado como alteração, quando difere do padrão.
 
 A suíte semântica mantém zero correções como `semantic_first_attempt`; agora
-respeita o mesmo modelo do ambiente. A POC e as suítes de comparação usam
+respeita o mesmo modelo do ambiente. A análise de interpretação e as suítes de comparação usam
 `interpretation_comparison`, preservando contexto completo, esquema antigo ou
 zero correções somente quando declarados. Não são apresentadas como fluxo padrão.
 
@@ -74,7 +74,7 @@ a configuração tentada, sem afirmar que houve execução.
 
 Os live tests salvam `configurations.json` no diretório temporário do caso,
 inclusive quando a inicialização falha. A suíte contextual inclui a configuração
-no `result.json` persistente; as suítes de interações/semântica e a POC a incluem
+no `result.json` persistente; as suítes de interações/semântica e a análise de interpretação a incluem
 em seus artefatos. Variantes que compartilham um cliente podem registrar uma
 composição do transporte e outras dos adaptadores experimentais.
 
@@ -91,7 +91,7 @@ poetry run pytest tests/integration/test_service_composition.py -q
 As regressões usam transporte simulado para verificar parâmetros das três fases,
 fechamento, falhas, configuração registrada, preservação das instruções e uma
 mudança de padrões chegando à CLI/janela e à suíte contextual. Fronteiras de
-módulos impedem que simulador, POC e arquivos live recomponham clientes/adaptadores.
+módulos impedem que simulador, análises e arquivos live recomponham clientes/adaptadores.
 
 Os contratos de contexto continuam passando na revisão offline sem alteração de
 referência. A [agenda sem janela](../interfaces/execucao-sem-janela.md)

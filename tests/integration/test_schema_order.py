@@ -1,9 +1,7 @@
-from trama.infrastructure import openai_services
 """Regressões da ordem do discriminador no contrato de saída estruturada."""
 
 import json
 from pathlib import Path
-import runpy
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -11,7 +9,9 @@ import httpx2
 from conftest import sourced_output
 from openai import OpenAI
 
+from trama.analysis import interpretation as experiment
 from trama.application.intents import MovementIntent
+from trama.infrastructure import openai_services
 from trama.infrastructure.openai_intent_interpreter import OpenAIIntentInterpreter, PLAN_SCHEMA, action_plan_schema
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -56,7 +56,6 @@ def test_real_sdk_serializes_operation_first_and_ab_changes_only_schema_order():
 
 
 def test_schema_comparison_runner_records_separate_results_and_preserves_other_parameters(tmp_path, monkeypatch, capture_logs):
-    experiment = runpy.run_path(str(ROOT / "pocs/interpretacao/run.py"))
     client = Mock()
     recorded = []
 
@@ -78,7 +77,8 @@ def test_schema_comparison_runner_records_separate_results_and_preserves_other_p
     monkeypatch.setattr("sys.argv", ["run.py", "--live", "--case", "real_5_terra", "--context", "minimal",
                                     "--schema-order", "both", "--output", str(output)])
     with capture_logs():
-        experiment["main"]()
+        experiment.main(default_cases=ROOT / "tests/fixtures/interpretation/cases.json",
+                        default_scenario=ROOT / "tests/fixtures/scenarios/legacy_cell_and_guards.json")
     results = [json.loads(line) for line in (output / "results.jsonl").read_text().splitlines()]
     assert [(r["schema_order"], r["passed"]) for r in results] == [("legacy", False), ("operation-first", True)]
     assert all(r["calls"] == 1 for r in results)
