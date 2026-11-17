@@ -11,7 +11,7 @@ from conftest import sourced_plan
 from trama.application.authorization import PlanAuthorizationError, validate_player_plan
 from trama.application.conversation import Conversation
 from trama.application.dungeon import DungeonSession
-from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, MovementSegment
+from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, MovementSegment, RuleIntent
 from trama.application.interpretation_context import compact_context
 from trama.application.routing import path_to
 from trama.application.preparation import SpatialRequirement, prepare_movement
@@ -43,6 +43,7 @@ def test_real_dungeon_wall_torches_allow_standing_in_all_their_cells(dice):
     session = DungeonSession.from_data(json.loads(SCENARIO.read_text()), roller=dice(20))
     torches = session.scene.objects
     assert len(torches) == 4
+    session.execute(RuleIntent('hide'))
     session.execute(MovementIntent((), False, '', 'corridor'))
     for torch in reversed(torches):
         assert torch.attachment.surface == 'wall' and torch.attachment.side == 'east'
@@ -85,7 +86,8 @@ def test_named_routing_does_not_plan_through_blocking_object_in_open_passage():
 def test_contextual_route_and_npc_route_share_object_collision(blocks_movement):
     scene = corridor_scene(blocks_movement=blocks_movement, blocks_vision=False)
     session = GameSession(scene.movement_grid, MovementState(Position(0, 1)), scene,
-                          (Creature('guard', 'Guarda', Position(6, 1)),))
+                          (Creature('guard', 'Guarda', Position(6, 1), hostile=False),))
+    # Este caso isola colisões; uma abordagem hostil é verificada em test_parley.
     requirement = SpatialRequirement('inside', 'b', frozenset({Position(5, 1)}))
     action = WorldAction('guard', 'move', 'O guarda avança.', destination=Position(1, 1))
     if blocks_movement:

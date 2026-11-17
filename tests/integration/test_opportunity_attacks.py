@@ -1,3 +1,4 @@
+from conftest import world_actions
 """Oportunidades durante movimentos reais; dados fixos e nenhuma chamada à IA."""
 
 from dataclasses import replace
@@ -49,7 +50,7 @@ def test_guard_opportunity_uses_reaction_before_exit_not_normal_action(dice, cap
     assert session.encounter.budgets["g1"].reaction_used
     assert not session.encounter.budgets["g1"].action_used
     assert not session.budget.action_used and session.encounter.combat.active_id == "player"
-    reaction = report.world_events[0]
+    reaction = world_actions(report.world_events)[0]
     assert reaction["operation"] == "opportunity_attack"
     assert reaction["before_leaving"] == [3, 4] and reaction["destination"] == [2, 4]
     assert "reaction.opportunity_resolved" in stream.getvalue()
@@ -105,7 +106,7 @@ def test_opportunity_at_zero_hp_stops_before_exit(dice):
     assert session.encounter.states["player"].hp == 0
     assert session.state.position == Position(2, 3) and session.state.spent_meters == 0
     assert report.stop_reason and report.unperformed_steps == 1
-    assert report.world_events[0]["damage"] == 3
+    assert world_actions(report.world_events)[0]["damage"] == 3
 
 
 def test_slow_from_opportunity_recalculates_budget_before_exit(dice):
@@ -126,7 +127,7 @@ def test_player_confirms_once_then_npc_resumes_without_repeating_actions(dice, a
     report = conversation.execute_npc_turn(fleeing_plan())
     assert session.pending_opportunity and conversation.pending_npc_turn
     assert session.creatures[0].position == Position(3, 3)
-    assert len(report.world_events) == 1 and not report.world_events[0]["changed"]
+    assert len(world_actions(report.world_events)) == 1 and not world_actions(report.world_events)[0]["changed"]
     assert not session.budget.action_used and not session.budget.reaction_used
     assert not session.encounter.roller.sides
     session.encounter.roller = dice(1) if accept else dice()
@@ -164,7 +165,7 @@ def test_explicit_automatic_policy_resolves_player_reaction_and_resumes_turn(dic
     session.encounter.roller = dice(1)
     report = Conversation(session).execute_npc_turn(fleeing_plan())
     assert not report.stop_reason and session.pending_opportunity is None
-    assert report.world_events[0]["reactions"][0]["operation"] == "opportunity_attack"
+    assert world_actions(report.world_events)[0]["reactions"][0]["operation"] == "opportunity_attack"
     assert session.creatures[0].position == Position(5, 3)
 
 
@@ -191,7 +192,7 @@ def test_multiple_opponents_each_have_a_reaction_in_scenario_order(dice):
                                        Creature("g2", "Guarda 2", Position(3, 4))))
     session.encounter.roller = dice(1, 1)
     report = Conversation(session).execute(ActionPlan((walking("west"),)))
-    assert [r["actor_id"] for r in report.world_events] == ["g1", "g2"]
+    assert [r["actor_id"] for r in world_actions(report.world_events)] == ["g1", "g2"]
     assert session.encounter.states["player"].hp == 22
     assert all(session.encounter.budgets[g].reaction_used for g in ("g1", "g2"))
 
@@ -206,7 +207,7 @@ def test_resume_preserves_prior_move_and_declining_does_not_suppress_later_oppor
     )),))
     conversation = Conversation(session)
     report = conversation.execute_npc_turn(plan)
-    assert len(report.world_events) == 2
+    assert len(world_actions(report.world_events)) == 2
     assert session.creatures[0].position == Position(3, 3)
     assert session.npc_movement["g1"].spent_meters == Decimal("1.5")
     TravelExecutor(session).resolve(False)

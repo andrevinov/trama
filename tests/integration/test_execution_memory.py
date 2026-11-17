@@ -1,3 +1,4 @@
+from conftest import world_actions
 """Falhas anteriores permanecem consultáveis sem repetir ações ou consumir recursos."""
 
 from copy import deepcopy
@@ -12,7 +13,7 @@ import pytest
 from trama.actions import ActionBudget
 from trama.application.conversation import Conversation, ExecutionReport
 from trama.application.dialogue import Speech
-from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, MovementSegment, RequestPart
+from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, MovementSegment, RequestPart, RuleIntent
 from trama.application.session import GameSession
 from trama.application.world import WorldAction, WorldPlan, WorldReaction
 from trama.creatures import creatures_from_data
@@ -64,8 +65,9 @@ def test_original_failed_destination_is_structured_at_source(blocked_guard, capt
     assert failure["obstacle"] == {"kind": "blocked_cell", "position": [14, 5]}
     assert "(14,5)" in failure["cause"] and "bloqueada" in failure["cause"]
     assert failure["skipped_actions"] == [{"actor_id": "guard_3", "operation": "attack", "target_id": "player", "destination": None}]
-    assert report.world_events == ()
-    assert conversation.session.encounter.combat.active_id == "guard_3"
+    assert [e['operation'] for e in world_actions(report.world_events)] == ['end_turn']
+    assert report.world_events[-1]['fallback'] == 'end_turn'
+    assert conversation.session.encounter.combat.active_id == "player"
     assert not conversation.session.encounter.roller.sides
     assert "destination_blocked" in stream.getvalue()
     assert "conversation.execution_recorded" in stream.getvalue()
@@ -87,12 +89,12 @@ def test_off_question_receives_failure_even_when_history_no_longer_contains_it(b
     assert previous["execution_id"] == report.execution_id
     assert previous["actor_id"] == "guard_3"
     assert previous["execution"]["failures"][0]["destination"] == [14, 5]
-    assert previous["situation"]["combat"]["active_id"] == "guard_3"
-    assert previous["situation"]["turn_pending"]
+    assert previous["situation"]["combat"]["active_id"] == "player"
+    assert not previous["situation"]["turn_pending"]
     assert "O destino foi rejeitado" not in json.dumps(context["history"], ensure_ascii=False)
     client = Mock()
     client.responses.create.return_value = SimpleNamespace(status="completed", output=[], output_text=json.dumps({
-        "on": "", "off": "O Guarda 3 tentou ir para (14,5), uma casa bloqueada. O movimento foi rejeitado, o ataque seguinte não aconteceu e o turno dele permanece pendente.",
+        "on": "", "off": "O Guarda 3 tentou ir para (14,5), uma casa bloqueada. O movimento foi rejeitado, o ataque seguinte não aconteceu e o turno dele foi encerrado.",
     }))
     reply = OpenAINarrator(client).narrate(context)
     final = conversation.finish(reply, context)
@@ -110,7 +112,8 @@ def test_context_is_a_copy_and_new_attempt_replaces_failure(blocked_guard):
     copied = conversation.narration_context()["previous_execution"]
     copied["execution"]["failures"][0]["cause"] = "Causa inventada"
     assert "Causa inventada" not in json.dumps(conversation.narration_context(), ensure_ascii=False)
-    # Nova tentativa válida: o guarda aguarda e o turno é avançado.
+    # No próximo turno real, o guarda aguarda sem repetir a falha anterior.
+    conversation.session.execute(RuleIntent('end_turn'))
     second = conversation.execute_npc_turn(WorldPlan())
     current = conversation.narration_context(report=second)
     assert current["execution"]["execution_id"] == second.execution_id
@@ -125,8 +128,8 @@ def test_context_is_a_copy_and_new_attempt_replaces_failure(blocked_guard):
 
 def test_partial_world_progress_and_all_skipped_actions_are_preserved(blocked_guard):
     report = blocked_guard.execute_npc_turn(failed_plan(prefix=True, extra_reaction=True))
-    assert len(report.world_events) == 1
-    assert report.world_events[0]["traveled_meters"] == 1.5
+    assert len(world_actions(report.world_events)) == 2
+    assert world_actions(report.world_events)[0]["traveled_meters"] == 1.5
     failure = report.failures[0].context()
     assert failure["origin"] == failure["position_after"] == [15, 6]
     assert [a["operation"] for a in failure["skipped_actions"]] == ["attack", "wait"]

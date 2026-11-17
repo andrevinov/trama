@@ -36,8 +36,10 @@ class ContextContract:
 
 F = ContextField
 STATE = {
+    'sensing': F('object', 'GameSession.perception', 'Ocultação e possibilidade atual de esconder-se; não revela observadores ocultos.'),
     'mode': F('string', 'GameSession.mode', 'Modo narrado ou por turnos.'),
     'character': F('object', 'GameSession.interpreter_context', 'Posição e recursos atuais do jogador.'),
+    'parley': F('object|null', 'GameSession.parley', 'Abordagem, posições de detecção e situação da conversa antes do combate.'),
     'combat': F('object|null', 'GameSession.combat_context', 'Iniciativa/vez atual, ou null fora de combate.'),
 }
 KNOWN = {
@@ -90,6 +92,11 @@ CONTRACTS = {
 # Tipos críticos internos. Demais extensões internas também entram na revisão
 # estrutural offline, sem transformar eventos e cenários em um esquema fechado.
 INTERNAL = {
+    'sensing.hidden': 'boolean', 'sensing.can_hide': 'boolean',
+    'world.perception': 'object', 'world.perception.hidden': 'boolean',
+    'world.perception.stealth_total': 'integer|null', 'world.perception.observers': 'array',
+    'world.perception.observers[]': 'object', 'world.perception.observers[].id': 'string',
+    'world.perception.observers[].sleeping': 'boolean', 'world.perception.observers[].senses': 'object',
     'character.column': 'integer', 'character.row': 'integer',
     'character.current_area': 'string|null', 'character.speed_meters': 'number',
     'character.remaining_meters': 'number|null',

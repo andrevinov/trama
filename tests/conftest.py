@@ -104,3 +104,8 @@ def enter_turn_mode(dice):
         session.encounter.start(tuple(c.id for c in session.creatures))
         return session
     return enter
+
+
+def world_actions(events):
+    """Ações/checagens do Mundo, sem os registros automáticos de percepção."""
+    return [event for event in events if event['operation'] != 'perception_detected']

@@ -6,6 +6,7 @@ from dataclasses import asdict
 from importlib.resources import files
 import json
 import logging
+import re
 
 from trama.application.dialogue import DialogueMessage
 from trama.application.intents import (ActionPlan, DoorIntent, MovementIntent,
@@ -54,8 +55,11 @@ class ScriptedRoller:
 
 def situation_state(session):
     """Observação mecânica da dungeon, sem calcular resultados esperados."""
-    area = session.scene.area_at(session.state.position)
+    area = session.scene.area_at(session.state.position) if session.scene else None
+    dungeon = getattr(session, 'dungeon', None)
     return {
+        'sensing': session.perception.context(),
+        'parley': session.parley.context() if session.parley else None,
         'position': [session.state.position.x + 1, session.state.position.y + 1],
         'area': area.id if area else None, 'mode': session.mode.value,
         'spent_meters': float(session.state.spent_meters),
@@ -64,15 +68,15 @@ def situation_state(session):
         'creatures': {c.id: [c.position.x + 1, c.position.y + 1] for c in session.creatures},
         'resources': {id: asdict(state) for id, state in session.encounter.states.items()},
         'budgets': {id: asdict(budget) for id, budget in session.encounter.budgets.items()},
-        'inventory': sorted(session.dungeon.inventory), 'discovered': sorted(session.dungeon.discovered),
-        'clothing': session.dungeon.clothing, 'weapons': list(session.encounter.player_sheet.weapons),
-        'passages': {p.id: {'is_open': p.is_open, 'locked': p.locked} for p in session.scene.passages},
+        'inventory': sorted(getattr(dungeon, 'inventory', set())), 'discovered': sorted(getattr(dungeon, 'discovered', set())),
+        'clothing': getattr(dungeon, 'clothing', 'none'), 'weapons': list(session.encounter.player_sheet.weapons),
+        'passages': {p.id: {'is_open': p.is_open, 'locked': p.locked} for p in session.scene.passages} if session.scene else {},
         'last_attack': deepcopy(session.encounter.last_attacks.get('player')),
-        'prisoner_awake': session.dungeon.prisoner_awake,
-        'prisoner_free': session.dungeon.prisoner_free,
-        'escaped': session.dungeon.escaped,
-        'disguise': session.dungeon.disguise, 'guard_alert': session.dungeon.guard_alert,
-        'sword_concealed': session.dungeon.sword_concealed,
+        'prisoner_awake': getattr(dungeon, 'prisoner_awake', False),
+        'prisoner_free': getattr(dungeon, 'prisoner_free', False),
+        'escaped': getattr(dungeon, 'escaped', False),
+        'disguise': getattr(dungeon, 'disguise', 'untested'), 'guard_alert': getattr(dungeon, 'guard_alert', False),
+        'sword_concealed': getattr(dungeon, 'sword_concealed', False),
         'pending_opportunity': session.pending_opportunity is not None,
     }
 
@@ -95,7 +99,7 @@ class Situation:
     """Dados de preparação; não contém prompts, adaptadores ou critérios de sucesso live."""
 
     fields = {'id', 'scenario', 'setup', 'rolls', 'optional_world_rolls', 'preparation_rolls',
-              'preconditions', 'passage_variations', 'history'}
+              'preconditions', 'passage_variations', 'history', 'start_variation', 'sense_variations', 'lighting_variations'}
 
     def __init__(self, data, preparations):
         if not isinstance(data, dict) or not isinstance(preparations, dict):
@@ -107,12 +111,14 @@ class Situation:
         self.data = deepcopy(data)
         self.preparations = deepcopy(preparations)
         if (not isinstance(data['id'], str) or not data['id'] or
-                data['scenario'] != 'dungeon_escape.json' or not isinstance(data['setup'], list) or
+                (not isinstance(data['scenario'], str) or not re.fullmatch(r'[a-z0-9_-]+\.json', data['scenario'])) or not isinstance(data['setup'], list) or
                 any(not isinstance(name, str) or name not in preparations for name in data['setup']) or
                 type(data['preparation_rolls']) is not int or data['preparation_rolls'] < 0 or
                 not isinstance(data['preconditions'], dict) or
                 any(not isinstance(k, str) or not k for k in data['preconditions'])):
             raise SituationError('Identificação, cenário ou preparação de situação inválidos.')
+        if not files('trama').joinpath('scenarios', data['scenario']).is_file():
+            raise SituationError('O cenário da situação não existe no pacote.')
         self.new_roller()  # Valida antes de abrir serviços ou executar operações.
         history = data.get('history')
         if history is not None and (not isinstance(history, dict) or set(history) != {'source', 'messages'}
@@ -139,6 +145,17 @@ class Situation:
 
     def scenario_data(self):
         data = json.loads(files('trama').joinpath('scenarios', self.data['scenario']).read_text(encoding='utf-8'))
+        if 'start_variation' in self.data:
+            data['start'] = deepcopy(self.data['start_variation'])
+        for id, variation in self.data.get('sense_variations', {}).items():
+            actor = next((a for a in [*data.get('creatures', []), *data.get('observers', [])] if a['id'] == id), None)
+            if actor is None or not isinstance(variation, dict):
+                raise SituationError(f'Variação de sentidos inválida: {id}.')
+            actor['senses'] = {**actor.get('senses', {}), **variation}
+        for kind, positions in self.data.get('lighting_variations', {}).items():
+            if kind not in {'dark', 'dim'} or not isinstance(positions, list):
+                raise SituationError('Variação de iluminação inválida.')
+            data[kind] = deepcopy(positions)
         for id, variation in self.data.get('passage_variations', {}).items():
             passage = next((p for p in data['passages'] if p['id'] == id), None)
             if (passage is None or not isinstance(variation, dict) or

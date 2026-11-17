@@ -1,0 +1,6 @@
+[
+  {"id":"abordagem-distante","expected":"pending","messages":["Vou direto até a última cela e checo se ela está destrancada."],"max_sdk_calls":5},
+  {"id":"conversa-evita-combate","expected":"peaceful","messages":["Vou direto até a última cela e checo se ela está destrancada.","Eu paro e tento convencer o guarda: não represento perigo. Por favor, não me ataque; podemos resolver isso conversando. Peço que confie em mim e me deixe explicar."],"max_sdk_calls":9},
+  {"id":"conversa-falha-inicia-combate","expected":"failed","messages":["Vou direto até a última cela e checo se ela está destrancada.","Eu paro e tento convencer o guarda: não represento perigo. Por favor, não me ataque; podemos resolver isso conversando. Peço que confie em mim e me deixe explicar."],"max_sdk_calls":10},
+  {"id":"conversa-jogador-ataca","expected":"attack","messages":["Vou direto até a última cela e checo se ela está destrancada.","Não quero conversar. Ataco o Guarda 1 com um soco."],"max_sdk_calls":10}
+]

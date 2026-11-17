@@ -93,7 +93,8 @@ fechamento, falhas, configuração registrada, preservação das instruções e 
 mudança de padrões chegando à CLI/janela e à suíte contextual. Fronteiras de
 módulos impedem que simulador, análises e arquivos live recomponham clientes/adaptadores.
 
-Os contratos de contexto continuam passando na revisão offline sem alteração de
-referência. A [agenda sem janela](../interfaces/execucao-sem-janela.md)
+Os contratos de contexto passam pela revisão offline, com atualização justificada
+quando há mudança intencional. A [agenda sem janela](../interfaces/execucao-sem-janela.md)
 está disponível em `game.runner`, sobre o mesmo `game.flow`. Os oito casos
-contextuais já a utilizam; as outras cinco suítes continuam parciais/experimentais.
+contextuais e os quatro casos de conversa já a utilizam; as outras cinco suítes
+continuam parciais/experimentais.

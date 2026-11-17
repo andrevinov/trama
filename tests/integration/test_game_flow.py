@@ -425,19 +425,22 @@ def test_npc_failure_keeps_prior_npc_effects_and_pending_turn(dice):
     assert not flow.narrator.calls
 
 
-def test_npc_domain_impediment_narrates_without_replanning_or_advancing_turn(dice):
-    session = grid_session(guard=True, roller=dice(1, 2, 20))
+def test_npc_domain_impediment_ends_turn_without_replanning(dice):
+    session = grid_session(guard=True, roller=dice(20, 19, 1))
     session.execute(RuleIntent('start_combat'))
-    director = Director(npc_plan(WorldAction('guard', 'attack', 'O guarda tenta atacar outra criatura.', 'guard')))
-    interpreter = Interpreter()
+    director = Director(WorldPlan(), npc_plan(WorldAction('guard', 'attack', 'O guarda tenta atacar outra criatura.', 'guard')))
+    interpreter = Interpreter(ActionPlan((RuleIntent('end_turn'),)))
     flow = GameFlow(session, interpreter, Narrator(Speech(off='A ação do guarda foi impedida.')), director)
-    flow.submit('Ando para leste.')
+    flow.submit('Encerro meu turno.')
+    respond(flow, FlowStage.INTERPRET)
+    respond(flow, FlowStage.WORLD)
     respond(flow, FlowStage.NPC_TURN)
     assert flow.report.status == 'blocked'
-    assert session.encounter.combat.active_id == 'guard'
+    assert session.encounter.combat.active_id == 'player'
+    assert flow.report.world_events[-1]['fallback'] == 'end_turn'
     respond(flow, FlowStage.NARRATE)
-    assert flow.status == FlowStatus.COMPLETED and len(director.calls) == 1
-    assert not interpreter.calls
+    assert flow.status == FlowStatus.COMPLETED and len(director.calls) == 2
+    assert len(interpreter.calls) == 1
 
 
 def test_npc_sequence_has_a_bound_if_executor_fails_to_advance(monkeypatch, dice):

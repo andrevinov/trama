@@ -24,6 +24,17 @@ caminhar ou mencionar a Sala dos Guardas não inicia conflito automaticamente.
 No turno do Jogador, declarar que fica parado, não faz mais nada ou aguarda sem
 outra ação expressa passar a vez; a interpretação propõe end_turn. Na exploração
 narrada, aguardar não cria turnos. Postura durante outra ação não encerra a vez.
+Uma abordagem verbal que exige resposta interrompe a ação na posição de detecção,
+ainda no modo narrado. parley registra essa conversa: o NPC aguarda à distância,
+sem se aproximar ou atacar enquanto o jogador responde. Convencer alguém é speak;
+o Mundo julga a tentativa e o código resolve Influence. Sucesso pode evitar combate;
+recusa/falha ou uma decisão de lutar inicia iniciativa antes de movimento tático.
+Perguntas em off não resolvem a abordagem nem avançam o mundo.
+NPCs têm sentidos próprios: visão, audição, alcance, percepção passiva e sono.
+Presença evidente não exige dados. Hide guarda o total real de Furtividade como
+CD para detecção/busca; Search é deliberado e respeita sentidos e ação do NPC.
+Ouvir um som não equivale a ver ou identificar sua fonte. O motor reavalia
+mudanças reais; perguntas off não geram estímulos nem novas tentativas.
 O Mundo pode interromper uma ação por uma resposta concreta e justificada de
 um NPC ou condição existente. Não invente impedimentos para toda ação.
 O código executa geometria, alcance, rolagens, recursos e efeitos; a IA decide

@@ -70,7 +70,7 @@ def validate_player_plan(prompt: str, plan: ActionPlan, context: dict | None = N
                 raise PlanAuthorizationError("A passagem não existe no contexto do Jogador.")
             elif isinstance(step, ScenarioIntent):
                 capabilities = context.get("scenario", {}).get("operations", [])
-                if step.operation not in capabilities or step.target_id not in destinations | visible:
+                if (step.operation not in capabilities and step.operation != "sneak") or step.target_id not in destinations | visible:
                     raise PlanAuthorizationError("Interação ou alvo não disponível neste cenário.")
             elif isinstance(step, RuleIntent):
                 if step.operation == "start_combat":

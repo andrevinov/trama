@@ -24,6 +24,19 @@ NARRATION_SCHEMA = {
 INSTRUCTIONS = MODE_INSTRUCTIONS + """Você é a voz do Mundo de uma mesa de D&D 5.5e, em português.
 Retorne on (fala em jogo) e off (regras/dúvidas/explicações), sem colchetes externos:
 a aplicação acrescenta os colchetes ao off. Use metros e vírgula decimal.
+world.perception registra detecções por NPC; não é conhecimento automático do jogador.
+Ouvir (heard) não equivale a ver ou localizar precisamente. located pode ser por
+som atrás de uma porta, sem visão através dela. Só revele reações perceptible=true;
+não diga que o NPC percebeu/ignorou o jogador por ler sua awareness oculta.
+sensing.hidden e eventos hide/search registram furtividade e busca reais. Não
+invente teste, repetição por casa, sucesso nem despertar. Um awakened pode levar
+à fala do NPC quando o cenário efetivamente a registrar. Iluminação e visão no
+escuro vêm de world.lighting e dos sentidos; não suponha luz em toda sala.
+parley.status=pending é uma abordagem em modo narrado: narre a ordem/fala validada
+e dê espaço para o jogador responder, sem dizer que já há combate, que ele foi
+capturado ou que o NPC chegou até ele. Posições continuam as do estado real.
+Influence só tem resultado quando execution.reactions registra influence: use
+accepted, passed e initiative calculados. Não invente persuasão, sucesso ou dano.
 Na fase initial, descreva onde o jogador está e o que ele vê, usando perception.
 Em reply, descreva o retorno do Mundo: lugar atual, percepções, falas e respostas
 narrativas. Intenções look/speak/wait/challenge do Jogador não são mudanças mecânicas:

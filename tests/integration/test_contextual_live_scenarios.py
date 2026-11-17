@@ -261,15 +261,16 @@ def test_guard_winning_initiative_can_move_and_attack_before_returning_control(m
     assert client.responses.create.call_count == 5
 
 
-def test_incomplete_guard_turn_no_longer_passes_as_initiative_success(monkeypatch, tmp_path, capture_logs):
+def test_recovered_guard_failure_does_not_pass_as_legal_initiative_success(monkeypatch, tmp_path, capture_logs):
     case = next(c for c in CASES if c['expected'] == 'enemy_first')
     client = install_client(case, monkeypatch, npc_behavior='invalid_attack')
     monkeypatch.setenv('TRAMA_CONTEXTUAL_ARTIFACTS', str(tmp_path))
-    with pytest.raises(AssertionError, match='turno do guarda'):
+    with pytest.raises(AssertionError, match='resposta do guarda falhou'):
         SUPPORT['test_live_contextual_movement'](case, capture_logs)
     evidence = json.loads(next(tmp_path.rglob('result.json')).read_text())
     assert evidence['outcome'] == 'failed' and evidence['stage'] == 'evaluation'
-    assert evidence['after']['combat']['active_id'] == 'guard_1'
+    assert evidence['after']['combat']['active_id'] == 'player'
+    assert any(e.get('fallback') == 'end_turn' for e in evidence['execution']['reactions'])
     assert any(f['actor_id'] == 'guard_1' for f in evidence['execution']['failures'])
     assert client.responses.create.call_count == 5
 

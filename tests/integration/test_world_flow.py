@@ -1,7 +1,7 @@
 """Jogador e Mundo independentes, com decisões fixas e rolagens controladas."""
 
 import json
-from conftest import sourced_plan
+from conftest import world_actions, sourced_plan
 from dataclasses import replace
 from decimal import Decimal
 from pathlib import Path
@@ -85,9 +85,11 @@ def test_world_context_contains_hidden_npcs_but_perception_does_not(prison):
     assert len(narration["world"]["npcs"]) == 3
 
 
-@pytest.mark.parametrize("roll,interrupted", [(1, False), (20, True)])
-def test_uncertain_guard_hearing_rolls_and_only_success_interrupts(prison, dice, roll, interrupted, capture_logs):
-    prison.encounter.roller = dice(roll)
+@pytest.mark.parametrize("hearing_range,interrupted", [(0, False), (60, True)])
+def test_legacy_hearing_check_uses_npc_senses_without_free_rolls(prison, dice, hearing_range, interrupted, capture_logs):
+    prison.encounter.roller = dice()
+    prison.creatures = tuple(replace(c, senses=replace(c.senses, hearing_range_meters=hearing_range))
+                            if c.id == "guard_1" else c for c in prison.creatures)
     conversation = Conversation(prison)
     reaction = WorldReaction(0, 3, (WorldAction("guard_1", "say", "Pare aí! Há alguém no corredor!"),),
                              True, "Um guarda ouviu os passos e exige que você pare.",
@@ -96,8 +98,10 @@ def test_uncertain_guard_hearing_rolls_and_only_success_interrupts(prison, dice,
         report = conversation.execute(ActionPlan((move_to("guard_door"), DoorIntent("open", "guard_door"))), WorldPlan((reaction,)))
     assert bool(report.stop_reason) is interrupted
     assert prison.state.position == Position(6 if interrupted else 12, 5)
-    assert report.world_events[0]["passed"] is interrupted
-    assert report.world_events[0]["dice"] == [roll]
+    assert world_actions(report.world_events)[0]["passed"] is interrupted
+    assert world_actions(report.world_events)[0]["dice"] == []
+    assert world_actions(report.world_events)[0]["automatic"]
+    assert not prison.encounter.roller.sides
     assert prison.scene.passages[1].is_open is (not interrupted)
     assert report.unperformed_steps == int(interrupted)
     assert len(prison.last_path) == (4 if interrupted else 10)
@@ -110,7 +114,7 @@ def test_unreached_checkpoint_never_rolls_or_runs_world_action(prison):
                              check=PerceptionCheck("guard_1", 12, "Passos na sala."))
     report = Conversation(prison).execute(ActionPlan((move_to("guard_room"),)), WorldPlan((reaction,)))
     assert "fechada" in report.stop_reason
-    assert report.world_events == () and not prison.encounter.roller.sides
+    assert world_actions(report.world_events) == [] and not prison.encounter.roller.sides
 
 
 def test_nonblocking_world_reply_preserves_remaining_distance_and_fraction(prison):
@@ -129,7 +133,7 @@ def test_world_checkpoint_at_reached_endpoint_still_fires_with_fractional_remain
     report = Conversation(prison).execute(ActionPlan((intent,)), world)
     assert prison.state.position == Position(9, 5)
     assert "0,5 m" in report.stop_reason
-    assert report.world_events[0]["text"] == "Quem anda aí?"
+    assert world_actions(report.world_events)[0]["text"] == "Quem anda aí?"
 
 
 def test_narrative_player_intent_receives_world_dialogue_without_mechanical_action(prison):
@@ -140,8 +144,8 @@ def test_narrative_player_intent_receives_world_dialogue_without_mechanical_acti
     report = conversation.execute(sourced_plan(ActionPlan((NarrativeIntent(speech.on, "speak"),)), speech.on), world)
     assert prison.state == before and prison.budget == ActionBudget()
     assert not report.progress and report.narrative_interaction
-    assert report.world_events[0]["speaker"] == "Guarda 1"
-    assert report.world_events[0]["perceptible"]
+    assert world_actions(report.world_events)[0]["speaker"] == "Guarda 1"
+    assert world_actions(report.world_events)[0]["perceptible"]
     reply = conversation.finish(Speech('Do outro lado da porta, você ouve: "Quem está aí?"'), conversation.narration_context(speech, report))
     assert reply.on
 
@@ -175,16 +179,17 @@ def test_guard_contours_door_corner_and_attacks_in_original_scenario(prison, dic
     assert report.stop_reason is None
     assert prison.creatures[0].position == Position(13, 5)
     assert sum(e.get("cost_meters", 0) for e in report.world_events) == 4.5
-    assert report.world_events[2]["operation"] == "attack"
-    assert report.world_events[2]["hit"] is False
+    assert world_actions(report.world_events)[2]["operation"] == "attack"
+    assert world_actions(report.world_events)[2]["hit"] is False
     assert prison.encounter.budgets["guard_1"].action_used
     assert prison.encounter.combat.active_id == "guard_2"
     records = [json.loads(line) for line in stream.getvalue().splitlines()]
     movements = [r["data"] for r in records if r["event"] == "movement.resolved"]
-    assert movements[1]["path"] == [{"x": 14, "y": 4}, {"x": 14, "y": 5}, {"x": 13, "y": 5}]
+    assert [movements[0]["path"][0], *(m["path"][-1] for m in movements)] == [
+        {"x": 15, "y": 4}, {"x": 14, "y": 4}, {"x": 14, "y": 5}, {"x": 13, "y": 5}]
 
 
-def test_incomplete_npc_move_keeps_progress_and_skips_attack_and_later_reactions(prison, dice, capture_logs):
+def test_limited_npc_move_keeps_progress_and_invalid_attack_ends_turn(prison, dice, capture_logs):
     prison.execute(move_to("guard_door"))
     prison.execute(DoorIntent("open", "guard_door"))
     prison.creatures = tuple(replace(c, position=Position(14, 4)) if c.id == "guard_1" else c
@@ -199,20 +204,22 @@ def test_incomplete_npc_move_keeps_progress_and_skips_attack_and_later_reactions
     )), WorldReaction(0, 0, (WorldAction("guard_1", "say", "Essa fala não deve acontecer."),))))
     with capture_logs() as stream:
         report = Conversation(prison).execute_npc_turn(world)
-    assert "Movimento insuficiente" in report.stop_reason
-    assert len(report.world_events) == 1
-    assert report.world_events[0]["changed"]
-    assert report.world_events[0]["cost_meters"] == 1.5
+    assert "fora de alcance" in report.stop_reason
+    assert len(world_actions(report.world_events)) == 2
+    assert world_actions(report.world_events)[0]["changed"]
+    assert world_actions(report.world_events)[0]["cost_meters"] == 1.5
     assert prison.creatures[0].position == Position(14, 5)
-    assert prison.npc_movement["guard_1"].spent_meters == 9
-    assert prison.encounter.combat.active_id == "guard_1"
+    assert world_actions(report.world_events)[0]['status'] == 'movement_limited'
+    assert report.world_events[-1]['fallback'] == 'end_turn'
+    assert not prison.npc_movement
+    assert prison.encounter.combat.active_id == "guard_2"
     assert not prison.encounter.budgets["guard_1"].action_used
     assert prison.encounter.states["player"].hp == 28
     assert not prison.encounter.roller.sides
     records = [json.loads(line) for line in stream.getvalue().splitlines()]
-    assert not any(r["event"] == "world.action_started" and r["data"]["operation"] == "attack" for r in records)
-    interruption = next(r["data"] for r in records if r["event"] == "world.reaction_interrupted")
-    assert interruption["unperformed_actions"] == 1
+    assert any(r["event"] == "world.action_rejected" and r["data"]["action"]["operation"] == "attack" for r in records)
+    assert report.failures[0].operation == 'attack'
+    assert [a['operation'] for a in report.failures[0].skipped_actions] == ['say']
 
 
 def test_npc_stops_at_closed_door_without_executing_next_action(prison):
@@ -220,7 +227,7 @@ def test_npc_stops_at_closed_door_without_executing_next_action(prison):
         WorldAction("guard_2", "move", "O guarda tenta sair da sala.", destination=Position(12, 5)),
         WorldAction("guard_2", "say", "Já estou no corredor."),
     )))
-    assert reason and len(events) == 1
+    assert reason and len(world_actions(events)) == 1
     assert events[0]["stop_reason"]
     assert events[0]["changed"] and events[0]["cost_meters"] == 1.5
     assert prison.creatures[1].position == Position(14, 5)
@@ -293,9 +300,10 @@ def test_partial_world_failure_keeps_completed_attack_in_report(dice):
     world = WorldPlan((WorldReaction(0, 0, (attack, attack)),))
     report = Conversation(session).execute_npc_turn(world)
     assert "já foi utilizada" in report.stop_reason
-    assert len(report.world_events) == 1 and report.world_events[0]["damage"] == 5
+    assert len(world_actions(report.world_events)) == 2 and world_actions(report.world_events)[0]["damage"] == 5
     assert session.encounter.states["player"].hp == 23
-    assert session.encounter.combat.active_id == "g1"  # Sem repetição nem avanço silencioso após erro.
+    assert session.encounter.combat.active_id == "player"
+    assert report.world_events[-1]['fallback'] == 'end_turn'
 
 
 def test_world_initiates_and_ends_conflict_without_buttons(prison, dice):

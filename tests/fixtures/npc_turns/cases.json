@@ -1,0 +1,14 @@
+[
+  {
+    "id": "turno-npc-distante",
+    "expected": "approach",
+    "prompt": "Encerro meu turno e permaneço aqui, esperando o vigia se aproximar.",
+    "max_sdk_calls": 6
+  },
+  {
+    "id": "turno-npc-aproxima-e-ataca",
+    "expected": "attack",
+    "prompt": "Encerro meu turno e permaneço aqui, enfrentando o vigia.",
+    "max_sdk_calls": 6
+  }
+]

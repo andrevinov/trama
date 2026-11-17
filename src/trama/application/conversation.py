@@ -108,7 +108,7 @@ class Conversation:
             "execution": self._execution_context(report),
             "situation": {"mode": self.session.mode.value, "combat": combat,
                           "player_position": [self.session.state.position.x + 1, self.session.state.position.y + 1],
-                          "turn_pending": bool(report.stop_reason and combat)},
+                          "turn_pending": bool(report.stop_reason and combat and combat['active_id'] == actor_id)},
         })
         logger.info("conversation.execution_recorded", extra={"data": {
             "execution_id": report.execution_id, "actor_id": actor_id,
@@ -224,6 +224,10 @@ class Conversation:
                     for reaction in reactions:
                         if reaction.after_squares != checkpoint:
                             continue
+                        if any(a.operation == 'influence' for a in reaction.actions) and (
+                                checkpoint is not None or not isinstance(intent, NarrativeIntent)
+                                or intent.operation not in {'speak', 'challenge'}):
+                            raise WorldError('Influence exige uma fala do jogador executada antes do julgamento.')
                         old_mode = self.session.mode
                         responses, interruption = executor.reaction(reaction)
                         world_events.extend({**event, "step_index": index, "after_squares": checkpoint} for event in responses)
@@ -233,7 +237,7 @@ class Conversation:
                                 failure = replace(failure, skipped_actions=failure.skipped_actions + (
                                     action_reference(intent, self.session.encounter.player_id),))
                             failures.append(failure)
-                        if interruption:
+                        if interruption or any(a.operation == "influence" for a in reaction.actions):
                             return interruption
                         if old_mode != self.session.mode:
                             return "O Mundo alterou a situação de conflito; a ação para para respeitar o novo modo."
@@ -341,12 +345,18 @@ class Conversation:
         before = self.session.state
         budget_before = self.session.budget
         previous_mode = self.session.mode
+        previous_parley = self.session.parley
         result = self.session.execute(intent, **options)
         scenario_events = self.session.drain_world_events()
         mode_stop = ("O conflito começou; a iniciativa determina quem age agora."
                      if previous_mode == GameMode.NARRATED and self.session.mode == GameMode.TURN_BASED
                      and any(e['operation'] == 'start_conflict' for e in scenario_events) else None)
+        if self.session.parley_pending and self.session.parley != previous_parley:
+            mode_stop = 'O NPC exige uma resposta. Você pode conversar antes de decidir pelo combate.'
         if isinstance(result, MovementResult):
+            if mode_stop and not result.stop_reason:
+                result = replace(result, stop_reason=mode_stop,
+                                 stop_code='parley_pending' if self.session.parley_pending else 'conflict_started')
             changed = before != result.state or self.session.budget != budget_before
             event = {"operation": "move", "changed": changed,
                            "status": "blocked" if result.stop_reason else ("completed" if changed else "already_satisfied"),
@@ -386,6 +396,7 @@ class Conversation:
         events = []
         failures = []
         self.pending_npc_turn = None
+        stop_reason = None
 
         def finish(reason=None):
             return self._remember(ExecutionReport(stop_reason=reason, world_events=tuple(events),
@@ -408,12 +419,18 @@ class Conversation:
                 if self.session.encounter.states[active].hp == 0:
                     break
                 if interruption:
-                    return finish(interruption)
-            if self.session.encounter.combat:
-                events.append({**self.session.next_turn().event, "actor_id": active, "perceptible": True})
+                    stop_reason = interruption
+                    break
         except (MovementError, ActionError, CharacterError, WorldError) as error:
-            return finish(str(error))
-        return finish()
+            stop_reason = str(error)
+        if self.session.encounter.combat:
+            event = {**self.session.next_turn().event, 'actor_id': active, 'perceptible': True}
+            if stop_reason:
+                # Recuperação determinística: descarta o restante inválido sem
+                # repetir efeitos, renovar recursos ou pedir outro plano à IA.
+                event.update(fallback='end_turn', reason=stop_reason)
+            events.append(event)
+        return finish(stop_reason)
 
     def narration_context(
         self, speech: Speech = Speech(), report: ExecutionReport = ExecutionReport(),
@@ -450,14 +467,16 @@ class Conversation:
             "execution": execution, "previous_execution": deepcopy(previous), "perception": perception,
             "character": context["character"],
             "player_sheet": context["player_sheet"], "combat": context["combat"],
-            "mode": context["mode"], "world": context["world"],
+            "mode": context["mode"], "world": context["world"], "parley": context["parley"], "sensing": context["sensing"],
             "history": [{"role": m.role, "on": m.speech.on, "off": m.speech.off}
                         for m in self.messages[-12:]],
             "verified_rules": [
                 "PHB 2024: movimento em casas de 1,5 m; terreno difícil custa 3 m por casa.",
                 "Em modo por turnos, PHB 2024, Dash: usa a ação para adicionar movimento igual à velocidade no turno.",
                 "Em modo por turnos, PHB 2024, objetos/Utilize: primeira interação gratuita; seguinte usa a ação.",
-                "PHB 2024, visão: Humano sem visão no escuro; paredes/portas fechadas bloqueiam.",
+                "PHB 2024, visão: Jogador humano sem visão no escuro; NPCs usam seus próprios sentidos. Paredes/portas fechadas bloqueiam visão.",
+                "PHB 2024: Hide usa Furtividade CD 15 e guarda o total como CD de detecção; passiva é 10+bônus, com ajustes por vantagem/desvantagem. Search deliberado usa sentidos e ação do NPC em combate. Cota de malha impõe desvantagem em Furtividade.",
+                "Trama: alcances auditivos configuráveis usam referência fixa 7 de 2d6 do DMG 2024; porta fechada atenua 6 m equivalentes. Sono usa limiar próprio de despertar, sem teste de Percepção inconsciente. Não se rerrola por casa sem nova busca/mudança relevante.",
                 "O Mundo decide respostas dos guardas; só narre como realizados os efeitos validados em execution.reactions.",
                 "PHB 2024, Guerreiro 1–3: Defesa +1 CA com armadura. Retomar o Fôlego: ação bônus, cura 1d10+nível, 2 usos; descanso curto recupera 1 e longo recupera todos.",
                 "Guerreiro 2: Surto de Ação concede uma ação extra, exceto Magia; um uso por descanso curto/longo. Novo turno não recupera usos da classe.",
@@ -473,6 +492,8 @@ class Conversation:
                 "Movimento imediato protegido após crítico de Campeão não provoca oportunidade. Desengajar, teleporte e movimento forçado ainda não têm comandos. Ataques atuais são corpo a corpo; testes de morte e cobertura completa ainda não estão implementados.",
                 "Modo narrado não cobra orçamento por turno; modo por turnos usa iniciativa e recursos do PHB 2024.",
                 "Decisão do usuário: executar o possível, parar no impedimento e explicar em off.",
+                "Trama: abordagem interrompe na detecção e permite resposta em modo narrado; não concede aproximação ou golpe gratuito. Parley pendente aguarda conversa ou combate.",
+                "PHB 2024, Influence: disposição willing/unwilling dispensa dados; hesitant testa perícia adequada, CD max(15, INT do NPC), com vantagem Friendly/desvantagem Hostile. Sucesso evita este combate; falha nesta abordagem inicia iniciativa (decisão do usuário).",
                 "Movimento contextual do Jogador: requisitos espaciais podem gerar aproximação antes da ação, salvo proibição de movimento. Iniciativa precede a aproximação tática de ataque; não concede movimento ou golpes gratuitos.",
                 "POC: casas inteiras; uma fração restante não é executada nem arredondada para cima.",
             ],

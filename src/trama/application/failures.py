@@ -13,7 +13,7 @@ def coordinates(position: Position | None) -> list[int] | None:
 def actor_position(session, actor_id: str) -> Position | None:
     if actor_id == session.encounter.player_id:
         return session.state.position
-    return next((c.position for c in session.creatures if c.id == actor_id), None)
+    return next((c.position for c in (*session.creatures, *session.observers) if c.id == actor_id), None)
 
 
 def action_reference(action, actor_id: str) -> dict:
@@ -52,16 +52,17 @@ def action_failure(session, action, message: str, *, origin: Position | None,
     """Anota o motivo conhecido e a geometria existente, sem deduzir causas do texto."""
     actor_id = getattr(action, "actor_id", session.encounter.player_id)
     sheet = session.encounter.sheets.get(actor_id)
+    observer = next((o for o in session.observers if o.id == actor_id), None)
     destination = getattr(action, "destination", None) or blocked_position
     obstacle = None
     probe = blocked_position or destination
     if probe is not None:
-        occupant = next((c for c in session.creatures if c.position == probe and c.id != actor_id), None)
+        occupant = next((c for c in (*session.creatures, *session.observers) if c.position == probe and c.id != actor_id), None)
         passage = next((p for p in session.scene.passages if p.position == probe), None) if session.scene else None
         obj = next((o for o in session.scene.objects if o.position == probe and o.blocks_movement), None) if session.scene else None
         if occupant is not None:
             obstacle = {"kind": "occupied_cell", "actor_id": occupant.id, "name": occupant.name,
-                        "at_zero_hp": session.encounter.states[occupant.id].hp == 0}
+                        "at_zero_hp": occupant.id in session.encounter.states and session.encounter.states[occupant.id].hp == 0}
         elif probe == session.state.position and actor_id != session.encounter.player_id:
             obstacle = {"kind": "occupied_cell", "actor_id": session.encounter.player_id,
                         "name": session.encounter.player_sheet.name,
@@ -88,7 +89,7 @@ def action_failure(session, action, message: str, *, origin: Position | None,
             cause = f"{obstacle['name']} impede a passagem na casa {cell}."
         else:
             cause = f"A casa {cell} é bloqueada no mapa e não pode ser ocupada."
-    return ExecutionFailure(actor_id, sheet.name if sheet else actor_id,
+    return ExecutionFailure(actor_id, sheet.name if sheet else observer.name if observer else actor_id,
                             getattr(action, "operation", "move"), code, message, cause,
                             origin, destination, actor_position(session, actor_id), obstacle,
                             target_id=getattr(action, "target_id", None))

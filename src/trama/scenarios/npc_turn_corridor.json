@@ -1,0 +1,45 @@
+{
+  "title": "Aproximação em combate",
+  "width": 26,
+  "height": 5,
+  "start": [
+    2,
+    2
+  ],
+  "areas": [
+    {
+      "id": "corridor",
+      "name": "Corredor",
+      "x": 1,
+      "y": 1,
+      "width": 24,
+      "height": 3,
+      "description": "Um corredor reto e iluminado. O vigia hostil avança para deter o aventureiro. O combate já começou."
+    }
+  ],
+  "passages": [],
+  "player": {
+    "level": 3,
+    "armor": "none",
+    "weapons": []
+  },
+  "creatures": [
+    {
+      "id": "watcher",
+      "name": "Vigia",
+      "position": [
+        21,
+        2
+      ],
+      "senses": {
+        "response": "observe"
+      },
+      "sheet": {
+        "level": 1,
+        "weapons": [
+          "greatsword"
+        ]
+      }
+    }
+  ]
+}

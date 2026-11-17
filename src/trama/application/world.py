@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from trama.spatial import Position
+from trama.application.parley import InfluenceRequest
 
 
 class WorldError(ValueError):
@@ -30,15 +31,21 @@ class WorldAction:
     target_id: str | None = None
     destination: Position | None = None
     weapon: str = "greatsword"
+    influence: InfluenceRequest | None = None
+    volume: str = "normal"
 
     def __post_init__(self):
         if (not isinstance(self.actor_id, str) or not self.actor_id
-                or self.operation not in {"describe", "say", "move", "open", "close", "attack", "wait", "start_conflict", "end_conflict"}
+                or self.volume not in {'quiet', 'normal', 'loud'}
+                or (self.operation != 'say' and self.volume != 'normal')
+                or self.operation not in {"describe", "say", "move", "open", "close", "attack", "wait", "start_conflict", "end_conflict", "parley", "influence", "search"}
                 or not isinstance(self.text, str) or not self.text.strip() or len(self.text) > 2000
                 or self.weapon not in {"greatsword", "flail", "javelin", "longsword", "unarmed"}
                 or (self.operation == "move") != isinstance(self.destination, Position)
                 or (self.target_id is not None and (not isinstance(self.target_id, str) or not self.target_id))
-                or (self.operation in {"open", "close", "attack"}) != (self.target_id is not None)):
+                or (self.influence is not None and not isinstance(self.influence, InfluenceRequest))
+                or (self.operation == "influence") != isinstance(self.influence, InfluenceRequest)
+                or (self.operation in {"open", "close", "attack", "search"}) != (self.target_id is not None)):
             raise WorldError("Ação do Mundo inválida.")
 
 

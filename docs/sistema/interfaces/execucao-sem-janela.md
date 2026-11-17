@@ -129,7 +129,8 @@ existentes, com correlação e sem duplicar prompts ou contar tokens por estimat
 O teste da composição também exercita `game.runner` com os três adaptadores reais
 e o transporte simulado. Não foram executadas chamadas pagas.
 
-Os oito casos contextuais usam esta API, incluindo abertura, NPCs e critérios.
+Os oito casos contextuais e os quatro de [conversa](../qualidade/conversa-live.md)
+usam esta API, incluindo abertura, NPCs e critérios.
 O limite de chamadas ao SDK é distinto de `max_requests` do runner. Consulte
 [o fluxo live](../qualidade/movimento-contextual-live.md) e a
 [cobertura](../qualidade/cobertura-atual.md) para o escopo das outras suítes.

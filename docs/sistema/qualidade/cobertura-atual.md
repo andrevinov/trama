@@ -11,6 +11,9 @@ fluxo completo. Os dados e as escolhas de cada fixture continuam explícitos.
 
 | Suíte em `tests/live` | Casos | Escopo efetivo | Limite |
 | --- | ---: | --- | --- |
+| `test_npc_turn_completion.py` | 2 | Fluxo compartilhado em corredor genérico: passar turno, aproximação limitada, ataque ao alcançar e pergunta off. | Distante aprovado antes do último ajuste de instruções; próximo aprovado após correção, com falha anterior preservada. [Medição e limites](../../evidencias/2026-11-16-conclusao-turnos-npc/relatorio.md). |
+| `test_npc_perception.py` | 13 | Fluxo compartilhado em salas genéricas: sentidos, ruídos, Hide, passiva, Search, sono e narração. | Preparação/critérios validados offline; sem execução paga registrada. Revisão semântica do texto é humana. |
+| `test_parley.py` | 4 | Fluxo compartilhado desde o corredor: abertura, detecção, resposta social/ataque, NPCs e narração. | Validação offline; sem medição paga deste incremento. Julgamento e texto reais ainda variam. |
 | `test_contextual_movement.py` | 8 | Fluxo compartilhado desde situação preparada: abertura, mensagem, Mundo, NPCs e narração. | Não é partida inteira desde a cela inicial; escolhas não previstas tornam execução inconclusiva. |
 | `test_dungeon_interactions.py` | 3 | Adaptadores e motor em fluxo parcial. | Mantém sequência manual, sem toda coordenação de NPCs e retomadas. |
 | `test_openai_movement.py` | 7 | Adaptadores e primitivas. | Cinco casos executam somente a primeira etapa; sem decisão do Mundo. |
@@ -63,6 +66,11 @@ UI, fluxo, reações e falhas sem pagar chamadas. Os
 [controles de regressão](deteccao-de-regressoes.md) demonstram critérios que
 reprovam ausência de aproximação, ataque após Surto, conclusão de NPC,
 oportunidade e deslocamento narrado sem efeito.
+
+A [conversa antes do combate](conversa-live.md) tem quatro situações jogáveis e
+critérios independentes validados offline, incluindo rejeição da aproximação
+indevida. A regra geral também é testada sem dungeon; a criação dos casos não
+constitui evidência de aprovação por modelo real.
 
 Surto seguido de ataque é prova local, sem novo caso pago na suíte contextual.
 A revisão genérica de toda verdade narrativa ainda não é automatizada. Há

@@ -4,7 +4,9 @@ Tier 3 · [Regras](README.md) · [Visão geral](../../../README.md)
 
 ## Combate por turnos: alcance deste incremento
 
-Ver guardas não inicia combate automaticamente. A intenção de ataque ou uma
+Ver guardas não inicia combate automaticamente. Uma abordagem que exige resposta
+pode abrir [conversa antes do combate](../aplicacao/conversa-antes-do-combate.md),
+com ambos nas posições de detecção; não concede aproximação gratuita. A intenção de ataque ou uma
 resposta justificada do Mundo inicia conflito e rola iniciativa antes dos golpes.
 Se o jogador ganha, o ataque pedido é resolvido; se um guarda ganha, o jogador
 aguarda os turnos dos NPCs antes de escolher sua ação. Não há ataque gratuito

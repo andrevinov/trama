@@ -5,8 +5,9 @@
       {
         "steps": [
           {
-            "intent": "movement",
-            "target_id": "gate_2"
+            "intent": "scenario",
+            "target_id": "gate_2",
+            "operation": "sneak"
           }
         ],
         "expected_status": "completed"
@@ -190,6 +191,28 @@
         "expected_world_operations": [
           "start_conflict"
         ]
+      }
+    ],
+    "enter_corridor": [
+      {
+        "steps": [
+          {
+            "intent": "movement",
+            "target_id": "corridor"
+          }
+        ],
+        "expected_status": "completed"
+      }
+    ],
+    "hide_in_west": [
+      {
+        "steps": [
+          {
+            "intent": "rule",
+            "operation": "hide"
+          }
+        ],
+        "expected_status": "completed"
       }
     ]
   },
@@ -829,6 +852,603 @@
         "guard_alert": true,
         "combat.active_id": "player",
         "combat.round": 1
+      }
+    },
+    {
+      "id": "abordagem-distante",
+      "scenario": "dungeon_escape.json",
+      "setup": [
+        "enter_corridor"
+      ],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          22
+        ],
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.guard_1": [
+          11,
+          4
+        ],
+        "resources.player.hp": 28,
+        "prisoner_awake": false,
+        "passages.guard_door.is_open": false
+      }
+    },
+    {
+      "id": "conversa-evita-combate",
+      "scenario": "dungeon_escape.json",
+      "setup": [
+        "enter_corridor"
+      ],
+      "rolls": [
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          22
+        ],
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.guard_1": [
+          11,
+          4
+        ],
+        "resources.player.hp": 28,
+        "prisoner_awake": false,
+        "passages.guard_door.is_open": false
+      }
+    },
+    {
+      "id": "conversa-falha-inicia-combate",
+      "scenario": "dungeon_escape.json",
+      "setup": [
+        "enter_corridor"
+      ],
+      "rolls": [
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          2
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          22
+        ],
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.guard_1": [
+          11,
+          4
+        ],
+        "resources.player.hp": 28,
+        "prisoner_awake": false,
+        "passages.guard_door.is_open": false
+      }
+    },
+    {
+      "id": "conversa-jogador-ataca",
+      "scenario": "dungeon_escape.json",
+      "setup": [
+        "enter_corridor"
+      ],
+      "rolls": [
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          2
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          22
+        ],
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.guard_1": [
+          11,
+          4
+        ],
+        "resources.player.hp": 28,
+        "prisoner_awake": false,
+        "passages.guard_door.is_open": false
+      }
+    },
+    {
+      "id": "percepcao-visao-alcance",
+      "scenario": "perception_rooms.json",
+      "setup": [],
+      "preparation_rolls": 0,
+      "rolls": [],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      },
+      "start_variation": [
+        4,
+        2
+      ],
+      "passage_variations": {
+        "door": {
+          "is_open": true
+        }
+      },
+      "sense_variations": {
+        "watcher": {
+          "sight_range_meters": 3,
+          "can_hear": false,
+          "response": "challenge"
+        }
+      }
+    },
+    {
+      "id": "percepcao-porta-fechada",
+      "scenario": "perception_rooms.json",
+      "setup": [],
+      "preparation_rolls": 0,
+      "rolls": [],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      }
+    },
+    {
+      "id": "percepcao-escuridao",
+      "scenario": "perception_rooms.json",
+      "setup": [],
+      "preparation_rolls": 0,
+      "rolls": [],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      },
+      "passage_variations": {
+        "door": {
+          "is_open": true
+        }
+      },
+      "lighting_variations": {
+        "dark": [
+          [
+            8,
+            2
+          ]
+        ]
+      },
+      "sense_variations": {
+        "watcher": {
+          "can_hear": false
+        }
+      }
+    },
+    {
+      "id": "percepcao-visao-no-escuro",
+      "scenario": "perception_rooms.json",
+      "setup": [],
+      "preparation_rolls": 0,
+      "rolls": [],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      },
+      "passage_variations": {
+        "door": {
+          "is_open": true
+        }
+      },
+      "lighting_variations": {
+        "dark": [
+          [
+            8,
+            2
+          ]
+        ]
+      },
+      "sense_variations": {
+        "watcher": {
+          "can_hear": false,
+          "darkvision_meters": 6
+        }
+      }
+    },
+    {
+      "id": "percepcao-som-distante",
+      "scenario": "perception_rooms.json",
+      "setup": [],
+      "preparation_rolls": 0,
+      "rolls": [],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      },
+      "start_variation": [
+        2,
+        2
+      ],
+      "sense_variations": {
+        "watcher": {
+          "hearing_range_meters": 6
+        }
+      }
+    },
+    {
+      "id": "percepcao-grito-distante",
+      "scenario": "perception_rooms.json",
+      "setup": [],
+      "preparation_rolls": 0,
+      "rolls": [],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      },
+      "start_variation": [
+        2,
+        2
+      ],
+      "sense_variations": {
+        "watcher": {
+          "hearing_range_meters": 6
+        }
+      }
+    },
+    {
+      "id": "percepcao-furtividade-passiva",
+      "scenario": "perception_rooms.json",
+      "setup": [],
+      "preparation_rolls": 0,
+      "rolls": [
+        [
+          20,
+          20
+        ]
+      ],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      }
+    },
+    {
+      "id": "percepcao-npc-perspicaz",
+      "scenario": "perception_rooms.json",
+      "setup": [],
+      "preparation_rolls": 0,
+      "rolls": [
+        [
+          20,
+          20
+        ]
+      ],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      },
+      "sense_variations": {
+        "watcher": {
+          "perception_bonus": 12
+        }
+      }
+    },
+    {
+      "id": "percepcao-busca-sucesso",
+      "scenario": "perception_rooms.json",
+      "setup": [
+        "hide_in_west"
+      ],
+      "preparation_rolls": 1,
+      "rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      },
+      "sense_variations": {
+        "watcher": {
+          "searching": true
+        }
+      }
+    },
+    {
+      "id": "percepcao-busca-falha",
+      "scenario": "perception_rooms.json",
+      "setup": [
+        "hide_in_west"
+      ],
+      "preparation_rolls": 1,
+      "rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          1
+        ]
+      ],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      },
+      "sense_variations": {
+        "watcher": {
+          "searching": true
+        }
+      }
+    },
+    {
+      "id": "percepcao-despertar",
+      "scenario": "perception_rooms.json",
+      "setup": [],
+      "preparation_rolls": 0,
+      "rolls": [],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      },
+      "sense_variations": {
+        "sleeper": {
+          "can_hear": true
+        },
+        "watcher": {
+          "can_hear": false,
+          "can_see": false
+        }
+      }
+    },
+    {
+      "id": "percepcao-sono-preservado",
+      "scenario": "perception_rooms.json",
+      "setup": [],
+      "preparation_rolls": 0,
+      "rolls": [],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      },
+      "sense_variations": {
+        "sleeper": {
+          "can_hear": true
+        },
+        "watcher": {
+          "can_hear": false,
+          "can_see": false
+        }
+      }
+    },
+    {
+      "id": "percepcao-furtividade-falha",
+      "scenario": "perception_rooms.json",
+      "setup": [],
+      "preparation_rolls": 0,
+      "rolls": [
+        [
+          20,
+          1
+        ]
+      ],
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "creatures.watcher": [
+          12,
+          3
+        ],
+        "resources.player.hp": 28
+      }
+    },
+    {
+      "id": "turno-npc-distante",
+      "scenario": "npc_turn_corridor.json",
+      "setup": [
+        "start_combat"
+      ],
+      "start_variation": [
+        2,
+        2
+      ],
+      "rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          19
+        ],
+        [
+          20,
+          1
+        ]
+      ],
+      "optional_world_rolls": [
+        [
+          20,
+          1
+        ]
+      ],
+      "preparation_rolls": 3,
+      "preconditions": {
+        "position": [
+          3,
+          3
+        ],
+        "creatures.watcher": [
+          22,
+          3
+        ],
+        "combat.active_id": "player",
+        "combat.round": 1,
+        "mode": "turn_based",
+        "resources.player.hp": 28,
+        "budgets.player.action_used": false,
+        "budgets.watcher.action_used": false,
+        "pending_opportunity": false,
+        "parley": null
+      }
+    },
+    {
+      "id": "turno-npc-aproxima-e-ataca",
+      "scenario": "npc_turn_corridor.json",
+      "setup": [
+        "start_combat"
+      ],
+      "start_variation": [
+        14,
+        2
+      ],
+      "rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          19
+        ],
+        [
+          20,
+          1
+        ]
+      ],
+      "optional_world_rolls": [
+        [
+          20,
+          1
+        ]
+      ],
+      "preparation_rolls": 3,
+      "preconditions": {
+        "position": [
+          15,
+          3
+        ],
+        "creatures.watcher": [
+          22,
+          3
+        ],
+        "combat.active_id": "player",
+        "combat.round": 1,
+        "mode": "turn_based",
+        "resources.player.hp": 28,
+        "budgets.player.action_used": false,
+        "budgets.watcher.action_used": false,
+        "pending_opportunity": false,
+        "parley": null
       }
     }
   ]

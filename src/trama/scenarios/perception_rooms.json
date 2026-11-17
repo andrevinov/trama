@@ -1,0 +1,81 @@
+{
+  "title": "Percepção de NPCs",
+  "width": 24,
+  "height": 5,
+  "start": [
+    8,
+    2
+  ],
+  "areas": [
+    {
+      "id": "west",
+      "name": "Sala oeste",
+      "x": 1,
+      "y": 1,
+      "width": 9,
+      "height": 3,
+      "description": "Sala de pedra separada da sala leste por uma porta de madeira."
+    },
+    {
+      "id": "east",
+      "name": "Sala leste",
+      "x": 11,
+      "y": 1,
+      "width": 12,
+      "height": 3,
+      "description": "Sala onde um vigia pode observar ou procurar sons."
+    }
+  ],
+  "passages": [
+    {
+      "id": "door",
+      "name": "Porta de madeira",
+      "kind": "door",
+      "position": [
+        10,
+        2
+      ],
+      "is_open": false,
+      "locked": false,
+      "connects": [
+        "west",
+        "east"
+      ]
+    }
+  ],
+  "player": {
+    "level": 3,
+    "armor": "none",
+    "weapons": []
+  },
+  "creatures": [
+    {
+      "id": "watcher",
+      "name": "Vigia",
+      "position": [
+        11,
+        2
+      ],
+      "senses": {
+        "response": "observe"
+      }
+    }
+  ],
+  "observers": [
+    {
+      "id": "sleeper",
+      "name": "Dorminhoco",
+      "position": [
+        3,
+        2
+      ],
+      "senses": {
+        "sleeping": true,
+        "can_see": false,
+        "can_hear": false,
+        "perception_bonus": 0,
+        "wake_range_meters": 9
+      }
+    }
+  ]
+}

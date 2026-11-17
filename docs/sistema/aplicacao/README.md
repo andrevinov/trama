@@ -29,6 +29,7 @@ recusar entregas antigas ou duplicadas.
 | Planos e validação | Representar intenções e conferir estrutura, referências e origens declaradas. | [intents.py](../../../src/trama/application/intents.py), [authorization.py](../../../src/trama/application/authorization.py) |
 | Preparação espacial | Consultar requisitos de uma ação e planejar a aproximação necessária. | [preparation.py](../../../src/trama/application/preparation.py), [routing.py](../../../src/trama/application/routing.py) |
 | Deslocamento e reações | Executar percursos com verificações por passo, oportunidades e retomadas. | [travel.py](../../../src/trama/application/travel.py) |
+| Percepção por NPC | Avaliar sentidos, ruídos, ocultação, sono e busca; publicar acontecimentos antes das respostas. | [perception.py](../../../src/trama/application/perception.py), [contratos de sentidos](../../../src/trama/perception.py) |
 | Execução do Mundo | Validar e aplicar propostas de respostas e ações de NPCs. | [world.py](../../../src/trama/application/world.py), [world_resolution.py](../../../src/trama/application/world_resolution.py) |
 | Contextos e projeções | Preparar informação para IA, mapa e fichas, incluindo disponibilidade de ações. | [context.py](../../../src/trama/application/context.py), [context_contracts.py](../../../src/trama/application/context_contracts.py), [sheets.py](../../../src/trama/application/sheets.py), [sheet_options.py](../../../src/trama/application/sheet_options.py) |
 | Impedimentos | Registrar causa, progresso e partes que não foram executadas. | [failures.py](../../../src/trama/application/failures.py) |
@@ -42,7 +43,8 @@ seguinte. Quando necessário e autorizado, a preparação espacial usa os mesmos
 percursos e reações do movimento explícito. A ação é revalidada após a caminhada.
 
 Um impedimento preserva os efeitos já aplicados e interrompe a continuação.
-Se houver iniciativa de NPC, o fluxo solicita sua decisão e resolve o turno.
+Uma abordagem preserva as posições e abre espaço para resposta ainda no modo
+narrado. Se houver iniciativa de NPC, o fluxo solicita sua decisão e resolve o turno.
 Uma oportunidade que exige escolha pausa o processamento e conserva a parte
 ainda não executada para a retomada.
 
@@ -69,6 +71,7 @@ desfaz nem repete operações anteriores.
 | Assunto | Referência de tier 3 |
 | --- | --- |
 | Interpretação semântica e validação de planos | [planos-e-validacao](planos-e-validacao.md) |
+| Conversa antes do combate | [abordagem e Influence](conversa-antes-do-combate.md) |
 | Fluxo do jogo e modos | [fluxo-do-jogo](fluxo-do-jogo.md) |
 | Movimento contextual e preparação espacial | [movimento-contextual](movimento-contextual.md) |
 | Execução das respostas do Mundo | [execucao-do-mundo](execucao-do-mundo.md) |

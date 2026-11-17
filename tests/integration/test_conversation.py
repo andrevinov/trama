@@ -1,5 +1,5 @@
 import json
-from conftest import sourced_plan
+from conftest import world_actions, sourced_plan
 from decimal import Decimal
 from pathlib import Path
 from types import SimpleNamespace
@@ -118,7 +118,7 @@ def test_move_open_enter_sequence_executes_in_order(conversation):
     assert conversation.session.state.position == Position(14, 5)
     assert conversation.session.state.spent_meters == 0
     assert len(conversation.narration_context(report=report)["perception"]["visible_creatures"]) == 3
-    assert report.context()["reactions"] == []
+    assert world_actions(report.context()["reactions"]) == []
 
 
 def test_no_rollback_and_no_later_action_after_budget_interruption(conversation, enter_turn_mode):

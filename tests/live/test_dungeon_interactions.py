@@ -9,7 +9,7 @@ import pytest
 
 from trama.application.conversation import Conversation
 from trama.application.scenarios import load_session
-from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, MovementSegment
+from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, MovementSegment, ScenarioIntent
 from trama.infrastructure.openai_services import open_services
 
 pytestmark = [pytest.mark.live,
@@ -69,7 +69,7 @@ def test_real_investigation_enters_cell_contextually(tmp_path, capture_logs, dic
     scenario = Path(__file__).resolve().parents[2] / 'src/trama/scenarios/dungeon_escape.json'
     session = load_session(scenario, roller=dice(20, 20))
     conversation = Conversation(session)
-    setup = conversation.execute(ActionPlan((MovementIntent((), False, '', 'gate_4'), DoorIntent('open', 'gate_4'))))
+    setup = conversation.execute(ActionPlan((ScenarioIntent('sneak', 'gate_4'), DoorIntent('open', 'gate_4'))))
     assert session.state.position.x == 7 and session.state.position.y == 9
     with capture_logs() as stream:
         try:

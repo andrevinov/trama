@@ -85,11 +85,26 @@ poetry run trama-simulator --situation ataque-com-movimento-insuficiente --debug
 | `ataque-guarda-vence-iniciativa` | Mesmo ponto de aproximação, com dados que favorecem o guarda na iniciativa. |
 | `investigar-grade-fechada` | Personagem diante da Cela 4, com a grade fechada. |
 | `investigar-sem-sair-do-lugar` | Cela 4 aberta; o pedido avaliado pelo teste proíbe aproximação. |
+| `abordagem-distante` | Jogador no corredor antes do ruído; dados levam o guarda à primeira detecção junto à porta. |
+| `conversa-evita-combate` | Mesmo ponto inicial, com Persuasão favorável após a abordagem. |
+| `conversa-falha-inicia-combate` | Mesmo ponto inicial, com Persuasão falha e iniciativa favorável ao guarda. |
+| `conversa-jogador-ataca` | Mesmo ponto inicial, com iniciativa favorável ao guarda quando o jogador escolhe lutar. |
 | `investigar-com-ataque-de-oportunidade` | Personagem junto ao guarda, em combate, com banheiro acessível. |
+
+Os 13 identificadores `percepcao-*` usam `perception_rooms.json`, uma situação
+genérica sem lógica de dungeon. Seus [casos e condições iniciais](../qualidade/percepcao-live.md)
+cobrem visão, porta, escuridão, sons, furtividade, busca e sono. Podem ser abertos
+por `--situation` e reiniciados pelos mesmos mecanismos da aplicação.
+
+Os identificadores `turno-npc-distante` e `turno-npc-aproxima-e-ataca` usam o
+corredor genérico `npc_turn_corridor.json`, com combate preparado por operação
+pública. Consulte os [critérios de conclusão do turno](../qualidade/turnos-npc-live.md).
 
 Cada situação declara:
 
-- `id` e `scenario`: identificação e recurso base `dungeon_escape.json`.
+- `id` e `scenario`: identificação e nome de recurso JSON existente no pacote, sem caminhos externos.
+- `start_variation`, `sense_variations` e `lighting_variations`: posição inicial,
+  perfis sensoriais por id de NPC e casas `dim`/`dark`, validados pelo carregador.
 - `passage_variations`: mudanças explícitas de `is_open`/`locked` antes da construção.
 - `setup`: grupos de planos determinísticos; cada etapa declara seu `intent` e os
   campos dos construtores reais de movimento, porta, regra, narrativa ou cenário.

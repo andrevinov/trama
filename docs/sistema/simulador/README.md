@@ -69,7 +69,7 @@ O cenário padrão acompanha o pacote e o executável instalado funciona também
 fora da raiz do repositório. A única entrada jogável é `trama-simulator`, também
 disponível por `python -m trama.simulator`, com a mesma implementação.
 `--situation ID` abre uma situação do catálogo compartilhado com os oito casos
-live contextuais. A seleção é alternativa a `--scenario`; veja os identificadores
+live contextuais e os quatro de conversa antes do combate. A seleção é alternativa a `--scenario`; veja os identificadores
 no [formato de cenários](carregamento-de-cenarios.md#situações-reproduzíveis).
 Configuração de serviços, controles e formas de diagnóstico têm suas próprias
 referências. Abertura, mensagens e reinício podem chamar a API real.

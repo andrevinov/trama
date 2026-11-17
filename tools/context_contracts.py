@@ -13,8 +13,9 @@ from pathlib import Path
 from trama.application.context_contracts import CONTRACTS, INTERNAL, OPTIONAL_INTERNAL, ContextKind
 from trama.application.conversation import Conversation
 from trama.application.dialogue import Speech
-from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, MovementSegment, RequestPart, RuleIntent, ScenarioIntent
+from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, MovementSegment, RequestPart, RuleIntent, ScenarioIntent, NarrativeIntent
 from trama.application.scenarios import build_session, load_session
+from trama.application.parley import InfluenceRequest
 from trama.application.world import WorldAction, WorldPlan, WorldReaction
 from trama.infrastructure import openai_intent_interpreter, openai_narrator, openai_world_director
 from trama.spatial import Position
@@ -52,13 +53,16 @@ def sample_contexts():
     c = Conversation(load_session(ROOT / 'src/trama/scenarios/dungeon_escape.json', roller=ReviewRoller(20, 20)))
     samples.append(c.narration_context(initial=True))
     # Preparação mecânica até a grade aberta: os dados e as regras são os da aplicação.
-    c.execute(ActionPlan((MovementIntent((), False, '', 'gate_4'), DoorIntent('open', 'gate_4'))))
+    c.execute(ActionPlan((ScenarioIntent('sneak', 'gate_4'), DoorIntent('open', 'gate_4'))))
     speech, plan = action(c, 'Eu checo a cela, procurando por algo útil.', ScenarioIntent('investigate', 'cell_4'))
     samples.extend((c.interpretation_context(), c.world_context(plan)))
     report = c.execute(plan)
     samples.append(c.narration_context(speech, report))
     samples.append(c.interpretation_context())  # Itens conhecidos, lista não vazia.
     samples.append(c.narration_context(c.prepare('[O que descobri?]')))
+    speech, plan = action(c, 'Olho ao redor.', NarrativeIntent('Olho ao redor.', 'look'))
+    report = c.execute(plan)
+    samples.append(c.narration_context(speech, report))  # Memória de testes de perícia permanece narrável.
 
     data = json.loads((ROOT / 'src/trama/scenarios/dungeon_escape.json').read_text())
     data['start'] = [9, 3]
@@ -84,6 +88,17 @@ def sample_contexts():
     samples.append(c.narration_context(report=report))
     samples.append(c.narration_context(c.prepare('[Por que o guarda não atacou?]')))
 
+    # Limite normal de movimento: relatório real sem manter o turno pendente.
+    c = Conversation(build_session(dict(width=26, height=5, start=[2, 2], creatures=[
+        dict(id='watcher', name='Vigia', position=[21, 2])]), roller=ReviewRoller(20, 19, 1)))
+    c.session.execute(RuleIntent('start_combat'))
+    c.session.execute(RuleIntent('end_turn'))
+    report = c.execute_npc_turn(WorldPlan((WorldReaction(0, 0, (
+        WorldAction('watcher', 'move', 'O vigia avança até o limite do turno.', destination=Position(3, 2)),
+    )),)))
+    samples.append(c.narration_context(report=report))
+    samples.append(c.narration_context(c.prepare('[O vigia ainda está agindo?]')))
+
     c = Conversation(build_session(dict(width=4, height=4, start=[1, 1], blocked=[[2, 1]])))
     samples.append(c.narration_context(initial=True))
     speech, plan = action(c, 'Ando para leste.', MovementIntent((MovementSegment('east', 2),), False, ''))
@@ -91,6 +106,34 @@ def sample_contexts():
     report = c.execute(plan)
     samples.append(c.narration_context(speech, report))
     samples.append(c.narration_context(c.prepare('[Por que parei?]')))
+    # Abordagem e Influence gerais, sem adjudicação da dungeon ou payload alternativo.
+    for persuasion_roll in (20, 1):
+        c = Conversation(build_session(dict(width=24, height=3, start=[1, 1], creatures=[
+            dict(id='watcher', name='Vigia', position=[20, 1], hostile=True)]),
+            roller=ReviewRoller(persuasion_roll, 1, 2, 20)))
+        speech, plan = action(c, 'Olho o corredor.', NarrativeIntent('Olho o corredor.', 'look'))
+        report = c.execute(plan, WorldPlan((WorldReaction(0, 0, (
+            WorldAction('watcher', 'parley', 'Pare! Identifique-se.'),)),)))
+        samples.extend((c.interpretation_context(), c.world_context(plan), c.narration_context(speech, report),
+                        c.narration_context(c.prepare('[Posso conversar?]'))))
+        speech, plan = action(c, 'Não lute; ouça minha explicação.', NarrativeIntent('Não lute; ouça minha explicação.', 'speak'))
+        report = c.execute(plan, WorldPlan((WorldReaction(0, None, (
+            WorldAction('watcher', 'influence', 'O vigia hesita em aceitar a explicação.',
+                        influence=InfluenceRequest('hesitant', 'persuasion')),)),)))
+        samples.extend((c.narration_context(speech, report), c.interpretation_context(), c.world_context(plan)))
+        if c.session.encounter.combat:
+            samples.append(c.world_context())
+    # Percepção geral: ocultação e busca reais em um mapa que não é a dungeon.
+    for search_roll in (1, 20):
+        c = Conversation(load_session(ROOT / 'src/trama/scenarios/perception_rooms.json', roller=ReviewRoller(20, search_roll)))
+        speech, plan = action(c, 'Eu me escondo.', RuleIntent('hide'))
+        report = c.execute(plan)
+        samples.extend((c.interpretation_context(), c.world_context(plan), c.narration_context(speech, report)))
+        speech, plan = action(c, 'Aguardo em silêncio.', NarrativeIntent('Aguardo em silêncio.', 'wait'))
+        report = c.execute(plan, WorldPlan((WorldReaction(0, None, (
+            WorldAction('watcher', 'search', 'O vigia busca o fugitivo oculto.', 'player'),)),)))
+        samples.extend((c.narration_context(speech, report), c.world_context(plan), c.interpretation_context(),
+                        c.narration_context(c.prepare('[O que foi percebido?]'))))
     return samples
 
 

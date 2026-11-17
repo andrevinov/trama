@@ -229,10 +229,11 @@ def tactical_mind(sheet: FighterSheet, state: FighterState, total: int, dc: int,
 
 
 def ability_check(sheet: FighterSheet, state: FighterState, skill: str, dc: int, roller: Roller,
-                  *, use_tactical_mind=False, use_inspiration=False) -> tuple[FighterState, D20Roll, int]:
+                  *, use_tactical_mind=False, use_inspiration=False, advantage=False, disadvantage=False) -> tuple[FighterState, D20Roll, int]:
     if state.hp == 0 or type(dc) is not int or dc < 1:
         raise CharacterError("Teste de atributo inválido.")
-    roll = roll_d20(roller, sheet.skill_bonus(skill), advantage=sheet.champion and skill == "athletics")
+    roll = roll_d20(roller, sheet.skill_bonus(skill),
+                    advantage=advantage or (sheet.champion and skill == "athletics"), disadvantage=disadvantage)
     if use_inspiration:
         state, roll = reroll_with_inspiration(state, roll, roller)
     total = roll.total

@@ -75,9 +75,23 @@ O fluxo mantém as seguintes decisões:
   os efeitos parciais e remove somente o impedimento de escolha já resolvido;
   outros impedimentos continuam no relatório. Não pede um novo plano para
   repetir o trecho do NPC que já foi executado.
+- Destino além do movimento disponível do NPC produz `movement_limited`, com
+  percurso/custo reais, `stop_code=insufficient_movement`, motivo em
+  `movement_limit_reason` e `stop_reason=null`. As ações seguintes ainda passam
+  pelas validações normais; gastar movimento não impede um ataque ao alcance.
+- Se uma ação de um plano de NPC falha durante a execução, preserva efeitos e
+  falhas estruturadas, descarta o restante e encerra o turno com
+  `fallback=end_turn`. O fluxo segue para o próximo participante, sem nova
+  decisão da IA ou renovação de recursos dentro do turno. É uma política de
+  recuperação do Trama, não uma regra adicional de D&D. O relatório mantém a
+  causa; `turn_pending` só é verdadeiro quando o ator ainda tem o turno ativo.
 - Falha de narração não desfaz nem repete execução. Falha numa decisão de NPC
   mantém o turno pendente e os efeitos dos NPCs anteriores, sem repetir chamadas
   automaticamente.
+
+Essa última situação inclui indisponibilidade do provedor e rejeição do contrato
+do plano antes da execução; não se inventa uma decisão para esses casos. As
+regressões e a bateria paga focada estão em [turnos de NPCs](../qualidade/turnos-npc-live.md).
 
 Sem interpretador, pedidos on recebem erro explícito. Sem narrador, a execução
 pode fornecer um resumo local em off, identificado como indisponibilidade; a
@@ -131,6 +145,15 @@ alterar o estado. O narrador recebe `execution.player_movement` com ocorrência,
 distância real e posições inicial/final. Uma intenção de caminhar escrita em texto
 não autoriza narrar deslocamento se esse resumo indicar que ele não ocorreu.
 O mapa desenha a posição validada pela aplicação, nos dois modos.
+
+## Abordagem antes da iniciativa
+
+Uma ordem que exige resposta pode interromper a ação em modo narrado. `parley`
+registra interlocutor e posições de detecção; o NPC aguarda a resposta sem ganhar
+aproximação gratuita. Uma fala pode receber julgamento de Influence: sucesso
+permite evitar o confronto, recusa/falha inicia iniciativa nas posições atuais.
+Ataque explícito pode iniciar combate diretamente. Perguntas off preservam a
+abordagem. Veja [contrato, referências e limites](conversa-antes-do-combate.md).
 
 ## Modos
 

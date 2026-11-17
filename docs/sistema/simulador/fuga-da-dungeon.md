@@ -74,21 +74,21 @@ terreno difícil, mas sua casa não é um destino para terminar o movimento.
 Referências da edição 2024: [testes e exploração](https://www.dndbeyond.com/sources/dnd/br-2024/playing-the-game),
 [Study, Search, Influence, Unconscious e Utilize](https://www.dndbeyond.com/sources/dnd/br-2024/rules-glossary),
 [Ilusão Menor](https://www.dndbeyond.com/spells/2619039-minor-illusion).
-As CDs abaixo e as reações são **decisões deste cenário**, não regras gerais de
-audição, disfarce ou rotina de NPCs impostas a todo o motor.
+As CDs de itens/disfarce e as respostas abaixo são decisões do cenário.
+Visão, audição, sono, Hide e Search usam a [percepção geral por NPC](../mundo/visao-e-percepcao.md).
 
 | Situação | Resolução implementada |
 | --- | --- |
 | Investigar a Cela 4 | A espada é encontrada sem teste. Inteligência (Investigação), CD 15, encontra o uniforme. |
-| Passar perto do prisioneiro | Destreza (Furtividade), CD 10, representa o ruído produzido; falha acorda-o. Não se rola Percepção de uma criatura inconsciente. |
-| Acordar/falar junto à cela | O prisioneiro acorda, pede ajuda e informa onde está a chave. |
-| Vozes nas celas | Guarda testa Sabedoria (Percepção), CD 15. Sucesso faz com que abra a porta e investigue o corredor. |
+| Passar perto do prisioneiro | Passos geram emissão normal ou discreta quando oculto; seus sentidos e limiar de despertar decidem se ele acorda, sem teste roteirizado. |
+| Acordar/falar junto à cela | Chamada audível ou contato ao alcance pode acordá-lo. Com a grade fechada, pede ajuda; durante a libertação, agradece em voz baixa. |
+| Vozes nas celas | O guarda só reage se seus sentidos alcançarem o som. Pode investigar e abordar ao obter visão; nenhum teste fixo de audição é imposto pelo roteiro. |
 | Escutar junto à porta dos guardas | Sabedoria (Percepção), CD 10, revela sinais do guarda e sua intenção de ir ao banheiro; não revela o futuro. |
 | Passar-se por empregado | Carisma (Enganação), CD 15, conforme Influence. Falha inicia conflito; não há novas tentativas idênticas para apagar a falha. |
 | Espada com o uniforme | Guarda testa Percepção, CD 10; CD 15 se a espada foi ocultada sob a roupa. Sucesso desfaz o disfarce e inicia iniciativa. |
 | Pegar a chave à vista do guarda | Destreza (Prestidigitação), CD 13. Falha mantém a chave na mesa e inicia conflito. Não se exige esse teste sem observador. |
-| Mover-se furtivamente | Furtividade CD 15, com resultado também usado para o ruído junto à cela. Não concede invisibilidade em plena luz diante do guarda. Aproveite ausência ou distração. |
-| Ilusão Menor do prisioneiro | Som de fuga no corredor, a 7,5 m da cama, duração de 1 minuto. O guarda escolhe examinar o som (Study): Investigação contra CD de magia 13 (INT 16, proficiência +2). Falha leva-o a investigar o ruído; sucesso reconhece a ilusão. |
+| Mover-se furtivamente | Usa Hide geral (CD 15) quando necessário e o movimento real; o total é comparado com a percepção de cada NPC. Exposição visual evidente não concede invisibilidade. |
+| Ilusão Menor do prisioneiro | Som alto de fuga no corredor, a 7,5 m da cama, duração de 1 minuto. Só existe Study/distração se a audição do guarda alcançar a emissão. O guarda escolhe examinar o som (Study): Investigação contra CD de magia 13 (INT 16, proficiência +2). Falha leva-o a investigar o ruído; sucesso reconhece a ilusão. |
 
 O NPC usa um fiapo dos próprios trapos de lã como componente material de Ilusão
 Menor, além do componente somático. Não aparece um foco ou bolsa de componentes.
@@ -103,7 +103,10 @@ A ilusão não enfeitiça, controla a mente nem garante sucesso contra o guarda.
   janela de **quatro ações completas do jogador**, depois ele tenta voltar.
   São intervalos abstratos de tempo do cenário, sem orçamento de turnos ou
   relógio geral. Perguntas off e tentativas inválidas não avançam essa rotina.
-- Ouvir o pedido de ajuda pode trazer o guarda às celas. O roteiro do banheiro
+- O prisioneiro é um observador sensorial próprio em `observers`, sem ficha de Guerreiro.
+  O roteiro reage aos acontecimentos validados pelo motor.
+- Ouvir o pedido de ajuda pode levar o guarda à porta. Ao identificar o jogador,
+  ele o aborda antes de avançar, pela [regra geral de conversa](../aplicacao/conversa-antes-do-combate.md). O roteiro do banheiro
   fica suspenso quando ele está alertado ou em combate.
 - No combate, a IA continua escolhendo deslocamento/ataque/espera do guarda,
   e as regras já existentes aplicam iniciativa, alcance, ações e oportunidades.

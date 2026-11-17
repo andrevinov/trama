@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "experiments": [
+    {
+      "id": "npc-turn-completion-20261116",
+      "scope": "game_flow_from_prepared_situation",
+      "model": "gpt-5.6-terra",
+      "git_head": "18828cee306e9741584372e1d175d60d4f6c5af8",
+      "worktree_dirty": true,
+      "execution_summary": {
+        "attempts": 18,
+        "responses": 16,
+        "usage": {
+          "input_tokens": 102058,
+          "output_tokens": 1388,
+          "total_tokens": 103446,
+          "cached_input_tokens": 34187,
+          "cache_write_tokens": 67823,
+          "reasoning_tokens": 193
+        },
+        "runs": [
+          {
+            "run_id": "20261117T024559-b4c56700",
+            "case_id": "turno-npc-aproxima-e-ataca",
+            "outcome": "failed",
+            "sdk_attempts": 1,
+            "responses": 0,
+            "instructions_sha256": {
+              "narrator_reply": "5714c416c72ecd60df2369ff04dabb1d9ebfb5c202bd2a58072126d9921f68cd"
+            },
+            "result_path": "logs/live/npc_turns/20261117T024559-b4c56700/turno-npc-aproxima-e-ataca/result.json",
+            "trace_path": "logs/live/npc_turns/20261117T024559-b4c56700/turno-npc-aproxima-e-ataca/trace.jsonl",
+            "errors": [],
+            "error": {
+              "type": "AssertionError",
+              "message": "assert (<RunStatus.FAILED: 'failed'> == <RunStatus.CO...: 'completed'>\n  \n  - completed\n  + failed)"
+            }
+          },
+          {
+            "run_id": "20261117T024559-b4c56700",
+            "case_id": "turno-npc-distante",
+            "outcome": "failed",
+            "sdk_attempts": 1,
+            "responses": 0,
+            "instructions_sha256": {
+              "narrator_reply": "5714c416c72ecd60df2369ff04dabb1d9ebfb5c202bd2a58072126d9921f68cd"
+            },
+            "result_path": "logs/live/npc_turns/20261117T024559-b4c56700/turno-npc-distante/result.json",
+            "trace_path": "logs/live/npc_turns/20261117T024559-b4c56700/turno-npc-distante/trace.jsonl",
+            "errors": [],
+            "error": {
+              "type": "AssertionError",
+              "message": "assert (<RunStatus.FAILED: 'failed'> == <RunStatus.CO...: 'completed'>\n  \n  - completed\n  + failed)"
+            }
+          },
+          {
+            "run_id": "20261117T024624-cf9a35b8",
+            "case_id": "turno-npc-aproxima-e-ataca",
+            "outcome": "failed",
+            "sdk_attempts": 1,
+            "responses": 1,
+            "instructions_sha256": {
+              "narrator_reply": "5714c416c72ecd60df2369ff04dabb1d9ebfb5c202bd2a58072126d9921f68cd"
+            },
+            "result_path": "logs/live/npc_turns/20261117T024624-cf9a35b8/turno-npc-aproxima-e-ataca/result.json",
+            "trace_path": "logs/live/npc_turns/20261117T024624-cf9a35b8/turno-npc-aproxima-e-ataca/trace.jsonl",
+            "errors": [],
+            "error": {
+              "type": "TypeError",
+              "message": "AIContext.__init__() missing 1 required positional argument: 'data'"
+            }
+          },
+          {
+            "run_id": "20261117T024624-cf9a35b8",
+            "case_id": "turno-npc-distante",
+            "outcome": "failed",
+            "sdk_attempts": 1,
+            "responses": 1,
+            "instructions_sha256": {
+              "narrator_reply": "5714c416c72ecd60df2369ff04dabb1d9ebfb5c202bd2a58072126d9921f68cd"
+            },
+            "result_path": "logs/live/npc_turns/20261117T024624-cf9a35b8/turno-npc-distante/result.json",
+            "trace_path": "logs/live/npc_turns/20261117T024624-cf9a35b8/turno-npc-distante/trace.jsonl",
+            "errors": [],
+            "error": {
+              "type": "TypeError",
+              "message": "AIContext.__init__() missing 1 required positional argument: 'data'"
+            }
+          },
+          {
+            "run_id": "20261117T024923-88ba1fd6",
+            "case_id": "turno-npc-aproxima-e-ataca",
+            "outcome": "failed",
+            "sdk_attempts": 4,
+            "responses": 4,
+            "instructions_sha256": {
+              "action_plan": "e5656dc127de01ff3c8db0cfa9c90804bbeba88e697b2bf3b960e203aad0df58",
+              "world_response": "0507d434406232d202a180e8d7bc511d4e70659813804f875f990965b528a782",
+              "narrator_reply": "5714c416c72ecd60df2369ff04dabb1d9ebfb5c202bd2a58072126d9921f68cd"
+            },
+            "result_path": "logs/live/npc_turns/20261117T024923-88ba1fd6/turno-npc-aproxima-e-ataca/result.json",
+            "trace_path": "logs/live/npc_turns/20261117T024923-88ba1fd6/turno-npc-aproxima-e-ataca/trace.jsonl",
+            "errors": [
+              [
+                "Dano ou poderes do jogador divergem dos efeitos permitidos.",
+                "Não executou exatamente um ataque legal ao alcançar o jogador."
+              ]
+            ],
+            "error": {
+              "type": "AssertionError",
+              "message": "Dano ou poderes do jogador divergem dos efeitos permitidos.; Não executou exatamente um ataque legal ao alcançar o jogador.\nassert not ['Dano ou poderes do jogador divergem dos efeitos permitidos.', 'Não executou exatamente um ataque legal ao alcançar o jogador.']"
+            }
+          },
+          {
+            "run_id": "20261117T024923-88ba1fd6",
+            "case_id": "turno-npc-distante",
+            "outcome": "passed",
+            "sdk_attempts": 5,
+            "responses": 5,
+            "instructions_sha256": {
+              "action_plan": "e5656dc127de01ff3c8db0cfa9c90804bbeba88e697b2bf3b960e203aad0df58",
+              "world_response": "0507d434406232d202a180e8d7bc511d4e70659813804f875f990965b528a782",
+              "narrator_reply": "5714c416c72ecd60df2369ff04dabb1d9ebfb5c202bd2a58072126d9921f68cd"
+            },
+            "result_path": "logs/live/npc_turns/20261117T024923-88ba1fd6/turno-npc-distante/result.json",
+            "trace_path": "logs/live/npc_turns/20261117T024923-88ba1fd6/turno-npc-distante/trace.jsonl",
+            "errors": [],
+            "error": null
+          },
+          {
+            "run_id": "20261117T025145-d11e40c6",
+            "case_id": "turno-npc-aproxima-e-ataca",
+            "outcome": "passed",
+            "sdk_attempts": 5,
+            "responses": 5,
+            "instructions_sha256": {
+              "action_plan": "e5656dc127de01ff3c8db0cfa9c90804bbeba88e697b2bf3b960e203aad0df58",
+              "world_response": "bc3ab00bc6d10748188943f73f114b7e0e6d284358991495b4b5fe3e59f4b54c",
+              "narrator_reply": "5714c416c72ecd60df2369ff04dabb1d9ebfb5c202bd2a58072126d9921f68cd"
+            },
+            "result_path": "logs/live/npc_turns/20261117T025145-d11e40c6/turno-npc-aproxima-e-ataca/result.json",
+            "trace_path": "logs/live/npc_turns/20261117T025145-d11e40c6/turno-npc-aproxima-e-ataca/trace.jsonl",
+            "errors": [],
+            "error": null
+          }
+        ]
+      },
+      "source_sha256_final": {
+        "src/trama/application/conversation.py": "c1a709ba73f83b294869c74af16bd6e2c637007c49778740409cd6c4d30a5012",
+        "src/trama/application/world_resolution.py": "8eacc9110fff4554b716a2fbd7007a9bfbdb01691ec3225bf1f889289ad94f38",
+        "src/trama/application/game_flow.py": "b586666f517115022ad54c62cf904412974c1a37ba796509d99e33ec6a5e3c22",
+        "src/trama/infrastructure/openai_world_director.py": "c7cdabf11bca46c5e30e3173bd393884077bdf3a9d18dc71c6cbba0c95b1b149",
+        "tests/live/test_npc_turn_completion.py": "d87bcd4808056f994ad12713019fc70ea3b656857fe13d2ccd0660595d5eea2d",
+        "src/trama/scenarios/npc_turn_corridor.json": "c8534ffcdc41cfe643e28b00654cbb31e41a641e8a2d7289244071ead2505398",
+        "tests/fixtures/npc_turns/cases.json": "009544bf4ec5bba5ef3562624ac5fb4bad1231851e3005ec710028370a72fb0b"
+      },
+      "versioned_artifacts": [
+        {
+          "path": "docs/evidencias/2026-11-16-conclusao-turnos-npc/relatorio.md",
+          "bytes": 5733,
+          "sha256": "d6c48c74ccc165382ad336ee554fc187d21ab643a5bb7277290d1df8773c8411"
+        }
+      ],
+      "local_artifacts": [
+        {
+          "path": "logs/live/npc_turns/20261117T024559-b4c56700/turno-npc-aproxima-e-ataca/result.json",
+          "bytes": 39988,
+          "sha256": "b7fe68a9ff1904e2ac346e24752f66cb5653c765d54be3aa85a8ffc7cb3694ad"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T024559-b4c56700/turno-npc-distante/result.json",
+          "bytes": 39975,
+          "sha256": "60b2db6bc5ba82950acb972dbc6295ebf17b66bad33796acf674b940b9afaf4f"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T024624-cf9a35b8/turno-npc-aproxima-e-ataca/result.json",
+          "bytes": 5091,
+          "sha256": "d76ebb2315b66857255843fd1f1f9b6c2c098639e0c2548244494d5ab6cba74a"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T024624-cf9a35b8/turno-npc-distante/result.json",
+          "bytes": 5085,
+          "sha256": "160ffa3a22bdbee4af6e68f672f077ca65b283d37ca30344520998d239b4e0a2"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T024923-88ba1fd6/turno-npc-aproxima-e-ataca/result.json",
+          "bytes": 108291,
+          "sha256": "0470b3da17598a0c4b961191f03cc6b68eabc7e471d065203619a215c90d0bf7"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T024923-88ba1fd6/turno-npc-distante/result.json",
+          "bytes": 145099,
+          "sha256": "f44fef7418f79a40e69947f1ba21f09909e8ad0c38cbe8a9365301da8f7fb71c"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T025145-d11e40c6/turno-npc-aproxima-e-ataca/result.json",
+          "bytes": 148524,
+          "sha256": "3b76ce80b1ef2e92b542752ddf4c9b3f1b1f208f3f8fb8a6c50c2f0207aef59f"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T024559-b4c56700/turno-npc-aproxima-e-ataca/trace.jsonl",
+          "bytes": 82750,
+          "sha256": "6f3bcf38ba4ab125f442a75fd5d64551f8a368cef44139acbf0d97b37b8770b2"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T024559-b4c56700/turno-npc-distante/trace.jsonl",
+          "bytes": 82722,
+          "sha256": "57cfc6789fc9e4880a03db1a48047567a17e9a6ecbd9b543bb6ba2c30b6580b7"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T024624-cf9a35b8/turno-npc-aproxima-e-ataca/trace.jsonl",
+          "bytes": 53627,
+          "sha256": "02ab46526df8e1364b6bc28d1a92324dbdbc784885dc8ca083d0d506a3f3d55d"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T024624-cf9a35b8/turno-npc-distante/trace.jsonl",
+          "bytes": 53589,
+          "sha256": "3218ce42b1878b5052d57387bb5783775b34b966a0e1c176d07613460ff43090"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T024923-88ba1fd6/turno-npc-aproxima-e-ataca/trace.jsonl",
+          "bytes": 163905,
+          "sha256": "dde0251e01147dc933c67935939741d42470fb038eeb61d2f436d063dbfcc779"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T024923-88ba1fd6/turno-npc-distante/trace.jsonl",
+          "bytes": 199853,
+          "sha256": "947470b552b8a2c2dfcdf5fa39a55e5d2e6cb10bcf28e05ba5732acb9909f8b8"
+        },
+        {
+          "path": "logs/live/npc_turns/20261117T025145-d11e40c6/turno-npc-aproxima-e-ataca/trace.jsonl",
+          "bytes": 207770,
+          "sha256": "973beaa52eaab317cdcb138f610a3dfd72df038e1c31961c2cdc28b00942b6a6"
+        },
+        {
+          "path": "logs/live/npc_turns/local-suite-initial.txt",
+          "bytes": 2715,
+          "sha256": "c3fa34c9baf9ff905ceea60a82ce4bc80b9339ac3318e4fff98d76aebb838e41"
+        },
+        {
+          "path": "logs/live/npc_turns/local-suite-final.txt",
+          "bytes": 1151,
+          "sha256": "63abbd060bcaf6164d06fefc79f20c4ec3fd415f20882ed4af59e236ea380daa"
+        },
+        {
+          "path": "logs/live/npc_turns/summary.json",
+          "bytes": 5776,
+          "sha256": "244939bd7642785d8d5c90d7ee66caea5408fe7df8997b3783f8c0ccf5af3a97"
+        }
+      ]
+    }
+  ]
+}

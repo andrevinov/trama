@@ -5,12 +5,13 @@ import logging
 
 from trama.actions import ActionBudget, ActionError, operate_door
 from trama.application.modes import GameMode
+from trama.application.perception import PerceptionRangeError
 from trama.application.routing import path_to_cells
 from trama.application.travel import TravelExecutor
 from trama.application.failures import action_failure, action_reference, actor_position
 from trama.application.session import GameSession
 from trama.application.world import WorldAction, WorldError, WorldReaction
-from trama.characters import CharacterError, ability_check
+from trama.characters import CharacterError
 from trama.movement import MovementError, MovementRequest, MovementState
 from trama.distances import CELL_METERS
 from trama.spatial import Position
@@ -31,22 +32,30 @@ class WorldExecutor:
         if reaction.check:
             check = reaction.check
             self._npc(check.actor_id)
-            encounter = self.session.encounter
-            state, roll, total = ability_check(encounter.sheets[check.actor_id], encounter.states[check.actor_id],
-                                             "perception", check.dc, encounter.roller)
-            encounter.states[check.actor_id] = state
-            passed = total >= check.dc
-            event = {"actor_id": check.actor_id, "operation": "perception_check", "dc": check.dc,
-                     "dice": list(roll.dice), "total": total, "passed": passed, "reason": check.reason,
-                     "changed": False, "perceptible": False}
+            # Compatibilidade de transporte: a proposta não substitui sentidos/CD reais.
+            try:
+                resolved = self.session.perception.search(check.actor_id)
+            except PerceptionRangeError:
+                resolved = dict(found=False, automatic=True, changed=False, perceptible=False)
+            passed = resolved['found']
+            event = {**resolved, 'actor_id': check.actor_id, 'operation': 'perception_check',
+                     'dc': resolved.get('dc'), 'dice': resolved.get('dice', []),
+                     'passed': passed, 'reason': check.reason}
             logger.info("world.check_resolved", extra={"data": event})
             events.append(event)
             if not passed:
                 return events, None
         for index, action in enumerate(reaction.actions):
             try:
+                previous_mode = self.session.mode
                 event = self.execute(action)
                 events.append(event)
+                events.extend(self.session.drain_world_events())
+                if action.operation == 'influence':
+                    return events, (None if event['accepted'] else 'A tentativa de conversa foi recusada; a iniciativa determina quem age agora.')
+                if action.operation == 'start_conflict' or (previous_mode == GameMode.NARRATED
+                        and self.session.mode == GameMode.TURN_BASED):
+                    return events, 'O conflito começou; a iniciativa determina quem age agora.'
                 if event.get("stop_reason"):
                     self.failure = replace(self.failure, skipped_actions=tuple(
                         action_reference(a, action.actor_id) for a in reaction.actions[index + 1:]))
@@ -70,8 +79,12 @@ class WorldExecutor:
 
     def _npc(self, actor_id):
         npc = next((c for c in self.session.creatures if c.id == actor_id), None)
-        if npc is None or self.session.encounter.states[actor_id].hp == 0:
+        if npc is None:
+            npc = next((o for o in self.session.observers if o.id == actor_id), None)
+        if npc is None or (actor_id in self.session.encounter.states and self.session.encounter.states[actor_id].hp == 0):
             raise WorldError("A resposta do Mundo exige um NPC existente e com PV.")
+        if self.session.perception.sleeping(npc):
+            raise WorldError('Um NPC dormindo não pode falar ou agir conscientemente.')
         return npc
 
     def execute(self, action: WorldAction) -> dict:
@@ -89,6 +102,11 @@ class WorldExecutor:
                                               blocked_position=getattr(error, "position", None))
                 logger.exception("world.action_rejected", extra={"data": {"action": action, "failure": self.failure.context()}})
                 raise
+            if action.operation == 'move' and event.get('stop_code') == 'insufficient_movement':
+                # O destino pode estar além do orçamento. O NPC percorreu somente
+                # o trecho legal e ainda pode executar outras ações do plano.
+                event = {**event, 'status': 'movement_limited',
+                         'movement_limit_reason': event['stop_reason'], 'stop_reason': None}
             if event.get("stop_reason"):
                 blocked = event.get("blocked_position")
                 self.failure = action_failure(self.session, action, event["stop_reason"], origin=origin,
@@ -110,9 +128,24 @@ class WorldExecutor:
             return event
         if npc is None:
             raise WorldError("Essa operação exige um NPC; o Mundo não pode controlar o Jogador.")
+        if action.operation == 'search':
+            if action.target_id != encounter.player_id:
+                raise WorldError('Este recorte de Search procura o jogador oculto.')
+            return session.perception.search(npc.id)
+        if action.operation == 'parley':
+            return {**session.offer_parley(npc.id, action.text),
+                    'stop_reason': 'O NPC exige uma resposta. Você pode conversar antes do combate.',
+                    'stop_code': 'parley_pending'}
+        if action.operation == 'influence':
+            return session.resolve_influence(npc.id, action.influence, action.text)
+        if session.parley_pending and action.operation in {'move', 'open', 'close', 'attack'}:
+            raise WorldError('O NPC deve aguardar a resposta à abordagem antes de se aproximar ou atacar.')
+        if npc.id not in encounter.sheets and action.operation != 'say':
+            raise WorldError('Um NPC sem ficha de combate pode perceber, buscar e falar; não recebe ações de Guerreiro.')
         if action.operation == "say":
+            session.emit_noise(npc.id, npc.position, action.volume, 'Fala de um NPC.')
             # A fala é um acontecimento audível decidido pelo Mundo, não visão através de paredes.
-            return {**event, "perceptible": True, "speaker": npc.name}
+            return {**event, "perceptible": True, "speaker": npc.name, "volume": action.volume}
         if action.operation == "end_conflict":
             if encounter.combat is None:
                 raise WorldError("Não há conflito para encerrar.")
@@ -121,11 +154,17 @@ class WorldExecutor:
             session.state = replace(session.state, spent_meters=0, dash_used=False, additional_dash_uses=0,
                                     free_meters=0, speed_reduction_meters=0)
             session.npc_movement.clear()
+            if session.parley is not None:
+                session.parley = replace(session.parley, status="peaceful")
+                session.peaceful_npcs.add(session.parley.actor_id)
             return {**event, "changed": True, "perceptible": True}
         if action.operation == "start_conflict":
             if encounter.combat is not None:
                 return event
-            result = encounter.start(tuple(c.id for c in session.creatures if c.hostile and encounter.states[c.id].hp > 0))
+            result = encounter.start(tuple(c.id for c in session.creatures if (c.hostile or c.id == action.actor_id) and encounter.states[c.id].hp > 0))
+            session.peaceful_npcs.difference_update(e.id for e in encounter.combat.order)
+            if session.parley is not None and any(e.id == session.parley.actor_id for e in encounter.combat.order):
+                session.parley = replace(session.parley, status="combat")
             session.state = replace(session.state, spent_meters=0, dash_used=False, additional_dash_uses=0, free_meters=0)
             return {**event, **result.event, "operation": "start_conflict", "perceptible": True}
         encounter.require_turn(npc.id)
@@ -134,7 +173,7 @@ class WorldExecutor:
         if action.operation == "move":
             # A IA escolhe o destino; a geometria encontra o trajeto e valida cada passo.
             destination = action.destination
-            occupied = {session.state.position} | {c.position for c in session.creatures if c.id != npc.id}
+            occupied = {session.state.position} | {c.position for c in session.creatures if c.id != npc.id} | {o.position for o in session.observers}
             blocked = session.grid.blocked | occupied
             grid = replace(session.grid, blocked=frozenset(blocked))
             goals = frozenset({destination})
@@ -181,6 +220,13 @@ class WorldExecutor:
                 session.grid = session.scene.movement_grid
                 if encounter.combat:
                     encounter.budgets[npc.id] = result.budget
+                else:
+                    session.perceive()
+                    session.observe_npc(npc.id)
+                    if session.parley_pending:
+                        return {**event, 'changed': True, 'target': passage.name, 'is_open': result.is_open,
+                                'status': result.status, 'perceptible': True,
+                                'stop_reason': 'O NPC exige uma resposta antes de continuar.', 'stop_code': 'parley_pending'}
             return {**event, "changed": result.changed, "target": passage.name, "is_open": result.is_open, "status": result.status,
                     "perceptible": passage.position in session.visibility.visible}
         if action.operation == "attack":

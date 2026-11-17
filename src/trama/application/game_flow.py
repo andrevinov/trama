@@ -261,7 +261,7 @@ class GameFlow:
                                           failures=tuple(f for f in self.report.failures if f.code != 'opportunity_pending'))
         else:
             self._npc_turns += 1
-        if npc_report.stop_reason:
+        if self.session.pending_opportunity:
             self._request_narration()
         else:
             self._continue_turns()

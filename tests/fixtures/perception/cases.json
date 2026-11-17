@@ -1,0 +1,110 @@
+[
+  {
+    "id": "percepcao-visao-alcance",
+    "expected": "vision",
+    "messages": [
+      "Caminho até a sala leste."
+    ],
+    "max_sdk_calls": 5
+  },
+  {
+    "id": "percepcao-porta-fechada",
+    "expected": "blocked_sight",
+    "messages": [
+      "Olho para a porta sem sair do lugar."
+    ],
+    "max_sdk_calls": 5
+  },
+  {
+    "id": "percepcao-escuridao",
+    "expected": "dark",
+    "messages": [
+      "Observo a sala em silêncio, sem sair do lugar."
+    ],
+    "max_sdk_calls": 5
+  },
+  {
+    "id": "percepcao-visao-no-escuro",
+    "expected": "darkvision",
+    "messages": [
+      "Observo a sala em silêncio, sem sair do lugar."
+    ],
+    "max_sdk_calls": 5
+  },
+  {
+    "id": "percepcao-som-distante",
+    "expected": "inaudible",
+    "messages": [
+      "Falo em voz normal: tem alguém aí?"
+    ],
+    "max_sdk_calls": 5
+  },
+  {
+    "id": "percepcao-grito-distante",
+    "expected": "loud",
+    "messages": [
+      "Grito bem alto: tem alguém aí?"
+    ],
+    "max_sdk_calls": 5
+  },
+  {
+    "id": "percepcao-furtividade-passiva",
+    "expected": "hidden",
+    "messages": [
+      "Eu me escondo atrás da parede, em silêncio.",
+      "Continuo escondido e sussurro baixinho: estou aqui."
+    ],
+    "max_sdk_calls": 9
+  },
+  {
+    "id": "percepcao-npc-perspicaz",
+    "expected": "passive_found",
+    "messages": [
+      "Eu me escondo atrás da parede, em silêncio.",
+      "Continuo escondido e sussurro baixinho: estou aqui."
+    ],
+    "max_sdk_calls": 9
+  },
+  {
+    "id": "percepcao-busca-sucesso",
+    "expected": "search_found",
+    "messages": [
+      "Aguardo em silêncio, permanecendo escondido."
+    ],
+    "max_sdk_calls": 5
+  },
+  {
+    "id": "percepcao-busca-falha",
+    "expected": "search_failed",
+    "messages": [
+      "Aguardo em silêncio, permanecendo escondido.",
+      "Continuo aguardando em silêncio, sem sair do esconderijo."
+    ],
+    "max_sdk_calls": 9
+  },
+  {
+    "id": "percepcao-despertar",
+    "expected": "awake",
+    "messages": [
+      "Falo em voz normal: acorda, por favor."
+    ],
+    "max_sdk_calls": 5
+  },
+  {
+    "id": "percepcao-sono-preservado",
+    "expected": "asleep",
+    "messages": [
+      "Eu sussurro bem baixinho, sem me mover."
+    ],
+    "max_sdk_calls": 5
+  },
+  {
+    "id": "percepcao-furtividade-falha",
+    "expected": "hide_failed",
+    "messages": [
+      "Eu me escondo atrás da parede, em silêncio.",
+      "Sussurro bem baixinho: estou aqui."
+    ],
+    "max_sdk_calls": 9
+  }
+]

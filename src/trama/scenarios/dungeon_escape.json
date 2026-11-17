@@ -215,14 +215,13 @@
         "weapons": [
           "longsword"
         ]
+      },
+      "senses": {
+        "response": "challenge"
       }
     }
   ],
   "dungeon": {
-    "prisoner_position": [
-      3,
-      17
-    ],
     "guard_home": [
       10,
       3
@@ -332,6 +331,21 @@
       "blocks_movement": false,
       "blocks_vision": false,
       "description": "Tocha acesa, fixada à parede leste do corredor."
+    }
+  ],
+  "observers": [
+    {
+      "id": "prisoner",
+      "name": "Prisioneiro",
+      "position": [
+        3,
+        17
+      ],
+      "senses": {
+        "perception_bonus": 0,
+        "sleeping": true,
+        "wake_range_meters": 9
+      }
     }
   ]
 }

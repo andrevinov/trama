@@ -107,17 +107,52 @@ class TravelExecutor:
             self.session.creatures = tuple(replace(c, position=state.position) if c.id == actor else c
                                            for c in self.session.creatures)
 
+    def _narrated_npc(self, actor, grid, state, request):
+        """Observe à origem e após cada passo, sem saltar o ponto de detecção."""
+        current = state
+        path = [state.position]
+        cost = Decimal('0')
+        session = self.session
+        if actor != session.encounter.player_id:
+            session.observe_npc(actor)
+        else:
+            session.perceive()
+        for destination in request.path:
+            if session.parley_pending or session.mode == GameMode.TURN_BASED:
+                break
+            result = apply_movement(grid, current, MovementRequest((destination,)), turn_based=False)
+            current = result.state
+            self._commit(actor, current)
+            path.extend(result.path[1:])
+            cost += result.cost_meters
+            if result.stop_reason:
+                return replace(result, path=tuple(path), cost_meters=cost)
+            volume = 'quiet' if actor == session.encounter.player_id and session.perception.hidden_total is not None else 'normal'
+            session.emit_noise(actor, current.position, volume, 'Passos no ambiente.')
+            if actor != session.encounter.player_id:
+                session.observe_npc(actor)
+        self._commit(actor, current)
+        if session.parley_pending:
+            return MovementResult(current, tuple(path), cost,
+                'O NPC exige uma resposta; a conversa ocorre antes do combate.', stop_code='parley_pending')
+        if session.mode == GameMode.TURN_BASED:
+            return MovementResult(current, tuple(path), cost,
+                'O conflito começou; a iniciativa determina quem age agora.', stop_code='conflict_started')
+        return MovementResult(current, tuple(path), cost)
+
     def run(self, actor, grid, state, request) -> MovementResult:
         session, encounter = self.session, self.session.encounter
         if session.pending_opportunity is not None:
             raise MovementError("Resolva o ataque de oportunidade pendente antes de continuar.")
         turn_based = session.mode == GameMode.TURN_BASED
+        if not turn_based:
+            return self._narrated_npc(actor, grid, state, request)
         if turn_based:
             state = replace(state, speed_reduction_meters=encounter.sheets[actor].speed_meters - encounter.speed(actor))
         positions = (state.position, *request.path)
-        if (not turn_based or not request.path or not any(
+        if (not request.path or (not self.session.perception.observers() and not any(
                 self._opportunities(actor, origin, destination)
-                for origin, destination in zip(positions, request.path))):
+                for origin, destination in zip(positions, request.path)))):
             result = apply_movement(grid, state, request, turn_based=turn_based)
             suppressed = session.suppressed_opportunity
             if suppressed and suppressed.target_id == actor and (suppressed.origin, suppressed.destination) in zip(result.path, result.path[1:]):
@@ -162,6 +197,8 @@ class TravelExecutor:
             result = apply_movement(grid, current, MovementRequest((destination,), dash))
             current = result.state
             self._commit(actor, current)
+            session.emit_noise(actor, current.position,
+                'quiet' if actor == encounter.player_id and session.perception.hidden_total is not None else 'normal', 'Passos no ambiente.')
             path.extend(result.path[1:])
             cost += result.cost_meters
             protected_cost += result.protected_meters

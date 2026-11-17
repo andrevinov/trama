@@ -163,10 +163,18 @@ iluminado por tochas, um guarda, banheiro, saída e outro prisioneiro. O jogador
 trapos e sem itens. A abertura mágica de sua cela dá início à história.
 
 O simulador exercita exploração, descoberta e coleta de itens, portas e chaves,
-disfarce, furtividade, interação com o prisioneiro e combate básico. Há mapa,
+disfarce, furtividade, interação com o prisioneiro e combate básico. A
+[conversa antes do combate](docs/sistema/aplicacao/conversa-antes-do-combate.md) é
+uma capacidade geral: abordagens preservam a distância e permitem resposta social
+antes da iniciativa. Há mapa,
 campo de visão e consulta de fichas, com **metros como unidade padrão** e casas
 de 1,5 m. O comportamento específico da dungeon inclui testes e respostas
 determinísticas na exploração; as decisões de combate do guarda passam pela IA.
+
+A [percepção dos NPCs](docs/sistema/mundo/visao-e-percepcao.md) também é uma
+capacidade geral: sentidos e alcances próprios, visão/ruídos, percepção passiva,
+Hide, busca deliberada e despertar. O prisioneiro tem perfil sensorial sem ficha
+de Guerreiro. As respostas narrativas continuam cabendo ao Mundo/cenário.
 
 O recorte de personagens cobre Humano, Guerreiro dos níveis 1 a 3 e Campeão.
 Inventário, magia e interações sociais atendem somente aos casos implementados.
@@ -248,6 +256,16 @@ usam um módulo importável e fixtures compartilhadas, sem dependência de scrip
 de POCs. A ferramenta `tools/analyze_interpretation.py` oferece uma prévia offline;
 seus resultados são identificados como contrato parcial do interpretador.
 
+Os [13 casos de percepção](docs/sistema/qualidade/percepcao-live.md) usam salas
+genéricas e perfis sensoriais configuráveis pelo mesmo carregador e runner.
+Suas preparações e critérios foram validados offline; não há execução paga
+afirmada por sua criação.
+Os [dois casos de conclusão de NPCs](docs/sistema/qualidade/turnos-npc-live.md)
+avaliam aproximação, ataque ao alcançar e devolução do turno, com execução
+focada e [evidências datadas](docs/evidencias/2026-11-16-conclusao-turnos-npc/relatorio.md).
+Os [quatro casos de conversa](docs/sistema/qualidade/conversa-live.md) cobrem
+abordagem distante, sucesso/falha de Persuasão e ataque escolhido pelo jogador.
+Foram preparados e validados offline; sua criação não executa chamadas pagas.
 Os oito casos de movimento contextual usam o carregamento, os contextos, os
 adaptadores e o fluxo compartilhados com o simulador. As demais suítes live
 mantêm os limites parciais ou experimentais descritos na documentação. A

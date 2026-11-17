@@ -27,6 +27,7 @@ como tal; sua aprovação não comprova o fluxo completo de uma partida.
 | Testes unitários | Regras e componentes isolados com entradas e resultados controlados. | [tests/unit](../../../tests/unit) |
 | Integração local | Componentes reais em conjunto, incluindo UI sem tela e transporte simulado quando necessário. | [tests/integration](../../../tests/integration) |
 | Live tests | Comportamentos com serviços reais e critérios declarados por suíte. | [tests/live](../../../tests/live/README.md) |
+| Conclusão de NPCs | Movimento limitado, continuação de ações, recuperação e devolução do controle. | [Turnos de NPCs](turnos-npc-live.md) |
 | Análise parcial de interpretação | Comparar variantes do adaptador com expectativas independentes, sem executar ações do jogo. | [Análise de interpretação](analise-de-interpretacao.md) |
 | Preparação de situações | Construção de estados reproduzíveis por operações públicas e verificação de pré-condições. | [Preparação reproduzível](preparacao-de-cenarios.md), [fixtures contextuais](../../../tests/fixtures/contextual_movement/README.md) |
 | Contratos de contexto | Revisão de mudanças nos dados, instruções e esquemas construídos pela aplicação. | [Contratos e procedimento de revisão](../ia/contextos-e-contratos.md) |
@@ -87,6 +88,8 @@ preserva essa distinção. Uma execução por situação não mede repetibilidad
 | Política dos live tests | [politica-live-tests](politica-live-tests.md) |
 | Preparação reproduzível de situações | [preparacao-de-cenarios](preparacao-de-cenarios.md) |
 | Análise parcial do contrato de interpretação | [analise-de-interpretacao](analise-de-interpretacao.md) |
+| Percepção de NPCs live | [Sentidos, casos e orçamento](percepcao-live.md) |
+| Conversa antes do combate live | [Casos, critérios e orçamento](conversa-live.md) |
 | Movimento contextual pelo fluxo compartilhado | [movimento-contextual-live](movimento-contextual-live.md) |
 | Demonstração offline de detecção de regressões | [deteccao-de-regressoes](deteccao-de-regressoes.md) |
 | Testes locais e fronteiras | [testes-locais](testes-locais.md) |

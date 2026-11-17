@@ -65,9 +65,23 @@ observados por fase.
 
 | Fase | Obrigatórios | Opcionais |
 | --- | --- | --- |
-| Interpretação | `mode`, `map`, `character`, `combat`, `visible_creatures`, `equipped_weapons`, `last_attack`, `recent_messages`, `available_actions`, `turn_resources` | `scenario`, `visible_objects` |
-| Mundo e NPC | `mode`, `map`, `character`, `combat`, `visible_creatures`, `equipped_weapons`, `last_attack`, `recent_messages`, `player_sheet`, `visible_enemies`, `world`, `player_plan`, `player_request_parts`, `phase` | `scenario`, `visible_objects`, extensões já reconhecidas `available_actions` e `turn_resources` |
-| Três tipos de narração | `mode`, `character`, `combat`, `phase`, `allow_on`, `player`, `execution`, `previous_execution`, `perception`, `player_sheet`, `world`, `history`, `verified_rules` | Nenhum campo de raiz |
+| Interpretação | `mode`, `sensing`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `equipped_weapons`, `last_attack`, `recent_messages`, `available_actions`, `turn_resources` | `scenario`, `visible_objects` |
+| Mundo e NPC | `mode`, `sensing`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `equipped_weapons`, `last_attack`, `recent_messages`, `player_sheet`, `visible_enemies`, `world`, `player_plan`, `player_request_parts`, `phase` | `scenario`, `visible_objects`, extensões já reconhecidas `available_actions` e `turn_resources` |
+| Três tipos de narração | `mode`, `sensing`, `parley`, `character`, `combat`, `phase`, `allow_on`, `player`, `execution`, `previous_execution`, `perception`, `player_sheet`, `world`, `history`, `verified_rules` | Nenhum campo de raiz |
+
+`sensing` é comum às seis fases: `hidden` e `can_hide` descrevem apenas o
+jogador, sem revelar perfis de NPCs ocultos. `world.perception` contém a visão de
+mestre: perfis, sono, conhecimento por fonte, total real de furtividade e última
+busca. `world.lighting` contém casas de luz fraca/escuridão. NPCs sem ficha de
+classe aparecem entre os observadores, sem turno ou poderes fictícios. O Mundo
+propõe Search; dados, alcance, ação e resultado são calculados pelo motor.
+Veja [percepção por NPC](../mundo/visao-e-percepcao.md).
+
+`parley` é comum às seis fases: `null` sem abordagem, ou interlocutor, exigência,
+posições em base 1 e status `pending`/`peaceful`/`combat`. O registro preserva o
+ponto de detecção; posições atuais continuam no mapa. O Mundo propõe `parley`
+ou `influence` e o narrador recebe o resultado validado, sem escolher dados.
+Veja [conversa antes do combate](../aplicacao/conversa-antes-do-combate.md).
 
 Obrigatório não significa não nulo: `combat` é `null` fora de combate;
 `last_attack` e `previous_execution` podem ser `null`. Em modo narrado,
@@ -82,6 +96,12 @@ on, e narração até doze mensagens com on/off. `verified_rules` vem da aplica�
 não de uma regra inventada pelo teste. `execution.player_movement` é calculado
 dos eventos reais. `previous_execution` guarda identidade, ator, execução e
 situação anteriores; uma pergunta off pode explicá-los sem executá-los novamente.
+
+Na conclusão de NPCs, movimento limitado mantém percurso/custo e motivo em
+`movement_limit_reason`, com `status=movement_limited` e sem `stop_reason` de
+interrupção. Falhas posteriores permanecem em `failures`; o evento de término
+pode registrar `fallback=end_turn` e a causa. O narrador recebe a iniciativa já
+avançada; uma falha recuperada não significa que o NPC ainda está agindo.
 
 Campos de raiz desconhecidos, tipos críticos errados, fase incompatível, off
 na projeção mínima, elementos marcados como ocultos dentro da percepção e dados

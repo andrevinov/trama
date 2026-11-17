@@ -19,13 +19,14 @@ from trama.application.modes import GameMode
 from trama.application.routing import path_to_cells
 from trama.application.session import GameSession
 from trama.application.preparation import SpatialRequirement
-from trama.application.travel import TravelResult
+from trama.application.travel import TravelResult, TravelExecutor
 from trama.characters import ability_check, sheet_from_data
 from trama.creatures import creatures_from_data
-from trama.movement import MovementError, MovementResult, MovementState
+from trama.movement import MovementError, MovementResult, MovementState, MovementRequest
 from trama.scene import Scene
 from trama.spatial import Position
 from trama.vision import line_of_sight
+from trama.perception import Noise, Observer, Senses, observers_from_data
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +48,6 @@ class DungeonState:
     disguise: str = 'untested'
     prisoner_awake: bool = False
     prisoner_free: bool = False
-    prisoner_sleep_checked: bool = False
     guard_alert: bool = False
     guard_activity: str = 'on_duty'
     bathroom_remaining: int = 0
@@ -75,7 +75,10 @@ class DungeonSession(GameSession):
         session = cls(scene.movement_grid, MovementState(Position(*data['start']), player.speed_meters), scene,
                       creatures, player_sheet=player,
                       enemy_sheets=tuple(sheet_from_data(c['sheet'], id=c['id'], name=c['name'])
-                                         for c in data['creatures']), roller=roller)
+                                         for c in data['creatures']), roller=roller,
+                      observers=observers_from_data(data.get('observers', [])) or (Observer(
+                          'prisoner', 'Prisioneiro', Position(*data['dungeon']['prisoner_position']),
+                          Senses(perception_bonus=0, sleeping=True)),))
         session.definition = deepcopy(data['dungeon'])
         session.items = {i['id']: deepcopy(i) for i in session.definition['items']}
         session.title = data.get('title', cls.title)
@@ -83,11 +86,11 @@ class DungeonSession(GameSession):
         return session
 
     def _initialize_dungeon(self):
-        self.dungeon = DungeonState()
-        self.prisoner_position = Position(*self.definition['prisoner_position'])
+        prisoner = self.perception.observer('prisoner')
+        self.dungeon = DungeonState(prisoner_awake=not self.perception.sleeping(prisoner))
+        self.prisoner_position = prisoner.position
         self.item_positions = {id: Position(*item['position']) for id, item in self.items.items()}
         self._events = []
-        self._stealth_total = None
         self._examined_locks = set()
         self._sword_checked = False
         player = self.encounter.player_id
@@ -96,10 +99,6 @@ class DungeonSession(GameSession):
     def reset(self):
         super().reset()
         self._initialize_dungeon()
-
-    def drain_world_events(self):
-        events, self._events = tuple(self._events), []
-        return events
 
     def _event(self, operation, text, *, actor_id='world', perceptible=True, **data):
         event = dict(operation=operation, actor_id=actor_id, text=text, changed=True,
@@ -129,8 +128,7 @@ class DungeonSession(GameSession):
         return self.encounter.states['guard_1'].hp > 0
 
     def _guard_sees_player(self):
-        return (self._guard_available() and self.dungeon.guard_activity != 'bathroom'
-                and line_of_sight(self.guard.position, self.state.position, self.scene.opaque))
+        return self._guard_available() and self.npc_sees_player('guard_1')
 
     def _check(self, actor, skill, dc):
         state, roll, total = ability_check(self.encounter.sheets[actor], self.encounter.states[actor],
@@ -204,7 +202,7 @@ class DungeonSession(GameSession):
         # (PHB 2024, Moving around Other Creatures), mas não é destino livre.
         bodies = frozenset(c.position for c in self.creatures if self.encounter.states[c.id].hp == 0)
         conscious = frozenset(c.position for c in self.creatures if self.encounter.states[c.id].hp > 0)
-        grid = replace(self.grid, blocked=self.grid.blocked | conscious,
+        grid = replace(self.grid, blocked=self.grid.blocked | conscious | frozenset(o.position for o in self.observers if o.id != 'prisoner'),
                        difficult=self.grid.difficult | bodies)
         if not self.dungeon.prisoner_free:
             grid = replace(grid, blocked=grid.blocked | {self.prisoner_position})
@@ -267,9 +265,7 @@ class DungeonSession(GameSession):
                                            visible=self.item_positions[id] in self.visibility.visible and id not in state.inventory)
                                       for id, item in self.items.items() if id in known]
         if self.prisoner_position in self.visibility.visible and not state.companion_escaped:
-            context['visible_creatures'].append(dict(id='prisoner', name='Prisioneiro', hostile=False,
-                column=self.prisoner_position.x + 1, row=self.prisoner_position.y + 1,
-                sleeping=not state.prisoner_awake, free=state.prisoner_free))
+            next(c for c in context['visible_creatures'] if c['id'] == 'prisoner')['free'] = state.prisoner_free
         context['world']['map'] = deepcopy(context['map'])
         # A aparência de uma fechadura não revela se está trancada.
         for passage in context['map']['scene']['passages']:
@@ -288,7 +284,7 @@ class DungeonSession(GameSession):
                 'conceal': 'Ocultar longsword sob o uniforme; não torna uma espada invisível.',
                 'unlock': 'Destrancar grade ao alcance com cell_key; abrir exige etapa open separada.',
                 'listen': 'Ouvir junto de uma porta/cela: target_id da passagem. Revela sinais audíveis, não o futuro.',
-                'sneak': 'Mover-se furtivamente até área/passagem/criatura/objeto conhecido. Executa teste e movimento; não use look para isso.',
+                'sneak': 'Movimento furtivo geral até destino conhecido; Hide CD 15 se necessário, seguido do mesmo percurso. NPCs usam seus próprios sentidos e percepção passiva.',
                 'wake': 'Acordar prisoner ao alcance, inclusive através da grade.',
                 'deceive': 'Tentar passar-se por empregado da limpeza: target_id guard_1, diante dele.',
                 'escape': 'Atravessar a saída aberta: target_id outside; nunca teleporta ou abre portas.',
@@ -300,11 +296,11 @@ class DungeonSession(GameSession):
                           clothing='Trapos de lã', inventory=[],
                           spell='Minor Illusion; som ilusório, CD 13, alcance 9 m, duração 1 minuto; lã dos próprios trapos.'),
             initial_event='A grade da Cela 1 acabou de se abrir magicamente, sem ninguém próximo. O jogador ouviu a fechadura e o metal; não sabe a causa.',
-            adjudication='Interações, testes, ruído, disfarce, rotina e ilusão são resolvidos pelo cenário em código. Não os duplique. Fora de combate, não acrescente deslocamento/conflito do guarda antecipando esses resultados. Em combate resolva o turno do guarda normalmente.',
+            adjudication='Rotina, itens, disfarce e ilusão são resolvidos pelo cenário. Visão, audição, sono, Hide e Search pertencem ao motor geral por NPC; consulte world.perception e não duplique detecções/testes. Sem parley pendente, não antecipe deslocamento/conflito. Com parley pendente, julgue a fala via influence após speak/challenge; resistência explícita pode iniciar conflito. A abordagem e Influence são regras gerais do Trama. Em combate resolva o turno do guarda normalmente.',
             routine='Após dois intervalos de espera em exploração, o guarda vai ao banheiro por quatro ações do jogador; retorna à mesa depois. Escutar revela sinais dessa rotina.',
             checks={'investigation_uniform': 15, 'listen': 10, 'deception': 15,
-                    'sword_notice': 10, 'concealed_sword_notice': 15, 'stealth_floor': 15,
-                    'guard_hearing': 15, 'sleep_noise': 10, 'illusion_investigation': 13})
+                    'sword_notice': 10, 'concealed_sword_notice': 15, 'hide': 15,
+                    'illusion_investigation': 13})
         context['world']['scenario']['prisoner']['spellcasting'] = {'intelligence': 16, 'proficiency_bonus': 2, 'spell_save_dc': 13}
         context['world']['conditions'] = ['Tochas fixadas à parede: não bloqueiam movimento nem visão. Iluminação normal, sem visão no escuro para humanos.',
             'Grades permitem visão; paredes e portas fechadas bloqueiam visão e passagem.',
@@ -321,6 +317,9 @@ class DungeonSession(GameSession):
     def _execute(self, intent, **options):
         if self.dungeon.escaped:
             raise ActionError('A fuga já foi concluída. Reinicie para jogar novamente.')
+        self.validate_preparation(intent)
+        if isinstance(intent, ScenarioIntent) and intent.operation == 'sneak':
+            return super()._execute(intent, **options)
         if isinstance(intent, ScenarioIntent):
             self.encounter.require_turn(self.encounter.player_id)
             return self._scenario_action(intent)
@@ -341,15 +340,11 @@ class DungeonSession(GameSession):
         elif isinstance(intent, NarrativeIntent):
             if intent.operation == 'wait' and self.mode == GameMode.NARRATED:
                 self._wait()
-            elif intent.operation in {'speak', 'challenge'}:
-                if not self.dungeon.prisoner_awake and distance(self.state.position, self._passage('gate_2').position) <= 2:
-                    self._wake_prisoner()
-                else:
-                    self._noise('Voz no setor das celas.')
         self._advance_bathroom()
         return result
 
     def _travel(self, intent, *, movement_path=None, include_remainder=True):
+        self.validate_preparation(intent)
         self.encounter.require_turn(self.encounter.player_id)
         path, _ = self.movement_path(intent) if movement_path is None else (movement_path, 0)
         if not path:
@@ -376,13 +371,16 @@ class DungeonSession(GameSession):
             protected += result.protected_meters
             reactions.extend(getattr(result, 'reactions', ()))
             if len(result.path) > 1:
-                self._passing_prisoner()
                 self._notice_guard()
                 self._follow_prisoner(traversed[-2])
                 self._check_exit()
             if previous_mode == GameMode.NARRATED and self.mode == GameMode.TURN_BASED:
                 result = replace(result, state=self.state, stop_reason='O guarda identificou a fuga; a iniciativa determina quem age agora.',
                                  stop_code='conflict_started')
+            if self.parley_pending:
+                result = replace(result, state=self.state,
+                    stop_reason='O guarda exige que você pare. Você pode responder antes de decidir pelo combate.',
+                    stop_code='parley_pending')
             if result.stop_reason or self.dungeon.escaped:
                 break
         self.last_path = tuple(traversed)
@@ -501,8 +499,11 @@ class DungeonSession(GameSession):
             if not self._near(self.prisoner_position) and not self._near(self._passage('gate_2').position):
                 raise ActionError('Aproxime-se da grade do prisioneiro para acordá-lo.')
             self._pay_action()
-            self._wake_prisoner()
-            changed = True
+            if self._near(self.prisoner_position):
+                self._wake_prisoner()  # Contato físico ao alcance não depende de audição.
+            else:
+                self.emit_noise('player', self.state.position, 'loud', 'Você chama o prisioneiro para acordá-lo.')
+            changed = state.prisoner_awake
         elif operation == 'deceive':
             if target != 'guard_1' or not self._guard_sees_player():
                 raise ActionError('O guarda precisa ver e ouvir você para avaliar o disfarce.')
@@ -511,19 +512,6 @@ class DungeonSession(GameSession):
             self._pay_action()
             self._assess_disguise()
             changed = True
-        elif operation == 'sneak':
-            if self.mode == GameMode.TURN_BASED:
-                raise ActionError('Esta aproximação furtiva é de exploração; Esconder-se em combate ainda não foi implementado.')
-            if self._guard_sees_player() and state.distraction_remaining == 0:
-                raise ActionError('O guarda já vê você na área iluminada; furtividade não o torna invisível.')
-            self._pay_action()
-            _, total = self._check('player', 'stealth', 15)
-            self._stealth_total = total
-            try:
-                result = self._travel(MovementIntent((), False, '', target))
-            finally:
-                self._stealth_total = None
-            return result
         elif operation == 'escape':
             if target != 'outside':
                 raise ActionError('A saída deste cenário é outside.')
@@ -534,49 +522,63 @@ class DungeonSession(GameSession):
         return RuleResult(dict(operation=operation, changed=changed, target_id=target,
                                summary='Consulte os fatos e testes registrados nas respostas do cenário.'))
 
-    def _passing_prisoner(self):
-        state = self.dungeon
-        if state.prisoner_awake or state.prisoner_sleep_checked or distance(self.state.position, self._passage('gate_2').position) > 2:
-            return
-        state.prisoner_sleep_checked = True
-        # Teste do ruído produzido pelo jogador, não de um NPC inconsciente.
-        if self._stealth_total is not None:
-            passed = self._stealth_total >= 10
-        else:
-            passed, _ = self._check('player', 'stealth', 10)
-        if not passed:
-            self._wake_prisoner()
-
     def _wake_prisoner(self):
         if self.dungeon.prisoner_awake:
             return
         self.dungeon.prisoner_awake = True
+        self.perception.awakened.add('prisoner')
+        if self._passage('gate_2').is_open:
+            self._event('say', 'Obrigado! O prisioneiro desperta e fala baixo ao ver sua grade aberta.', actor_id='prisoner')
+            self.emit_noise('prisoner', self.prisoner_position, 'quiet', 'Agradecimento em voz baixa.')
+            return
         self._event('say', 'Ei! Por favor, me solte! A chave está na mesa do guarda!', actor_id='prisoner')
         self.dungeon.discovered.add('cell_key')  # Informação dita pelo prisioneiro; não concede o item.
-        self._noise('O pedido de socorro do prisioneiro ecoa nas celas.')
+        self.emit_noise('prisoner', self.prisoner_position, 'loud',
+                        'O pedido de socorro do prisioneiro ecoa nas celas.')
 
-    def _noise(self, reason):
-        if (not self._guard_available() or self.mode == GameMode.TURN_BASED
-                or self.dungeon.guard_activity == 'bathroom' or self._area() not in {'corridor', 'cell_1', 'cell_2', 'cell_3', 'cell_4'}):
+    def on_perception(self, event):
+        # O motor detecta; este cenário decide o que os personagens fazem depois.
+        if event['operation'] == 'awakened' and event['actor_id'] == 'prisoner':
+            self._wake_prisoner()
             return
-        passed, _ = self._check('guard_1', 'perception', 15)
-        if passed:
+        if event['operation'] != 'perception_detected' or event['actor_id'] != 'guard_1':
+            return super().on_perception(event)
+        if event['target_id'] == 'minor_illusion':
+            return  # O som foi ouvido; Study e distração são resolvidos na interação da magia.
+        if event['target_id'] == 'player' and event['level'] == 'seen':
+            self._notice_guard()
+        elif (event['level'] in {'heard', 'located'} and self.mode == GameMode.NARRATED
+              and not self.parley_pending and not self.dungeon.distraction_remaining
+              and 'guard_1' not in self.peaceful_npcs):
+            # Passos na sala podem ser atividade comum; no setor de celas motivam busca.
+            if event['target_id'] == 'player' and self._area() not in {'corridor', 'cell_1', 'cell_2', 'cell_3', 'cell_4'}:
+                return
             self.dungeon.guard_alert = True
             self.dungeon.guard_activity = 'investigating'
-            self._event('alert', reason + ' O guarda vem investigar.', actor_id='guard_1')
-            self._move_guard(Position(8, 15), open_doors=('guard_door',))
-            self._notice_guard()
+            self._event('alert', 'O guarda ouve um ruído no setor das celas e vem investigar.', actor_id='guard_1')
+            doors = ('bathroom_door', 'guard_door') if self.dungeon.bathroom_remaining > 0 else ('guard_door',)
+            self.dungeon.bathroom_remaining = 0
+            self._move_guard(Position(8, 15), open_doors=doors)
 
     def _notice_guard(self):
         state = self.dungeon
-        if not self._guard_sees_player() or self.mode == GameMode.TURN_BASED or state.escaped:
+        if (not self._guard_sees_player() or self.mode == GameMode.TURN_BASED or state.escaped
+                or self.parley_pending or 'guard_1' in self.peaceful_npcs):
             return
         if state.distraction_remaining:
             return
         if state.clothing == 'cleaner_uniform' and not state.guard_alert:
             self._assess_disguise()
             return
-        self._start_conflict('O guarda vê um prisioneiro solto e intercepta a fuga.')
+        if not self.parley_pending and 'guard_1' not in self.peaceful_npcs:
+            self._events.append(self.offer_parley('guard_1', 'Você aí! Pare! O que está fazendo fora da cela?'))
+
+    def observe_npc(self, actor_id):
+        if actor_id == 'guard_1':
+            self.perceive()
+            self._notice_guard()
+        else:
+            super().observe_npc(actor_id)
 
     def _assess_disguise(self):
         state = self.dungeon
@@ -611,6 +613,19 @@ class DungeonSession(GameSession):
 
     def _move_guard(self, goal, *, open_doors=()):
         """Rotina de exploração: caminho validado, sem atravessar jogador ou portas."""
+        def walk(path):
+            before = self.guard.position
+            result = TravelExecutor(self).run('guard_1', self._guard_movement_grid(),
+                MovementState(before, self.encounter.sheets['guard_1'].speed_meters), MovementRequest(path))
+            if self.guard.position != before:
+                self._event('move', 'O guarda se desloca.', actor_id='guard_1',
+                            origin=coordinate(before), destination=coordinate(self.guard.position),
+                            cost_meters=float(result.cost_meters))
+            return result.stop_reason is None
+
+        self._notice_guard()
+        if self.parley_pending or self.mode == GameMode.TURN_BASED:
+            return False
         for id in open_doors:
             p = self._passage(id)
             # O guarda alcança a porta pelo próprio lado antes de abri-la.
@@ -624,12 +639,16 @@ class DungeonSession(GameSession):
                 approach = path_to_cells(grid, self.guard.position, goals)
             except MovementError:
                 return False
-            if approach:
-                self._set_guard(approach[-1])
+            if approach and not walk(approach):
+                return False
             if distance(self.guard.position, p.position) <= 1:
                 self.scene = self.scene.with_passage(id, True)
                 self.grid = self.scene.movement_grid
                 self._event('open', f'O guarda abre {p.name}.', actor_id='guard_1', target_id=id)
+                self.perceive()
+                self._notice_guard()
+                if self.parley_pending or self.mode == GameMode.TURN_BASED:
+                    return False
         blocked = self.grid.blocked | {self.state.position}
         blocked |= {self.prisoner_position}
         grid = replace(self.grid, blocked=frozenset(blocked))
@@ -639,15 +658,10 @@ class DungeonSession(GameSession):
             self._event('routine_blocked', 'O guarda não consegue completar o percurso; permanece na posição alcançada.',
                         actor_id='guard_1', destination=coordinate(goal))
             return False
-        if path:
-            self._set_guard(path[-1])
-        return True
+        return walk(path) if path else True
 
-    def _set_guard(self, position):
-        before = self.guard.position
-        self.creatures = tuple(replace(c, position=position) if c.id == 'guard_1' else c for c in self.creatures)
-        self._event('move', 'O guarda se desloca.', actor_id='guard_1',
-                    origin=coordinate(before), destination=coordinate(position))
+    def _guard_movement_grid(self):
+        return replace(self.grid, blocked=self.grid.blocked | {self.state.position, self.prisoner_position})
 
     def _wait(self):
         state = self.dungeon
@@ -665,7 +679,7 @@ class DungeonSession(GameSession):
 
     def _advance_bathroom(self):
         state = self.dungeon
-        if self.mode == GameMode.TURN_BASED or state.escaped:
+        if self.mode == GameMode.TURN_BASED or state.escaped or self.parley_pending:
             return
         if state.distraction_remaining:
             state.distraction_remaining -= 1
@@ -688,6 +702,7 @@ class DungeonSession(GameSession):
             return
         if not self.dungeon.prisoner_awake:
             self.dungeon.prisoner_awake = True
+            self.perception.awakened.add('prisoner')
         self.dungeon.prisoner_free = True
         self._event('prisoner_freed', 'O prisioneiro se ergue e revela ser um mago ilusionista. Ele retira um fiapo de lã dos trapos e propõe distrair o guarda.', actor_id='prisoner')
         self._illusion()
@@ -702,6 +717,10 @@ class DungeonSession(GameSession):
         self._event('spell_cast', 'O ilusionista cria o som de uma fuga no fundo do corredor com Ilusão Menor.',
                     actor_id='prisoner', spell='minor_illusion', component='Lã retirada dos próprios trapos',
                     source=coordinate(source), duration_seconds=60, spell_dc=13)
+        self.emit_noise('minor_illusion', source, 'loud', 'Som ilusório de uma fuga ruidosa no corredor.')
+        if not self.perception.hears(self.guard, Noise('minor_illusion', source, 'loud', 'Som ilusório.')):
+            self._event('illusion_unheard', 'O guarda não ouve a ilusão.', actor_id='guard_1', perceptible=False)
+            return
         passed, _ = self._check('guard_1', 'investigation', 13)
         if passed:
             self._event('illusion_recognized', 'O guarda examina o som e reconhece a ilusão.', actor_id='guard_1')
@@ -726,6 +745,7 @@ class DungeonSession(GameSession):
         if path:
             before = self.prisoner_position
             self.prisoner_position = path[-1]
+            self.observers = tuple(replace(o, position=self.prisoner_position) if o.id == 'prisoner' else o for o in self.observers)
             logger.debug('dungeon.companion_moved', extra={'data': {'actor_id': 'prisoner',
                 'origin': coordinate(before), 'destination': coordinate(self.prisoner_position),
                 'path': [coordinate(p) for p in path]}})
@@ -751,6 +771,7 @@ class DungeonSession(GameSession):
             if path is not None:
                 if path:
                     self.prisoner_position = path[-1]
+                    self.observers = tuple(replace(o, position=self.prisoner_position) if o.id == 'prisoner' else o for o in self.observers)
                 self.dungeon.companion_escaped = True
         self.dungeon.escaped = True
         self._event('escaped', 'Você atravessa a saída e escapa da dungeon.' +

@@ -26,8 +26,11 @@ from trama.spatial import Grid, Position
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def at_storage(roller, *, opened=True):
-    s = DungeonSession.from_data(json.loads((ROOT / 'src/trama/scenarios/dungeon_escape.json').read_text()), roller=roller)
+def at_storage(roller, *, opened=True, senses=None):
+    data = json.loads((ROOT / 'src/trama/scenarios/dungeon_escape.json').read_text())
+    if senses:
+        data['creatures'][0]['senses'].update(senses)
+    s = DungeonSession.from_data(data, roller=roller)
     s.state = replace(s.state, position=Position(7, 9))  # Coluna 8, linha 10, como no log.
     if opened:
         s.scene = s.scene.with_passage('gate_4', True)
@@ -244,14 +247,16 @@ def test_world_interrupts_investigation_approach_before_roll(dice):
 
 
 def test_listen_and_wake_publish_reach_requirements_without_new_engine_cases(dice):
-    s = at_storage(dice(20))
+    s = at_storage(dice(20, 20))
+    s.execute(RuleIntent('hide'))
     c = Conversation(s)
     context = c.world_context(ActionPlan((ScenarioIntent('listen', 'guard_door'),)))
     assert context['player_plan'][0]['spatial_requirement']['kind'] == 'in_reach'
     report = c.execute(ActionPlan((ScenarioIntent('listen', 'guard_door'),)))
     assert report.status == 'completed'
     assert s._near(s._passage('guard_door').position)
-    s = at_storage(dice(20, 1))  # Passos discretos; guarda não ouve o pedido de ajuda.
+    s = at_storage(dice(20), senses={'can_hear': False})  # Pré-condição: guarda sem audição.
+    s.execute(RuleIntent('hide'))
     report = Conversation(s).execute(ActionPlan((ScenarioIntent('wake', 'prisoner'),)))
     assert report.status == 'completed'
     assert s.dungeon.prisoner_awake
@@ -359,12 +364,13 @@ def test_dungeon_attack_alone_crosses_open_guard_door_and_uses_longsword(dice):
         MovementIntent((), False, '', 'guard_door'))))
     assert setup.status == 'completed'
     opened = c.execute(ActionPlan((DoorIntent('open', 'guard_door'),)))
-    assert opened.status == 'blocked'  # Reconhecido como fugitivo: começa o conflito.
-    assert s.encounter.combat.active_id == 'player'
+    assert opened.status == 'blocked'  # Reconhecido como fugitivo: pode responder à abordagem.
+    assert s.parley_pending and s.encounter.combat is None
     assert s.scene.area_at(s.state.position).id == 'corridor'
     report = c.execute(ActionPlan((RuleIntent('attack', 'guard_1', 'longsword'),)))
     assert report.status == 'completed'
-    assert [e['operation'] for e in report.events] == ['move', 'attack']
+    assert [e['operation'] for e in report.events] == ['start_combat', 'move', 'attack']
+    assert s.encounter.combat.active_id == 'player'
     assert s.scene.area_at(s.state.position).id == 'guard_room'
     assert s.state.spent_meters == Decimal('4.5')
     assert s.budget.action_used

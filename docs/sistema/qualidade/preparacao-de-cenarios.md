@@ -94,6 +94,7 @@ pré-condições impossíveis, omissão da caminhada/abertura, investigação ma
 e preservação dos canais/memória. Um teste de fronteira proíbe atribuições
 diretas aos campos de estado/histórico nos arquivos live atuais.
 
-Os oito casos contextuais usam a composição e o runner compartilhados. As demais
+Os oito casos contextuais e os quatro de [conversa](conversa-live.md) usam a
+composição e o runner compartilhados. As demais
 suítes mantêm os limites descritos na [cobertura atual](cobertura-atual.md).
 Preparação reproduzível não garante uma resposta determinística do modelo.

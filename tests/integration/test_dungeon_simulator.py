@@ -37,7 +37,7 @@ def interact(s, operation, target):
 
 
 def reach_storage(s):
-    move(s, 'gate_4')
+    interact(s, 'sneak', 'gate_4')
     s.execute(DoorIntent('open', 'gate_4'))
     move(s, 'cell_4')
 
@@ -52,7 +52,10 @@ def find_equipment(s):
 
 
 def reach_guard_door(s):
-    move(s, 'guard_door')
+    if s.perception.hidden_total is None:
+        interact(s, 'sneak', 'guard_door')
+    else:
+        move(s, 'guard_door')
 
 
 def wait_for_bathroom(s):
@@ -109,7 +112,7 @@ def test_items_and_locked_cells_require_reach_and_key(dice):
     s = dungeon(dice(20))
     with pytest.raises(ActionError):
         interact(s, 'investigate', 'cell_4')
-    move(s, 'gate_2')
+    interact(s, 'sneak', 'gate_2')
     with pytest.raises(ActionError, match='trancada'):
         s.execute(DoorIntent('open', 'gate_2'))
     with pytest.raises(ActionError, match='chave'):
@@ -119,7 +122,7 @@ def test_items_and_locked_cells_require_reach_and_key(dice):
 
 def test_closed_storage_lock_is_not_metagame_information(dice):
     s = dungeon(dice(20))
-    move(s, 'gate_4')
+    interact(s, 'sneak', 'gate_4')
     p = next(p for p in s.interpreter_context()['map']['scene']['passages'] if p['id'] == 'gate_4')
     assert p['locked'] is None
     world = next(p for p in s.interpreter_context()['world']['map']['scene']['passages'] if p['id'] == 'gate_4')
@@ -129,20 +132,25 @@ def test_closed_storage_lock_is_not_metagame_information(dice):
 
 
 def test_noise_wakes_prisoner_and_can_bring_guard(dice):
-    s = dungeon(dice(1, 20, 20, 19, 1))  # Passos, audição e iniciativa.
+    s = dungeon(dice())  # Passos evidentes e grito alcançável; nenhum teste aleatório.
     result = move(s, 'gate_2')
     assert s.dungeon.prisoner_awake
     assert s.dungeon.guard_alert
-    assert s.guard.position == Position(8, 15)
-    assert s.mode == GameMode.TURN_BASED  # O guarda chega ao corredor e vê o jogador.
+    assert s.guard.position == Position(9, 5)
+    assert s.mode == GameMode.NARRATED
+    assert s.parley_pending and s.encounter.combat is None
+    assert result.stop_code == 'parley_pending'
+    assert s.encounter.roller.sides == []
     assert s._passage('guard_door').is_open
     assert result.cost_meters > 0
     assert any(e['operation'] == 'say' and e['actor_id'] == 'prisoner' for e in s.drain_world_events())
 
 
-def test_wake_explicitly_requests_release_and_guard_can_miss_noise(dice):
-    s = dungeon(dice(20, 1))
-    move(s, 'gate_2')
+def test_wake_explicitly_requests_release_and_guard_can_be_outside_hearing(dice):
+    data = json.loads(SCENARIO.read_text())
+    data['creatures'][0]['senses']['hearing_range_meters'] = 0
+    s = DungeonSession.from_data(data, roller=dice(20))
+    interact(s, 'sneak', 'gate_2')
     interact(s, 'wake', 'prisoner')
     assert s.dungeon.prisoner_awake
     assert not s.dungeon.guard_alert
@@ -230,11 +238,12 @@ def test_stealth_movement_updates_map_but_not_invisibility_in_lit_room(dice):
         interact(s, 'sneak', 'exit_door')
 
 
-def test_unarmed_arrival_starts_combat_and_no_equipment_is_invented(dice):
+def test_unarmed_arrival_offers_conversation_and_no_equipment_is_invented(dice):
     s = dungeon(dice(20, 20, 19, 1))
     reach_guard_door(s)
     s.execute(DoorIntent('open', 'guard_door'))
-    assert s.encounter.combat
+    assert s.encounter.combat is None and s.parley_pending
+    assert s.encounter.roller.sides == [20]
     assert s.encounter.player_sheet.weapons == ()
     assert not s.dungeon.inventory
 
@@ -293,7 +302,7 @@ def test_parse_new_interactions_and_validate_unknown_items():
 
 def test_named_prisoner_is_a_valid_movement_target_without_fighter_sheet(dice):
     s = dungeon(dice(20))
-    move(s, 'gate_2')
+    interact(s, 'sneak', 'gate_2')
     context = Conversation(s).interpretation_context()
     assert any(c['id'] == 'prisoner' for c in context['visible_creatures'])
     prompt = 'Vou até o prisioneiro.'
@@ -305,7 +314,7 @@ def test_named_prisoner_is_a_valid_movement_target_without_fighter_sheet(dice):
 
 def test_closed_door_stops_partial_movement_and_narration_receives_actual_position(dice):
     s = dungeon(dice(20))
-    report = Conversation(s).execute(ActionPlan((MovementIntent((), False, '', 'guard_room'),)))
+    report = Conversation(s).execute(ActionPlan((ScenarioIntent('sneak', 'guard_room'),)))
     assert report.progress and report.stop_reason
     assert not s._passage('guard_door').is_open
     assert s.state.position == Position(8, 7)
@@ -319,7 +328,8 @@ def test_long_sword_combat_uses_found_weapon_and_actual_armor(dice):
     find_equipment(s)
     reach_guard_door(s)
     s.execute(DoorIntent('open', 'guard_door'))
-    assert s.mode == GameMode.TURN_BASED
+    assert s.parley_pending and s.mode == GameMode.NARRATED
+    s.execute(RuleIntent('start_combat'))  # Escolha explícita de lutar após a abordagem.
     move(s, 'guard_1')
     before = s.encounter.states['guard_1'].hp
     result = s.execute(RuleIntent('attack', 'guard_1', 'longsword'))
@@ -343,7 +353,7 @@ def test_stealth_route_while_guard_is_in_bathroom(dice):
 
 def test_guard_can_recognize_minor_illusion_without_being_charmed(dice):
     s = dungeon(dice(20, 20))
-    move(s, 'gate_2')
+    interact(s, 'sneak', 'gate_2')
     # Congela uma situação intermediária real: jogador obteve a chave.
     s.dungeon.inventory.add('cell_key')
     interact(s, 'unlock', 'gate_2')

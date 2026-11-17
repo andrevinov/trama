@@ -11,7 +11,7 @@ from trama.movement import (
 )
 from trama.scene import Scene
 from trama.application.intents import (
-    DIRECTIONS, DoorIntent, PlayerIntent, MovementIntent, RuleIntent, NarrativeIntent,
+    DIRECTIONS, DoorIntent, PlayerIntent, MovementIntent, RuleIntent, NarrativeIntent, ScenarioIntent,
 )
 from trama.application.routing import path_to, path_to_cells
 from trama.application.preparation import SpatialRequirement
@@ -20,13 +20,16 @@ from trama.creatures import Creature
 from trama.vision import Visibility, field_of_view, line_of_sight
 from trama.application.context import build_context
 from trama.distances import format_meters
-from trama.characters import CharacterError, FighterSheet
+from trama.characters import CharacterError, FighterSheet, ability_check
 from trama.dice import Roller
 from trama.application.encounter import Encounter, RuleResult
 from trama.application.sheets import sheet_context, enemy_summary
 from trama.application.sheet_options import sheet_options
 from trama.application.travel import TravelExecutor
 from trama.application.modes import GameMode
+from trama.application.parley import Parley, InfluenceRequest
+from trama.application.perception import PerceptionSystem
+from trama.perception import Noise, Observer
 from trama.observability import log_context, new_id
 
 logger = logging.getLogger(__name__)
@@ -37,7 +40,7 @@ class GameSession:
         self, grid: Grid, initial_state: MovementState, scene: Scene | None = None,
         creatures: tuple[Creature, ...] = (),
         *, player_sheet: FighterSheet | None = None, enemy_sheets: tuple[FighterSheet, ...] | None = None,
-        roller: Roller | None = None,
+        roller: Roller | None = None, observers: tuple[Observer, ...] = (),
     ) -> None:
         if not grid.contains(initial_state.position) or initial_state.position in grid.blocked:
             raise ValueError("O personagem deve começar em uma casa livre do mapa.")
@@ -48,6 +51,15 @@ class GameSession:
         self.initial_scene = scene
         self.creatures = creatures
         self.initial_creatures = creatures
+        self.observers = observers
+        self.initial_observers = observers
+        if (len({o.id for o in observers}) != len(observers)
+                or {o.id for o in observers} & {c.id for c in creatures}
+                or len({o.position for o in observers}) != len(observers)
+                or any(o.position == initial_state.position or o.position in {c.position for c in creatures} for o in observers)
+                or any(not grid.contains(o.position) or o.position in grid.blocked for o in observers)
+                or any(o.senses.response == 'challenge' for o in observers)):
+            raise ValueError('Observadores precisam de ids distintos e posições livres no mapa.')
         if (len({c.id for c in creatures}) != len(creatures)
                 or len({c.position for c in creatures}) != len(creatures)
                 or any(not grid.contains(c.position) or c.position in grid.blocked
@@ -73,6 +85,10 @@ class GameSession:
         self.auto_opportunity = False
         self.pending_opportunity = None
         self.suppressed_opportunity = None
+        self.parley: Parley | None = None
+        self.peaceful_npcs: set[str] = set()
+        self._events = []
+        self.perception = PerceptionSystem(self)
         self.reset_version = 0
         logger.info("game.session_created", extra={"data": {"player_id": player.id,
                     "position": initial_state.position, "creature_count": len(creatures)}})
@@ -103,8 +119,100 @@ class GameSession:
                 "legend": "Humano · visão normal · áreas claras: visão atual"}
 
     def drain_world_events(self) -> tuple[dict, ...]:
-        """Fatos adicionais de cenários; a sessão básica não produz nenhum."""
-        return ()
+        """Fatos comuns e adicionais do cenário, consumidos pelo fluxo real."""
+        events, self._events = tuple(self._events), []
+        return events
+
+    @property
+    def parley_pending(self):
+        return self.parley is not None and self.parley.status == 'pending'
+
+    def npc_sees_player(self, actor_id):
+        try:
+            return self.perception.sees(self.perception.observer(actor_id), self.state.position)
+        except ActionError:
+            return False
+
+    def perceive(self, noise=None):
+        events = self.perception.evaluate(noise)
+        self._events.extend(events)
+        for event in events:
+            logger.info('perception.detected' if event['operation'] == 'perception_detected' else 'perception.awakened', extra={'data': event})
+            self.on_perception(event)
+        return events
+
+    def on_perception(self, event):
+        if event['operation'] != 'perception_detected' or event['target_id'] != self.encounter.player_id:
+            return
+        observer = self.perception.observer(event['actor_id'])
+        if (observer.senses.response == 'challenge' and event['level'] == 'seen'
+                and self.mode == GameMode.NARRATED and not self.parley_pending
+                and observer.id not in self.peaceful_npcs):
+            self._events.append(self.offer_parley(observer.id, 'Pare! O que você está fazendo aqui?'))
+
+    def emit_noise(self, actor_id, position, volume='normal', reason='Ruído.'):
+        if actor_id == self.encounter.player_id and volume != 'quiet':
+            self.perception.hidden_total = None
+        return self.perceive(Noise(actor_id, position, volume, reason))
+
+    def offer_parley(self, actor_id, demand):
+        """Uma abordagem exige resposta, sem iniciativa ou aproximação adicional."""
+        if self.mode != GameMode.NARRATED or not self.npc_sees_player(actor_id):
+            raise ActionError('A abordagem exige um NPC consciente que perceba o jogador fora de combate.')
+        if not isinstance(demand, str) or not demand.strip():
+            raise ActionError('A abordagem exige uma fala concreta do NPC.')
+        if self.parley_pending:
+            raise ActionError('Já há uma abordagem aguardando resposta.')
+        npc = next(c for c in self.creatures if c.id == actor_id)
+        self.peaceful_npcs.discard(actor_id)
+        self.parley = Parley(actor_id, demand, self.state.position, npc.position)
+        event = dict(operation='parley', text=demand, changed=True,
+                     perceptible=True, speaker=npc.name, **self.parley.context())
+        logger.info('game.parley_started', extra={'data': event})
+        return event
+
+    def observe_npc(self, actor_id):
+        """Aproximação hostil em exploração para na primeira percepção do jogador.
+
+        Cenários podem julgar disfarce/distração antes de solicitar a abordagem;
+        a preservação das posições e a conversa pertencem à sessão geral.
+        """
+        self.perceive()
+        npc = next(c for c in self.creatures if c.id == actor_id)
+        if (self.mode == GameMode.NARRATED and npc.hostile and not self.parley_pending
+                and actor_id not in self.peaceful_npcs and self.npc_sees_player(actor_id)):
+            self._events.append(self.offer_parley(actor_id, 'Pare! O que você está fazendo aqui?'))
+
+    def resolve_influence(self, actor_id, request: InfluenceRequest, reason):
+        if not self.parley_pending or self.parley.actor_id != actor_id or self.encounter.combat:
+            raise ActionError('Não há conversa pendente com esse NPC.')
+        if not isinstance(request, InfluenceRequest):
+            raise ActionError('Informe o julgamento da tentativa de Influence.')
+        event = dict(operation='influence', actor_id=actor_id, text=reason, changed=True,
+                     perceptible=True, willingness=request.willingness, skill=request.skill,
+                     attitude=request.attitude)
+        passed = request.willingness == 'willing'
+        if request.willingness == 'hesitant':
+            player = self.encounter.player_id
+            dc = max(15, self.encounter.sheets[actor_id].abilities.intelligence)
+            state, roll, total = ability_check(self.encounter.player_sheet, self.encounter.states[player],
+                request.skill, dc, self.encounter.roller,
+                advantage=request.attitude == 'friendly', disadvantage=request.attitude == 'hostile')
+            self.encounter.states[player] = state
+            passed = total >= dc
+            event.update(dc=dc, dice=list(roll.dice), total=total, passed=passed,
+                         advantage=roll.advantage, disadvantage=roll.disadvantage)
+        event['accepted'] = passed
+        self.parley = replace(self.parley, status='peaceful' if passed else 'combat')
+        if passed:
+            self.peaceful_npcs.add(actor_id)
+        else:
+            # A recusa desta abordagem torna o interlocutor um adversário,
+            # mesmo se ele não era marcado como hostil antes da conversa.
+            self.creatures = tuple(replace(c, hostile=True) if c.id == actor_id else c for c in self.creatures)
+            event['initiative'] = self._execute_rule(RuleIntent('start_combat')).event
+        logger.info('game.influence_resolved', extra={'data': event})
+        return event
 
     def character_options(self) -> list[dict]:
         """Consulta para a ficha, sem rolagens, gastos ou alteração do estado."""
@@ -172,10 +280,16 @@ class GameSession:
 
     def interpreter_context(self) -> dict:
         context = build_context(self.grid, self.state, self.scene, self.creatures, self.visibility, self.budget)
+        context['visible_creatures'].extend(dict(id=o.id, name=o.name, column=o.position.x + 1,
+            row=o.position.y + 1, hostile=False, sleeping=self.perception.sleeping(o))
+            for o in self.observers if o.position in self.visibility.visible)
         context["player_sheet"] = self.character_context()
         context["visible_enemies"] = self.visible_enemy_summaries()
         context["combat"] = self.combat_context()
         context["mode"] = self.mode.value
+        context["parley"] = self.parley.context() if self.parley else None
+        context["sensing"] = {"hidden": self.perception.hidden_total is not None,
+                              "can_hide": self.perception.can_hide()}
         last = self.encounter.last_attacks.get(self.encounter.player_id)
         context["last_attack"] = ({**last, "target_alive": self.encounter.states[last["target_id"]].hp > 0,
                                    "target_visible": any(c.id == last["target_id"] and c.position in self.visibility.visible
@@ -185,6 +299,7 @@ class GameSession:
             context["character"].update(remaining_meters=None, turn=None,
                                         action_used=False, free_interaction_used=False)
         context["world"] = {
+            "perception": self.perception.context(),
             "opportunity_attacks": {"player": "automatic" if self.auto_opportunity else "confirm",
                                     "guards": "automatic", "reach_meters": 1.5},
             "map": context["map"],
@@ -194,7 +309,10 @@ class GameSession:
                       "sheet": sheet_context(self.encounter.sheets[c.id], self.encounter.states[c.id],
                                              self.encounter.budgets[c.id])}
                      for c in self.creatures],
-            "conditions": ["Iluminação normal nas áreas do cenário.", "Portas fechadas bloqueiam visão e passagem."],
+            "lighting": {"dim": [[p.x + 1, p.y + 1] for p in sorted(self.scene.dim, key=lambda p: (p.y, p.x))],
+                         "dark": [[p.x + 1, p.y + 1] for p in sorted(self.scene.dark, key=lambda p: (p.y, p.x))]} if self.scene else {"dim": [], "dark": []},
+            "conditions": ["Iluminação indicada em world.lighting; humanos não enxergam no escuro sem sentidos especiais.",
+                           "Portas fechadas bloqueiam visão e passagem; som pode atravessá-las com atenuação."],
         }
         return context
 
@@ -226,6 +344,9 @@ class GameSession:
 
     def validate_preparation(self, intent) -> None:
         """Condições conhecidas que não devem provocar caminhada inútil."""
+        if self.parley_pending and not isinstance(intent, NarrativeIntent) and not (
+                isinstance(intent, RuleIntent) and intent.operation in {'attack', 'start_combat'}):
+            raise ActionError('Responda à abordagem antes de continuar: você pode conversar ou iniciar combate.')
         if isinstance(intent, DoorIntent):
             self.encounter.require_turn(self.encounter.player_id)
             passage = next((p for p in self.scene.passages if p.id == intent.target_id), None) if self.scene else None
@@ -259,7 +380,8 @@ class GameSession:
 
     def _movement_grid(self) -> Grid:
         # Guardas Médios hostis e conscientes: não se atravessa o espaço deles.
-        return replace(self.grid, blocked=self.grid.blocked | frozenset(c.position for c in self.creatures))
+        return replace(self.grid, blocked=self.grid.blocked | frozenset(c.position for c in self.creatures)
+                       | frozenset(o.position for o in self.observers))
 
     def execute(self, intent: PlayerIntent, *, movement_path: tuple[Position, ...] | None = None,
                 include_remainder: bool = True) -> MovementResult | DoorActionResult | RuleResult:
@@ -308,9 +430,21 @@ class GameSession:
             raise
 
     def _execute(self, intent: PlayerIntent, *, movement_path=None, include_remainder=True) -> MovementResult | DoorActionResult | RuleResult:
+        self.validate_preparation(intent)
+        if isinstance(intent, ScenarioIntent) and intent.operation == 'sneak':
+            if any(getattr(o, 'hostile', False) and self.perception.sees(o, self.state.position) for o in self.perception.observers()):
+                raise ActionError('Um inimigo já vê você na área iluminada; furtividade não concede invisibilidade.')
+            if self.perception.hidden_total is None:
+                self._execute_rule(RuleIntent('hide'))
+            return self._execute(MovementIntent((), False, '', intent.target_id), **dict(
+                movement_path=movement_path, include_remainder=include_remainder))
         if isinstance(intent, NarrativeIntent):
             self.encounter.require_turn(self.encounter.player_id)
-            return RuleResult({"operation": intent.operation, "changed": False, "text": intent.text,
+            if intent.operation in {'speak', 'challenge'}:
+                self.emit_noise(self.encounter.player_id, self.state.position, intent.volume, 'Fala do jogador.')
+            elif intent.operation == 'look':
+                self.perceive()
+            return RuleResult({"operation": intent.operation, "changed": False, "text": intent.text, "volume": intent.volume,
                                "summary": "Interação recebida, sem alteração mecânica do estado ou posição."})
         if isinstance(intent, RuleIntent):
             if intent.operation not in {"start_combat", "end_turn"}:
@@ -365,7 +499,7 @@ class GameSession:
         if intent.clarification:
             raise MovementError(intent.clarification)
         if intent.target_id is not None:
-            creature = next((c for c in self.creatures if c.id == intent.target_id), None)
+            creature = next((c for c in (*self.creatures, *self.observers) if c.id == intent.target_id), None)
             if creature is not None:
                 if creature.position not in self.visibility.visible:
                     raise MovementError("O alvo não está visível para se aproximar.")
@@ -394,10 +528,35 @@ class GameSession:
 
     def _execute_rule(self, intent: RuleIntent) -> RuleResult:
         player = self.encounter.player_id
+        if intent.operation == 'hide':
+            if not self.perception.can_hide():
+                raise ActionError('É preciso ocultação/cobertura e estar fora da visão inimiga; furtividade não concede invisibilidade em uma área iluminada e exposta.')
+            if self.perception.hidden_total is not None:
+                return RuleResult(dict(operation='hide', changed=False, status='already_satisfied', summary='Você já está escondido.'))
+            budget = self.budget.spend_action() if self.mode == GameMode.TURN_BASED else self.budget
+            state, roll, total = ability_check(self.encounter.player_sheet, self.encounter.states[player],
+                                              'stealth', 15, self.encounter.roller,
+                                              disadvantage=self.encounter.player_sheet.armor == 'chain_mail')
+            self.encounter.states[player] = state
+            self.budget = budget
+            self.perception.hidden_total = total if total >= 15 else None
+            self.perception.revision += 1
+            event = dict(operation='hide', actor_id=player, changed=True, dice=list(roll.dice), total=total,
+                         dc=15, passed=total >= 15, perceptible=True,
+                         advantage=roll.advantage, disadvantage=roll.disadvantage)
+            self._events.append(event)
+            logger.info('perception.hide_resolved', extra={'data': event})
+            return RuleResult(event)
         if intent.operation == "start_combat":
-            enemies = tuple(c.id for c in self.creatures if c.hostile and c.position in self.visibility.visible
+            interlocutor = (self.parley.actor_id if self.parley is not None
+                            and self.parley.status in {'pending', 'combat'} else None)
+            enemies = tuple(c.id for c in self.creatures
+                            if (c.id == interlocutor or (c.hostile and c.position in self.visibility.visible))
                             and self.encounter.states[c.id].hp > 0)
             result = self.encounter.start(enemies)
+            self.peaceful_npcs.difference_update(enemies)
+            if self.parley is not None and self.parley.actor_id in enemies:
+                self.parley = replace(self.parley, status="combat")
             self.state = replace(self.state, spent_meters=Decimal("0"), dash_used=False,
                                  additional_dash_uses=0, free_meters=Decimal("0"))
             return result
@@ -479,6 +638,9 @@ class GameSession:
                 self.budget = result.budget
             else:
                 result = replace(result, budget=self.budget)
+            self.emit_noise(self.encounter.player_id, passage.position,
+                            'quiet' if self.perception.hidden_total is not None else 'normal',
+                            'Uma passagem foi aberta ou fechada.')
         return result
 
     def next_turn(self) -> RuleResult | None:
@@ -507,6 +669,8 @@ class GameSession:
         self.state = self.initial_state
         self.scene = self.initial_scene
         self.creatures = self.initial_creatures
+        self.observers = self.initial_observers
+        self.perception = PerceptionSystem(self)
         if self.scene is not None:
             self.grid = self.scene.movement_grid
         self.budget = ActionBudget(action_used=self.initial_state.dash_used)
@@ -514,5 +678,8 @@ class GameSession:
         self.npc_movement.clear()
         self.pending_opportunity = None
         self.suppressed_opportunity = None
+        self.parley = None
+        self.peaceful_npcs.clear()
+        self._events = []
         logger.info("game.session_reset", extra={"data": {"position": self.state.position,
                     "resources": self.encounter.states.copy(), "budget": self.budget}})

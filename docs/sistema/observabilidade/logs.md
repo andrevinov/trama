@@ -95,6 +95,8 @@ o log não reescreve os dados realmente enviados à API.
 | Portas e ações | `door.resolved`, `door.unchanged`, `action.budget_calculated`; estado da porta e orçamento calculado |
 | Mapa, visão e criaturas | Carregamento, mudança de passagem e recálculo da visão; sem registros por raio ou por quadro da janela |
 | Personagens | `character.power_used`, `character.inspiration_used`, `character.ability_check_resolved`, `character.rest_finished`, `character.mastery_changed` |
+| Sentidos dos NPCs | `perception.detected`, `perception.awakened`, `perception.hide_resolved`, `perception.search_resolved`; observador, fonte, sentido, grau de conhecimento, dados e CD reais. |
+| Abordagem e Influence | `game.parley_started`, `game.influence_resolved`; interlocutor, posições, julgamento, dados, resultado social e iniciativa quando houver. |
 | Mundo | Decisão separada, ações de NPCs, testes de Percepção e interrupções do Jogador |
 | Combate/encontro | Iniciativa, ataque, turno, encerramento, efeitos, ação concluída e orçamento aplicado |
 | Dados | `dice.rolled`, `dice.d20_resolved`, `dice.invalid_result`; faces, resultados individuais, modificador, vantagem/desvantagem e seleção |

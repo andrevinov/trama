@@ -9,7 +9,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from conftest import sourced_plan
+from conftest import world_actions, sourced_plan
 from trama.actions import ActionBudget
 from trama.application.conversation import Conversation
 from trama.application.dialogue import Speech
@@ -114,7 +114,7 @@ def test_explicit_approach_is_not_repeated(prison):
     report = c.execute(plan, world)
     assert report.stop_reason is None
     assert [e['operation'] for e in report.events] == ['move', 'open']
-    assert report.world_events == ()  # Nenhuma casa de aproximação na etapa 1.
+    assert world_actions(report.world_events) == []  # Nenhuma casa de aproximação na etapa 1.
 
 
 def test_explicit_no_movement_is_respected(prison):
@@ -214,7 +214,7 @@ def test_world_interrupts_implicit_approach_at_actual_checkpoint(prison):
     assert prison.state.position == Position(5, 5)
     assert len(prison.last_path) == 3
     assert not prison.scene.passages[1].is_open
-    assert report.world_events[0]['after_squares'] == 2
+    assert world_actions(report.world_events)[0]['after_squares'] == 2
     assert report.events[-1]['status'] == 'blocked'
 
 
@@ -232,15 +232,15 @@ def test_unreached_world_checkpoint_during_approach_does_not_fire(prison):
     reaction = WorldReaction(0, 99, (WorldAction('guard_1', 'say', 'Não deve ocorrer.'),))
     report = Conversation(prison).execute(ActionPlan((DoorIntent('open', 'guard_door'),)), WorldPlan((reaction,)))
     assert report.status == 'completed'
-    assert report.world_events == ()
+    assert world_actions(report.world_events) == []
 
 
 def test_after_interaction_world_reply_fires_after_open_not_after_approach(prison):
     reaction = WorldReaction(0, None, (WorldAction('guard_1', 'say', 'A porta abriu.'),))
     report = Conversation(prison).execute(ActionPlan((DoorIntent('open', 'guard_door'),)), WorldPlan((reaction,)))
     assert prison.scene.passages[1].is_open
-    assert report.world_events[0]['after_squares'] is None
-    assert report.world_events[0]['text'] == 'A porta abriu.'
+    assert world_actions(report.world_events)[0]['after_squares'] is None
+    assert world_actions(report.world_events)[0]['text'] == 'A porta abriu.'
 
 
 def test_world_context_exposes_preparation_and_keeps_original_indices(prison):
@@ -259,14 +259,15 @@ def test_world_context_exposes_preparation_and_keeps_original_indices(prison):
 
 def test_scenario_guard_can_interrupt_preparation(dice):
     s = dungeon()
-    s.encounter.roller = dice(1, 20, 20, 19, 1)
+    s.encounter.roller = dice(1, 20)
     report = Conversation(s).execute(ActionPlan((DoorIntent('open', 'gate_4'), look())))
     assert report.status == 'blocked'
     assert report.progress
-    assert s.encounter.combat
+    assert s.parley_pending and s.encounter.combat is None
+    assert s.guard.position == Position(9, 5)
     assert not s._passage('gate_4').is_open
     assert s.budget.free_interaction_used is False
-    assert any(e['operation'] == 'start_conflict' for e in report.world_events)
+    assert any(e['operation'] == 'parley' for e in report.world_events)
 
 
 def test_strict_door_contract_and_no_movement_flag():

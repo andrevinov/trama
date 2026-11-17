@@ -301,7 +301,7 @@ def test_off_question_keeps_failed_npc_execution_after_window_report_reset(scree
         contexts = []
         def narrate(self, context):
             self.contexts.append(context)
-            return Speech(off="O guarda tentou entrar em (6,4), uma casa bloqueada. O ataque seguinte não aconteceu e o turno dele permanece pendente.")
+            return Speech(off="O guarda tentou entrar em (6,4), uma casa bloqueada. O ataque seguinte não aconteceu e o turno dele foi encerrado.")
 
     interpreter, world, narrator = Interpreter(), World(), Narrator()
     window = MovementWindow(session, interpreter, "simulado", narrator, world)
@@ -309,7 +309,7 @@ def test_off_question_keeps_failed_npc_execution_after_window_report_reset(scree
     window.submit()
     for _ in range(4):
         pump(window)
-    assert not window.pending and session.encounter.combat.active_id == "g1"
+    assert not window.pending and session.encounter.combat.active_id == "player"
     execution_id = window.report.execution_id
     states = session.encounter.states.copy()
     window.input.insert("[Ele não me atacou por quê?]")
@@ -323,7 +323,8 @@ def test_off_question_keeps_failed_npc_execution_after_window_report_reset(scree
     assert failure["skipped_actions"][0]["operation"] == "attack"
     assert interpreter.calls == 1 and world.calls == 2 and len(narrator.contexts) == 2
     assert not window.failed and not window.pending
-    assert session.encounter.states == states and session.encounter.combat.active_id == "g1"
+    assert session.encounter.states == states and session.encounter.combat.active_id == "player"
+    assert not context['previous_execution']['situation']['turn_pending']
 
 
 def test_separate_player_world_and_narration_requests_execute_in_main_thread(screen):

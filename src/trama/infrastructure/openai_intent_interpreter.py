@@ -57,7 +57,7 @@ DOOR_SCHEMA = {"type": "object", "properties": {
 RULE_SCHEMA = {
     "type": "object",
     "properties": {
-        "operation": {"type": "string", "enum": ["end_turn", "second_wind", "action_surge"]},
+        "operation": {"type": "string", "enum": ["end_turn", "second_wind", "action_surge", "hide"]},
         "target_id": {"type": "null"},
         "weapon": {"type": "string", "enum": ["greatsword", "flail", "javelin", "longsword", "unarmed"]},
         "use_inspiration": {"type": "boolean"},
@@ -72,8 +72,9 @@ ATTACK_SCHEMA = {**RULE_SCHEMA, "properties": {**RULE_SCHEMA["properties"],
     "required": [*RULE_SCHEMA["required"], "allow_approach"]}
 NARRATIVE_SCHEMA = {"type": "object", "properties": {
     "operation": {"type": "string", "enum": list(NARRATIVE_OPERATIONS)},
-    "text": {"type": "string", "minLength": 1, "maxLength": 2000}},
-    "required": ["operation", "text"], "additionalProperties": False}
+    "text": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "volume": {"type": "string", "enum": ["quiet", "normal", "loud"]}},
+    "required": ["operation", "text", "volume"], "additionalProperties": False}
 
 SCENARIO_SCHEMA = {"type": "object", "properties": {
     "operation": {"type": "string", "enum": list(SCENARIO_OPERATIONS)},
@@ -220,7 +221,15 @@ blocks_movement e blocks_vision são independentes; fixação não implica bloqu
 Destrancar e abrir são unlock e open. Se pedir ambas, gere ambas em sequência.
 Ir até a saída pode usar move/outside ou escape/outside; portas não abrem sozinhas.
 Disfarçar-se perante o guarda usa deceive/guard_1, após vestir a roupa.
-Não peça testes genéricos: o cenário escolhe perícia, CD e rola os dados.
+hide é uma operação geral para esconder-se: target_id=null, use_inspiration=false.
+sneak é geral e usa target_id do destino, inclusive sem scenario; não acrescente
+move duplicado. O código valida cobertura, rola Furtividade CD 15 se necessário
+e mantém o total como CD de detecção. Não escolha CD nem sucesso.
+Em speak/challenge, volume=quiet para sussurrar, loud para gritar e normal para
+fala comum. Nas outras intenções narrativas, volume=normal. Não transforme uma
+fala em percepção: o motor notifica os NPCs que efetivamente podem ouvi-la.
+Apenas olhar usa look, sem Search ou teste gratuito. Percepção pertence aos
+sentidos dos NPCs, não a um teste inventado pelo interpretador.
 
 attack exige alvo visível e usa weapon de equipped_weapons. Se não há arma,
 use unarmed. Uma arma que o próprio plano manda pegar antes pode ser usada
@@ -252,10 +261,10 @@ def parse_intent(text: str) -> PlayerIntent:
                 raise ValueError("Campos de interação inválidos")
             return ScenarioIntent(value["operation"], value["target_id"], value.get("allow_approach", True))
         if isinstance(value, dict) and value.get("operation") in NARRATIVE_OPERATIONS:
-            if set(value) != {"operation", "text"}:
+            if set(value) not in ({"operation", "text"}, {"operation", "text", "volume"}):
                 raise ValueError("Campos de intenção narrativa inválidos")
-            return NarrativeIntent(value["text"], value["operation"])
-        if isinstance(value, dict) and value.get("operation") in {"end_turn", "attack", "second_wind", "action_surge"}:
+            return NarrativeIntent(value["text"], value["operation"], volume=value.get("volume", "normal"))
+        if isinstance(value, dict) and value.get("operation") in {"end_turn", "attack", "second_wind", "action_surge", "hide"}:
             if set(value) not in ({"operation", "target_id", "weapon", "use_inspiration"},
                                    {"operation", "target_id", "weapon", "use_inspiration", "allow_approach"}):
                 raise ValueError("Operação de combate inválida")

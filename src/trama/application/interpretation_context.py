@@ -23,8 +23,10 @@ def compact_context(context: dict) -> dict:
         {"operation": "move", "description": "Caminhar, voltar, retornar ou recuar até lugar/criatura, coordenadas ou direção/distância; postura é detalhe narrativo."},
         {"operation": "open", "description": "Aproximar-se se necessário e abrir passagem; se já aberta, continuar sem custo. allow_approach=false proíbe deslocamento."},
         {"operation": "close", "description": "Aproximar-se se necessário e fechar passagem; se já fechada, continuar sem custo. allow_approach=false proíbe deslocamento."},
+        {"operation": "hide", "description": "Esconder-se com cobertura/ocultação e fora da visão inimiga; CD 15, total define a detecção posterior."},
+        {"operation": "sneak", "description": "Mover-se furtivamente até target_id, com Hide se necessário. Disponível em qualquer cenário; não duplica move."},
         {"operation": "look", "description": "Olhar a partir da posição atual, sem teste."},
-        {"operation": "speak", "description": "Falar ou perguntar a alguém no mundo."},
+        {"operation": "speak", "description": "Falar, responder à abordagem ou tentar convencer alguém no mundo. Proponha speak; o Mundo julga Influence, sem inventar sucesso."},
         {"operation": "wait", "description": "Permanecer ou aguardar no modo narrado, sem turnos. Em combate, passar a vez usa end_turn."},
         {"operation": "challenge", "description": "Anunciar um desafio."},
         {"operation": "attack", "description": "Atacar alvo visível. Movimento contextual aproxima ao alcance; a iniciativa precede essa caminhada em combate. allow_approach=false proíbe aproximar."},
@@ -36,6 +38,8 @@ def compact_context(context: dict) -> dict:
     combat = context.get("combat")
     result = {
         "mode": context.get("mode", "narrated"), "map": map_context,
+        "parley": deepcopy(context.get("parley")),
+        "sensing": deepcopy(context.get("sensing", {"hidden": False, "can_hide": False})),
         "character": {key: character[key] for key in ("column", "row", "current_area", "speed_meters", "remaining_meters") if key in character},
         "visible_creatures": deepcopy(context.get("visible_creatures", [])),
         "combat": ({key: combat[key] for key in ("round", "active_id", "player_turn") if key in combat} if combat else None),

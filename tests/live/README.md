@@ -9,7 +9,7 @@ e tem regressões offline; os oito casos contextuais já usam essa entrada pela
 agenda sem janela. As outras suítes mantêm os limites descritos em cada cenário.
 
 A [cobertura atual](../../docs/sistema/qualidade/cobertura-atual.md) classifica os
-seis arquivos e distingue fluxo completo, contratos parciais e experimentos.
+arquivos e distingue fluxo completo, contratos parciais e experimentos.
 A [execução sem janela](../../docs/sistema/interfaces/execucao-sem-janela.md) usa
 o mesmo coordenador. Escolhas ausentes não equivalem a recusa automática.
 O [experimento contextual](../../docs/evidencias/2026-11-16-movimento-contextual/relatorio.md)
@@ -43,6 +43,45 @@ contextos, instruções ou esquemas, confira a referência com
 offline correspondente reconstroem os contratos atuais, sem chamadas externas.
 Não use `docs/contracts/ai-contexts.json` para fabricar payloads dos testes live;
 o arquivo é somente evidência de revisão.
+
+## Suíte focada: conclusão de turnos de NPCs
+
+`test_npc_turn_completion.py` tem dois casos: aproximação com inimigo distante e
+aproximação seguida de ataque ao alcançar. Ambos exigem devolver o controle e
+responder a pergunta off sem alterar o estado. Consulte
+[critérios, limites e evidências](../../docs/sistema/qualidade/turnos-npc-live.md).
+Uma tentativa por caso: 10 chamadas normais, teto de 12 com correções,
+a partir do combate preparado e sem narração de abertura.
+
+```bash
+RUN_OPENAI_LIVE_TESTS=1 poetry run pytest tests/live/test_npc_turn_completion.py -m live -v
+```
+
+## Suíte focada: percepção dos NPCs
+
+`test_npc_perception.py` usa 13 situações genéricas, sem regras de dungeon:
+visão/alcance, portas, escuridão/visão no escuro, som, passiva, Hide, Search e sono.
+Consulte [casos, critérios, autorização e evidências](../../docs/sistema/qualidade/percepcao-live.md).
+Uma bateria prevê 64 chamadas normais e teto de 81, uma repetição por caso.
+Criar/coletar os testes não executa chamadas pagas.
+
+```bash
+poetry run pytest tests/live/test_npc_perception.py --collect-only -q
+RUN_OPENAI_LIVE_TESTS=1 poetry run pytest tests/live/test_npc_perception.py -m live -v
+```
+
+## Suíte focada: conversa antes do combate
+
+Os quatro casos em `test_parley.py` usam situações jogáveis, abertura e mensagens
+pelo runner real: abordagem distante, sucesso/falha de Persuasão e ataque escolhido
+pelo jogador. Consulte [critérios, limites e artefatos](../../docs/sistema/qualidade/conversa-live.md).
+Uma bateria tem 27 chamadas normais e teto de 34, sem repetir até passar.
+A criação e a coleta são offline; chamadas pagas requerem autorização explícita.
+
+```bash
+poetry run pytest tests/live/test_parley.py --collect-only -q
+RUN_OPENAI_LIVE_TESTS=1 poetry run pytest tests/live/test_parley.py -m live -v
+```
 
 ## Suíte focada: movimento contextual no simulador
 

@@ -69,7 +69,7 @@ class RuleIntent:
     allow_approach: bool = True
 
     def __post_init__(self) -> None:
-        if (self.operation not in {"start_combat", "end_turn", "attack", "second_wind", "action_surge"}
+        if (self.operation not in {"start_combat", "end_turn", "attack", "second_wind", "action_surge", "hide"}
                 or self.weapon not in {"greatsword", "flail", "javelin", "longsword", "unarmed"}
                 or type(self.use_inspiration) is not bool or type(self.allow_approach) is not bool
                 or (self.target_id is not None and (not isinstance(self.target_id, str) or not self.target_id))
@@ -86,9 +86,11 @@ class NarrativeIntent:
     text: str
     operation: str = "look"
     target_id: str | None = None
+    volume: str = "normal"
 
     def __post_init__(self):
-        if (not isinstance(self.text, str) or not self.text.strip() or len(self.text) > 2000
+        if (self.volume not in {"quiet", "normal", "loud"}
+                or (self.operation not in {"speak", "challenge"} and self.volume != "normal") or not isinstance(self.text, str) or not self.text.strip() or len(self.text) > 2000
                 or self.operation not in NARRATIVE_OPERATIONS or self.target_id is not None):
             raise ValueError("Intenção narrativa inválida.")
 
@@ -115,7 +117,7 @@ PlayerIntent = MovementIntent | DoorIntent | RuleIntent | NarrativeIntent | Scen
 
 
 REQUEST_KINDS = ("execute", "question", "negated", "quoted", "narrative_detail", "unsupported", "conditional", "unclear")
-PLAN_OPERATIONS = ("move", "open", "close", "attack", "end_turn", "second_wind", "action_surge",
+PLAN_OPERATIONS = ("hide", "move", "open", "close", "attack", "end_turn", "second_wind", "action_surge",
                    *NARRATIVE_OPERATIONS, *SCENARIO_OPERATIONS, "clarify", "dash", "inspiration")
 
 
