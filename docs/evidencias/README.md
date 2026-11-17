@@ -15,6 +15,8 @@ uma nova implementação não transforma resultados antigos em aprovação atual
 - [17/11/2026 — Vínculos por memória](2026-11-17-vinculos-memoria/relatorio.md): mesma alegação em vários interesses sem pontuação duplicada; três casos aprovados nas execuções registradas, com falha semântica inicial preservada.
 
 - [17/11/2026 — Dificuldades contextuais e memórias](2026-11-17-dificuldade-contextual/relatorio.md): dez casos novos com execução aprovada, três falhas iniciais preservadas e 40 chamadas ao SDK.
+- [17/11/2026 — Agência dos NPCs e fatos da narração](2026-11-17-agencia-npcs/relatorio.md): três casos novos aprovados, espera limitada, cochichos privados e off sem avanços; 33 chamadas incluindo revisão de linguagem.
+
 Logs brutos permanecem nos diretórios locais indicados nos relatórios, ignorados
 pelo Git. Estes relatórios não equivalem a autorização para repetir chamadas.
 

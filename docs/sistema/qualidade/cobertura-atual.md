@@ -11,6 +11,7 @@ fluxo completo. Os dados e as escolhas de cada fixture continuam explícitos.
 
 | Suíte em `tests/live` | Casos | Escopo efetivo | Limite |
 | --- | ---: | --- | --- |
+| `test_npc_agency_live.py` | 3 | Fluxo oficial: agência após conversas paralelas, observações próprias e perguntas off sem avanços. | [Três casos aprovados](../../evidencias/2026-11-17-agencia-npcs/relatorio.md); consulta off reavaliada após refinamento de linguagem, 33 chamadas no total. [Casos e limites](agencia-live.md). |
 | `test_contextual_difficulty_live.py` | 10 | Fluxo oficial: três conversas com referências de memória e sete tarefas contextuais; CDs fixas ficam no código. | [Dez casos aprovados nas execuções medidas](../../evidencias/2026-11-17-dificuldade-contextual/relatorio.md), três falhas iniciais preservadas; [critérios e limites](dificuldade-live.md). |
 | `test_memory_evidence_links_live.py` | 3 | Fluxo compartilhado na dungeon: frase real, vários interesses por alegação e repetição sem outra rolagem. | Três casos com execuções aprovadas; original reavaliado após ajuste de categoria/fonte. [Falha preservada e limites](../../evidencias/2026-11-17-vinculos-memoria/relatorio.md). |
 | `test_social_disposition_live.py` | 7 | Fluxo compartilhado desde abordagem audível: perfis, alinhamentos, recompensas e informação relevante. | Corrupto completo aprovado após correção; cinco casos simples satisfazem os critérios corrigidos em revisão offline da medição; memória incompleta. [Falhas e limites](../../evidencias/2026-11-17-disposicao-social/relatorio.md). |

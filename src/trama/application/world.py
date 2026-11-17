@@ -6,6 +6,7 @@ from typing import Protocol
 from trama.spatial import Position
 from trama.application.parley import InfluenceRequest
 from trama.difficulty import Adjudication
+from trama.agency import IntentDecision
 
 
 class WorldError(ValueError):
@@ -44,7 +45,7 @@ class WorldAction:
                 or not isinstance(self.actor_id, str) or not self.actor_id
                 or self.volume not in {'quiet', 'normal', 'loud'}
                 or (self.operation != 'say' and self.volume != 'normal')
-                or self.operation not in {"describe", "say", "move", "open", "close", "attack", "wait", "start_conflict", "end_conflict", "parley", "influence", "search"}
+                or self.operation not in {"describe", "say", "move", "open", "close", "attack", "wait", "start_conflict", "end_conflict", "parley", "influence", "search", "resume_activity"}
                 or not isinstance(self.text, str) or not self.text.strip() or len(self.text) > 2000
                 or self.weapon not in {"greatsword", "flail", "javelin", "longsword", "unarmed"}
                 or (self.operation == "move") != isinstance(self.destination, Position)
@@ -78,8 +79,11 @@ class WorldReaction:
 class WorldPlan:
     reactions: tuple[WorldReaction, ...] = ()
     adjudications: tuple[Adjudication, ...] = ()
+    intent: IntentDecision | None = None
 
     def __post_init__(self):
+        if self.intent is not None and not isinstance(self.intent, IntentDecision):
+            raise WorldError('Intenção do NPC inválida.')
         if len(self.reactions) > 10 or not all(isinstance(r, WorldReaction) for r in self.reactions):
             raise WorldError("O Mundo excedeu o limite de respostas por mensagem.")
         if (not isinstance(self.adjudications, tuple) or len(self.adjudications) > 32

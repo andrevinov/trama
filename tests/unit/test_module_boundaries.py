@@ -26,11 +26,14 @@ import pytest
     ("application/travel", {"trama.application.modes", "trama.characters", "trama.movement",
                             "trama.reactions", "trama.spatial", "trama.vision"}),
     ("difficulty", set()),
-    ("application/world", {"trama.spatial", "trama.application.parley", "trama.difficulty"}),
+    ("agency", set()),
+    ("application/agency", {"trama.actions", "trama.agency"}),
+    ("application/world", {"trama.spatial", "trama.application.parley", "trama.difficulty", "trama.agency"}),
     ("application/parley", {"trama.spatial", "trama.social"}),
     ("application/authorization", {"trama.application.dialogue", "trama.application.intents"}),
     ("application/interpretation_context", set()),
     ("application/context_contracts", set()),
+    ("application/combat_tracker", set()),
     ("application/preparation", {"trama.application.intents", "trama.application.routing", "trama.movement", "trama.spatial"}),
     ("application/failures", {"trama.spatial"}),
     ("application/scenarios", {"trama.application.dungeon", "trama.application.session", "trama.characters",
@@ -55,7 +58,7 @@ import pytest
     ("infrastructure/openai_json", {"trama.observability", "trama.infrastructure.openai_config", "trama.infrastructure.call_budget"}),
     ("infrastructure/openai_intent_interpreter", {"trama.application.context_contracts", "trama.application.authorization", "trama.application.interpretation_context", "trama.application.modes", "trama.application.intents", "trama.distances", "trama.knowledge", "trama.infrastructure.openai_json", "trama.infrastructure.openai_config", "trama.infrastructure.call_budget", "trama.observability"}),
     ("infrastructure/openai_narrator", {"trama.application.context_contracts", "trama.application.modes", "trama.application.dialogue", "trama.infrastructure.openai_json", "trama.infrastructure.openai_config", "trama.infrastructure.call_budget", "trama.observability"}),
-    ("infrastructure/openai_world_director", {"trama.application.parley", "trama.application.context_contracts", "trama.application.modes", "trama.application.world", "trama.spatial", "trama.social", "trama.difficulty", "trama.infrastructure.openai_json", "trama.infrastructure.openai_config", "trama.infrastructure.call_budget", "trama.observability"}),
+    ("infrastructure/openai_world_director", {"trama.application.parley", "trama.application.context_contracts", "trama.application.modes", "trama.application.world", "trama.spatial", "trama.social", "trama.difficulty", "trama.agency", "trama.infrastructure.openai_json", "trama.infrastructure.openai_config", "trama.infrastructure.call_budget", "trama.observability"}),
 ])
 def test_core_modules_do_not_import_each_others_rules_or_adapters(module, allowed):
     source = Path(__file__).resolve().parents[2] / "src/trama" / f"{module}.py"

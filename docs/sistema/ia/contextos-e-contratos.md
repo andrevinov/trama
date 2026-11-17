@@ -209,3 +209,17 @@ alegação de nobreza relevante simultaneamente para segurança e emprego.
 `--update` exige justificativa não vazia e registra o hash anterior e o atual.
 Não deve ser executado automaticamente durante testes, startup ou CI para fazer
 a comparação passar. O campo `review` não é enviado aos adaptadores.
+
+## Acompanhamento de intenções
+
+`npc_agency` é uma fase adicional de decisão do Mundo após a execução do jogador.
+Seu contrato é deliberadamente menor: `mode`, `phase`, `actor`, `profile`,
+`knowledge` do próprio NPC, `observations`, `parley` e `world.adjudication`. Não
+recebe histórico global ou prompt privado; comunicações não compreendidas têm
+texto nulo. O plano do Mundo inclui `intent` somente nessa fase; nas outras,
+o campo é nulo. A execução valida ator, espera limitada e operações permitidas.
+
+A narração recebe `perception.communications`, com volume e ouvintes das falas
+percebidas pelo jogador. Essa memória permanece disponível em perguntas off sem
+ações novas. Objetivos e razões privadas do acompanhamento não são narráveis.
+Veja [intenções dos NPCs](../aplicacao/intencoes-dos-npcs.md).

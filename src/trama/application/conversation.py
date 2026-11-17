@@ -190,6 +190,8 @@ class Conversation:
 
     def execute(self, plan: ActionPlan, world: WorldPlan = WorldPlan(), *, player_prompt: str | None = None,
                 require_adjudications: bool = False) -> ExecutionReport:
+        if world.intent is not None:
+            raise WorldError('Intenções de NPC só podem ser atualizadas na etapa de acompanhamento.')
         self._sync_reset()
         if player_prompt is None and self.messages and self.messages[-1].role == "player":
             player_prompt = self.messages[-1].speech.on
@@ -391,6 +393,8 @@ class Conversation:
                                    narrative_interaction=isinstance(intent, NarrativeIntent), world_events=scenario_events)
 
     def execute_npc_turn(self, world: WorldPlan, *, require_adjudications=False) -> ExecutionReport:
+        if world.intent is not None:
+            raise WorldError('Uma intenção de exploração não substitui o turno de combate.')
         self._sync_reset()
         combat = self.session.encounter.combat
         if combat is None or combat.active_id == self.session.encounter.player_id:
@@ -440,6 +444,47 @@ class Conversation:
             events.append(event)
         return finish(stop_reason)
 
+    def agency_context(self, actor_id):
+        session = self.session
+        npc = session.perception.observer(actor_id)
+        observations = session.agency.context(actor_id)
+        adjudication = session.adjudication.prepare(())
+        adjudication['cached'] = [{k: v for k, v in entry.items() if k not in {'reason','fact_ids'}}
+                                  for entry in adjudication['cached']]
+        return AIContext(ContextKind.NPC_AGENCY, dict(mode=session.mode.value, phase='npc_agency',
+            actor=dict(id=npc.id, name=npc.name, column=npc.position.x + 1, row=npc.position.y + 1,
+                       senses=npc.senses.context(session.perception.bonus(npc))),
+            profile=session.social.profiles[actor_id].context(),
+            knowledge=[m.data() for m in session.knowledge.store.select(actor_id,
+                query=observations['intent']['goal'], max_chars=3500)], observations=observations,
+            parley=(session.parley.context() if session.parley and session.parley.actor_id == actor_id else None),
+            world=dict(adjudication=adjudication)))
+
+    def execute_agency(self, actor_id, world, *, require_adjudications=False):
+        if self.session.encounter.combat:
+            raise WorldError('Não há acompanhamento de exploração durante combate.')
+        actions = self.session.agency.validate(actor_id, world)
+        self.session.adjudication.begin(world.adjudications, strict=require_adjudications)
+        events = []
+        failure = None
+        executor = WorldExecutor(self.session, agency_actor=actor_id)
+        try:
+            for action in actions:
+                events.append(executor.execute(action))
+                events.extend(self.session.drain_world_events())
+                if self.session.encounter.combat:
+                    self.session.agency.close(actor_id)
+                    break
+            self.session.agency.apply(world.intent, actions)
+        except (WorldError, ActionError, CharacterError, MovementError) as error:
+            events.extend(self.session.drain_world_events())
+            failure = executor.failure
+            return self._remember(ExecutionReport(world_events=tuple(events), stop_reason=str(error),
+                failures=(failure,) if failure else ()), actor_id)
+        finally:
+            self.session.adjudication.strict = False
+        return self._remember(ExecutionReport(world_events=tuple(events)), actor_id)
+
     def narration_context(
         self, speech: Speech = Speech(), report: ExecutionReport = ExecutionReport(),
         *, initial: bool = False,
@@ -456,6 +501,7 @@ class Conversation:
         scene = self.session.scene
         area = scene.area_at(self.session.state.position) if scene else None
         perception = {
+            'communications': self.session.knowledge.public_communications(),
             "current_place": area.name if area else "passagem",
             "current_description": area.description if area else "",
             "visible_places": ([{"name": a.name, "description": a.description}

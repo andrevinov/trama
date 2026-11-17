@@ -193,3 +193,12 @@ viagem ou audição neste incremento.
 `tests/integration/test_world_flow.py` usa decisões fixas e dados controlados;
 os testes da janela verificam as três etapas, execução local e turnos de NPCs.
 Nenhum teste padrão usa rede, credenciais ou chamadas pagas.
+
+## Continuidade dos interlocutores em exploração
+
+Após efeitos reais do jogador, o mesmo `GameFlow` pode agendar `npc_agency`
+para interlocutores ainda envolvidos que não atuaram naquela interação. A
+decisão é posterior à percepção, com contexto próprio e texto inaudível omitido.
+Perguntas off não agendam essa etapa. Ela termina antes da narração ou dá lugar
+à iniciativa e aos turnos normais quando houver confronto. Veja
+[intenções dos NPCs](intencoes-dos-npcs.md).

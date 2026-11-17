@@ -793,6 +793,12 @@ class DungeonSession(GameSession):
     def _guard_movement_grid(self):
         return replace(self.grid, blocked=self.grid.blocked | {self.state.position, self.prisoner_position})
 
+    def on_npc_resume(self, actor_id):
+        if actor_id == 'guard_1':
+            self.dungeon.guard_alert = False
+            self.dungeon.guard_activity = 'on_duty'
+            self.dungeon.waits = 0
+
     def _wait(self):
         state = self.dungeon
         if state.guard_alert or not self._guard_available() or state.guard_activity == 'bathroom':

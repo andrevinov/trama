@@ -9,6 +9,7 @@ Tarefas incertas usam [avaliação contextual de dificuldade](docs/sistema/aplic
 NPCs possuem [memórias e disposição social](docs/sistema/aplicacao/disposicao-social.md)
 por pedido. Alinhamento, interesses e informação relevante orientam se aceitam,
 recusam ou exigem teste; aceitar ouvir preserva os limites da custódia.
+Interlocutores também têm [intenções acompanhadas em exploração](docs/sistema/aplicacao/intencoes-dos-npcs.md): conversas paralelas podem levá-los a cobrar uma resposta ou tomar outra iniciativa.
 
 Este é o documento de **tier 1**: apresenta o sistema, suas partes, suas relações
 e o alcance atual. A documentação segue do geral para o específico:
@@ -65,7 +66,8 @@ por turno. Alcance, obstáculos, ocupação e recursos continuam sendo validados
 
 No **modo por turnos**, um conflito inicia iniciativa e passa a organizar
 movimento, ações, ações bônus e reações. O sistema resolve os turnos dos NPCs e
-as escolhas de reação pertinentes. Passar a vez é uma intenção expressa pela
+as escolhas de reação pertinentes. Um mostrador de iniciativa apresenta a ordem,
+a vez atual, os recursos restantes e as decisões pendentes durante o combate. Passar a vez é uma intenção expressa pela
 conversa, inclusive ao dizer que não fará mais nada naquele turno.
 
 Esses modos fazem parte do fluxo do jogo. Seus detalhes e pontos de interrupção

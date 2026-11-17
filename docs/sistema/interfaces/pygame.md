@@ -41,11 +41,42 @@ da execução e mantendo expectativas independentes de posição. Os testes
 anteriores de desenho, turnos, erros e ficha continuam como regressões; planos
 não são mais injetados na fila da janela para contornar a entrada do jogador.
 
+## Mostrador de combate
+
+Durante o modo por turnos, o painel **Iniciativa** aparece entre o resumo do
+personagem e a conversa, nas três abas. Mostra rodada, ordem e valor da
+iniciativa; destaca a vez atual e distingue quem ainda aguarda, quem encerrou
+a vez e quem está com 0 PV. A conversa ajusta sua altura e mantém a rolagem.
+No modo narrado, o painel desaparece e a conversa recupera seu espaço original.
+
+Na vez atual, mostra movimento restante, ação normal/extra, ação bônus,
+reação, interação e ações extras. Para os demais participantes, indica a fase
+na rodada e a reação disponível; movimento e ações aguardam o início da própria
+vez ou já foram encerrados. Recursos livres são opções: não precisam ser usados
+para encerrar o turno. O painel não prevê a próxima tática de NPCs.
+
+Uma linha de andamento distingue interpretação, decisão do Mundo, resolução
+do turno de NPC, narração, erro e escolha de oportunidade. A reação fica pendente
+até a decisão explícita do jogador; o turno atual não é antecipado pela UI.
+
+A roda sobre o mostrador percorre os participantes, dois cartões por página,
+sem rolar a conversa. O painel acompanha a troca de turno para deixar o
+participante atual visível. Os nomes e valores respeitam a mesma visibilidade
+de `combat_context`: um inimigo fora de visão não ganha identidade, iniciativa
+ou recursos expostos pelo novo painel.
+
+`application/combat_tracker.py` produz uma projeção de leitura separada dos
+contextos da IA. `ui/turn_panel.py` desenha os cartões; `MovementWindow` adapta
+a área da conversa e encaminha a roda do mouse. Nenhuma dessas consultas executa
+ações ou muda a iniciativa. Os testes em `test_combat_tracker.py` exercitam
+recursos reais, troca de rodada, oportunidade, sigilo e navegação nas abas.
+Não são necessárias chamadas de IA para validar esta apresentação.
+
 ## Controles
 
 - **Enter** ou **Enviar**: enviar a mensagem; **Shift+Enter**: nova linha.
 - **Roda do mouse / PgUp / PgDn**: percorrer a conversa, sem truncar mensagens.
-  Sobre a ficha, a roda percorre o conteúdo da ficha.
+  Sobre a ficha, a roda percorre o conteúdo da ficha; sobre a iniciativa, percorre os participantes.
 - **Jogo / Ficha / Inimigos**: alternar o painel esquerdo. A conversa permanece
   visível; é possível consultar as guias enquanto uma resposta está pendente.
 - Na **Ficha**, **Agora / Recursos / Dados** selecionam a seção; clique no

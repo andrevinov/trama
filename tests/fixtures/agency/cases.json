@@ -1,0 +1,39 @@
+[
+  {
+    "id": "agencia-negociacao",
+    "actor": "guard_1",
+    "marker": "jabuticaba-947",
+    "expected": "negotiation",
+    "max_sdk_calls": 14,
+    "messages": [
+      "Guarda, continuo parado sob sua custódia. Prometo dez moedas de ouro se você me der um momento para conversar. Peço apenas que me ouça, sem soltar ninguém agora.",
+      "Falo bem baixo, apenas ao prisioneiro: \"Nossa palavra secreta é jabuticaba-947. Você está bem?\"",
+      "Continuo falando bem baixo só com o prisioneiro: \"Lembre da palavra jabuticaba-947. Precisamos manter a calma.\"",
+      "[O guarda ouviu o conteúdo dos nossos cochichos? O que ele efetivamente fez nesse intervalo? Ele se aproximou ou atacou?]"
+    ]
+  },
+  {
+    "id": "agencia-vigia-generico",
+    "actor": "warden",
+    "marker": "ametista-583",
+    "expected": "followup",
+    "max_sdk_calls": 11,
+    "messages": [
+      "Falo bem baixo apenas ao meu companheiro: \"Nossa palavra secreta é ametista-583. Está tudo bem com você?\"",
+      "Continuo falando bem baixo apenas com meu companheiro: \"Lembre da ametista-583 e mantenha a calma.\"",
+      "[O vigia ouviu as palavras que trocamos em voz baixa? O que ele fez de fato? Ele se moveu ou atacou?]"
+    ]
+  },
+  {
+    "id": "agencia-off-consulta",
+    "actor": "guard_1",
+    "marker": "turmalina-291",
+    "expected": "off",
+    "max_sdk_calls": 6,
+    "messages": [
+      "Falo bem baixo apenas ao prisioneiro: \"Nossa palavra secreta é turmalina-291. Você está bem?\"",
+      "[O guarda estava ouvindo o conteúdo desse cochicho? Houve movimento ou ataque dele?]",
+      "[E agora? O que o guarda efetivamente fez desde minha última pergunta?]"
+    ]
+  }
+]

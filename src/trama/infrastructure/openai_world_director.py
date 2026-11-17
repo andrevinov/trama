@@ -14,6 +14,7 @@ from trama.observability import log_context, new_id
 from trama.spatial import Position
 from trama.social import GOALS, assessment_from_data
 from trama.difficulty import Adjudication, DIFFICULTY_CLASSES
+from trama.agency import IntentDecision
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +53,7 @@ POSITION_SCHEMA = object_schema({"column": {"type": "integer", "minimum": 1},
                                  "row": {"type": "integer", "minimum": 1}})
 ACTION_FIELDS = {
     "actor_id": {"type": "string"},
-    "operation": {"type": "string", "enum": ["describe", "say", "move", "open", "close", "attack", "wait", "start_conflict", "end_conflict", "parley", "influence", "search"]},
+    "operation": {"type": "string", "enum": ["describe", "say", "move", "open", "close", "attack", "wait", "start_conflict", "end_conflict", "parley", "influence", "search", "resume_activity"]},
     "text": {"type": "string", "minLength": 1, "maxLength": 2000},
     "target_id": {"type": ["string", "null"]},
     "destination": {"anyOf": [POSITION_SCHEMA, {"type": "null"}]},
@@ -95,10 +96,43 @@ REACTION_SCHEMA = object_schema({
     "check": {"anyOf": [CHECK_SCHEMA, {"type": "null"}]},
 })
 WORLD_SCHEMA = object_schema({
+    'intent': {'anyOf': [object_schema({
+        'actor_id': {'type':'string','minLength':1,'maxLength':120},
+        'goal': {'type':'string','minLength':1,'maxLength':300},
+        'activity': {'type':'string','minLength':1,'maxLength':300},
+        'waiting_for': {'type':['string','null'],'maxLength':300},
+    }), {'type':'null'}]},
     'adjudications': {'type': 'array', 'maxItems': 32, 'items': ADJUDICATION_SCHEMA},
     "reactions": {"type": "array", "maxItems": 10, "items": REACTION_SCHEMA}})
 
 INSTRUCTIONS = MODE_INSTRUCTIONS + """
+Fase npc_agency: a ação do jogador JÁ aconteceu. Resolva SOMENTE actor.id,
+preenchendo intent com objetivo próprio, atividade e resposta concreta aguardada
+(ou waiting_for=null). Use profile, knowledge próprios e observations resolvidas.
+Não há histórico onisciente: comunicação understood=false tem text=null; o NPC
+pode notar alguém falando se vê a fonte, mas não conhece palavras inaudíveis.
+Não invente conhecimento a partir de uma suspeita ou da intenção de outro NPC.
+O objetivo deve orientar uma decisão agora: cobrar proposta/pagamento, fazer
+pergunta, manter uma espera breve fundamentada, encerrar a conversa ou iniciar
+um confronto quando houver causa. Não deixe uma abordagem/negociação pendente
+sem acompanhamento. reactions exige 1–3 ações do mesmo NPC, step_index=0,
+after_squares=null, interrupt=false, check=null. Operações permitidas nesta fase:
+say, wait, resume_activity, start_conflict.
+text descreve somente a ação observável; objetivos privados ficam em intent.
+Ao falar para o jogador, escolha
+volume que alcance a distância observada; não presuma compreensão de sussurros.
+wait só pode ser uma ação isolada, com waiting_for concreto e can_wait=true.
+can_wait=false exige tomar uma iniciativa, sem espera vazia/repetida. Esperar
+não é obrigatório nem um temporizador de combate; escolha conforme persona e
+fatos. Novas falas do jogador a terceiros não suspendem o objetivo do NPC.
+resume_activity encerra a conversa e retoma a atividade existente: não move,
+não entrega chave/dinheiro nem solta prisioneiros. start_conflict rola iniciativa
+nas posições atuais; nenhum movimento ou ataque ocorre antes dela. Essas duas
+operações encerram o plano e devem vir por último. Não use influence para uma
+fala que não ocorreu/que o NPC não ouviu. Nessa fase, a espera à distância da
+primeira abordagem não impede cobrar uma resposta ou mudar de situação.
+Nas demais fases, intent=null; não atualize intenções antes dos efeitos reais.
+
 Antes de propor respostas, resolva world.adjudication.requests em adjudications.
 Informe exatamente uma decisão por request_id solicitado, nenhuma para testes
 não solicitados; requests=[] exige adjudications=[]. Não reavalie cached.
@@ -317,6 +351,7 @@ def parse_world_plan(text: str) -> WorldPlan:
     try:
         value = json.loads(text)
         value.setdefault('adjudications', [])  # Transporte de gravações antigas.
+        value.setdefault('intent', None)
         _fields(value, WORLD_SCHEMA["properties"])
         if not isinstance(value["reactions"], list):
             raise WorldError("Respostas do Mundo devem ser uma lista.")
@@ -361,7 +396,11 @@ def parse_world_plan(text: str) -> WorldPlan:
         for decision in value['adjudications']:
             _fields(decision, ADJUDICATION_SCHEMA['properties'])
             decisions.append(Adjudication(**{**decision, 'fact_ids': tuple(decision['fact_ids'])}))
-        return WorldPlan(tuple(reactions), tuple(decisions))
+        intent = value['intent']
+        if intent is not None:
+            _fields(intent, WORLD_SCHEMA['properties']['intent']['anyOf'][0]['properties'])
+            intent = IntentDecision(**intent)
+        return WorldPlan(tuple(reactions), tuple(decisions), intent)
     except (ValueError, TypeError, KeyError, AttributeError) as error:
         logger.error("ai.world_rejected", extra={"data": {"reason": str(error)}}, exc_info=True)
         raise WorldError(f"A IA retornou uma resposta do Mundo inválida: {error}") from error
@@ -376,7 +415,7 @@ class OpenAIWorldDirector:
 
     def decide(self, context: dict) -> WorldPlan:
         if isinstance(context, AIContext):
-            context.require(ContextKind.WORLD_ACTION, ContextKind.NPC_TURN)
+            context.require(ContextKind.WORLD_ACTION, ContextKind.NPC_TURN, ContextKind.NPC_AGENCY)
         with log_context(ai_call_id=new_id()):
             text = request_json(self.client, model=self.model, instructions=INSTRUCTIONS,
                                 payload=context, schema=WORLD_SCHEMA, name="world_response",

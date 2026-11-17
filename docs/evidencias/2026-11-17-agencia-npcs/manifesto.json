@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "experiments": [
+    {
+      "id": "npc-agency-20261117",
+      "scope": "game_flow_from_prepared_situation",
+      "authorization": "Usuário autorizou implementação, três lives e execução de até 33 chamadas. Rodada principal com 27; consulta off reavaliada com as seis restantes após refinamento de linguagem. Nenhuma suíte live antiga executada.",
+      "git_head_before_commit": "2e0e70d0a8f1504b641eabb7b7e59aaa4d01b9c7",
+      "worktree_dirty": true,
+      "sdk_attempts": 33,
+      "outcomes": {
+        "passed": 4
+      },
+      "usage": {
+        "input_tokens": 370099,
+        "output_tokens": 6076,
+        "total_tokens": 376175,
+        "cached_input_tokens": 125513,
+        "cache_write_tokens": 244487,
+        "reasoning_tokens": 2316
+      },
+      "versioned_artifacts": [
+        {
+          "path": "docs/evidencias/2026-11-17-agencia-npcs/contratos-enviados.json",
+          "sha256": "27d62ac4f5a1bd7aa8f8e5af7689a111dfa5f01dcd0e9c9c04d3a11c473b66e3",
+          "bytes": 100959
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-agencia-npcs/fonte-da-regressao.json",
+          "sha256": "c8a91a99572ecf2b174b18b702d1b00d3460254c374648ffa94f2fc6cd1be4f3",
+          "bytes": 4186
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-agencia-npcs/relatorio.md",
+          "sha256": "d150820bc87449efba073507fff2ad53ce0a0458ce0959bca213982b09fe5e52",
+          "bytes": 5815
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-agencia-npcs/resumo.json",
+          "sha256": "5be73c5f478c493d6cf64fe38b35695d4e4ca59a3f6064aaac5bdd77247ec08a",
+          "bytes": 21817
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-agencia-npcs/revisao-final.json",
+          "sha256": "ae82ba1da9bfe53e146395fba56c014162978f6b26bcd5dbd7a204ee8c5c08fc",
+          "bytes": 992147
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-agencia-npcs/revisao-inicial.json",
+          "sha256": "54b5aee2a3ef93ebfec18a1f531cb44c86a4c29b4d50a10ac448a6bbdd3fdf8c",
+          "bytes": 881882
+        }
+      ],
+      "local_artifacts": [
+        {
+          "path": "logs/live/agency/20261117T221855-66f13b3e/agencia-negociacao/result.json",
+          "sha256": "f6a17016aa0f0a326986aaef9f68f75c4acb94736fcf9c9ecbcc356abe1dda49",
+          "bytes": 1254525
+        },
+        {
+          "path": "logs/live/agency/20261117T221855-66f13b3e/agencia-negociacao/trace.jsonl",
+          "sha256": "fb9229662d9d5bfb8999b4a783deff9cce840deea55dc0690de4d96c4e285546",
+          "bytes": 806164
+        },
+        {
+          "path": "logs/live/agency/20261117T221855-66f13b3e/agencia-off-consulta/result.json",
+          "sha256": "1b47d9ca8bbec83bda5bb4b179d9f12d6e48bb8c118223fe96b6bd81d6a0b7b5",
+          "bytes": 686331
+        },
+        {
+          "path": "logs/live/agency/20261117T221855-66f13b3e/agencia-off-consulta/trace.jsonl",
+          "sha256": "072d5fdb34199eef4e7dafc11ece242def5bef06fae8fd112d0302bd3b266a59",
+          "bytes": 422254
+        },
+        {
+          "path": "logs/live/agency/20261117T221855-66f13b3e/agencia-vigia-generico/result.json",
+          "sha256": "09a1f7acb3dbc16dc2601ad51a326907c78d611bc98d2e2eeff33d94781eed73",
+          "bytes": 226216
+        },
+        {
+          "path": "logs/live/agency/20261117T221855-66f13b3e/agencia-vigia-generico/trace.jsonl",
+          "sha256": "1bde2ef50e2c1c5fcac86b4519f37bce9ed862bf3dee24a1db006507cd5ba62b",
+          "bytes": 382103
+        },
+        {
+          "path": "logs/live/agency/20261117T222332-1bfc00e4/agencia-off-consulta/result.json",
+          "sha256": "0dfdac7e6e67797d109bd5d37f1c83c7ddc07a8e06f15bfec662346fcd58619b",
+          "bytes": 686358
+        },
+        {
+          "path": "logs/live/agency/20261117T222332-1bfc00e4/agencia-off-consulta/trace.jsonl",
+          "sha256": "41dce23f00fe3f2813928b138c128a6b8f76560748ef3f0148952575af494f4a",
+          "bytes": 423136
+        },
+        {
+          "path": "logs/live/agency/local-validation/final-regressions.txt",
+          "sha256": "a15e3f4b6b1b019fee0135254dbbca51597d134bd1c88a9f5420da73ba49dcf4",
+          "bytes": 260
+        },
+        {
+          "path": "logs/live/agency/local-validation/full-suite-initial.txt",
+          "sha256": "a7800b1f136b86e162ba411925c540f8c3a567211867ebba5f1f32c8abaa3dcd",
+          "bytes": 3230
+        },
+        {
+          "path": "logs/live/agency/local-validation/focused-before-lifecycle.txt",
+          "sha256": "91e01095b9e2c61104bb13c46b85e87130f4dd364b89e62e0f7da90075ca2b17",
+          "bytes": 180
+        }
+      ]
+    }
+  ]
+}

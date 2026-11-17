@@ -37,6 +37,7 @@ class FlowStage(StrEnum):
     INTERPRET = 'interpret'
     WORLD = 'world'
     NPC_TURN = 'npc_turn'
+    NPC_AGENCY = 'npc_agency'
     NARRATE = 'narrate'
 
 
@@ -95,6 +96,7 @@ class GameFlow:
         self._player_plan: ActionPlan | None = None
         self._narration_context: dict | None = None
         self._npc_turns = 0
+        self._agency_queue = []
         self._deferred_speech: Speech | None = None
         self._paused_report: ExecutionReport | None = None
         self._setup = setup
@@ -175,6 +177,7 @@ class GameFlow:
         self.message = {
             FlowStage.INTERPRET: 'Interpretando a ação…', FlowStage.WORLD: 'O Mundo está avaliando sua resposta…',
             FlowStage.NPC_TURN: 'O Mundo está resolvendo o turno dos NPCs…', FlowStage.NARRATE: 'O narrador está respondendo…',
+            FlowStage.NPC_AGENCY: 'O Mundo está acompanhando as intenções dos NPCs…',
         }[stage]
         logger.debug('game_flow.requested', extra={'data': {'stage': stage, 'request_id': self.pending_request.id}})
 
@@ -204,7 +207,8 @@ class GameFlow:
                 if isinstance(result, Exception):
                     raise result
                 expected = {FlowStage.INTERPRET: ActionPlan, FlowStage.WORLD: WorldPlan,
-                            FlowStage.NPC_TURN: WorldPlan, FlowStage.NARRATE: Speech}[request.stage]
+                            FlowStage.NPC_TURN: WorldPlan, FlowStage.NPC_AGENCY: WorldPlan,
+                            FlowStage.NARRATE: Speech}[request.stage]
                 if not isinstance(result, expected):
                     raise GameFlowError(f'Resposta incompatível com a etapa {request.stage}.')
                 if request.stage == FlowStage.INTERPRET:
@@ -213,6 +217,8 @@ class GameFlow:
                     self._finish(result)
                 elif request.stage == FlowStage.NPC_TURN:
                     self._accept_npc_turn(result)
+                elif request.stage == FlowStage.NPC_AGENCY:
+                    self._accept_agency(result)
                 else:
                     self._execute_player(result)
             except Exception as error:
@@ -231,9 +237,30 @@ class GameFlow:
             self._request(FlowStage.WORLD, self.conversation.world_context(plan), self.world_director.decide)
 
     def _execute_player(self, world: WorldPlan):
-        self.report = self.report.merge(self.conversation.execute(self._player_plan, world, player_prompt=self.speech.on,
+        checkpoint = self.session.agency.checkpoint()
+        execution = self.conversation.execute(self._player_plan, world, player_prompt=self.speech.on,
+            require_adjudications=self.world_director is not None)
+        self.report = self.report.merge(execution)
+        self._agency_queue = self.session.agency.pending(execution, checkpoint)
+        self._continue_agency()
+
+    def _continue_agency(self):
+        if self.session.encounter.combat:
+            self._agency_queue.clear()
+        while self._agency_queue and self._agency_queue[0] not in self.session.agency.intents:
+            self._agency_queue.pop(0)
+        if self._agency_queue and self.world_director is not None:
+            actor = self._agency_queue[0]
+            self._request(FlowStage.NPC_AGENCY, self.conversation.agency_context(actor), self.world_director.decide)
+        else:
+            self._continue_turns()
+
+    def _accept_agency(self, world):
+        actor = self._agency_queue[0]
+        self.report = self.report.merge(self.conversation.execute_agency(actor, world,
             require_adjudications=self.world_director is not None))
-        self._continue_turns()
+        self._agency_queue.pop(0)
+        self._continue_agency()
 
     def _npc_active(self) -> bool:
         combat = self.session.encounter.combat
@@ -315,7 +342,7 @@ class GameFlow:
         self.status = FlowStatus.FAILED
         reason = str(error).strip() if isinstance(error, ValueError) else ''
         reason = reason or 'Falha ao processar a interação.'
-        if (stage or self.stage) in {FlowStage.NARRATE, FlowStage.NPC_TURN}:
+        if (stage or self.stage) in {FlowStage.NARRATE, FlowStage.NPC_TURN, FlowStage.NPC_AGENCY}:
             reason = ' '.join(p for p in (reason, self._execution_summary(), self.report.stop_reason) if p)
         self.message = reason.strip()
         self.reply = self.conversation.failure(self.message)
@@ -341,6 +368,7 @@ class GameFlow:
         self._deferred_speech = None
         self._paused_report = None
         try:
+            self._agency_queue = []
             if self._setup is not None:
                 self._setup(self.conversation)
         except Exception as error:

@@ -22,6 +22,7 @@ from trama.infrastructure import openai_intent_interpreter, openai_narrator, ope
 from trama.spatial import Position
 from trama.knowledge import Claim
 from trama.difficulty import Adjudication
+from trama.agency import IntentDecision
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / 'docs/contracts/ai-contexts.json'
@@ -53,6 +54,16 @@ def action(conversation, prompt, intent):
 def sample_contexts():
     """Observa projeções reais nos seis tipos de contexto; não simula respostas de IA."""
     samples = []
+    # Acompanhamento real de uma abordagem, com cochicho visto e não ouvido.
+    agency = Conversation(build_session(dict(width=25,height=6,start=[2,2],creatures=[
+        dict(id='sentinel',name='Sentinela',position=[18,2])]), roller=ReviewRoller()))
+    agency.session.offer_parley('sentinel','Diga o que deseja.')
+    agency.execute(ActionPlan((NarrativeIntent('Conversa reservada.','speak',volume='quiet'),)))
+    samples.append(agency.agency_context('sentinel'))
+    agency.execute_agency('sentinel',WorldPlan((WorldReaction(0,None,(
+        WorldAction('sentinel','say','Preciso de sua resposta.'),)),),
+        intent=IntentDecision('sentinel','Obter uma resposta.','Cobrar a resposta.','Resposta à pergunta.')))
+    samples.extend((agency.agency_context('sentinel'),agency.narration_context()))
     # Memória inicial -> fala referenciada -> relato do jogador, sem dados de IA.
     c = Conversation(load_session(ROOT / 'src/trama/scenarios/knowledge_rooms.json'))
     speech, plan = action(c, 'Arquivista, onde viu a chave?', NarrativeIntent('Onde viu a chave?', 'speak'))

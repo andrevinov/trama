@@ -11,10 +11,12 @@ from trama.application.dialogue import Narrator
 from trama.application.game_flow import GameFlow, FlowStatus, ProviderResult
 from trama.application.session import GameSession
 from trama.application.world import WorldDirector
+from trama.application.combat_tracker import combat_tracker_view
 from trama.spatial import Position
 from trama.distances import CELL_METERS, format_meters
 from trama.ui.text import word_lines
 from trama.ui.character_panel import CharacterPanel, draw_panel, enemy_paragraphs
+from trama.ui.turn_panel import TurnPanel
 from trama.observability import log_context, new_id
 
 logger = logging.getLogger(__name__)
@@ -105,6 +107,7 @@ class MovementWindow:
         self.active_tab = "Jogo"
         self.sheet_scroll = 0
         self.character_panel = CharacterPanel()
+        self.turn_panel = TurnPanel()
         self.tabs = {name: pygame.Rect(550 + i * 156, 60, 146, 34)
                      for i, name in enumerate(("Jogo", "Ficha", "Inimigos"))}
         self._chat_key = None
@@ -205,6 +208,10 @@ class MovementWindow:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             return False
         if event.type == pygame.MOUSEWHEEL:
+            tracker = combat_tracker_view(self.flow)
+            if tracker and self.turn_panel.rect(tracker).collidepoint(pygame.mouse.get_pos()):
+                self.turn_panel.scroll(-event.y, tracker)
+                return True
             if self.active_tab != "Jogo" and pygame.Rect(32, 104, 480, 438).collidepoint(pygame.mouse.get_pos()):
                 self.sheet_scroll = max(0, self.sheet_scroll - event.y * 60)
                 self.character_panel.item_rects.clear()
@@ -257,14 +264,22 @@ class MovementWindow:
             logger.info("ui.reset_requested")
             self.flow.reset()
         self.character_panel = CharacterPanel()
+        self.turn_panel = TurnPanel()
         self.sheet_scroll = 0
         self.scroll = 0
         self._dispatch_pending()
 
+    @property
+    def conversation_rect(self):
+        tracker = combat_tracker_view(self.flow)
+        top = self.turn_panel.rect(tracker).bottom + 10 if tracker else 252
+        return pygame.Rect(550, top, 458, 690 - top)
+
     def _draw_conversation(self, screen: pygame.Surface, font) -> None:
-        pygame.draw.rect(screen, PANEL, (550, 252, 458, 438), border_radius=10)
-        screen.blit(font.render("Conversa · roda do mouse / PgUp / PgDn", True, MUTED), (568, 266))
-        viewport = pygame.Rect(566, 297, 426, 377)
+        rect = self.conversation_rect
+        pygame.draw.rect(screen, PANEL, rect, border_radius=10)
+        screen.blit(font.render("Conversa · roda do mouse / PgUp / PgDn", True, MUTED), (568, rect.y + 14))
+        viewport = pygame.Rect(566, rect.y + 45, 426, rect.height - 61)
         key = (id(self.conversation), len(self.conversation.messages), viewport.width)
         if key != self._chat_key:
             lines = []
@@ -490,6 +505,9 @@ class MovementWindow:
             label(text, rect.x + 10, rect.y + 12, MUTED if self.pending else TEXT, small)
         label("On: ações e narrativa · [Off: regras e dúvidas]", 52, 620, MUTED, small)
         paragraph("Ex.: Caminho até a porta. · Abra a porta. Em conflito: ataque o Guarda 1. · Encerro meu turno.", 52, 646, 460, 2)
+        tracker = combat_tracker_view(self.flow)
+        if tracker:
+            self.turn_panel.draw(screen, tracker)
         self._draw_conversation(screen, small)
         pygame.draw.rect(screen, PANEL, (32, 712, 976, 44), border_radius=6)
         paragraph(self.message, 46, 717, 948, 2, RED if self.failed else ACCENT)

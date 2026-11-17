@@ -1,0 +1,125 @@
+[
+  {
+    "timestamp": "2026-11-17T21:50:30.211+00:00",
+    "event": "game.operation_completed",
+    "session_id": "d23dc26c34414556a64faa0bc054f833",
+    "interaction_id": "6a99f20cafcb42f4b949e205f8e0ac3d",
+    "data": {
+      "operation": "speak",
+      "duration_ms": 5.464,
+      "result": {
+        "event": {
+          "operation": "speak",
+          "changed": false,
+          "text": "você tem algum poder que possa nos ajudar a fugir daqui?",
+          "volume": "quiet",
+          "memory_ids": [],
+          "claims": [],
+          "shared_memories": [],
+          "heard_by": [
+            "prisoner"
+          ],
+          "learned_memory_ids": [],
+          "summary": "Interação recebida, sem alteração mecânica do estado ou posição."
+        },
+        "stop_reason": null
+      },
+      "status": "completed",
+      "movement_before": {
+        "position": {
+          "x": 7,
+          "y": 19
+        },
+        "speed_meters": "9",
+        "spent_meters": "0",
+        "dash_used": false,
+        "turn": 1,
+        "additional_dash_uses": 0,
+        "free_meters": "0",
+        "speed_reduction_meters": "0"
+      },
+      "movement_after": {
+        "position": {
+          "x": 7,
+          "y": 19
+        },
+        "speed_meters": "9",
+        "spent_meters": "0",
+        "dash_used": false,
+        "turn": 1,
+        "additional_dash_uses": 0,
+        "free_meters": "0",
+        "speed_reduction_meters": "0"
+      },
+      "budget_before": {
+        "free_interaction_used": false,
+        "action_used": false,
+        "bonus_action_used": false,
+        "reaction_used": false,
+        "extra_actions": 0
+      },
+      "budget_after": {
+        "free_interaction_used": false,
+        "action_used": false,
+        "bonus_action_used": false,
+        "reaction_used": false,
+        "extra_actions": 0
+      },
+      "changed_characters": {}
+    },
+    "source": "logs/trama.jsonl",
+    "source_line_sha256": "b59ebce638f319777a586e9be5c816726cc314e1b875e6b28e22a4d130cd1379"
+  },
+  {
+    "timestamp": "2026-11-17T21:50:30.216+00:00",
+    "event": "world.action_completed",
+    "session_id": "d23dc26c34414556a64faa0bc054f833",
+    "interaction_id": "6a99f20cafcb42f4b949e205f8e0ac3d",
+    "data": {
+      "actor_id": "prisoner",
+      "operation": "say",
+      "text": "Não enquanto eu estiver trancado aqui. Primeiro precisamos sair desta cela sem dar ao guarda motivo para desconfiar.",
+      "changed": false,
+      "perceptible": true,
+      "memory_ids": [],
+      "claims": [],
+      "shared_memories": [],
+      "heard_by": [
+        "player"
+      ],
+      "learned_memory_ids": [],
+      "speaker": "Prisioneiro",
+      "volume": "quiet"
+    },
+    "source": "logs/trama.jsonl",
+    "source_line_sha256": "609c0f29549a1b9782803951336e95b3228a3a92067dd6b507ab7af35c2e83bd"
+  },
+  {
+    "timestamp": "2026-11-17T21:50:32.926+00:00",
+    "event": "conversation.reply",
+    "session_id": "d23dc26c34414556a64faa0bc054f833",
+    "interaction_id": "6a99f20cafcb42f4b949e205f8e0ac3d",
+    "data": {
+      "speech": {
+        "on": "O prisioneiro responde em voz baixa, sem se aproximar: “Não enquanto eu estiver trancado aqui. Primeiro precisamos sair desta cela sem dar ao guarda motivo para desconfiar.”\n\nVocê continua no corredor, diante da Cela 2. O guarda permanece à distância, junto à Sala dos Guardas.",
+        "off": ""
+      }
+    },
+    "source": "logs/trama.jsonl",
+    "source_line_sha256": "4e142ae03f4655f7338b6aad4a6b68e3f3b9e0e5b39a2eecd98546b1f029bcc1"
+  },
+  {
+    "timestamp": "2026-11-17T21:51:06.683+00:00",
+    "event": "conversation.reply",
+    "session_id": "d23dc26c34414556a64faa0bc054f833",
+    "interaction_id": "6760a823bfa540e089199b559ee235a2",
+    "data": {
+      "speech": {
+        "on": "",
+        "off": "Você o vê no limiar da Sala dos Guardas, a cerca de 21 m de distância, mantendo-se onde está. Ele continua atento ao corredor e ouvindo a conversa; não houve deslocamento, ataque nem outra ação registrada dele nesse intervalo."
+      }
+    },
+    "source": "logs/trama.jsonl",
+    "source_line_sha256": "c6b38497079108a2e6554761c04795a60c059469b0183cbb42e79ed09fbbdbc0"
+  }
+]

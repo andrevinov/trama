@@ -59,6 +59,8 @@ def situation_state(session):
     area = session.scene.area_at(session.state.position) if session.scene else None
     dungeon = getattr(session, 'dungeon', None)
     return {
+        'intentions': deepcopy(session.agency.intents),
+        'communications': session.knowledge.public_communications(),
         'social': session.social.context(tuple(session.social.profiles)),
         'knowledge': session.knowledge.store.export(),
         'sensing': session.perception.context(),

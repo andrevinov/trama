@@ -10,6 +10,7 @@ class ContextKind(StrEnum):
     INTERPRETATION = 'interpretation'
     WORLD_ACTION = 'world_action'
     NPC_TURN = 'npc_turn'
+    NPC_AGENCY = 'npc_agency'
     NARRATION_INITIAL = 'narration_initial'
     NARRATION_RESULT = 'narration_result'
     NARRATION_OFF = 'narration_off'
@@ -85,6 +86,17 @@ CONTRACTS = {
         ('world', 'player_sheet', 'recent_messages[].off', 'map.blocked', 'map.difficult')),
     ContextKind.WORLD_ACTION: ContextContract(WORLD, 'Mestre completo avaliando a proposta do jogador.'),
     ContextKind.NPC_TURN: ContextContract(WORLD, 'Mestre completo para o NPC ativo; proposta do jogador vazia.'),
+    ContextKind.NPC_AGENCY: ContextContract({
+        'mode': F('string', 'GameSession.mode', 'Acompanhamento somente em modo narrado.'),
+        'phase': F('string', 'Conversation.agency_context', 'npc_agency, após efeitos reais do jogador.'),
+        'actor': F('object', 'PerceptionSystem.observer', 'Identidade, posição e sentidos do próprio NPC.'),
+        'profile': F('object', 'DispositionSystem.profiles', 'Alinhamento e persona deste NPC.'),
+        'knowledge': F('array', 'KnowledgeStore.select', 'Somente memórias próprias do NPC solicitado.'),
+        'observations': F('object', 'AgencySystem / KnowledgeSystem', 'Intenção, espera e falas percebidas; texto inaudível é nulo.'),
+        'parley': F('object|null', 'GameSession.parley', 'Abordagem de que este NPC participa.'),
+        'world': F('object', 'AdjudicationSystem.prepare', 'Pedidos de dificuldade física necessários à execução.'),
+    }, 'Decisão de um interlocutor com percepção resolvida; sem histórico onisciente.',
+        ('recent_messages','player_plan','player_request_parts','player_sheet','world.knowledge','world.social','world.scenario')),
     ContextKind.NARRATION_INITIAL: ContextContract(NARRATION, 'Descrição inicial limitada à percepção; world só para coerência.',
         ('world.social', 'world.knowledge', 'world.adjudication', 'execution.reactions[].disposition', 'execution.reactions[].private_memory_ids', 'previous_execution.execution.reactions[].disposition', 'execution.reactions[].adjudication', 'previous_execution.execution.reactions[].adjudication', 'previous_execution.execution.reactions[].private_memory_ids')),
     ContextKind.NARRATION_RESULT: ContextContract(NARRATION, 'Narra efeitos validados e responde off; não executa intenções.',
@@ -128,6 +140,10 @@ INTERNAL = {
     'perception.visible_passages[]': 'object', 'perception.visible_scene_objects[]': 'object',
     'perception.visible_passages[].visible': 'boolean', 'perception.visible_scene_objects[].visible': 'boolean',
     'perception.visible_objects[]': 'object',
+    'perception.communications': 'array', 'perception.communications[]': 'object',
+    'perception.communications[].actor_id': 'string', 'perception.communications[].text': 'string',
+    'perception.communications[].volume': 'string', 'perception.communications[].heard_by': 'array',
+    'perception.communications[].sequence': 'integer',
     'history[]': 'object', 'history[].role': 'string', 'history[].on': 'string', 'history[].off': 'string',
     'verified_rules[]': 'string',
 }
@@ -177,6 +193,8 @@ def validate_context(kind: ContextKind, context: dict) -> None:
         if value is _MISSING or not _matches(value, spec.types):
             raise ContextError(f'{kind}.{path}: esperado {spec.types}' + (' (campo ausente).' if value is _MISSING else '.'))
     for path, kinds in INTERNAL.items():
+        if kind == ContextKind.NPC_AGENCY and path.startswith('world.'):
+            continue  # Nesta fase, world contém apenas adjudicações físicas.
         if path.split('.')[0].removesuffix('[]') not in context:
             continue
         for location, value in _values(context, path):
@@ -193,6 +211,20 @@ def validate_context(kind: ContextKind, context: dict) -> None:
         expected = 'player_action' if kind == ContextKind.WORLD_ACTION else 'npc_turn'
         if context['phase'] != expected or (kind == ContextKind.NPC_TURN and (context['player_plan'] or context['player_request_parts'])):
             raise ContextError(f'{kind}: fase ou proposta do jogador incompatível.')
+    if kind == ContextKind.NPC_AGENCY and (context['phase'] != 'npc_agency' or context['mode'] != 'narrated'):
+        raise ContextError(f'{kind}: o acompanhamento exige modo narrado e fase própria.')
+    if kind == ContextKind.NPC_AGENCY:
+        if not isinstance(context['world'].get('adjudication'), dict):
+            raise ContextError(f'{kind}: faltam as adjudicações físicas.')
+        actor = context['actor'].get('id')
+        if (not isinstance(actor, str) or context['observations'].get('actor_id') != actor
+                or context['observations'].get('intent', {}).get('actor_id') != actor
+                or any(m.get('owner_id') != actor for m in context['knowledge'])):
+            raise ContextError(f'{kind}: identidade ou memória de outro personagem.')
+        for communication in context['observations'].get('communications', []):
+            if type(communication.get('understood')) is not bool or (
+                    not communication['understood'] and communication.get('text') is not None):
+                raise ContextError(f'{kind}: uma fala inaudível não pode transmitir palavras ao NPC.')
     if kind.value.startswith('narration_'):
         if context['phase'] != ('initial' if kind == ContextKind.NARRATION_INITIAL else 'reply'):
             raise ContextError(f'{kind}.phase: fase de narração incompatível.')

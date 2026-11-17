@@ -14,6 +14,7 @@ from trama.application.intents import ActionPlan, NarrativeIntent
 from trama.application.parley import InfluenceRequest
 from trama.application.situations import load_situation, situation_state
 from trama.application.world import WorldAction, WorldPlan, WorldReaction
+from trama.agency import IntentDecision
 from trama.bootstrap import open_situation
 from trama.knowledge import Claim
 from trama.social import DispositionAssessment, MemoryEffect, PersonaEffect
@@ -85,11 +86,16 @@ def test_irrelevant_reply_can_leave_social_decision_unchanged_without_influence_
         game.flow.world_director=SimpleNamespace(decide=lambda context: WorldPlan((WorldReaction(0,None,(
             WorldAction('guard_1','influence','Avalia.',influence=InfluenceRequest(skill='persuasion',assessment=assessment)),)),)))
         assert game.runner.submit(case['messages'][0]).status=='completed'
-        game.flow.world_director=SimpleNamespace(decide=lambda context: WorldPlan())
+        game.flow.world_director=SimpleNamespace(decide=lambda context: WorldPlan((WorldReaction(0,None,(
+            WorldAction('guard_1','wait','O guarda aguarda a explicação prometida.'),)),),
+            intent=IntentDecision('guard_1','Ouvir a explicação.','Aguardar brevemente.','A explicação prometida.'))
+            if context['phase']=='npc_agency' else WorldPlan())
         before=situation_state(game.flow.session)
         result=game.runner.submit(case['messages'][2])
         after=situation_state(game.flow.session)
         assert not LIVE['evaluate'](case,2,before,after,result)
+        assert any(r.stage=='npc_agency' for r in result.requests)
+        assert not any(e['operation']=='influence' for e in result.report.world_events)
         mutated=deepcopy(after)
         mutated['social']['decisions'].append({'accepted':True})
         assert LIVE['evaluate'](case,2,before,mutated,result)

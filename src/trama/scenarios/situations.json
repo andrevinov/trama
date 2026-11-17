@@ -372,6 +372,21 @@
         ],
         "expected_status": "completed"
       }
+    ],
+    "agency_contact": [
+      {
+        "steps": [
+          {
+            "intent": "narrative",
+            "operation": "look",
+            "text": "Olho o vigia."
+          }
+        ],
+        "expected_status": "blocked",
+        "expected_world_operations": [
+          "parley"
+        ]
+      }
     ]
   },
   "situations": [
@@ -2614,6 +2629,236 @@
         [
           20,
           1
+        ]
+      ]
+    },
+    {
+      "id": "agencia-negociacao",
+      "scenario": "dungeon_escape.json",
+      "start_variation": [
+        7,
+        19
+      ],
+      "setup": [
+        "guard_challenge_cell_2"
+      ],
+      "rolls": [],
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          20
+        ],
+        "creatures.guard_1": [
+          10,
+          6
+        ],
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "prisoner_awake": true,
+        "passages.guard_door.is_open": true,
+        "resources.player.hp": 28
+      }
+    },
+    {
+      "id": "agencia-off-consulta",
+      "scenario": "dungeon_escape.json",
+      "start_variation": [
+        7,
+        19
+      ],
+      "setup": [
+        "guard_challenge_cell_2"
+      ],
+      "rolls": [],
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          20
+        ],
+        "creatures.guard_1": [
+          10,
+          6
+        ],
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "prisoner_awake": true,
+        "passages.guard_door.is_open": true,
+        "resources.player.hp": 28
+      }
+    },
+    {
+      "scenario": "watched_conversation.json",
+      "setup": [
+        "agency_contact"
+      ],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "position": [
+          3,
+          3
+        ],
+        "creatures.warden": [
+          19,
+          3
+        ]
+      },
+      "id": "agencia-vigia-generico",
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
         ]
       ]
     }

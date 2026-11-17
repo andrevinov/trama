@@ -32,6 +32,7 @@ from trama.application.perception import PerceptionSystem
 from trama.application.knowledge import KnowledgeSystem
 from trama.application.disposition import DispositionSystem
 from trama.application.adjudication import AdjudicationSystem
+from trama.application.agency import AgencySystem
 from trama.knowledge import Claim
 from trama.perception import Noise, Observer
 from trama.observability import log_context, new_id
@@ -99,6 +100,7 @@ class GameSession:
         self.social = DispositionSystem(self, self._initial_social_profiles)
         self.last_communication = None
         self.adjudication = AdjudicationSystem(self)
+        self.agency = AgencySystem(self)
         self.reset_version = 0
         logger.info("game.session_created", extra={"data": {"player_id": player.id,
                     "position": initial_state.position, "creature_count": len(creatures)}})
@@ -168,6 +170,9 @@ class GameSession:
     def on_knowledge(self, memory):
         """Cenários podem reconhecer uma informação aprendida sem conceder itens."""
 
+    def on_npc_resume(self, actor_id):
+        """A conversa terminou; o cenário pode retomar a atividade existente."""
+
     def on_perception(self, event):
         if event['operation'] != 'perception_detected' or event['target_id'] != self.encounter.player_id:
             return
@@ -193,6 +198,7 @@ class GameSession:
         npc = next(c for c in self.creatures if c.id == actor_id)
         self.peaceful_npcs.discard(actor_id)
         self.parley = Parley(actor_id, demand, self.state.position, npc.position)
+        self.agency.engage(actor_id, demand)
         event = dict(operation='parley', text=demand, changed=True,
                      perceptible=True, speaker=npc.name, **self.parley.context())
         logger.info('game.parley_started', extra={'data': event})
@@ -222,6 +228,7 @@ class GameSession:
                               concession=event['concession'])
         npc = self.perception.observer(actor_id)
         response = event['response_text']
+        self.agency.answered(actor_id, response)
         volume = self.last_communication.get('volume', 'normal')
         communication = self.knowledge.communicate(actor_id, response, npc.position, volume)
         self._events.append(dict(operation='say', actor_id=actor_id, speaker=npc.name, text=response,
@@ -427,6 +434,8 @@ class GameSession:
         try:
             result = self._execute(intent, **options)
             if self.mode != mode_before:
+                if self.mode == GameMode.TURN_BASED:
+                    self.agency.intents.clear()
                 logger.info("game.mode_changed", extra={"data": {"before": mode_before, "after": self.mode,
                             "operation": operation, "actor_id": self.encounter.player_id}})
             if isinstance(result, DoorActionResult) and not result.changed:
@@ -707,6 +716,7 @@ class GameSession:
         self.social = DispositionSystem(self, self._initial_social_profiles)
         self.last_communication = None
         self.adjudication = AdjudicationSystem(self)
+        self.agency = AgencySystem(self)
         if self.scene is not None:
             self.grid = self.scene.movement_grid
         self.budget = ActionBudget(action_used=self.initial_state.dash_used)

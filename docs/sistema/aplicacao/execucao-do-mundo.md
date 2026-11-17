@@ -49,3 +49,10 @@ aparecem somente em `say`; Influence usa fundamentação privada.
 Descrições e falas são narrativas. Alterações mecânicas exigem operações
 estruturadas. `describe` não cria objetos, obstáculos ou condições persistentes;
 novos tipos de alteração do Mundo precisam de implementação própria.
+
+O acompanhamento `npc_agency` aceita `IntentDecision` e 1–3 ações próprias
+validadas. Não aceita deslocamentos, ataques ou Influence sem fala executada.
+`resume_activity` somente nessa etapa encerra a conversa sem efeitos espaciais;
+`start_conflict` preserva posições até a iniciativa. O executor preserva ações
+já realizadas quando uma continuação falha. Objetivos privados não são eventos
+públicos. Consulte [intenções dos NPCs](intencoes-dos-npcs.md).

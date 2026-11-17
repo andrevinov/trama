@@ -22,8 +22,9 @@ logger = logging.getLogger(__name__)
 
 
 class WorldExecutor:
-    def __init__(self, session: GameSession):
+    def __init__(self, session: GameSession, *, agency_actor=None):
         self.session = session
+        self.agency_actor = agency_actor
         self.remaining_actions = ()
         self.failure = None
 
@@ -114,6 +115,8 @@ class WorldExecutor:
                                               blocked_position=Position(blocked[0] - 1, blocked[1] - 1) if blocked else None)
             logger.info("world.action_completed", extra={"data": event})
             if self.session.mode != mode_before:
+                if self.session.mode == GameMode.TURN_BASED:
+                    self.session.agency.intents.clear()
                 logger.info("game.mode_changed", extra={"data": {"before": mode_before, "after": self.session.mode,
                             "reason": action.text, "actor_id": action.actor_id}})
             return event
@@ -151,6 +154,17 @@ class WorldExecutor:
             if action.memory_ids:
                 resolved['private_memory_ids'] = list(action.memory_ids)
             return resolved
+        if action.operation == 'resume_activity':
+            if self.agency_actor != npc.id:
+                raise WorldError('Retomar a atividade exige acompanhamento da intenção deste NPC.')
+            if session.encounter.combat or not session.parley_pending or session.parley.actor_id != npc.id:
+                raise WorldError('Esse NPC não tem uma conversa de exploração para encerrar.')
+            session.parley = replace(session.parley, status='peaceful')
+            session.peaceful_npcs.add(npc.id)
+            session.agency.close(npc.id)
+            session.on_npc_resume(npc.id)
+            return {**event, 'changed': True, 'conversation_closed': True,
+                    'movement_occurred': False}
         if session.parley_pending and action.operation in {'move', 'open', 'close', 'attack'}:
             raise WorldError('O NPC deve aguardar a resposta à abordagem antes de se aproximar ou atacar.')
         if npc.id not in encounter.sheets and action.operation != 'say':
@@ -158,6 +172,9 @@ class WorldExecutor:
         if action.operation == "say":
             communication = session.knowledge.communicate(npc.id, action.text, npc.position,
                                                            action.volume, memory_ids=action.memory_ids)
+            if (self.agency_actor is None and session.last_communication
+                    and npc.id in session.last_communication['heard_by']):
+                session.agency.answered(npc.id, action.text)
             session.emit_noise(npc.id, npc.position, action.volume, 'Fala de um NPC.', speech=True)
             # A fala é um acontecimento audível decidido pelo Mundo, não visão através de paredes.
             return {**event, **communication, "perceptible": encounter.player_id in communication['heard_by'],
@@ -179,6 +196,7 @@ class WorldExecutor:
             if encounter.combat is not None:
                 return event
             result = encounter.start(tuple(c.id for c in session.creatures if (c.hostile or c.id == action.actor_id) and encounter.states[c.id].hp > 0))
+            session.agency.close(npc.id)
             session.peaceful_npcs.difference_update(e.id for e in encounter.combat.order)
             if session.parley is not None and any(e.id == session.parley.actor_id for e in encounter.combat.order):
                 session.parley = replace(session.parley, status="combat")

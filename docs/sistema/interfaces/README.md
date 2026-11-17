@@ -24,6 +24,7 @@ validações e operações do jogo.
 | --- | --- | --- |
 | Janela e entrada | Receber mensagens, tratar eventos e apresentar conversa, mapa e escolhas de reação. | [movement_window.py](../../../src/trama/ui/movement_window.py) |
 | Ficha e inimigos | Organizar dados e cartões de consulta, com detalhes expansíveis e disponibilidade atual. | [character_panel.py](../../../src/trama/ui/character_panel.py) |
+| Iniciativa e pendências | Mostrar ordem, vez atual, recursos e decisões pendentes apenas em combate. | [Mostrador de combate](pygame.md#mostrador-de-combate), [turn_panel.py](../../../src/trama/ui/turn_panel.py) |
 | Texto | Apoiar apresentação e organização de texto na janela. | [text.py](../../../src/trama/ui/text.py) |
 | Execução sem janela | Despachar pedidos públicos do fluxo até conclusão, falha ou necessidade de nova entrada. | [game_runner.py](../../../src/trama/application/game_runner.py) |
 

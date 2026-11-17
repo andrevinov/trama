@@ -44,8 +44,9 @@ def test_phase_contracts_validate_real_current_projections_without_wire_metadata
     assert 'kind' not in wire
     assert deepcopy(context).kind == kind
     assert wire['mode'] in {'narrated', 'turn_based'}
-    del context['character']
-    with pytest.raises(ContextError, match='character'):
+    mandatory = 'actor' if kind == ContextKind.NPC_AGENCY else 'character'
+    del context[mandatory]
+    with pytest.raises(ContextError, match=mandatory):
         validate_context(kind, context)
 
 

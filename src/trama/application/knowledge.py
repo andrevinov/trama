@@ -15,6 +15,8 @@ class KnowledgeSystem:
     def __init__(self, session, memories=()):
         self.session = session
         self.store = KnowledgeStore(memories)
+        self.communications = []
+        self.communication_sequence = 0
         owners = {session.encounter.player_id, *(c.id for c in session.creatures), *(o.id for o in session.observers)}
         if any(m.owner_id not in owners for m in memories):
             raise KnowledgeError('Memória inicial pertence a personagem inexistente.')
@@ -68,6 +70,13 @@ class KnowledgeSystem:
             if self.session.perception.hears(listener, noise):
                 hearers.append(player)
         event_id = new_id()
+        self.communication_sequence += 1
+        self.communications.append(dict(sequence=self.communication_sequence, actor_id=actor_id,
+            text=text, volume=volume, heard_by=list(hearers),
+            seen_by=[o.id for o in self.session.perception.observers()
+                     if self.session.perception.sees(o, position)],
+            player_perceived=actor_id == player or player in hearers))
+        self.communications = self.communications[-12:]
         learned = []
         for recipient in hearers:
             for memory in memories:
@@ -83,6 +92,20 @@ class KnowledgeSystem:
                 'shared_memories': [{k: v for k, v in m.data().items()
                                     if k in {'id', 'owner_id', 'claim', 'text', 'source', 'when'}} for m in memories],
                 'heard_by': hearers, 'learned_memory_ids': [m.id for m in learned]}
+
+    def communications_for(self, actor_id):
+        result = []
+        for event in self.communications:
+            heard = actor_id == event['actor_id'] or actor_id in event['heard_by']
+            seen = actor_id in event['seen_by']
+            if heard or seen:
+                result.append(dict(sequence=event['sequence'], actor_id=event['actor_id'],
+                    understood=heard, text=event['text'] if heard else None, volume=event['volume']))
+        return result
+
+    def public_communications(self):
+        return [{k: e[k] for k in ('sequence','actor_id','text','volume','heard_by')}
+                for e in self.communications if e['player_perceived']]
 
     def context(self, query=''):
         s = self.session

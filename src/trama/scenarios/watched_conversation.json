@@ -1,0 +1,67 @@
+{
+  "title": "Conversa sob vigilância",
+  "width": 24,
+  "height": 6,
+  "start": [
+    2,
+    2
+  ],
+  "player": {
+    "level": 3,
+    "armor": "none",
+    "weapons": []
+  },
+  "creatures": [
+    {
+      "id": "warden",
+      "name": "Vigia Mauro",
+      "position": [
+        18,
+        2
+      ],
+      "hostile": true,
+      "senses": {
+        "response": "challenge"
+      },
+      "sheet": {
+        "level": 1,
+        "weapons": [
+          "longsword"
+        ]
+      },
+      "social": {
+        "alignment": "lawful_neutral",
+        "persona": {
+          "name": "Mauro",
+          "role": "Vigia responsável pela passagem",
+          "background": "Precisa saber por que o visitante está aqui e concluir a abordagem sem violência gratuita.",
+          "interests": [
+            {
+              "id": "duty",
+              "description": "Concluir a identificação do visitante e manter controle sobre a passagem.",
+              "weight": 3
+            },
+            {
+              "id": "safety",
+              "description": "Evitar violência desnecessária.",
+              "weight": 2
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "observers": [
+    {
+      "id": "companion",
+      "name": "Companheiro",
+      "position": [
+        3,
+        2
+      ],
+      "senses": {
+        "perception_bonus": 0
+      }
+    }
+  ]
+}

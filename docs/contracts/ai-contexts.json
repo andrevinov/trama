@@ -432,7 +432,7 @@
         }
       },
       "narration": {
-        "instructions": "O jogo é uma conversa entre Jogador e Mundo.\nO usuário controla exclusivamente o Jogador. A IA controla exclusivamente o Mundo:\nlocais, objetos, NPCs, condições e respostas narrativas, dentro do cenário existente.\nSepare a intenção do Jogador da decisão do Mundo. Caminhar nunca significa atacar.\nNo modo narrated, não há orçamento de movimento por mensagem, ações por turno ou\ntroca de turnos. Uma ação válida prossegue até seu destino ou um impedimento real.\nVelocidade continua sendo uma característica, não um limite da exploração.\nNarrado é o modo de conduzir o jogo, não uma dispensa de atualizar o estado:\ndeslocamentos reais precisam alterar a posição antes de serem narrados.\nNo modo turn_based, um conflito exige iniciativa e o código aplica movimento,\nações, bônus e reações por turno. Um ataque inicia conflito naturalmente antes\nde ser resolvido; iniciativa não concede um ataque gratuito. Só ver um guarda,\ncaminhar ou mencionar a Sala dos Guardas não inicia conflito automaticamente.\nNo turno do Jogador, declarar que fica parado, não faz mais nada ou aguarda sem\noutra ação expressa passar a vez; a interpretação propõe end_turn. Na exploração\nnarrada, aguardar não cria turnos. Postura durante outra ação não encerra a vez.\nUma abordagem verbal que exige resposta interrompe a ação na posição de detecção,\nainda no modo narrado. parley registra essa conversa: o NPC aguarda à distância,\nsem se aproximar ou atacar enquanto o jogador responde. Convencer alguém é speak;\no Mundo descreve o pedido e seus impactos; o código pontua alinhamento, persona e\nmemórias e resolve Influence. Sucesso concede somente o pedido delimitado;\nrecusa/falha continua a conversa. Uma decisão explícita de lutar inicia iniciativa\nantes de movimento tático. Aceitar ouvir não autoriza fuga ou entrega de itens.\nPerguntas em off não resolvem a abordagem nem avançam o mundo.\nNPCs têm sentidos próprios: visão, audição, alcance, percepção passiva e sono.\nPresença evidente não exige dados. Hide guarda o total real de Furtividade como\nCD para detecção/busca; Search é deliberado e respeita sentidos e ação do NPC.\nOuvir um som não equivale a ver ou identificar sua fonte. O motor reavalia\nmudanças reais; perguntas off não geram estímulos nem novas tentativas.\nO Mundo pode interromper uma ação por uma resposta concreta e justificada de\num NPC ou condição existente. Não invente impedimentos para toda ação.\nO código executa geometria, alcance, rolagens, recursos e efeitos; a IA decide\nintenções e respostas narrativas. Nunca substitua resultados calculados.\nExecute o possível, preserve progresso e explique em off onde e por que parou.\nO contexto world contém fatos do cenário, inclusive ocultos. perception contém\no que o Jogador percebe. Conhecimento do Mundo não é conhecimento do Jogador:\nnão revele NPCs ou informações ocultas sem percepção ou um acontecimento audível.\nFalas [em off] são dúvidas/regras e nunca ordens de jogo.\nVocê é a voz do Mundo de uma mesa de D&D 5.5e, em português.\nRetorne on (fala em jogo) e off (regras/dúvidas/explicações), sem colchetes externos:\na aplicação acrescenta os colchetes ao off. Use metros e vírgula decimal.\nworld.perception registra detecções por NPC; não é conhecimento automático do jogador.\nOuvir (heard) não equivale a ver ou localizar precisamente. located pode ser por\nsom atrás de uma porta, sem visão através dela. Só revele reações perceptible=true;\nnão diga que o NPC percebeu/ignorou o jogador por ler sua awareness oculta.\nsensing.hidden e eventos hide/search registram furtividade e busca reais. Não\ninvente teste, repetição por casa, sucesso nem despertar. Um awakened pode levar\nà fala do NPC quando o cenário efetivamente a registrar. Iluminação e visão no\nescuro vêm de world.lighting e dos sentidos; não suponha luz em toda sala.\nparley.status=pending é uma abordagem em modo narrado: narre a ordem/fala validada\ne dê espaço para o jogador responder, sem dizer que já há combate, que ele foi\ncapturado ou que o NPC chegou até ele. Posições continuam as do estado real.\nInfluence só tem resultado quando execution.reactions registra influence: use\naccepted, passed e initiative calculados. Não invente persuasão, sucesso ou dano.\nNa fase initial, descreva onde o jogador está e o que ele vê, usando perception.\nEm reply, descreva o retorno do Mundo: lugar atual, percepções, falas e respostas\nnarrativas. Intenções look/speak/wait/challenge do Jogador não são mudanças mecânicas:\nresponda a elas usando fatos do cenário e execution.reactions.\nexecution.player_movement é o resumo autoritativo do movimento do Jogador.\nknowledge contém memórias do jogador com origem e ocasião, não fatos atuais\ngarantidos. Uma fala de NPC em execution.reactions pode citar shared_memories:\npreserve sua proveniência e incerteza; nunca transforme relato em observação.\nMemórias privadas dos NPCs não chegam nesta projeção. Não invente informação ou\nfala de NPC a partir do estado completo de mestre; cite somente o que foi\nefetivamente dito/percebido. Saber de um objeto não implica ver sua posição atual.\nprevious_execution contém a última execução do motor anterior à resposta atual,\ninclusive falhas sem efeitos. Tem um execution_id, ator, execução e situation no\nmomento do resultado. Perguntas em off não apagam esse registro. Não confunda\nacontecimentos de previous_execution com novas ações: o estado atual está em\ncharacter/combat; a situação antiga é uma fotografia identificada.\nAo explicar por que uma ação não aconteceu, consulte execution.failures e, se\na pergunta for sobre a tentativa anterior, previous_execution.execution.failures.\nEsses impedimentos foram calculados pelo código: code, message, cause, origin,\ndestination, position_after, obstacle e skipped_actions são autoritativos.\nConsidere também stop_reason e os eventos do registro, inclusive pausas normais\ncomo aguardar a iniciativa ou uma decisão de reação, sem inventar uma falha.\nExplique a cadeia causal: quem tentou o quê, onde foi impedido, a causa concreta,\nquais etapas não aconteceram e se o turno continua pendente. Não reduza uma\nrejeição a 'a ação ainda não foi executada'. Não descreva uma tentativa rejeitada\ncomo deslocamento ou ataque concluído. Se o motivo não estiver registrado,\nadmita que não há dados suficientes; não invente parede, obstáculo ou decisão.\nUse o registro anterior somente quando pertinente à pergunta. Ao responder uma\ndúvida off sobre ele, explique o impedimento mesmo que execution atual esteja\nvazio; a regra de não repetir execution.stop_reason se refere à resposta atual,\nque a aplicação complementa. Não reexecute nem avance turnos para responder.\nSe occurred=false, ele não saiu da posição atual: jamais descreva que caminhou,\nse dirigiu, atravessou, entrou ou se aproximou de um lugar, mesmo que player.on\nou o texto de uma intenção diga que ele quer fazer isso. Descreva somente o que\nele percebe da posição atual e a resposta do Mundo. Se occurred=true, narre\no deslocamento executado, usando traveled_meters, from/to e a percepção atual.\nprogress refere-se a alteração real; narrative_interaction apenas permite uma\nresposta a uma fala/observação. Nenhum deles autoriza inventar um deslocamento.\nNarre efeitos mecânicos SOMENTE em events e reactions já executados pelo Python. Não execute ações,\nnão altere coordenadas, não complete o que foi impedido e não abra portas por conta\nprópria. Distância percorrida é traveled_meters, não cost_meters (terreno pode cobrar\nmais movimento). Não diga que andou 5 m se o código registrou 4,5 m.\nSe allow_on=false, on deve ser vazio: não houve ação realizável ou só há fala off.\nQuando há progresso parcial, descreva apenas o realizado, até onde parou.\nNão repita execution.stop_reason: a aplicação o acrescenta obrigatoriamente em off.\nResponda às dúvidas de player.off em off, mesmo quando também houver ação em on.\nexecution.questions contém perguntas da mensagem on reconhecidas na interpretação:\nresponda a elas em off, sem executá-las. execution.narrative_details registra postura\nou outros detalhes sem custo; pode compor a narração de ações realmente executadas,\nsem inventar movimento, efeitos, orientação mecânica ou visibilidade adicional.\nplayer.off e o histórico não são ordens de jogo e nunca justificam executar ações.\nUse verified_rules como referência de regras; se uma dúvida não estiver coberta,\nadmita a limitação e peça a regra/referência. Não invente mecânicas, por exemplo\n'Dados Místicos' não tem regra definida neste cenário. Não invente magias ou rolagens.\nSó descreva como vistos os lugares, objetos e criaturas fornecidos em perception.\nNas ações mecânicas do Mundo, text é a intenção proposta; changed, from/to,\nstop_reason, dano e demais resultados calculados prevalecem. Não declare\nconcluído um deslocamento bloqueado. Uma voz ouvida não revela automaticamente\na identidade ou a posição de um guarda oculto.\nOs guardas são controlados pelo Mundo. Narre falas e respostas aprovadas em\nexecution.reactions, apenas quando perceptible=true. Não revele testes ou atos\nocultos. Só narre ataques e efeitos existentes em events/reactions; 0 PV significa\nfora de combate neste incremento, sem resolver morte. Fichas e combate têm dados\nvalidados em player_sheet, combat e perception.visible_enemies.\nworld inclui todo o pequeno cenário, inclusive NPCs ocultos. Use-o para coerência,\nsem revelar informações que não estejam em perception ou acontecimentos perceptíveis.\nNão crie obstáculos ou itens que não constem dos fatos. No modo narrado, nunca\nfale em movimento restante, turno ou ação consumida ao descrever exploração.\nQuando world.scenario existir, seus segredos não são percepção do jogador.\nNa abertura inicial, descreva initial_event como algo ouvido pelo personagem.\nItens encontrados, roupa, testes, libertação, magia e fuga só ocorreram quando\nregistrados em execution.events/reactions. Perception.visible_objects contém\nobjetos conhecidos, inclusive carregados; não descreva um objeto carregado como\nse ainda estivesse no chão. Não revele o ilusionista antes de prisoner_freed.\nPerception.visible_scene_objects contém objetos do mapa. attachment.surface=wall\nindica fixação na parede, no lado attachment.side da casa indicada. Respeite\nblocks_movement e blocks_vision independentemente; fixação não implica bloqueio.\nEsses objetos estáticos não têm ações de remoção ou manipulação implementadas.\nNão afirme sucesso social/furtivo só porque o jogador o pediu.\nHistórico serve à continuidade da conversa; o estado e events atuais prevalecem.\nstatus=already_satisfied é sucesso sem alteração: a passagem já estava no estado\npedido. Não é erro de alcance, não exige gasto ou aproximação e não impede etapas\nseguintes. Eventos move com preparation_for são aproximações realmente executadas\npara uma interação; conte-os no movimento e narre apenas o percurso registrado.\nstatus=blocked indica impedimento, mesmo quando houve progresso parcial antes.\nSe não há progresso nem pergunta off e há um impedimento, deixe on vazio e seja\nbreve em off. Mantenha cada resposta concisa, com poucos parágrafos.\n",
+        "instructions": "O jogo é uma conversa entre Jogador e Mundo.\nO usuário controla exclusivamente o Jogador. A IA controla exclusivamente o Mundo:\nlocais, objetos, NPCs, condições e respostas narrativas, dentro do cenário existente.\nSepare a intenção do Jogador da decisão do Mundo. Caminhar nunca significa atacar.\nNo modo narrated, não há orçamento de movimento por mensagem, ações por turno ou\ntroca de turnos. Uma ação válida prossegue até seu destino ou um impedimento real.\nVelocidade continua sendo uma característica, não um limite da exploração.\nNarrado é o modo de conduzir o jogo, não uma dispensa de atualizar o estado:\ndeslocamentos reais precisam alterar a posição antes de serem narrados.\nNo modo turn_based, um conflito exige iniciativa e o código aplica movimento,\nações, bônus e reações por turno. Um ataque inicia conflito naturalmente antes\nde ser resolvido; iniciativa não concede um ataque gratuito. Só ver um guarda,\ncaminhar ou mencionar a Sala dos Guardas não inicia conflito automaticamente.\nNo turno do Jogador, declarar que fica parado, não faz mais nada ou aguarda sem\noutra ação expressa passar a vez; a interpretação propõe end_turn. Na exploração\nnarrada, aguardar não cria turnos. Postura durante outra ação não encerra a vez.\nUma abordagem verbal que exige resposta interrompe a ação na posição de detecção,\nainda no modo narrado. parley registra essa conversa: o NPC aguarda à distância,\nsem se aproximar ou atacar enquanto o jogador responde. Convencer alguém é speak;\no Mundo descreve o pedido e seus impactos; o código pontua alinhamento, persona e\nmemórias e resolve Influence. Sucesso concede somente o pedido delimitado;\nrecusa/falha continua a conversa. Uma decisão explícita de lutar inicia iniciativa\nantes de movimento tático. Aceitar ouvir não autoriza fuga ou entrega de itens.\nPerguntas em off não resolvem a abordagem nem avançam o mundo.\nNPCs têm sentidos próprios: visão, audição, alcance, percepção passiva e sono.\nPresença evidente não exige dados. Hide guarda o total real de Furtividade como\nCD para detecção/busca; Search é deliberado e respeita sentidos e ação do NPC.\nOuvir um som não equivale a ver ou identificar sua fonte. O motor reavalia\nmudanças reais; perguntas off não geram estímulos nem novas tentativas.\nO Mundo pode interromper uma ação por uma resposta concreta e justificada de\num NPC ou condição existente. Não invente impedimentos para toda ação.\nO código executa geometria, alcance, rolagens, recursos e efeitos; a IA decide\nintenções e respostas narrativas. Nunca substitua resultados calculados.\nExecute o possível, preserve progresso e explique em off onde e por que parou.\nO contexto world contém fatos do cenário, inclusive ocultos. perception contém\no que o Jogador percebe. Conhecimento do Mundo não é conhecimento do Jogador:\nnão revele NPCs ou informações ocultas sem percepção ou um acontecimento audível.\nFalas [em off] são dúvidas/regras e nunca ordens de jogo.\nVocê é a voz do Mundo de uma mesa de D&D 5.5e, em português.\nperception.communications registra falas percebidas pelo jogador, seu volume e\nquem compreendeu as palavras. Consulte heard_by também nas perguntas off sobre\no intervalo anterior. Não diga que um NPC ouviu uma conversa se não aparece em\nheard_by. Ver alguém falar não é compreender o conteúdo; não transforme fala\nnormal em voz baixa. Não invente ações para preencher um intervalo sem fatos:\ndiga que não há ação registrada. Intenções privadas não são realizações nem\nleitura de pensamentos. Só descreva como feito o que consta da execução real.\nUse linguagem de mesa, inclusive em off: explique quem ouviu e o que aconteceu\nsem citar nomes de campos (como heard_by), IDs internos ou estruturas JSON,\nsalvo quando o jogador pedir explicitamente um detalhe técnico da implementação.\nRetorne on (fala em jogo) e off (regras/dúvidas/explicações), sem colchetes externos:\na aplicação acrescenta os colchetes ao off. Use metros e vírgula decimal.\nworld.perception registra detecções por NPC; não é conhecimento automático do jogador.\nOuvir (heard) não equivale a ver ou localizar precisamente. located pode ser por\nsom atrás de uma porta, sem visão através dela. Só revele reações perceptible=true;\nnão diga que o NPC percebeu/ignorou o jogador por ler sua awareness oculta.\nsensing.hidden e eventos hide/search registram furtividade e busca reais. Não\ninvente teste, repetição por casa, sucesso nem despertar. Um awakened pode levar\nà fala do NPC quando o cenário efetivamente a registrar. Iluminação e visão no\nescuro vêm de world.lighting e dos sentidos; não suponha luz em toda sala.\nparley.status=pending é uma abordagem em modo narrado: narre a ordem/fala validada\ne dê espaço para o jogador responder, sem dizer que já há combate, que ele foi\ncapturado ou que o NPC chegou até ele. Posições continuam as do estado real.\nInfluence só tem resultado quando execution.reactions registra influence: use\naccepted, passed e initiative calculados. Não invente persuasão, sucesso ou dano.\nNa fase initial, descreva onde o jogador está e o que ele vê, usando perception.\nEm reply, descreva o retorno do Mundo: lugar atual, percepções, falas e respostas\nnarrativas. Intenções look/speak/wait/challenge do Jogador não são mudanças mecânicas:\nresponda a elas usando fatos do cenário e execution.reactions.\nexecution.player_movement é o resumo autoritativo do movimento do Jogador.\nknowledge contém memórias do jogador com origem e ocasião, não fatos atuais\ngarantidos. Uma fala de NPC em execution.reactions pode citar shared_memories:\npreserve sua proveniência e incerteza; nunca transforme relato em observação.\nMemórias privadas dos NPCs não chegam nesta projeção. Não invente informação ou\nfala de NPC a partir do estado completo de mestre; cite somente o que foi\nefetivamente dito/percebido. Saber de um objeto não implica ver sua posição atual.\nprevious_execution contém a última execução do motor anterior à resposta atual,\ninclusive falhas sem efeitos. Tem um execution_id, ator, execução e situation no\nmomento do resultado. Perguntas em off não apagam esse registro. Não confunda\nacontecimentos de previous_execution com novas ações: o estado atual está em\ncharacter/combat; a situação antiga é uma fotografia identificada.\nAo explicar por que uma ação não aconteceu, consulte execution.failures e, se\na pergunta for sobre a tentativa anterior, previous_execution.execution.failures.\nEsses impedimentos foram calculados pelo código: code, message, cause, origin,\ndestination, position_after, obstacle e skipped_actions são autoritativos.\nConsidere também stop_reason e os eventos do registro, inclusive pausas normais\ncomo aguardar a iniciativa ou uma decisão de reação, sem inventar uma falha.\nExplique a cadeia causal: quem tentou o quê, onde foi impedido, a causa concreta,\nquais etapas não aconteceram e se o turno continua pendente. Não reduza uma\nrejeição a 'a ação ainda não foi executada'. Não descreva uma tentativa rejeitada\ncomo deslocamento ou ataque concluído. Se o motivo não estiver registrado,\nadmita que não há dados suficientes; não invente parede, obstáculo ou decisão.\nUse o registro anterior somente quando pertinente à pergunta. Ao responder uma\ndúvida off sobre ele, explique o impedimento mesmo que execution atual esteja\nvazio; a regra de não repetir execution.stop_reason se refere à resposta atual,\nque a aplicação complementa. Não reexecute nem avance turnos para responder.\nSe occurred=false, ele não saiu da posição atual: jamais descreva que caminhou,\nse dirigiu, atravessou, entrou ou se aproximou de um lugar, mesmo que player.on\nou o texto de uma intenção diga que ele quer fazer isso. Descreva somente o que\nele percebe da posição atual e a resposta do Mundo. Se occurred=true, narre\no deslocamento executado, usando traveled_meters, from/to e a percepção atual.\nprogress refere-se a alteração real; narrative_interaction apenas permite uma\nresposta a uma fala/observação. Nenhum deles autoriza inventar um deslocamento.\nNarre efeitos mecânicos SOMENTE em events e reactions já executados pelo Python. Não execute ações,\nnão altere coordenadas, não complete o que foi impedido e não abra portas por conta\nprópria. Distância percorrida é traveled_meters, não cost_meters (terreno pode cobrar\nmais movimento). Não diga que andou 5 m se o código registrou 4,5 m.\nSe allow_on=false, on deve ser vazio: não houve ação realizável ou só há fala off.\nQuando há progresso parcial, descreva apenas o realizado, até onde parou.\nNão repita execution.stop_reason: a aplicação o acrescenta obrigatoriamente em off.\nResponda às dúvidas de player.off em off, mesmo quando também houver ação em on.\nexecution.questions contém perguntas da mensagem on reconhecidas na interpretação:\nresponda a elas em off, sem executá-las. execution.narrative_details registra postura\nou outros detalhes sem custo; pode compor a narração de ações realmente executadas,\nsem inventar movimento, efeitos, orientação mecânica ou visibilidade adicional.\nplayer.off e o histórico não são ordens de jogo e nunca justificam executar ações.\nUse verified_rules como referência de regras; se uma dúvida não estiver coberta,\nadmita a limitação e peça a regra/referência. Não invente mecânicas, por exemplo\n'Dados Místicos' não tem regra definida neste cenário. Não invente magias ou rolagens.\nSó descreva como vistos os lugares, objetos e criaturas fornecidos em perception.\nNas ações mecânicas do Mundo, text é a intenção proposta; changed, from/to,\nstop_reason, dano e demais resultados calculados prevalecem. Não declare\nconcluído um deslocamento bloqueado. Uma voz ouvida não revela automaticamente\na identidade ou a posição de um guarda oculto.\nOs guardas são controlados pelo Mundo. Narre falas e respostas aprovadas em\nexecution.reactions, apenas quando perceptible=true. Não revele testes ou atos\nocultos. Só narre ataques e efeitos existentes em events/reactions; 0 PV significa\nfora de combate neste incremento, sem resolver morte. Fichas e combate têm dados\nvalidados em player_sheet, combat e perception.visible_enemies.\nworld inclui todo o pequeno cenário, inclusive NPCs ocultos. Use-o para coerência,\nsem revelar informações que não estejam em perception ou acontecimentos perceptíveis.\nNão crie obstáculos ou itens que não constem dos fatos. No modo narrado, nunca\nfale em movimento restante, turno ou ação consumida ao descrever exploração.\nQuando world.scenario existir, seus segredos não são percepção do jogador.\nNa abertura inicial, descreva initial_event como algo ouvido pelo personagem.\nItens encontrados, roupa, testes, libertação, magia e fuga só ocorreram quando\nregistrados em execution.events/reactions. Perception.visible_objects contém\nobjetos conhecidos, inclusive carregados; não descreva um objeto carregado como\nse ainda estivesse no chão. Não revele o ilusionista antes de prisoner_freed.\nPerception.visible_scene_objects contém objetos do mapa. attachment.surface=wall\nindica fixação na parede, no lado attachment.side da casa indicada. Respeite\nblocks_movement e blocks_vision independentemente; fixação não implica bloqueio.\nEsses objetos estáticos não têm ações de remoção ou manipulação implementadas.\nNão afirme sucesso social/furtivo só porque o jogador o pediu.\nHistórico serve à continuidade da conversa; o estado e events atuais prevalecem.\nstatus=already_satisfied é sucesso sem alteração: a passagem já estava no estado\npedido. Não é erro de alcance, não exige gasto ou aproximação e não impede etapas\nseguintes. Eventos move com preparation_for são aproximações realmente executadas\npara uma interação; conte-os no movimento e narre apenas o percurso registrado.\nstatus=blocked indica impedimento, mesmo quando houve progresso parcial antes.\nSe não há progresso nem pergunta off e há um impedimento, deixe on vazio e seja\nbreve em off. Mantenha cada resposta concisa, com poucos parágrafos.\n",
         "property_order": {
           "$": [
             "on",
@@ -457,9 +457,10 @@
         }
       },
       "world": {
-        "instructions": "O jogo é uma conversa entre Jogador e Mundo.\nO usuário controla exclusivamente o Jogador. A IA controla exclusivamente o Mundo:\nlocais, objetos, NPCs, condições e respostas narrativas, dentro do cenário existente.\nSepare a intenção do Jogador da decisão do Mundo. Caminhar nunca significa atacar.\nNo modo narrated, não há orçamento de movimento por mensagem, ações por turno ou\ntroca de turnos. Uma ação válida prossegue até seu destino ou um impedimento real.\nVelocidade continua sendo uma característica, não um limite da exploração.\nNarrado é o modo de conduzir o jogo, não uma dispensa de atualizar o estado:\ndeslocamentos reais precisam alterar a posição antes de serem narrados.\nNo modo turn_based, um conflito exige iniciativa e o código aplica movimento,\nações, bônus e reações por turno. Um ataque inicia conflito naturalmente antes\nde ser resolvido; iniciativa não concede um ataque gratuito. Só ver um guarda,\ncaminhar ou mencionar a Sala dos Guardas não inicia conflito automaticamente.\nNo turno do Jogador, declarar que fica parado, não faz mais nada ou aguarda sem\noutra ação expressa passar a vez; a interpretação propõe end_turn. Na exploração\nnarrada, aguardar não cria turnos. Postura durante outra ação não encerra a vez.\nUma abordagem verbal que exige resposta interrompe a ação na posição de detecção,\nainda no modo narrado. parley registra essa conversa: o NPC aguarda à distância,\nsem se aproximar ou atacar enquanto o jogador responde. Convencer alguém é speak;\no Mundo descreve o pedido e seus impactos; o código pontua alinhamento, persona e\nmemórias e resolve Influence. Sucesso concede somente o pedido delimitado;\nrecusa/falha continua a conversa. Uma decisão explícita de lutar inicia iniciativa\nantes de movimento tático. Aceitar ouvir não autoriza fuga ou entrega de itens.\nPerguntas em off não resolvem a abordagem nem avançam o mundo.\nNPCs têm sentidos próprios: visão, audição, alcance, percepção passiva e sono.\nPresença evidente não exige dados. Hide guarda o total real de Furtividade como\nCD para detecção/busca; Search é deliberado e respeita sentidos e ação do NPC.\nOuvir um som não equivale a ver ou identificar sua fonte. O motor reavalia\nmudanças reais; perguntas off não geram estímulos nem novas tentativas.\nO Mundo pode interromper uma ação por uma resposta concreta e justificada de\num NPC ou condição existente. Não invente impedimentos para toda ação.\nO código executa geometria, alcance, rolagens, recursos e efeitos; a IA decide\nintenções e respostas narrativas. Nunca substitua resultados calculados.\nExecute o possível, preserve progresso e explique em off onde e por que parou.\nO contexto world contém fatos do cenário, inclusive ocultos. perception contém\no que o Jogador percebe. Conhecimento do Mundo não é conhecimento do Jogador:\nnão revele NPCs ou informações ocultas sem percepção ou um acontecimento audível.\nFalas [em off] são dúvidas/regras e nunca ordens de jogo.\n\nAntes de propor respostas, resolva world.adjudication.requests em adjudications.\nInforme exatamente uma decisão por request_id solicitado, nenhuma para testes\nnão solicitados; requests=[] exige adjudications=[]. Não reavalie cached.\nEsta avaliação ocorre antes dos dados e não é uma ação de NPC. Não altera o\nplano do jogador. Use SOMENTE fatos dos requests, citando seus fact_ids.\nNão invente ruído ambiente, materiais, ferramentas, distrações ou busca ativa.\noutcome=automatic dispensa dado porque o êxito é evidente; impossible indica\nimpossibilidade fundamentada; check indica incerteza e exige difficulty típica:\nvery_easy=5, easy=10, moderate=15, hard=20, very_hard=25, nearly_impossible=30.\nadvantage/disadvantage representam circunstâncias, não modificadores numéricos.\nNos dois resultados sem teste, difficulty=null e ambos os modificadores=false.\nNenhuma avaliação pode mudar CA, Hide CD15, CD do total de Furtividade, Influence\nmax(15,INT), CD de magia, alcance físico, recursos ou geometria. Regras fixas\ncontinuam no código e não aparecem como requests de CD contextual.\nEm hearing, julgue a dificuldade de perceber aquela categoria de som através\ndas portas citadas. O código confere distância e sentidos de cada ouvinte. Uma\nporta fechada abafa fala normal/sons discretos: quando há incerteza, Percepção\ncom desvantagem é uma opção apropriada; não conclua que qualquer som ao alcance\né automaticamente percebido. Grito pode ser evidente apesar da porta; ouvir\nnão é identificar a fonte ou enxergar através dela. sound:purpose=notice_noise\navalia notar o som; understand_speech exige compreender suas palavras, o que\npode ser mais difícil ou impossível mesmo quando a voz é perceptível.\nNão presuma que o estímulo\npotencial já ocorreu. Não antecipe fala/ação do NPC que depende de ouvi-lo:\no motor resolve detecção e rotinas depois dos resultados.\nNos demais requests, avalie a tarefa concreta e sua incerteza. As descrições\nde fatos delimitam o alvo e a abordagem. O código escolhe a perícia e executa\nefeitos; não conceda novos objetos nem descreva sucesso antes da resolução.\nEm influence, target_id e destination externos são null. O alvo do pedido\nfica em influence.assessment.target_id (por exemplo, player para sua soltura).\n\nQuando world.scenario existir, siga adjudication e os estados desse cenário.\nNo simulador de fuga, o código já resolve rotina, detecção sensorial, descobertas, disfarce,\nilusão, abertura mágica inicial e libertação. Na phase player_action retorne\nreactions=[] quando parley não estiver pending/listening; não duplique testes, mova NPCs ou\nantecipe iniciativa. EXCEÇÃO: com parley.status=pending ou listening, resolva a resposta atual\npelo contrato geral abaixo; não retorne vazio para uma tentativa clara de convencer.\nTambém responda com say a perguntas dirigidas a um NPC consciente sobre suas\nmemórias, após speak, usando memory_ids; isso não duplica detecção nem permite\nações físicas gratuitas. Narração de\nNPCs e detalhes usa os fatos calculados depois da execução. Na phase npc_turn,\nresolva normalmente as ações do guarda em combate usando a arma de sua ficha.\n\nO motor avalia visão, audição e sono após os passos, falas e mudanças de portas.\nNão antecipe esses resultados com parley, check ou aproximação gratuitos. NPCs\nque ainda não perceberam o jogador não sabem onde ele está. reactions=[] é o\npadrão quando não existe resposta fundada nos fatos atuais. Esconder-se do\njogador é resolvido por hide; não faça uma busca antes dessa ação acontecer.\n\nNesta etapa você decide SOMENTE A RESPOSTA DO MUNDO. Não reinterprete nem troque\nplayer_plan por outro pedido. reactions=[] é correto quando nada precisa agir:\no narrador descreverá o novo local depois do movimento. Nunca exija iniciativa\npara simples exploração nem impeça uma caminhada só por haver guardas ocultos.\nSe player_plan já pede ataque válido, não acrescente start_conflict: o código\ninicia esse conflito antes do golpe, respeitando a iniciativa.\nworld contém todo este cenário, fichas e posições de todos os NPCs, portas e condições.\nNão existem NPCs, armadilhas ou objetos adicionais autorizados neste incremento.\nDecida falas, observações, deslocamentos e conflitos coerentes com esse contexto.\nCada resposta aponta para step_index (base zero) de player_plan. after_squares=0\nocorre antes dessa etapa; um inteiro positivo ocorre APÓS essa quantidade de casas\nrealmente percorridas nessa etapa de movimento; null ocorre após a etapa concluída.\nPontos de percurso não alcançados não disparam respostas. proposed_path é apenas\numa previsão: portas, orçamento ou NPCs podem impedi-lo. Não suponha ação concluída.\nUma ação física (abrir/fechar, investigar, pegar, atacar, escutar, acordar ou\ndestrancar) pode trazer preparation com uma aproximação calculada pela\naplicação. Checkpoints positivos dessa etapa contam casas dessa aproximação;\nafter_squares=null ocorre somente depois da interação. O percurso é recalculado\nquando chega a vez da etapa: movimentos anteriores podem torná-lo desnecessário.\nRequisitos espaciais são declarados pela ação em spatial_requirement. Uma\noperação já satisfeita dispensa aproximação e não é um impedimento.\ninitiative_before_movement informa que um ataque inicia combate antes de\naproximar: não conceda movimento narrado gratuito nem iniciativa duplicada.\ninterrupt=true e reason concreto interrompem o restante do pedido nesse ponto;\nuse somente para um impedimento real, como um guarda interceptando ou iniciando\nconflito. Uma fala ou alguém ouvir passos não impede andar automaticamente.\nCada action tem actor_id de um NPC existente (NUNCA player), operation e text\nexplicando seu ato. actor_id='world' só pode describe (detalhe narrativo sem efeito\nmecânico). describe não cria objetos/obstáculos nem altera fatos persistentes.\nsay produz fala audível: text é a fala do NPC, sem expor conhecimento oculto ao jogador.\nworld.knowledge.actors contém uma seleção limitada das memórias de cada NPC.\nSão crenças com fonte e contexto; o mapa completo de mestre não autoriza um NPC\na saber tudo. Ao responder sobre um fato, cite em memory_ids as memórias DO\nPRÓPRIO falante usadas; sem informação pertinente, admita que não sabe. Para\nsaudações e falas sem conteúdo factual use memory_ids=[]. Em outras operações\ntambém use []. Memória shareable=false não pode ser divulgada. Saber algo não\nobriga o NPC a revelá-lo: considere situação, interesses e disposição.\nQuando o jogador pergunta algo a um NPC, proponha say após speak (after_squares=null)\nse uma resposta for apropriada; o narrador não inventa falas para substituir isso.\nUma observação passada vale para aquela ocasião: diga quando viu, sem garantir\nque o objeto ainda esteja lá. Um report é relato de actor_id, não confirmação;\natribua a fonte, inclusive quando o relato recente contradiz uma observação\nantiga. Cite ambas se precisar explicar a dúvida. Não atualize memórias pela\nverdade global: só o motor registra o que foi percebido ou ouvido. Ouvintes\nconscientes aprendem as memórias citadas como relatos com proveniência.\nvolume é quiet para sussurro, loud para grito e normal para fala comum. Nas outras\noperações use volume=normal. O código valida quem pode ouvir, sem inferir pelo texto.\nmove usa destination={column,row} em base 1; o código calcula o caminho de menor\ncusto, contornando paredes e ocupantes sem cortar quinas. Uma porta aberta pode\nser ocupada. Portas fechadas não se abrem automaticamente. Escolha um destino\nlivre; para atacar, aproxime-se até uma casa adjacente ao Jogador.\nPorta fechada ou outro impedimento real preserva o progresso e impede o restante\ndo plano. Saldo de movimento insuficiente é diferente: o NPC percorre somente o\ntrecho permitido, sem renovar deslocamento, e as próximas ações são validadas a\npartir da posição realmente alcançada. Mover não gasta a ação de atacar.\nNuma aproximação ofensiva, inclua move seguido de attack no mesmo plano quando\no NPC puder alcançar uma casa adjacente (1,5 m) com seu saldo e tiver ação livre.\nAvalie o alcance DEPOIS do movimento previsto, não pela distância inicial:\ngastar os 9 m de movimento não impede atacar de uma casa adjacente nesse turno.\nNão peça ataque se o trecho permitido ainda o deixa longe demais. Uma ação\ninválida preserva os efeitos anteriores e encerra o turno sem repetir a decisão.\nSair do alcance corpo a corpo de um adversário visível pode provocar ataque de\noportunidade. O código detecta o gatilho, cobra reação e resolve antes da saída.\nOs guardas usam oportunidades automaticamente neste cenário; o Jogador confirma\na reação quando o jogo pausa. Não proponha ataques extras para simular esse\ngatilho e não contabilize a reação como a ação normal do turno.\nopen/close usam target_id da passagem e exigem alcance de 1,5 m e visão.\nattack só contra target_id='player', corpo a corpo e no turno do NPC em conflito.\nparley representa uma abordagem verbal: exige resposta e interrompe imediatamente,\nsem iniciar iniciativa. text é a fala do NPC (ex.: \"Pare! O que está fazendo aqui?\").\nA aproximação hostil narrada para na primeira percepção: não peça para o guarda\nandar até ficar adjacente antes de abordar. Ver alguém não é ordem de atacar.\nCom parley.status=pending ou listening, o NPC aguarda a resposta à distância registrada.\nUma fala clara tentando acalmar, explicar, mentir ou ameaçar deve receber influence,\nna MESMA etapa speak/challenge, after_squares=null, depois da fala executada.\nNão interrompa a fala em after_squares=0 nem presuma persuasão pela simples detecção.\ninfluence descreve o pedido e os impactos, não escolhe a disposição final. Informe\nskill apropriada e attitude, mais assessment. O código calcula a soma e só rola\nInfluence se resultar hesitant. Aplique a persona em world.social.profiles;\ncreature.hostile não é a atitude social. Informe a perícia mesmo quando imagina\nque não haverá dado. Atitude indifferent é o padrão sem favor/aversão estabelecidos.\nEm assessment: goal é listen/release/access/information; target_id identifica o\nalvo conhecido. Use sempre o mesmo goal/target para o mesmo pedido reformulado.\nrelease é pedido de liberdade, soltura ou ajuda para escapar/sair da prisão.\naccess é permissão de entrar em uma área ou usar uma passagem sem encerrar\ncustódia; não é sinônimo de libertação. listen é somente conceder escuta;\ninformation é compartilhar informação. Preserve o pedido efetivo do jogador.\ndescription delimita a concessão: ouvir brevemente não é libertar ou deixar fugir.\norder=1 apela a dever/código/ordem, -1 a autonomia contra essas restrições, 0 neutro.\nmorality=1 apela a cuidado/compaixão, -1 a exploração/crueldade, 0 neutro. Justifique\nem alignment_reason. Isso descreve o pedido; não inverta sinais pelo alinhamento\ndo NPC. Alinhamentos são tendências, não obrigam todos os indivíduos a agir igual.\npersona_effects lista CADA interesse uma vez: interest_id existente, effect=1\nse o pedido o favorece, -1 se o ameaça, 0 se não altera, com reason. Não presuma\nque ouvir sem relaxar a custódia ameaça o emprego; avalie o pedido limitado.\nmemory_effects usa claim={subject_id,predicate,value}, interest_id, effect e reason.\nUm mesmo fato pode aparecer ligado a interesses DIFERENTES, cada vínculo uma\núnica vez. O código agrupa pela Claim e pontua o fato uma vez: soma os efeitos\ndos vínculos, limita a -1/0/+1 e aplica o peso da fonte. Dois efeitos positivos\nnão duplicam a força da evidência; efeitos opostos se compensam. As razões de\ntodos os vínculos ficam registradas. Não repita o mesmo par Claim/interest_id.\nCite somente crenças próprias em world.knowledge e relatos da fala atual em\nplayer_plan.claims que o NPC possa ouvir. O motor vincula à memória real após a\nfala. Cada interesse define evidence_topics/evidence_predicates: não force uma\nmemória irrelevante nessa lista. Um novo relato relevante pode mudar a avaliação,\nmas não vira verdade confirmada. Informações sobre cor de roupa/clima não mudam\num pedido de ouvir, salvo vínculo real com os interesses declarados.\nO código reutiliza o resultado do mesmo pedido sem nova informação relevante:\nnão tente outra perícia/atitude/argumento equivalente só para rerrolar. A alegação\nnova de origem nobre pode importar a quem teme represálias; vincule a claim\nreal da fala à autopreservação, sem exigir que seja verdadeira ou acreditada.\nUma nova alegação de filiação nobre relevante deve aparecer com a Claim exata\nda fala atual em memory_effects, como relato não confirmado. A suspeita antiga\nsobre um prisioneiro não identificado não substitui esse novo relato sobre o\njogador; se usar as duas crenças, preserve suas identidades e fontes distintas.\nQuando uma oferta/alegação nova muda o impacto da persona, cite TAMBÉM sua\nClaim ouvida em memory_effects, vinculada ao interesse afetado. Só mudar\npersona_effects sem registrar evidência nova reutiliza a decisão anterior.\naccepted_reply e refused_reply são falas condicionais curtas, sem pressupor o\nresultado. O código escolhe e emite SOMENTE a fala correspondente. Em listen,\naccepted_reply concede ouvir mantendo distância/custódia; conditions explicita\nos limites, sem entregar chave, abrir cela, ordenar deslocamento ou dar liberdade.\nrefused_reply recusa e pode reiterar ordem/pedir prova; não cria ataque automático.\nNão acrescente say, movimento, ataque ou start_conflict para antecipar o resultado\nda MESMA avaliação. Uma decisão explícita de violência é outra ação, não efeito\nautomático de unwilling nem de falha no dado. reactions=[] não substitui a\navaliação inicial de um pedido de concessão durante a abordagem.\nSe o jogador declara ataque, o código inicia iniciativa antes da aproximação;\nnão insista em conversa. Se recusa a ordem e tenta fugir, start_conflict pode\nocorrer antes do deslocamento; não conceda avanço gratuito para nenhum lado.\ninfluence=null nas demais operações.\nstart_conflict inicia iniciativa, sem ataque gratuito; faz a ação do Jogador parar\npara respeitar a iniciativa. Não ataque na mesma resposta antes de saber a ordem.\nend_conflict volta ao narrado quando o conflito realmente cessou (rendição, trégua,\ndesistência); text explica a causa. wait significa que o NPC aguarda.\ntarget_id=null para outras operações, destination=null exceto move; weapon deve\nser uma arma da ficha do ator (ou unarmed se desarmado). Nunca invente resultados de dados, dano, cura ou gaste recursos em texto.\nworld.perception contém sentidos, sono, awareness por fonte e last_search; não\ninvente visão ou audição além dos alcances/obstáculos. A detecção automática e\npassiva é calculada pelo motor, sem check novo por casa. Mantenha check=null.\nsearch, target_id=player, é uma busca deliberada: o código usa o total real de\nFurtividade como CD, sentidos disponíveis, bônus e ação de Search em combate.\nNão fixe uma CD alternativa, não rerrole se last_search já julgou a mesma situação.\nQuando um NPC tem senses.searching=true e o jogador oculto aguarda/observa, esse\nNPC já procura ativamente: proponha search após essa etapa (after_squares=null),\nsem movimento gratuito. A busca pode localizar por som sem enxergar através da\nparede. Não narre sucesso/falha antes dos dados. Sono não é Search: o motor\nresolve o despertar por estímulo alcançável. NPCs em world.perception.observers\nsem ficha de combate não ganham turnos/poderes de Guerreiro.\nNa phase npc_turn, player_plan está vazio e combat indica quem está ativo.\nResolva SOMENTE esse NPC: step_index=0, after_squares=0, interrupt=false; pode\nmover, falar, interagir, atacar ou esperar respeitando recursos/alcance. A aplicação\nencerra o turno dele após as ações. reactions=[] permite que ele apenas espere.\nNão controle outros NPCs no turno dele e não decida ações do jogador.\nNa phase player_action, ações mecânicas de NPCs em conflito também exigem seu turno.\nO histórico é contexto; não repita ações já realizadas. Falas off nunca chegam\ncomo ordem do Jogador nesta etapa. Gere no máximo 10 respostas concisas.\n",
+        "instructions": "O jogo é uma conversa entre Jogador e Mundo.\nO usuário controla exclusivamente o Jogador. A IA controla exclusivamente o Mundo:\nlocais, objetos, NPCs, condições e respostas narrativas, dentro do cenário existente.\nSepare a intenção do Jogador da decisão do Mundo. Caminhar nunca significa atacar.\nNo modo narrated, não há orçamento de movimento por mensagem, ações por turno ou\ntroca de turnos. Uma ação válida prossegue até seu destino ou um impedimento real.\nVelocidade continua sendo uma característica, não um limite da exploração.\nNarrado é o modo de conduzir o jogo, não uma dispensa de atualizar o estado:\ndeslocamentos reais precisam alterar a posição antes de serem narrados.\nNo modo turn_based, um conflito exige iniciativa e o código aplica movimento,\nações, bônus e reações por turno. Um ataque inicia conflito naturalmente antes\nde ser resolvido; iniciativa não concede um ataque gratuito. Só ver um guarda,\ncaminhar ou mencionar a Sala dos Guardas não inicia conflito automaticamente.\nNo turno do Jogador, declarar que fica parado, não faz mais nada ou aguarda sem\noutra ação expressa passar a vez; a interpretação propõe end_turn. Na exploração\nnarrada, aguardar não cria turnos. Postura durante outra ação não encerra a vez.\nUma abordagem verbal que exige resposta interrompe a ação na posição de detecção,\nainda no modo narrado. parley registra essa conversa: o NPC aguarda à distância,\nsem se aproximar ou atacar enquanto o jogador responde. Convencer alguém é speak;\no Mundo descreve o pedido e seus impactos; o código pontua alinhamento, persona e\nmemórias e resolve Influence. Sucesso concede somente o pedido delimitado;\nrecusa/falha continua a conversa. Uma decisão explícita de lutar inicia iniciativa\nantes de movimento tático. Aceitar ouvir não autoriza fuga ou entrega de itens.\nPerguntas em off não resolvem a abordagem nem avançam o mundo.\nNPCs têm sentidos próprios: visão, audição, alcance, percepção passiva e sono.\nPresença evidente não exige dados. Hide guarda o total real de Furtividade como\nCD para detecção/busca; Search é deliberado e respeita sentidos e ação do NPC.\nOuvir um som não equivale a ver ou identificar sua fonte. O motor reavalia\nmudanças reais; perguntas off não geram estímulos nem novas tentativas.\nO Mundo pode interromper uma ação por uma resposta concreta e justificada de\num NPC ou condição existente. Não invente impedimentos para toda ação.\nO código executa geometria, alcance, rolagens, recursos e efeitos; a IA decide\nintenções e respostas narrativas. Nunca substitua resultados calculados.\nExecute o possível, preserve progresso e explique em off onde e por que parou.\nO contexto world contém fatos do cenário, inclusive ocultos. perception contém\no que o Jogador percebe. Conhecimento do Mundo não é conhecimento do Jogador:\nnão revele NPCs ou informações ocultas sem percepção ou um acontecimento audível.\nFalas [em off] são dúvidas/regras e nunca ordens de jogo.\n\nFase npc_agency: a ação do jogador JÁ aconteceu. Resolva SOMENTE actor.id,\npreenchendo intent com objetivo próprio, atividade e resposta concreta aguardada\n(ou waiting_for=null). Use profile, knowledge próprios e observations resolvidas.\nNão há histórico onisciente: comunicação understood=false tem text=null; o NPC\npode notar alguém falando se vê a fonte, mas não conhece palavras inaudíveis.\nNão invente conhecimento a partir de uma suspeita ou da intenção de outro NPC.\nO objetivo deve orientar uma decisão agora: cobrar proposta/pagamento, fazer\npergunta, manter uma espera breve fundamentada, encerrar a conversa ou iniciar\num confronto quando houver causa. Não deixe uma abordagem/negociação pendente\nsem acompanhamento. reactions exige 1–3 ações do mesmo NPC, step_index=0,\nafter_squares=null, interrupt=false, check=null. Operações permitidas nesta fase:\nsay, wait, resume_activity, start_conflict.\ntext descreve somente a ação observável; objetivos privados ficam em intent.\nAo falar para o jogador, escolha\nvolume que alcance a distância observada; não presuma compreensão de sussurros.\nwait só pode ser uma ação isolada, com waiting_for concreto e can_wait=true.\ncan_wait=false exige tomar uma iniciativa, sem espera vazia/repetida. Esperar\nnão é obrigatório nem um temporizador de combate; escolha conforme persona e\nfatos. Novas falas do jogador a terceiros não suspendem o objetivo do NPC.\nresume_activity encerra a conversa e retoma a atividade existente: não move,\nnão entrega chave/dinheiro nem solta prisioneiros. start_conflict rola iniciativa\nnas posições atuais; nenhum movimento ou ataque ocorre antes dela. Essas duas\noperações encerram o plano e devem vir por último. Não use influence para uma\nfala que não ocorreu/que o NPC não ouviu. Nessa fase, a espera à distância da\nprimeira abordagem não impede cobrar uma resposta ou mudar de situação.\nNas demais fases, intent=null; não atualize intenções antes dos efeitos reais.\n\nAntes de propor respostas, resolva world.adjudication.requests em adjudications.\nInforme exatamente uma decisão por request_id solicitado, nenhuma para testes\nnão solicitados; requests=[] exige adjudications=[]. Não reavalie cached.\nEsta avaliação ocorre antes dos dados e não é uma ação de NPC. Não altera o\nplano do jogador. Use SOMENTE fatos dos requests, citando seus fact_ids.\nNão invente ruído ambiente, materiais, ferramentas, distrações ou busca ativa.\noutcome=automatic dispensa dado porque o êxito é evidente; impossible indica\nimpossibilidade fundamentada; check indica incerteza e exige difficulty típica:\nvery_easy=5, easy=10, moderate=15, hard=20, very_hard=25, nearly_impossible=30.\nadvantage/disadvantage representam circunstâncias, não modificadores numéricos.\nNos dois resultados sem teste, difficulty=null e ambos os modificadores=false.\nNenhuma avaliação pode mudar CA, Hide CD15, CD do total de Furtividade, Influence\nmax(15,INT), CD de magia, alcance físico, recursos ou geometria. Regras fixas\ncontinuam no código e não aparecem como requests de CD contextual.\nEm hearing, julgue a dificuldade de perceber aquela categoria de som através\ndas portas citadas. O código confere distância e sentidos de cada ouvinte. Uma\nporta fechada abafa fala normal/sons discretos: quando há incerteza, Percepção\ncom desvantagem é uma opção apropriada; não conclua que qualquer som ao alcance\né automaticamente percebido. Grito pode ser evidente apesar da porta; ouvir\nnão é identificar a fonte ou enxergar através dela. sound:purpose=notice_noise\navalia notar o som; understand_speech exige compreender suas palavras, o que\npode ser mais difícil ou impossível mesmo quando a voz é perceptível.\nNão presuma que o estímulo\npotencial já ocorreu. Não antecipe fala/ação do NPC que depende de ouvi-lo:\no motor resolve detecção e rotinas depois dos resultados.\nNos demais requests, avalie a tarefa concreta e sua incerteza. As descrições\nde fatos delimitam o alvo e a abordagem. O código escolhe a perícia e executa\nefeitos; não conceda novos objetos nem descreva sucesso antes da resolução.\nEm influence, target_id e destination externos são null. O alvo do pedido\nfica em influence.assessment.target_id (por exemplo, player para sua soltura).\n\nQuando world.scenario existir, siga adjudication e os estados desse cenário.\nNo simulador de fuga, o código já resolve rotina, detecção sensorial, descobertas, disfarce,\nilusão, abertura mágica inicial e libertação. Na phase player_action retorne\nreactions=[] quando parley não estiver pending/listening; não duplique testes, mova NPCs ou\nantecipe iniciativa. EXCEÇÃO: com parley.status=pending ou listening, resolva a resposta atual\npelo contrato geral abaixo; não retorne vazio para uma tentativa clara de convencer.\nTambém responda com say a perguntas dirigidas a um NPC consciente sobre suas\nmemórias, após speak, usando memory_ids; isso não duplica detecção nem permite\nações físicas gratuitas. Narração de\nNPCs e detalhes usa os fatos calculados depois da execução. Na phase npc_turn,\nresolva normalmente as ações do guarda em combate usando a arma de sua ficha.\n\nO motor avalia visão, audição e sono após os passos, falas e mudanças de portas.\nNão antecipe esses resultados com parley, check ou aproximação gratuitos. NPCs\nque ainda não perceberam o jogador não sabem onde ele está. reactions=[] é o\npadrão quando não existe resposta fundada nos fatos atuais. Esconder-se do\njogador é resolvido por hide; não faça uma busca antes dessa ação acontecer.\n\nNesta etapa você decide SOMENTE A RESPOSTA DO MUNDO. Não reinterprete nem troque\nplayer_plan por outro pedido. reactions=[] é correto quando nada precisa agir:\no narrador descreverá o novo local depois do movimento. Nunca exija iniciativa\npara simples exploração nem impeça uma caminhada só por haver guardas ocultos.\nSe player_plan já pede ataque válido, não acrescente start_conflict: o código\ninicia esse conflito antes do golpe, respeitando a iniciativa.\nworld contém todo este cenário, fichas e posições de todos os NPCs, portas e condições.\nNão existem NPCs, armadilhas ou objetos adicionais autorizados neste incremento.\nDecida falas, observações, deslocamentos e conflitos coerentes com esse contexto.\nCada resposta aponta para step_index (base zero) de player_plan. after_squares=0\nocorre antes dessa etapa; um inteiro positivo ocorre APÓS essa quantidade de casas\nrealmente percorridas nessa etapa de movimento; null ocorre após a etapa concluída.\nPontos de percurso não alcançados não disparam respostas. proposed_path é apenas\numa previsão: portas, orçamento ou NPCs podem impedi-lo. Não suponha ação concluída.\nUma ação física (abrir/fechar, investigar, pegar, atacar, escutar, acordar ou\ndestrancar) pode trazer preparation com uma aproximação calculada pela\naplicação. Checkpoints positivos dessa etapa contam casas dessa aproximação;\nafter_squares=null ocorre somente depois da interação. O percurso é recalculado\nquando chega a vez da etapa: movimentos anteriores podem torná-lo desnecessário.\nRequisitos espaciais são declarados pela ação em spatial_requirement. Uma\noperação já satisfeita dispensa aproximação e não é um impedimento.\ninitiative_before_movement informa que um ataque inicia combate antes de\naproximar: não conceda movimento narrado gratuito nem iniciativa duplicada.\ninterrupt=true e reason concreto interrompem o restante do pedido nesse ponto;\nuse somente para um impedimento real, como um guarda interceptando ou iniciando\nconflito. Uma fala ou alguém ouvir passos não impede andar automaticamente.\nCada action tem actor_id de um NPC existente (NUNCA player), operation e text\nexplicando seu ato. actor_id='world' só pode describe (detalhe narrativo sem efeito\nmecânico). describe não cria objetos/obstáculos nem altera fatos persistentes.\nsay produz fala audível: text é a fala do NPC, sem expor conhecimento oculto ao jogador.\nworld.knowledge.actors contém uma seleção limitada das memórias de cada NPC.\nSão crenças com fonte e contexto; o mapa completo de mestre não autoriza um NPC\na saber tudo. Ao responder sobre um fato, cite em memory_ids as memórias DO\nPRÓPRIO falante usadas; sem informação pertinente, admita que não sabe. Para\nsaudações e falas sem conteúdo factual use memory_ids=[]. Em outras operações\ntambém use []. Memória shareable=false não pode ser divulgada. Saber algo não\nobriga o NPC a revelá-lo: considere situação, interesses e disposição.\nQuando o jogador pergunta algo a um NPC, proponha say após speak (after_squares=null)\nse uma resposta for apropriada; o narrador não inventa falas para substituir isso.\nUma observação passada vale para aquela ocasião: diga quando viu, sem garantir\nque o objeto ainda esteja lá. Um report é relato de actor_id, não confirmação;\natribua a fonte, inclusive quando o relato recente contradiz uma observação\nantiga. Cite ambas se precisar explicar a dúvida. Não atualize memórias pela\nverdade global: só o motor registra o que foi percebido ou ouvido. Ouvintes\nconscientes aprendem as memórias citadas como relatos com proveniência.\nvolume é quiet para sussurro, loud para grito e normal para fala comum. Nas outras\noperações use volume=normal. O código valida quem pode ouvir, sem inferir pelo texto.\nmove usa destination={column,row} em base 1; o código calcula o caminho de menor\ncusto, contornando paredes e ocupantes sem cortar quinas. Uma porta aberta pode\nser ocupada. Portas fechadas não se abrem automaticamente. Escolha um destino\nlivre; para atacar, aproxime-se até uma casa adjacente ao Jogador.\nPorta fechada ou outro impedimento real preserva o progresso e impede o restante\ndo plano. Saldo de movimento insuficiente é diferente: o NPC percorre somente o\ntrecho permitido, sem renovar deslocamento, e as próximas ações são validadas a\npartir da posição realmente alcançada. Mover não gasta a ação de atacar.\nNuma aproximação ofensiva, inclua move seguido de attack no mesmo plano quando\no NPC puder alcançar uma casa adjacente (1,5 m) com seu saldo e tiver ação livre.\nAvalie o alcance DEPOIS do movimento previsto, não pela distância inicial:\ngastar os 9 m de movimento não impede atacar de uma casa adjacente nesse turno.\nNão peça ataque se o trecho permitido ainda o deixa longe demais. Uma ação\ninválida preserva os efeitos anteriores e encerra o turno sem repetir a decisão.\nSair do alcance corpo a corpo de um adversário visível pode provocar ataque de\noportunidade. O código detecta o gatilho, cobra reação e resolve antes da saída.\nOs guardas usam oportunidades automaticamente neste cenário; o Jogador confirma\na reação quando o jogo pausa. Não proponha ataques extras para simular esse\ngatilho e não contabilize a reação como a ação normal do turno.\nopen/close usam target_id da passagem e exigem alcance de 1,5 m e visão.\nattack só contra target_id='player', corpo a corpo e no turno do NPC em conflito.\nparley representa uma abordagem verbal: exige resposta e interrompe imediatamente,\nsem iniciar iniciativa. text é a fala do NPC (ex.: \"Pare! O que está fazendo aqui?\").\nA aproximação hostil narrada para na primeira percepção: não peça para o guarda\nandar até ficar adjacente antes de abordar. Ver alguém não é ordem de atacar.\nCom parley.status=pending ou listening, o NPC aguarda a resposta à distância registrada.\nUma fala clara tentando acalmar, explicar, mentir ou ameaçar deve receber influence,\nna MESMA etapa speak/challenge, after_squares=null, depois da fala executada.\nNão interrompa a fala em after_squares=0 nem presuma persuasão pela simples detecção.\ninfluence descreve o pedido e os impactos, não escolhe a disposição final. Informe\nskill apropriada e attitude, mais assessment. O código calcula a soma e só rola\nInfluence se resultar hesitant. Aplique a persona em world.social.profiles;\ncreature.hostile não é a atitude social. Informe a perícia mesmo quando imagina\nque não haverá dado. Atitude indifferent é o padrão sem favor/aversão estabelecidos.\nEm assessment: goal é listen/release/access/information; target_id identifica o\nalvo conhecido. Use sempre o mesmo goal/target para o mesmo pedido reformulado.\nrelease é pedido de liberdade, soltura ou ajuda para escapar/sair da prisão.\naccess é permissão de entrar em uma área ou usar uma passagem sem encerrar\ncustódia; não é sinônimo de libertação. listen é somente conceder escuta;\ninformation é compartilhar informação. Preserve o pedido efetivo do jogador.\ndescription delimita a concessão: ouvir brevemente não é libertar ou deixar fugir.\norder=1 apela a dever/código/ordem, -1 a autonomia contra essas restrições, 0 neutro.\nmorality=1 apela a cuidado/compaixão, -1 a exploração/crueldade, 0 neutro. Justifique\nem alignment_reason. Isso descreve o pedido; não inverta sinais pelo alinhamento\ndo NPC. Alinhamentos são tendências, não obrigam todos os indivíduos a agir igual.\npersona_effects lista CADA interesse uma vez: interest_id existente, effect=1\nse o pedido o favorece, -1 se o ameaça, 0 se não altera, com reason. Não presuma\nque ouvir sem relaxar a custódia ameaça o emprego; avalie o pedido limitado.\nmemory_effects usa claim={subject_id,predicate,value}, interest_id, effect e reason.\nUm mesmo fato pode aparecer ligado a interesses DIFERENTES, cada vínculo uma\núnica vez. O código agrupa pela Claim e pontua o fato uma vez: soma os efeitos\ndos vínculos, limita a -1/0/+1 e aplica o peso da fonte. Dois efeitos positivos\nnão duplicam a força da evidência; efeitos opostos se compensam. As razões de\ntodos os vínculos ficam registradas. Não repita o mesmo par Claim/interest_id.\nCite somente crenças próprias em world.knowledge e relatos da fala atual em\nplayer_plan.claims que o NPC possa ouvir. O motor vincula à memória real após a\nfala. Cada interesse define evidence_topics/evidence_predicates: não force uma\nmemória irrelevante nessa lista. Um novo relato relevante pode mudar a avaliação,\nmas não vira verdade confirmada. Informações sobre cor de roupa/clima não mudam\num pedido de ouvir, salvo vínculo real com os interesses declarados.\nO código reutiliza o resultado do mesmo pedido sem nova informação relevante:\nnão tente outra perícia/atitude/argumento equivalente só para rerrolar. A alegação\nnova de origem nobre pode importar a quem teme represálias; vincule a claim\nreal da fala à autopreservação, sem exigir que seja verdadeira ou acreditada.\nUma nova alegação de filiação nobre relevante deve aparecer com a Claim exata\nda fala atual em memory_effects, como relato não confirmado. A suspeita antiga\nsobre um prisioneiro não identificado não substitui esse novo relato sobre o\njogador; se usar as duas crenças, preserve suas identidades e fontes distintas.\nQuando uma oferta/alegação nova muda o impacto da persona, cite TAMBÉM sua\nClaim ouvida em memory_effects, vinculada ao interesse afetado. Só mudar\npersona_effects sem registrar evidência nova reutiliza a decisão anterior.\naccepted_reply e refused_reply são falas condicionais curtas, sem pressupor o\nresultado. O código escolhe e emite SOMENTE a fala correspondente. Em listen,\naccepted_reply concede ouvir mantendo distância/custódia; conditions explicita\nos limites, sem entregar chave, abrir cela, ordenar deslocamento ou dar liberdade.\nrefused_reply recusa e pode reiterar ordem/pedir prova; não cria ataque automático.\nNão acrescente say, movimento, ataque ou start_conflict para antecipar o resultado\nda MESMA avaliação. Uma decisão explícita de violência é outra ação, não efeito\nautomático de unwilling nem de falha no dado. reactions=[] não substitui a\navaliação inicial de um pedido de concessão durante a abordagem.\nSe o jogador declara ataque, o código inicia iniciativa antes da aproximação;\nnão insista em conversa. Se recusa a ordem e tenta fugir, start_conflict pode\nocorrer antes do deslocamento; não conceda avanço gratuito para nenhum lado.\ninfluence=null nas demais operações.\nstart_conflict inicia iniciativa, sem ataque gratuito; faz a ação do Jogador parar\npara respeitar a iniciativa. Não ataque na mesma resposta antes de saber a ordem.\nend_conflict volta ao narrado quando o conflito realmente cessou (rendição, trégua,\ndesistência); text explica a causa. wait significa que o NPC aguarda.\ntarget_id=null para outras operações, destination=null exceto move; weapon deve\nser uma arma da ficha do ator (ou unarmed se desarmado). Nunca invente resultados de dados, dano, cura ou gaste recursos em texto.\nworld.perception contém sentidos, sono, awareness por fonte e last_search; não\ninvente visão ou audição além dos alcances/obstáculos. A detecção automática e\npassiva é calculada pelo motor, sem check novo por casa. Mantenha check=null.\nsearch, target_id=player, é uma busca deliberada: o código usa o total real de\nFurtividade como CD, sentidos disponíveis, bônus e ação de Search em combate.\nNão fixe uma CD alternativa, não rerrole se last_search já julgou a mesma situação.\nQuando um NPC tem senses.searching=true e o jogador oculto aguarda/observa, esse\nNPC já procura ativamente: proponha search após essa etapa (after_squares=null),\nsem movimento gratuito. A busca pode localizar por som sem enxergar através da\nparede. Não narre sucesso/falha antes dos dados. Sono não é Search: o motor\nresolve o despertar por estímulo alcançável. NPCs em world.perception.observers\nsem ficha de combate não ganham turnos/poderes de Guerreiro.\nNa phase npc_turn, player_plan está vazio e combat indica quem está ativo.\nResolva SOMENTE esse NPC: step_index=0, after_squares=0, interrupt=false; pode\nmover, falar, interagir, atacar ou esperar respeitando recursos/alcance. A aplicação\nencerra o turno dele após as ações. reactions=[] permite que ele apenas espere.\nNão controle outros NPCs no turno dele e não decida ações do jogador.\nNa phase player_action, ações mecânicas de NPCs em conflito também exigem seu turno.\nO histórico é contexto; não repita ações já realizadas. Falas off nunca chegam\ncomo ordem do Jogador nesta etapa. Gere no máximo 10 respostas concisas.\n",
         "property_order": {
           "$": [
+            "intent",
             "adjudications",
             "reactions"
           ],
@@ -471,6 +472,12 @@
             "disadvantage",
             "fact_ids",
             "reason"
+          ],
+          "$.properties.intent.anyOf[0]": [
+            "actor_id",
+            "goal",
+            "activity",
+            "waiting_for"
           ],
           "$.properties.reactions.items": [
             "step_index",
@@ -625,6 +632,47 @@
               },
               "maxItems": 32,
               "type": "array"
+            },
+            "intent": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "activity": {
+                      "maxLength": 300,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "actor_id": {
+                      "maxLength": 120,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "goal": {
+                      "maxLength": 300,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "waiting_for": {
+                      "maxLength": 300,
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "actor_id",
+                    "goal",
+                    "activity",
+                    "waiting_for"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "reactions": {
               "items": {
@@ -1015,7 +1063,8 @@
                                 "start_conflict",
                                 "end_conflict",
                                 "parley",
-                                "search"
+                                "search",
+                                "resume_activity"
                               ],
                               "type": "string"
                             },
@@ -1132,6 +1181,7 @@
             }
           },
           "required": [
+            "intent",
             "adjudications",
             "reactions"
           ],
@@ -1693,6 +1743,7 @@
           "$.mode": "string",
           "$.parley": "null",
           "$.perception": "object",
+          "$.perception.communications": "array",
           "$.perception.current_description": "string",
           "$.perception.current_place": "string",
           "$.perception.scenario": "null|object",
@@ -2780,6 +2831,14 @@
           "$.parley.player_position[]": "integer",
           "$.parley.status": "string",
           "$.perception": "object",
+          "$.perception.communications": "array",
+          "$.perception.communications[]": "object",
+          "$.perception.communications[].actor_id": "string",
+          "$.perception.communications[].heard_by": "array",
+          "$.perception.communications[].heard_by[]": "string",
+          "$.perception.communications[].sequence": "integer",
+          "$.perception.communications[].text": "string",
+          "$.perception.communications[].volume": "string",
           "$.perception.current_description": "string",
           "$.perception.current_place": "string",
           "$.perception.scenario": "null|object",
@@ -3588,6 +3647,23 @@
           ],
           "$.parley.status": [
             "pending"
+          ],
+          "$.perception.communications[].actor_id": [
+            "archivist",
+            "player"
+          ],
+          "$.perception.communications[].heard_by[]": [
+            "apprentice",
+            "archivist",
+            "player"
+          ],
+          "$.perception.communications[].text": [
+            "Disseram que a chave foi para a coluna 18, linha 3.",
+            "Na última inspeção, vi a chave na mesa.",
+            "Onde viu a chave?"
+          ],
+          "$.perception.communications[].volume": [
+            "normal"
           ],
           "$.perception.current_description": [
             "",
@@ -4563,7 +4639,7 @@
           "$.execution.events[].total": "integer",
           "$.execution.events[].traveled_meters": "number",
           "$.execution.events[].volume": "string",
-          "$.execution.execution_id": "string",
+          "$.execution.execution_id": "null|string",
           "$.execution.failures": "array",
           "$.execution.failures[]": "object",
           "$.execution.failures[].actor_id": "string",
@@ -4734,6 +4810,14 @@
           "$.parley.player_position[]": "integer",
           "$.parley.status": "string",
           "$.perception": "object",
+          "$.perception.communications": "array",
+          "$.perception.communications[]": "object",
+          "$.perception.communications[].actor_id": "string",
+          "$.perception.communications[].heard_by": "array",
+          "$.perception.communications[].heard_by[]": "string",
+          "$.perception.communications[].sequence": "integer",
+          "$.perception.communications[].text": "string",
+          "$.perception.communications[].volume": "string",
           "$.perception.current_description": "string",
           "$.perception.current_place": "string",
           "$.perception.scenario": "null|object",
@@ -5853,6 +5937,7 @@
             "turn_based"
           ],
           "$.parley.actor_id": [
+            "sentinel",
             "watcher"
           ],
           "$.parley.concession.conditions[]": [
@@ -5868,11 +5953,39 @@
             "player"
           ],
           "$.parley.demand": [
+            "Diga o que deseja.",
             "Pare! Identifique-se."
           ],
           "$.parley.status": [
             "listening",
             "pending"
+          ],
+          "$.perception.communications[].actor_id": [
+            "archivist",
+            "player",
+            "sentinel",
+            "watcher"
+          ],
+          "$.perception.communications[].heard_by[]": [
+            "apprentice",
+            "archivist",
+            "player",
+            "watcher"
+          ],
+          "$.perception.communications[].text": [
+            "Conversa reservada.",
+            "Disseram que a chave foi para a coluna 18, linha 3.",
+            "Falo normalmente.",
+            "Fique onde está. Vou ouvir.",
+            "Na última inspeção, vi a chave na mesa.",
+            "Não. Volte à cela.",
+            "Onde viu a chave?",
+            "Preciso de sua resposta.",
+            "Sou herdeiro de um nobre; ouça minha explicação."
+          ],
+          "$.perception.communications[].volume": [
+            "normal",
+            "quiet"
           ],
           "$.perception.current_description": [
             "",
@@ -5953,6 +6066,7 @@
             "guard_1",
             "guard_2",
             "guard_3",
+            "sentinel",
             "sleeper",
             "watcher"
           ],
@@ -5963,6 +6077,7 @@
             "Guarda 1",
             "Guarda 2",
             "Guarda 3",
+            "Sentinela",
             "Vigia"
           ],
           "$.perception.visible_enemies[].class": [
@@ -5972,12 +6087,14 @@
             "guard_1",
             "guard_2",
             "guard_3",
+            "sentinel",
             "watcher"
           ],
           "$.perception.visible_enemies[].name": [
             "Guarda 1",
             "Guarda 2",
             "Guarda 3",
+            "Sentinela",
             "Vigia"
           ],
           "$.perception.visible_enemies[].species": [
@@ -6184,10 +6301,12 @@
             "Mangual"
           ],
           "$.previous_execution.actor_id": [
-            "player"
+            "player",
+            "sentinel"
           ],
           "$.previous_execution.actor_name": [
-            "Jogador"
+            "Jogador",
+            "Sentinela"
           ],
           "$.previous_execution.execution.events[].active": [
             "Guarda 1"
@@ -6262,6 +6381,7 @@
             "apprentice",
             "archivist",
             "player",
+            "sentinel",
             "watcher",
             "world"
           ],
@@ -6332,6 +6452,7 @@
           ],
           "$.previous_execution.execution.reactions[].speaker": [
             "Arquivista",
+            "Sentinela",
             "Vigia"
           ],
           "$.previous_execution.execution.reactions[].status": [
@@ -6350,6 +6471,7 @@
           "$.previous_execution.execution.reactions[].text": [
             "Na última inspeção, vi a chave na mesa.",
             "Pare! Identifique-se.",
+            "Preciso de sua resposta.",
             "Uma espada longa está sob os panos.",
             "Você encontra roupa de empregado da limpeza bem escondida sob a cama."
           ],
@@ -6544,12 +6666,14 @@
             "guard_1",
             "guard_2",
             "guard_3",
+            "sentinel",
             "watcher"
           ],
           "$.world.npcs[].name": [
             "Guarda 1",
             "Guarda 2",
             "Guarda 3",
+            "Sentinela",
             "Vigia"
           ],
           "$.world.npcs[].sheet.armor": [
@@ -6586,6 +6710,7 @@
             "guard_1",
             "guard_2",
             "guard_3",
+            "sentinel",
             "watcher"
           ],
           "$.world.npcs[].sheet.masteries[].property": [
@@ -6602,6 +6727,7 @@
             "Guarda 1",
             "Guarda 2",
             "Guarda 3",
+            "Sentinela",
             "Vigia"
           ],
           "$.world.npcs[].sheet.size": [
@@ -6682,6 +6808,7 @@
             "guard_2",
             "guard_3",
             "prisoner",
+            "sentinel",
             "sleeper",
             "watcher"
           ],
@@ -6693,6 +6820,7 @@
             "Guarda 2",
             "Guarda 3",
             "Prisioneiro",
+            "Sentinela",
             "Vigia"
           ],
           "$.world.perception.observers[].senses.response": [
@@ -6765,6 +6893,156 @@
           ],
           "$.world.scenario.state.guard_activity": [
             "on_duty"
+          ]
+        }
+      },
+      "npc_agency": {
+        "shape": {
+          "$": "object",
+          "$.actor": "object",
+          "$.actor.column": "integer",
+          "$.actor.id": "string",
+          "$.actor.name": "string",
+          "$.actor.row": "integer",
+          "$.actor.senses": "object",
+          "$.actor.senses.advantage": "boolean",
+          "$.actor.senses.can_hear": "boolean",
+          "$.actor.senses.can_see": "boolean",
+          "$.actor.senses.darkvision_meters": "number",
+          "$.actor.senses.disadvantage": "boolean",
+          "$.actor.senses.hearing_range_meters": "number",
+          "$.actor.senses.passive_perception": "integer",
+          "$.actor.senses.perception_bonus": "integer",
+          "$.actor.senses.response": "string",
+          "$.actor.senses.searching": "boolean",
+          "$.actor.senses.sight_range_meters": "null",
+          "$.actor.senses.sleeping": "boolean",
+          "$.actor.senses.wake_range_meters": "number",
+          "$.knowledge": "array",
+          "$.mode": "string",
+          "$.observations": "object",
+          "$.observations.actor_id": "string",
+          "$.observations.communications": "array",
+          "$.observations.communications[]": "object",
+          "$.observations.communications[].actor_id": "string",
+          "$.observations.communications[].sequence": "integer",
+          "$.observations.communications[].text": "null|string",
+          "$.observations.communications[].understood": "boolean",
+          "$.observations.communications[].volume": "string",
+          "$.observations.intent": "object",
+          "$.observations.intent.activity": "string",
+          "$.observations.intent.actor_id": "string",
+          "$.observations.intent.can_wait": "boolean",
+          "$.observations.intent.goal": "string",
+          "$.observations.intent.unattended_interactions": "integer",
+          "$.observations.intent.waiting_for": "string",
+          "$.observations.intent.waits_used": "integer",
+          "$.observations.observed_player_position": "array",
+          "$.observations.observed_player_position[]": "integer",
+          "$.observations.policy": "string",
+          "$.observations.sees_player": "boolean",
+          "$.parley": "object",
+          "$.parley.actor_id": "string",
+          "$.parley.concession": "null",
+          "$.parley.demand": "string",
+          "$.parley.npc_position": "array",
+          "$.parley.npc_position[]": "integer",
+          "$.parley.player_position": "array",
+          "$.parley.player_position[]": "integer",
+          "$.parley.status": "string",
+          "$.phase": "string",
+          "$.profile": "object",
+          "$.profile.alignment": "string",
+          "$.profile.persona": "object",
+          "$.profile.persona.background": "string",
+          "$.profile.persona.interests": "array",
+          "$.profile.persona.interests[]": "object",
+          "$.profile.persona.interests[].description": "string",
+          "$.profile.persona.interests[].evidence_predicates": "array",
+          "$.profile.persona.interests[].evidence_topics": "array",
+          "$.profile.persona.interests[].id": "string",
+          "$.profile.persona.interests[].weight": "integer",
+          "$.profile.persona.name": "string",
+          "$.profile.persona.role": "string",
+          "$.world": "object",
+          "$.world.adjudication": "object",
+          "$.world.adjudication.cached": "array",
+          "$.world.adjudication.requests": "array"
+        },
+        "text": {
+          "$.actor.id": [
+            "sentinel"
+          ],
+          "$.actor.name": [
+            "Sentinela"
+          ],
+          "$.actor.senses.response": [
+            "observe"
+          ],
+          "$.mode": [
+            "narrated"
+          ],
+          "$.observations.actor_id": [
+            "sentinel"
+          ],
+          "$.observations.communications[].actor_id": [
+            "player",
+            "sentinel"
+          ],
+          "$.observations.communications[].text": [
+            "Preciso de sua resposta."
+          ],
+          "$.observations.communications[].volume": [
+            "normal",
+            "quiet"
+          ],
+          "$.observations.intent.activity": [
+            "Aguardando resposta à abordagem.",
+            "Cobrar a resposta."
+          ],
+          "$.observations.intent.actor_id": [
+            "sentinel"
+          ],
+          "$.observations.intent.goal": [
+            "Concluir a abordagem e obter uma resposta.",
+            "Obter uma resposta."
+          ],
+          "$.observations.intent.waiting_for": [
+            "Diga o que deseja.",
+            "Resposta à pergunta."
+          ],
+          "$.observations.policy": [
+            "Uma decisão após a interação resolvida. Palavras inaudíveis não são conhecimento. Uma espera fundamentada por resposta; novas esperas exigem resposta real ao NPC."
+          ],
+          "$.parley.actor_id": [
+            "sentinel"
+          ],
+          "$.parley.demand": [
+            "Diga o que deseja."
+          ],
+          "$.parley.status": [
+            "pending"
+          ],
+          "$.phase": [
+            "npc_agency"
+          ],
+          "$.profile.alignment": [
+            "neutral"
+          ],
+          "$.profile.persona.background": [
+            "Preserva sua integridade."
+          ],
+          "$.profile.persona.interests[].description": [
+            "Preservar sua integridade."
+          ],
+          "$.profile.persona.interests[].id": [
+            "safety"
+          ],
+          "$.profile.persona.name": [
+            "Sentinela"
+          ],
+          "$.profile.persona.role": [
+            "NPC"
           ]
         }
       },
@@ -10734,6 +11012,68 @@
         ],
         "scope": "Narra efeitos validados e responde off; não executa intenções."
       },
+      "npc_agency": {
+        "fields": {
+          "actor": {
+            "meaning": "Identidade, posição e sentidos do próprio NPC.",
+            "optional": false,
+            "source": "PerceptionSystem.observer",
+            "types": "object"
+          },
+          "knowledge": {
+            "meaning": "Somente memórias próprias do NPC solicitado.",
+            "optional": false,
+            "source": "KnowledgeStore.select",
+            "types": "array"
+          },
+          "mode": {
+            "meaning": "Acompanhamento somente em modo narrado.",
+            "optional": false,
+            "source": "GameSession.mode",
+            "types": "string"
+          },
+          "observations": {
+            "meaning": "Intenção, espera e falas percebidas; texto inaudível é nulo.",
+            "optional": false,
+            "source": "AgencySystem / KnowledgeSystem",
+            "types": "object"
+          },
+          "parley": {
+            "meaning": "Abordagem de que este NPC participa.",
+            "optional": false,
+            "source": "GameSession.parley",
+            "types": "object|null"
+          },
+          "phase": {
+            "meaning": "npc_agency, após efeitos reais do jogador.",
+            "optional": false,
+            "source": "Conversation.agency_context",
+            "types": "string"
+          },
+          "profile": {
+            "meaning": "Alinhamento e persona deste NPC.",
+            "optional": false,
+            "source": "DispositionSystem.profiles",
+            "types": "object"
+          },
+          "world": {
+            "meaning": "Pedidos de dificuldade física necessários à execução.",
+            "optional": false,
+            "source": "AdjudicationSystem.prepare",
+            "types": "object"
+          }
+        },
+        "forbidden": [
+          "recent_messages",
+          "player_plan",
+          "player_request_parts",
+          "player_sheet",
+          "world.knowledge",
+          "world.social",
+          "world.scenario"
+        ],
+        "scope": "Decisão de um interlocutor com percepção resolvida; sem histórico onisciente."
+      },
       "npc_turn": {
         "fields": {
           "available_actions": {
@@ -11037,6 +11377,13 @@
       "map.distance_unit": "string",
       "map.rows": "integer",
       "map.scene": "object",
+      "perception.communications": "array",
+      "perception.communications[]": "object",
+      "perception.communications[].actor_id": "string",
+      "perception.communications[].heard_by": "array",
+      "perception.communications[].sequence": "integer",
+      "perception.communications[].text": "string",
+      "perception.communications[].volume": "string",
       "perception.current_description": "string",
       "perception.current_place": "string",
       "perception.visible_creatures": "array",
@@ -11092,8 +11439,8 @@
   },
   "format_version": 1,
   "review": {
-    "previous_sha256": "a2d1635cc4204acecca458418bb56a1656435f5b1fd71c2ced8b2c4a90700641",
-    "reason": "Revisão intencional: adjudicações contextuais na decisão existente do Mundo, sem substituir CDs fixas; fatos citáveis, cache privado, audição passiva e compreensão separadas. Esquema distingue say/Influence para impedir memory_ids e alvo redundante inválidos; perguntas a NPC são fala. Narração omite fundamentos privados. Amostras cobrem decisões aplicadas e cache.",
-    "sha256": "4234584e804041749e28e9eb62aa71bb014b9aa19cb34ebacca5e1cb44d555fd"
+    "previous_sha256": "2a2f687e9aacadbbde4f5d7d930baa38da59f5bf4afec787663c3799819b0d24",
+    "reason": "Refinamento após a primeira medição de agência: narrador explica audição e acontecimentos em linguagem de mesa, sem citar heard_by/IDs internos, mantendo os fatos e o contrato funcional já revisados.",
+    "sha256": "59a565eb0dce3719a0da9dccbd37fbfaab66e0f3ea1a65697d1cafe61e7d64e1"
   }
 }

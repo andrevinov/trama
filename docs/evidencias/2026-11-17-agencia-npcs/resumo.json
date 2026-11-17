@@ -1,0 +1,596 @@
+{
+  "scope": "game_flow_from_prepared_situation",
+  "attempts": [
+    {
+      "run_id": "20261117T221855-66f13b3e",
+      "case": {
+        "id": "agencia-negociacao",
+        "actor": "guard_1",
+        "marker": "jabuticaba-947",
+        "expected": "negotiation",
+        "max_sdk_calls": 14,
+        "messages": [
+          "Guarda, continuo parado sob sua custódia. Prometo dez moedas de ouro se você me der um momento para conversar. Peço apenas que me ouça, sem soltar ninguém agora.",
+          "Falo bem baixo, apenas ao prisioneiro: \"Nossa palavra secreta é jabuticaba-947. Você está bem?\"",
+          "Continuo falando bem baixo só com o prisioneiro: \"Lembre da palavra jabuticaba-947. Precisamos manter a calma.\"",
+          "[O guarda ouviu o conteúdo dos nossos cochichos? O que ele efetivamente fez nesse intervalo? Ele se aproximou ou atacou?]"
+        ]
+      },
+      "outcome": "passed",
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 14,
+          "transport_attempt_upper_bound": 14
+        }
+      },
+      "session_id": "ea9d14a4a59347aaae73d71ccc9717f7",
+      "sdk_attempts": 12,
+      "dice_used": [],
+      "runs": [
+        {
+          "status": "completed",
+          "reply": {
+            "on": "O guarda permanece junto à porta aberta da Sala dos Guardas, mantendo distância no corredor iluminado. Ele aceita ouvi-lo por um breve momento, mas sua voz é firme: “Está bem. Fale depressa — e não faça nenhum movimento brusco.”",
+            "off": ""
+          },
+          "errors": [],
+          "stages": [
+            "interpret",
+            "world",
+            "narrate"
+          ],
+          "decisions": []
+        },
+        {
+          "status": "completed",
+          "reply": {
+            "on": "O prisioneiro responde em voz baixa: “Estou bem.”\n\nDa Sala dos Guardas, o guarda retruca em tom normal: “Não ouvi isso. Fale mais alto — e fique onde está.”",
+            "off": ""
+          },
+          "errors": [],
+          "stages": [
+            "interpret",
+            "world",
+            "npc_agency",
+            "narrate"
+          ],
+          "decisions": [
+            {
+              "reactions": [
+                {
+                  "step_index": 0,
+                  "after_squares": null,
+                  "actions": [
+                    {
+                      "actor_id": "guard_1",
+                      "operation": "say",
+                      "text": "Não ouvi isso. Fale mais alto — e fique onde está.",
+                      "target_id": null,
+                      "destination": null,
+                      "weapon": "longsword",
+                      "influence": null,
+                      "volume": "normal",
+                      "memory_ids": []
+                    }
+                  ],
+                  "interrupt": false,
+                  "reason": "O guarda viu o jogador falar, mas as palavras foram inaudíveis; ele exige uma resposta compreensível sem abandonar a custódia.",
+                  "check": null
+                }
+              ],
+              "adjudications": [],
+              "intent": {
+                "actor_id": "guard_1",
+                "goal": "Obter uma resposta audível antes de decidir se continua ouvindo.",
+                "activity": "Cobrando que o jogador fale de modo compreensível, mantendo a custódia à distância.",
+                "waiting_for": "O jogador deve repetir sua resposta em voz audível."
+              }
+            }
+          ]
+        },
+        {
+          "status": "completed",
+          "reply": {
+            "on": "O prisioneiro responde em voz baixa: “Entendido. Vou manter a calma.”\n\nO guarda permanece à distância, vigiando e esperando uma resposta que consiga ouvir.",
+            "off": ""
+          },
+          "errors": [],
+          "stages": [
+            "interpret",
+            "world",
+            "npc_agency",
+            "narrate"
+          ],
+          "decisions": [
+            {
+              "reactions": [
+                {
+                  "step_index": 0,
+                  "after_squares": null,
+                  "actions": [
+                    {
+                      "actor_id": "guard_1",
+                      "operation": "wait",
+                      "text": "O guarda permanece à distância, vigiando e esperando uma resposta que consiga ouvir.",
+                      "target_id": null,
+                      "destination": null,
+                      "weapon": "longsword",
+                      "influence": null,
+                      "volume": "normal",
+                      "memory_ids": []
+                    }
+                  ],
+                  "interrupt": false,
+                  "reason": "O guarda já pediu uma resposta audível e pode aguardar brevemente por ela.",
+                  "check": null
+                }
+              ],
+              "adjudications": [],
+              "intent": {
+                "actor_id": "guard_1",
+                "goal": "Obter uma resposta audível antes de decidir se continua ouvindo.",
+                "activity": "Mantém a custódia à distância, aguardando que o jogador fale de modo compreensível.",
+                "waiting_for": "O jogador deve repetir sua resposta em voz audível."
+              }
+            }
+          ]
+        },
+        {
+          "status": "completed",
+          "reply": {
+            "on": "",
+            "off": "Não. As duas falas em voz baixa foram compreendidas apenas pelo prisioneiro; o guarda disse explicitamente que não ouviu a primeira, e não há registro de que tenha ouvido a segunda.\n\nNo intervalo posterior, o único ato registrado do guarda foi permanecer à distância, vigiando e esperando uma resposta audível. Ele não se aproximou nem atacou."
+          },
+          "errors": [],
+          "stages": [
+            "narrate"
+          ],
+          "decisions": []
+        }
+      ]
+    },
+    {
+      "run_id": "20261117T221855-66f13b3e",
+      "case": {
+        "id": "agencia-off-consulta",
+        "actor": "guard_1",
+        "marker": "turmalina-291",
+        "expected": "off",
+        "max_sdk_calls": 8,
+        "messages": [
+          "Falo bem baixo apenas ao prisioneiro: \"Nossa palavra secreta é turmalina-291. Você está bem?\"",
+          "[O guarda estava ouvindo o conteúdo desse cochicho? Houve movimento ou ataque dele?]",
+          "[E agora? O que o guarda efetivamente fez desde minha última pergunta?]"
+        ]
+      },
+      "outcome": "passed",
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 8,
+          "transport_attempt_upper_bound": 8
+        }
+      },
+      "session_id": "b5140b682f614a03a3af129594dbb753",
+      "sdk_attempts": 6,
+      "dice_used": [],
+      "runs": [
+        {
+          "status": "completed",
+          "reply": {
+            "on": "O prisioneiro responde em voz baixa: “Estou acordado. Quem é você?”\n\nMais ao norte, o guarda permanece onde está, aguardando sua resposta.",
+            "off": ""
+          },
+          "errors": [],
+          "stages": [
+            "interpret",
+            "world",
+            "npc_agency",
+            "narrate"
+          ],
+          "decisions": [
+            {
+              "reactions": [
+                {
+                  "step_index": 0,
+                  "after_squares": null,
+                  "actions": [
+                    {
+                      "actor_id": "guard_1",
+                      "operation": "wait",
+                      "text": "O guarda permanece onde está, aguardando sua resposta.",
+                      "target_id": null,
+                      "destination": null,
+                      "weapon": "longsword",
+                      "influence": null,
+                      "volume": "normal",
+                      "memory_ids": []
+                    }
+                  ],
+                  "interrupt": false,
+                  "reason": "A abordagem verbal continua pendente e o guarda pode aguardar uma resposta concreta.",
+                  "check": null
+                }
+              ],
+              "adjudications": [],
+              "intent": {
+                "actor_id": "guard_1",
+                "goal": "Concluir a abordagem e obter uma resposta.",
+                "activity": "Aguardando resposta à abordagem.",
+                "waiting_for": "Você aí! Pare! O que está fazendo fora da cela?"
+              }
+            }
+          ]
+        },
+        {
+          "status": "completed",
+          "reply": {
+            "on": "",
+            "off": "Não. O cochicho do jogador (“turmalina-291...”) foi compreendido apenas pelo prisioneiro; o guarda não consta em heard_by dessa fala.\n\nNão houve movimento nem ataque do guarda. O último registro dele indica que permaneceu onde estava, aguardando sua resposta."
+          },
+          "errors": [],
+          "stages": [
+            "narrate"
+          ],
+          "decisions": []
+        },
+        {
+          "status": "completed",
+          "reply": {
+            "on": "",
+            "off": "Desde sua última pergunta, não há nova ação registrada do guarda. O último registro efetivo continua sendo: ele permaneceu na posição dele, aguardando sua resposta ao desafio; não se moveu nem atacou."
+          },
+          "errors": [],
+          "stages": [
+            "narrate"
+          ],
+          "decisions": []
+        }
+      ]
+    },
+    {
+      "run_id": "20261117T221855-66f13b3e",
+      "case": {
+        "id": "agencia-vigia-generico",
+        "actor": "warden",
+        "marker": "ametista-583",
+        "expected": "followup",
+        "max_sdk_calls": 11,
+        "messages": [
+          "Falo bem baixo apenas ao meu companheiro: \"Nossa palavra secreta é ametista-583. Está tudo bem com você?\"",
+          "Continuo falando bem baixo apenas com meu companheiro: \"Lembre da ametista-583 e mantenha a calma.\"",
+          "[O vigia ouviu as palavras que trocamos em voz baixa? O que ele fez de fato? Ele se moveu ou atacou?]"
+        ]
+      },
+      "outcome": "passed",
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 11,
+          "transport_attempt_upper_bound": 11
+        }
+      },
+      "session_id": "add9da7975e94b8a940f0a6522987776",
+      "sdk_attempts": 9,
+      "dice_used": [],
+      "runs": [
+        {
+          "status": "completed",
+          "reply": {
+            "on": "Seu companheiro responde bem baixo: “Estou bem.”\n\nÀ distância, Mauro permanece atento, aguardando uma resposta clara à sua ordem.",
+            "off": ""
+          },
+          "errors": [],
+          "stages": [
+            "interpret",
+            "world",
+            "npc_agency",
+            "narrate"
+          ],
+          "decisions": [
+            {
+              "reactions": [
+                {
+                  "step_index": 0,
+                  "after_squares": null,
+                  "actions": [
+                    {
+                      "actor_id": "warden",
+                      "operation": "wait",
+                      "text": "Mauro permanece à distância, atento, aguardando uma resposta clara.",
+                      "target_id": null,
+                      "destination": null,
+                      "weapon": "longsword",
+                      "influence": null,
+                      "volume": "normal",
+                      "memory_ids": []
+                    }
+                  ],
+                  "interrupt": false,
+                  "reason": "A abordagem está pendente, e o vigia pode aguardar brevemente pela resposta solicitada.",
+                  "check": null
+                }
+              ],
+              "adjudications": [],
+              "intent": {
+                "actor_id": "warden",
+                "goal": "Concluir a abordagem e obter uma resposta.",
+                "activity": "Aguardando resposta à abordagem.",
+                "waiting_for": "Uma resposta clara do visitante à pergunta sobre o que faz ali."
+              }
+            }
+          ]
+        },
+        {
+          "status": "completed",
+          "reply": {
+            "on": "Seu companheiro ouve sua instrução em voz baixa.\n\nÀ distância, o Vigia Mauro responde alto: “Não ouvi nada daí. Fale mais alto: o que você está fazendo aqui?”",
+            "off": ""
+          },
+          "errors": [],
+          "stages": [
+            "interpret",
+            "world",
+            "npc_agency",
+            "narrate"
+          ],
+          "decisions": [
+            {
+              "reactions": [
+                {
+                  "step_index": 0,
+                  "after_squares": null,
+                  "actions": [
+                    {
+                      "actor_id": "warden",
+                      "operation": "say",
+                      "text": "Não ouvi nada daí. Fale mais alto: o que você está fazendo aqui?",
+                      "target_id": null,
+                      "destination": null,
+                      "weapon": "longsword",
+                      "influence": null,
+                      "volume": "loud",
+                      "memory_ids": []
+                    }
+                  ],
+                  "interrupt": false,
+                  "reason": "Mauro vê o visitante, mas as tentativas anteriores foram inaudíveis; não pode continuar esperando sem tomar iniciativa.",
+                  "check": null
+                }
+              ],
+              "adjudications": [],
+              "intent": {
+                "actor_id": "warden",
+                "goal": "Concluir a abordagem obtendo identificação ou propósito do visitante.",
+                "activity": "Exige uma resposta audível à distância.",
+                "waiting_for": null
+              }
+            }
+          ]
+        },
+        {
+          "status": "completed",
+          "reply": {
+            "on": "",
+            "off": "Não. Pelos registros de comunicação, as duas falas em voz baixa foram ouvidas apenas pelo seu companheiro; Mauro não consta como ouvinte delas.\n\nO que ele fez foi falar alto, à distância: “Não ouvi nada daí. Fale mais alto: o que você está fazendo aqui?” Não há movimento, ataque, dano ou outra ação dele registrada. Ele permanece na posição [19, 3], e você em [3, 3]."
+          },
+          "errors": [],
+          "stages": [
+            "narrate"
+          ],
+          "decisions": []
+        }
+      ]
+    },
+    {
+      "run_id": "20261117T222332-1bfc00e4",
+      "case": {
+        "id": "agencia-off-consulta",
+        "actor": "guard_1",
+        "marker": "turmalina-291",
+        "expected": "off",
+        "max_sdk_calls": 6,
+        "messages": [
+          "Falo bem baixo apenas ao prisioneiro: \"Nossa palavra secreta é turmalina-291. Você está bem?\"",
+          "[O guarda estava ouvindo o conteúdo desse cochicho? Houve movimento ou ataque dele?]",
+          "[E agora? O que o guarda efetivamente fez desde minha última pergunta?]"
+        ]
+      },
+      "outcome": "passed",
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 6,
+          "transport_attempt_upper_bound": 6
+        }
+      },
+      "session_id": "0febc20ad3554181947f07f57302189a",
+      "sdk_attempts": 6,
+      "dice_used": [],
+      "runs": [
+        {
+          "status": "completed",
+          "reply": {
+            "on": "O prisioneiro responde em voz baixa: “Estou bem o bastante.”\n\nAo norte, o guarda mantém distância, aguardando sua resposta à ordem que já deu.",
+            "off": ""
+          },
+          "errors": [],
+          "stages": [
+            "interpret",
+            "world",
+            "npc_agency",
+            "narrate"
+          ],
+          "decisions": [
+            {
+              "reactions": [
+                {
+                  "step_index": 0,
+                  "after_squares": null,
+                  "actions": [
+                    {
+                      "actor_id": "guard_1",
+                      "operation": "wait",
+                      "text": "O guarda mantém distância e aguarda sua resposta.",
+                      "target_id": null,
+                      "destination": null,
+                      "weapon": "longsword",
+                      "influence": null,
+                      "volume": "normal",
+                      "memory_ids": []
+                    }
+                  ],
+                  "interrupt": false,
+                  "reason": "A abordagem está pendente e o guarda pode aguardar uma resposta concreta.",
+                  "check": null
+                }
+              ],
+              "adjudications": [],
+              "intent": {
+                "actor_id": "guard_1",
+                "goal": "Concluir a abordagem e obter uma resposta.",
+                "activity": "Aguardando resposta à abordagem.",
+                "waiting_for": "Você aí! Pare! O que está fazendo fora da cela?"
+              }
+            }
+          ]
+        },
+        {
+          "status": "completed",
+          "reply": {
+            "on": "",
+            "off": "Não. O cochicho do jogador foi ouvido somente pelo prisioneiro; o guarda não consta como ouvinte dessas palavras, portanto não há indicação de que tenha percebido seu conteúdo.\n\nNão houve movimento nem ataque do guarda. Ele permaneceu à distância e apenas aguardou sua resposta."
+          },
+          "errors": [],
+          "stages": [
+            "narrate"
+          ],
+          "decisions": []
+        },
+        {
+          "status": "completed",
+          "reply": {
+            "on": "",
+            "off": "Desde sua última pergunta, nada novo foi registrado. A última ação efetiva do guarda foi permanecer onde estava, à distância, aguardando sua resposta à ordem dele; não houve deslocamento, ataque, fala adicional nem outra interação."
+          },
+          "errors": [],
+          "stages": [
+            "narrate"
+          ],
+          "decisions": []
+        }
+      ]
+    }
+  ],
+  "sdk_attempts": 33,
+  "usage": {
+    "input_tokens": 370099,
+    "output_tokens": 6076,
+    "total_tokens": 376175,
+    "cached_input_tokens": 125513,
+    "cache_write_tokens": 244487,
+    "reasoning_tokens": 2316
+  },
+  "narrative_review": "Textos conferidos: NPC não recebeu/reproduziu palavras inaudíveis, vigia genérico retomou a cobrança após uma espera, consultas off não criaram ações, não houve deslocamento, ataque ou transferência inventados. Primeira rodada expôs heard_by em uma resposta off; revisão de linguagem reavaliada no caso off com seis chamadas restantes.",
+  "outcomes": {
+    "passed": 4
+  },
+  "distinct_cases": 3
+}
