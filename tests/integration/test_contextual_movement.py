@@ -82,8 +82,10 @@ def test_closed_cell_stops_before_investigation_without_opening_or_rolling(dice)
 
 
 def test_take_known_sword_approaches_and_updates_real_equipment(dice):
-    s = at_storage(dice())
-    s.dungeon.discovered.add('longsword')
+    s = at_storage(dice(20))
+    # Descoberta real registra também a localização lembrada do objeto.
+    Conversation(s).execute(ActionPlan((investigate(),)))
+    s.state = replace(s.state, position=Position(7, 9))
     report = Conversation(s).execute(ActionPlan((ScenarioIntent('take', 'longsword'),)))
     assert report.status == 'completed'
     assert [e['operation'] for e in report.events] == ['move', 'take']

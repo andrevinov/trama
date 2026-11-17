@@ -6,7 +6,7 @@ import json
 from types import SimpleNamespace
 from unittest.mock import Mock
 
-from conftest import sourced_output
+from conftest import sourced_output, judged_output
 import runpy
 
 import pytest
@@ -55,7 +55,7 @@ def install_client(case, monkeypatch, *, npc_behavior='wait'):
     client.base_url = 'https://offline.test'
     def create(**parameters):
         return SimpleNamespace(status='completed', output=[], usage=None,
-            output_text=json.dumps(scripted_output(case, parameters, npc_behavior=npc_behavior)))
+            output_text=json.dumps(judged_output(scripted_output(case, parameters, npc_behavior=npc_behavior), parameters)))
     client.responses.create.side_effect = create
     monkeypatch.setattr(openai_services, 'OpenAI', lambda **kwargs: client)
     monkeypatch.setenv('OPENAI_API_KEY', 'offline-unused-key')
@@ -130,15 +130,14 @@ def test_opportunity_fixture_breaks_disguise_by_real_perception_and_initiative(c
     with capture_logs() as stream:
         conversation, roller = SUPPORT['build_case'](case)
     report = conversation.narration_context()['previous_execution']['execution']
-    check = next(e for e in report['reactions'] if e['operation'] == 'check')
-    assert check['actor_id'] == 'guard_1' and check['skill'] == 'perception'
-    assert check['passed'] and check['dc'] == 10 and check['dice'] == [20]
+    assert any(e['operation'] == 'visible_weapon' and e['actor_id'] == 'guard_1' for e in report['reactions'])
+    assert not any(e['operation'] == 'check' for e in report['reactions'])
     assert any(e['operation'] == 'start_conflict' for e in report['reactions'])
     assert [e['operation'] for e in report['events']] == ['drop', 'take']
     assert conversation.session.dungeon.disguise == 'failed'
     assert conversation.session.dungeon.guard_alert
     assert not conversation.session.dungeon.sword_concealed
-    assert len(roller.used) == 8
+    assert len(roller.used) == 7
     events = [json.loads(line) for line in stream.getvalue().splitlines()]
     assert any(e['event'] == 'encounter.started' for e in events)
 
@@ -190,7 +189,7 @@ def test_live_runner_saves_real_adapter_contexts_and_correlated_logs_offline(mon
     calls = []
     def create(**kwargs):
         calls.append(kwargs)
-        return SimpleNamespace(status='completed', output=[], output_text=json.dumps(next(answers)), usage=None)
+        return SimpleNamespace(status='completed', output=[], output_text=json.dumps(judged_output(next(answers), kwargs)), usage=None)
     class OfflineClient:
         responses = SimpleNamespace(create=create)
         def __enter__(self):

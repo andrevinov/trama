@@ -1,4 +1,4 @@
-from conftest import sourced_plan, scripted_responses
+from conftest import with_judgments, sourced_plan, scripted_responses
 from threading import Event
 
 import pygame
@@ -288,6 +288,7 @@ def test_off_question_keeps_failed_npc_execution_after_window_report_reset(scree
 
     class World:
         calls = 0
+        @with_judgments
         def decide(self, context):
             self.calls += 1
             if context["phase"] == "player_action":
@@ -347,7 +348,7 @@ def test_separate_player_world_and_narration_requests_execute_in_main_thread(scr
         {"reactions": []},
         {"on": "Você atravessa o corredor e para diante da porta fechada.", "off": ""},
     ]
-    client.responses.create.side_effect = scripted_responses(*[SimpleNamespace(status="completed", output=[], output_text=json.dumps(value)) for value in outputs])
+    client.responses.create.side_effect = scripted_responses(*[SimpleNamespace(status="completed", output=[], output_text=json.dumps(value)) for value in outputs], adjudicate=True)
     window = MovementWindow(session, OpenAIIntentInterpreter(client), "simulado", OpenAINarrator(client), OpenAIWorldDirector(client))
     window.input.insert("Eu caminho até a direção da porta da sala dos guardas.")
     window.submit()
@@ -393,6 +394,7 @@ def test_npc_turns_advance_via_world_decisions_and_return_to_player(screen, dice
         def __init__(self):
             self.phases = []
 
+        @with_judgments
         def decide(self, context):
             self.phases.append(context["phase"])
             return WorldPlan()
@@ -626,6 +628,7 @@ def test_opportunity_buttons_resume_npc_without_new_interpretation(screen, dice,
         def __init__(self):
             self.calls = []
 
+        @with_judgments
         def decide(self, context):
             self.calls.append(context)
             return WorldPlan() if context['phase'] == 'player_action' else world

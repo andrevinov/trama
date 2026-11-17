@@ -5,6 +5,7 @@ from typing import Protocol
 
 from trama.spatial import Position
 from trama.application.parley import InfluenceRequest
+from trama.difficulty import Adjudication
 
 
 class WorldError(ValueError):
@@ -33,9 +34,14 @@ class WorldAction:
     weapon: str = "greatsword"
     influence: InfluenceRequest | None = None
     volume: str = "normal"
+    memory_ids: tuple[str, ...] = ()
 
     def __post_init__(self):
-        if (not isinstance(self.actor_id, str) or not self.actor_id
+        if (not isinstance(self.memory_ids, tuple) or len(self.memory_ids) > 6
+                or any(not isinstance(id, str) or not id or len(id) > 160 for id in self.memory_ids)
+                or len(set(self.memory_ids)) != len(self.memory_ids)
+                or self.memory_ids and self.operation not in {'say', 'influence'}
+                or not isinstance(self.actor_id, str) or not self.actor_id
                 or self.volume not in {'quiet', 'normal', 'loud'}
                 or (self.operation != 'say' and self.volume != 'normal')
                 or self.operation not in {"describe", "say", "move", "open", "close", "attack", "wait", "start_conflict", "end_conflict", "parley", "influence", "search"}
@@ -71,10 +77,15 @@ class WorldReaction:
 @dataclass(frozen=True)
 class WorldPlan:
     reactions: tuple[WorldReaction, ...] = ()
+    adjudications: tuple[Adjudication, ...] = ()
 
     def __post_init__(self):
         if len(self.reactions) > 10 or not all(isinstance(r, WorldReaction) for r in self.reactions):
             raise WorldError("O Mundo excedeu o limite de respostas por mensagem.")
+        if (not isinstance(self.adjudications, tuple) or len(self.adjudications) > 32
+                or any(not isinstance(a, Adjudication) for a in self.adjudications)
+                or len({a.request_id for a in self.adjudications}) != len(self.adjudications)):
+            raise WorldError('Avaliações de dificuldade inválidas ou repetidas.')
 
 
 class WorldDirector(Protocol):

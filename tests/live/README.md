@@ -1,5 +1,14 @@
 # Testes live
 
+A [bateria de vínculos de memória](../../docs/sistema/qualidade/vinculos-memoria-live.md)
+contém três casos focados na rejeição de uma alegação ligada a vários interesses.
+Usa a dungeon, a abordagem preparada e o runner real, sem resposta congelada no live.
+
+A [bateria de disposição social](../../docs/sistema/qualidade/disposicao-live.md)
+usa sete situações `disposicao-*` no fluxo compartilhado: persona, alinhamento,
+recompensa, informação relevante e escuta com custódia. Sua medição e seus limites
+estão no [relatório datado](../../docs/evidencias/2026-11-17-disposicao-social/relatorio.md).
+
 Antes de criar, alterar ou executar um caso, leia a
 [política obrigatória dos live tests](../../docs/sistema/qualidade/politica-live-tests.md).
 O [plano de adoção](../../docs/roadmaps/implementados/2026-11-16-live-tests-compartilhados/plano.md) descreve como compartilhar
@@ -43,6 +52,17 @@ contextos, instruções ou esquemas, confira a referência com
 offline correspondente reconstroem os contratos atuais, sem chamadas externas.
 Não use `docs/contracts/ai-contexts.json` para fabricar payloads dos testes live;
 o arquivo é somente evidência de revisão.
+
+## Suíte focada: conhecimento dos NPCs
+
+`test_npc_knowledge_live.py` tem quatro casos pelo runner real: conhecimento
+inicial, desconhecimento, lembrança desatualizada e relato retomado com fonte.
+Uma tentativa por caso: 18 chamadas normais, teto de 24 com correções.
+Veja [preparação, critérios e evidências](../../docs/sistema/qualidade/conhecimento-live.md).
+
+```bash
+RUN_OPENAI_LIVE_TESTS=1 poetry run pytest tests/live/test_npc_knowledge_live.py -m live -v
+```
 
 ## Suíte focada: conclusão de turnos de NPCs
 
@@ -190,3 +210,5 @@ RUN_OPENAI_LIVE_TESTS=1 poetry run pytest tests/live/test_dungeon_interactions.p
 
 Executar o arquivo inteiro autoriza os três casos: dez chamadas normalmente,
 até treze considerando correções. Apenas coletar testes não chama a API.
+
+A bateria nova de [dificuldades contextuais e referências de memória](../../docs/sistema/qualidade/dificuldade-live.md) roda isoladamente em `test_contextual_difficulty_live.py`; dez casos, até 40 chamadas agregadas no experimento autorizado.

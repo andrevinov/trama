@@ -146,7 +146,8 @@ class Conversation:
         return AIContext(ContextKind.INTERPRETATION, compact_context(self._full_context()))
 
     def _full_context(self) -> dict:
-        context = self.session.interpreter_context()
+        query = next((m.speech.on for m in reversed(self.messages) if m.role == 'player' and m.speech.on), '')
+        context = self.session.interpreter_context(knowledge_query=query)
         # Perguntas/comandos em off, inclusive no histórico, não entram na interpretação.
         context["recent_messages"] = [{"role": m.role, "on": m.speech.on}
                                       for m in self.messages[-12:] if m.speech.on]
@@ -183,9 +184,12 @@ class Conversation:
         context["player_plan"] = json.loads(json.dumps(steps, default=float))
         context["player_request_parts"] = [asdict(p) for p in plan.request_parts] if plan else []
         context["phase"] = "player_action" if plan else "npc_turn"
+        context['world']['adjudication'] = self.session.adjudication.prepare(context['player_plan'],
+            approach=next((m.speech.on for m in reversed(self.messages) if m.role == 'player'), '') if plan else '')
         return AIContext(ContextKind.WORLD_ACTION if plan else ContextKind.NPC_TURN, context)
 
-    def execute(self, plan: ActionPlan, world: WorldPlan = WorldPlan(), *, player_prompt: str | None = None) -> ExecutionReport:
+    def execute(self, plan: ActionPlan, world: WorldPlan = WorldPlan(), *, player_prompt: str | None = None,
+                require_adjudications: bool = False) -> ExecutionReport:
         self._sync_reset()
         if player_prompt is None and self.messages and self.messages[-1].role == "player":
             player_prompt = self.messages[-1].speech.on
@@ -204,6 +208,7 @@ class Conversation:
         executor = WorldExecutor(self.session)
         if any(r.step_index >= len(plan.steps) for r in world.reactions):
             raise WorldError("Resposta do Mundo aponta para uma etapa inexistente.")
+        self.session.adjudication.begin(world.adjudications, strict=require_adjudications)
         def record(chunk, preparation_for=None):
             nonlocal progress, narrative_interaction, reason
             events.extend(({**e, "preparation_for": preparation_for} if preparation_for else e) for e in chunk.events)
@@ -296,6 +301,7 @@ class Conversation:
         if failures:
             skipped = tuple(action_reference(s, self.session.encounter.player_id) for s in plan.steps[attempted:])
             failures[-1] = replace(failures[-1], skipped_actions=failures[-1].skipped_actions + skipped)
+        self.session.adjudication.strict = False
         report = ExecutionReport(tuple(events), progress, reason, len(plan.steps) - attempted,
                                  tuple(world_events), narrative_interaction,
                                  tuple(p.text for p in plan.request_parts if p.kind == "narrative_detail"),
@@ -384,12 +390,13 @@ class Conversation:
             return ExecutionReport((event,), result.event["changed"], result.stop_reason or mode_stop,
                                    narrative_interaction=isinstance(intent, NarrativeIntent), world_events=scenario_events)
 
-    def execute_npc_turn(self, world: WorldPlan) -> ExecutionReport:
+    def execute_npc_turn(self, world: WorldPlan, *, require_adjudications=False) -> ExecutionReport:
         self._sync_reset()
         combat = self.session.encounter.combat
         if combat is None or combat.active_id == self.session.encounter.player_id:
             raise WorldError("Não há turno de NPC para resolver.")
         active = combat.active_id
+        self.session.adjudication.begin(world.adjudications, strict=require_adjudications)
         if any(r.step_index != 0 or r.after_squares != 0 or r.interrupt or
                any(a.actor_id != active for a in r.actions) for r in world.reactions):
             raise WorldError("A decisão deve resolver apenas o NPC ativo, antes da etapa 0, sem interromper o Jogador.")
@@ -399,6 +406,7 @@ class Conversation:
         stop_reason = None
 
         def finish(reason=None):
+            self.session.adjudication.strict = False
             return self._remember(ExecutionReport(stop_reason=reason, world_events=tuple(events),
                                                   failures=tuple(failures)), active)
 
@@ -436,7 +444,12 @@ class Conversation:
         self, speech: Speech = Speech(), report: ExecutionReport = ExecutionReport(),
         *, initial: bool = False,
     ) -> AIContext:
-        context = self.session.interpreter_context()
+        context = self.session.interpreter_context(knowledge_query=speech.on or speech.off)
+        # Memórias privadas de NPCs só orientam o Mundo. A narração usa as
+        # memórias do jogador e as referências efetivamente compartilhadas.
+        context['world'].pop('knowledge', None)
+        context['world'].pop('social', None)
+        context['world'].pop('adjudication', None)
         self._sync_reset()
         # O narrador descreve a percepção atual, não o mapa arquitetônico inteiro.
         visible = self.session.visibility.visible
@@ -456,7 +469,17 @@ class Conversation:
                                       if scene else []),
             "scenario": context.get("scenario"),
         }
-        execution = self._execution_context(report)
+        def public_execution(value):
+            if isinstance(value, dict):
+                hidden = {'disposition', 'text', 'private_memory_ids'} if value.get('operation') == 'influence' else set()
+                if value.get('operation') in {'check', 'hearing_check'}:
+                    hidden |= {'adjudication', 'adjudication_id'}
+                return {k: public_execution(v) for k, v in value.items() if k not in hidden}
+            if isinstance(value, (list, tuple)):
+                return [public_execution(v) for v in value]
+            return deepcopy(value)
+
+        execution = public_execution(self._execution_context(report))
         previous = self._last_execution
         if previous and report.execution_id == previous["execution_id"]:
             previous = self._preceding_execution
@@ -464,10 +487,11 @@ class Conversation:
             "phase": "initial" if initial else "reply",
             "allow_on": initial or report.progress or report.narrative_interaction or report.status == "already_satisfied" or any(e.get("perceptible") for e in report.world_events),
             "player": {"on": speech.on, "off": speech.off},
-            "execution": execution, "previous_execution": deepcopy(previous), "perception": perception,
+            "execution": execution, "previous_execution": public_execution(previous), "perception": perception,
             "character": context["character"],
             "player_sheet": context["player_sheet"], "combat": context["combat"],
             "mode": context["mode"], "world": context["world"], "parley": context["parley"], "sensing": context["sensing"],
+            'knowledge': context['knowledge'],
             "history": [{"role": m.role, "on": m.speech.on, "off": m.speech.off}
                         for m in self.messages[-12:]],
             "verified_rules": [
@@ -477,7 +501,9 @@ class Conversation:
                 "PHB 2024, visão: Jogador humano sem visão no escuro; NPCs usam seus próprios sentidos. Paredes/portas fechadas bloqueiam visão.",
                 "PHB 2024: Hide usa Furtividade CD 15 e guarda o total como CD de detecção; passiva é 10+bônus, com ajustes por vantagem/desvantagem. Search deliberado usa sentidos e ação do NPC em combate. Cota de malha impõe desvantagem em Furtividade.",
                 "Trama: alcances auditivos configuráveis usam referência fixa 7 de 2d6 do DMG 2024; porta fechada atenua 6 m equivalentes. Sono usa limiar próprio de despertar, sem teste de Percepção inconsciente. Não se rerrola por casa sem nova busca/mudança relevante.",
+                "Trama: fala normal com contato visual mútuo atual recebe 50% de margem auditiva (humano: 31,5 m). Sussurros, gritos, ruídos incidentais e despertar mantêm os alcances originais; visão e percurso acústico continuam validados.",
                 "O Mundo decide respostas dos guardas; só narre como realizados os efeitos validados em execution.reactions.",
+                "Dificuldade contextual: o Mundo avalia fatos antes dos dados, e o código aplica o resultado automático, impossibilidade ou teste com CD típica/modificadores. Hearing usa passiva com -5 na desvantagem; compreender fala é separado de notar ruído. CDs fixas de Hide, Search contra Furtividade, Influence e magia não são substituídas pela IA.",
                 "PHB 2024, Guerreiro 1–3: Defesa +1 CA com armadura. Retomar o Fôlego: ação bônus, cura 1d10+nível, 2 usos; descanso curto recupera 1 e longo recupera todos.",
                 "Guerreiro 2: Surto de Ação concede uma ação extra, exceto Magia; um uso por descanso curto/longo. Novo turno não recupera usos da classe.",
                 "Mente Tática: +1d10 a teste de atributo falho; gasta Retomar o Fôlego somente se o teste passar. Não serve para ataques ou salvaguardas.",
@@ -493,7 +519,7 @@ class Conversation:
                 "Modo narrado não cobra orçamento por turno; modo por turnos usa iniciativa e recursos do PHB 2024.",
                 "Decisão do usuário: executar o possível, parar no impedimento e explicar em off.",
                 "Trama: abordagem interrompe na detecção e permite resposta em modo narrado; não concede aproximação ou golpe gratuito. Parley pendente aguarda conversa ou combate.",
-                "PHB 2024, Influence: disposição willing/unwilling dispensa dados; hesitant testa perícia adequada, CD max(15, INT do NPC), com vantagem Friendly/desvantagem Hostile. Sucesso evita este combate; falha nesta abordagem inicia iniciativa (decisão do usuário).",
+                "PHB 2024, Influence: willing/unwilling dispensa dados; hesitant testa perícia adequada, CD max(15, INT do NPC), com vantagem Friendly/desvantagem Hostile. Trama: alinhamento, persona e memórias pontuam a disposição; só informação nova relevante reavalia o mesmo pedido. Sucesso concede apenas o pedido delimitado; falha não inicia combate automaticamente.",
                 "Movimento contextual do Jogador: requisitos espaciais podem gerar aproximação antes da ação, salvo proibição de movimento. Iniciativa precede a aproximação tática de ataque; não concede movimento ou golpes gratuitos.",
                 "POC: casas inteiras; uma fração restante não é executada nem arredondada para cima.",
             ],

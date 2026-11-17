@@ -39,12 +39,14 @@ def sourced_output(value, prompt, *, operations=None, kind="execute"):
     return value
 
 
-def scripted_responses(*responses, operations=None, kind="execute"):
+def scripted_responses(*responses, operations=None, kind="execute", adjudicate=False):
     """SDK simulado com resposta e classificação conhecidas, sem analisar a frase."""
     sequence = iter(responses)
     def create(**kwargs):
         response = copy(next(sequence))
         value = json.loads(response.output_text)
+        if adjudicate:
+            value = judged_output(value, kwargs)
         response.output_text = json.dumps(sourced_output(value, json.loads(kwargs["input"]).get("player_prompt", ""),
                                                           operations=operations, kind=kind))
         return response
@@ -109,3 +111,46 @@ def enter_turn_mode(dice):
 def world_actions(events):
     """Ações/checagens do Mundo, sem os registros automáticos de percepção."""
     return [event for event in events if event['operation'] != 'perception_detected']
+
+
+def judged_world(plan, context):
+    """Decisões explícitas para doubles antigos: acústica automática e demais CD15.
+
+    Apenas fixtures offline de fluxos alheios à dificuldade. Os testes específicos
+    de adjudicação fornecem suas próprias decisões e verificam a ausência delas.
+    """
+    from trama.difficulty import Adjudication
+    return replace(plan, adjudications=tuple(Adjudication(r['id'],
+        'automatic' if r['kind'] == 'hearing' else 'check',
+        None if r['kind'] == 'hearing' else 'moderate', False, False,
+        (next(iter(r['facts'])),), 'Decisão explícita do adaptador local de regressão.')
+        for r in context.get('world', {}).get('adjudication', {}).get('requests', [])))
+
+
+def with_judgments(decide):
+    """Adapta doubles locais ao contrato novo sem tocar o caminho com IA real."""
+    from functools import wraps
+    @wraps(decide)
+    def call(*args, **kwargs):
+        context = kwargs.get('context', args[-1] if args else None)
+        plan = decide(*args, **kwargs)
+        return judged_world(plan, context)
+    return call
+
+
+def judged_output(value, parameters):
+    from dataclasses import asdict
+    from trama.application.world import WorldPlan
+    if parameters['text']['format']['name'] == 'world_response':
+        value = {**value, 'adjudications': [asdict(d) for d in
+            judged_world(WorldPlan(), json.loads(parameters['input'])).adjudications]}
+    return value
+
+
+def without_correlation_ids(value):
+    """Compara conteúdo mecânico entre sessões sem exigir os mesmos UUIDs."""
+    if isinstance(value, dict):
+        return {k: without_correlation_ids(v) for k, v in value.items() if k not in {'execution_id','event_id'}}
+    if isinstance(value, list):
+        return [without_correlation_ids(v) for v in value]
+    return value

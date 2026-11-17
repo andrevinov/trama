@@ -16,11 +16,19 @@ Na tela e nos contextos da IA, colunas/linhas começam em 1. Cada casa mede 1,5 
   panos; uniforme da limpeza bem escondido sob a cama.
 - Sala dos Guardas: um único Guerreiro Humano 1, uma mesa com a chave das celas,
   uma porta para o banheiro e uma porta de saída. Ambas fechadas e destrancadas.
+  O guarda lembra que seu chefe colocou um dos prisioneiros ali. Suspeita que
+  esse prisioneiro seja filho de um lorde importante e teme represálias caso
+  isso seja verdade. A suspeita não confirma parentesco nem identifica o lorde
+  ou associa esse papel ao jogador ou ao prisioneiro da Cela 2.
 - Jogador: Guerreiro Humano 3, Campeão, Defesa, 28 PV, **CA 11**, velocidade 9 m,
   somente trapos e **nenhum item**. Defesa não concede CA sem armadura. Mantém
   conhecimentos, perícias, recursos da classe e Inspiração Heroica.
 - Prisioneiro: trapos de lã, sem inventário. A identidade de mago ilusionista só
   é revelada após a libertação. Não recebe uma ficha fictícia de Guerreiro.
+  Sua informação sobre a chave é uma memória inicial declarada em `knowledge`
+  no NPC: sabe que é o guarda quem fica com a chave, mas desconhece onde ele
+  a mantém. Ao pedir ajuda, compartilha essa informação se estiver disponível
+  e autorizada, sem fornecer uma localização. Veja [memórias e limites](../aplicacao/conhecimento-dos-npcs.md).
 
 A espada encontrada passa a ser uma arma real da ficha, com ataque, dano e
 maestria Sap. É usada com uma mão, 1d8 + Força. Largá-la remove a arma da ficha.
@@ -74,19 +82,20 @@ terreno difícil, mas sua casa não é um destino para terminar o movimento.
 Referências da edição 2024: [testes e exploração](https://www.dndbeyond.com/sources/dnd/br-2024/playing-the-game),
 [Study, Search, Influence, Unconscious e Utilize](https://www.dndbeyond.com/sources/dnd/br-2024/rules-glossary),
 [Ilusão Menor](https://www.dndbeyond.com/spells/2619039-minor-illusion).
-As CDs de itens/disfarce e as respostas abaixo são decisões do cenário.
+Tarefas incertas de itens/escuta usam a [avaliação contextual](../aplicacao/avaliacao-de-dificuldade.md).
+Disfarce usa a CD de Influence; rotinas e consequências abaixo são recortes do cenário.
 Visão, audição, sono, Hide e Search usam a [percepção geral por NPC](../mundo/visao-e-percepcao.md).
 
 | Situação | Resolução implementada |
 | --- | --- |
-| Investigar a Cela 4 | A espada é encontrada sem teste. Inteligência (Investigação), CD 15, encontra o uniforme. |
+| Investigar a Cela 4 | A espada é encontrada sem teste. Search/Sabedoria (Percepção), com dificuldade contextual, pode encontrar o uniforme. |
 | Passar perto do prisioneiro | Passos geram emissão normal ou discreta quando oculto; seus sentidos e limiar de despertar decidem se ele acorda, sem teste roteirizado. |
 | Acordar/falar junto à cela | Chamada audível ou contato ao alcance pode acordá-lo. Com a grade fechada, pede ajuda; durante a libertação, agradece em voz baixa. |
 | Vozes nas celas | O guarda só reage se seus sentidos alcançarem o som. Pode investigar e abordar ao obter visão; nenhum teste fixo de audição é imposto pelo roteiro. |
-| Escutar junto à porta dos guardas | Sabedoria (Percepção), CD 10, revela sinais do guarda e sua intenção de ir ao banheiro; não revela o futuro. |
+| Escutar junto à porta dos guardas | Sabedoria (Percepção), com dificuldade contextual e fonte sonora real, revela sinais do guarda; não revela o futuro. |
 | Passar-se por empregado | Carisma (Enganação), CD 15, conforme Influence. Falha inicia conflito; não há novas tentativas idênticas para apagar a falha. |
-| Espada com o uniforme | Guarda testa Percepção, CD 10; CD 15 se a espada foi ocultada sob a roupa. Sucesso desfaz o disfarce e inicia iniciativa. |
-| Pegar a chave à vista do guarda | Destreza (Prestidigitação), CD 13. Falha mantém a chave na mesa e inicia conflito. Não se exige esse teste sem observador. |
+| Espada com o uniforme | Espada exposta é evidente, sem dado. Espada ocultada exige avaliação contextual de Percepção. Sucesso desfaz o disfarce e inicia iniciativa. |
+| Pegar a chave à vista do guarda | Destreza (Prestidigitação), com dificuldade contextual. Falha mantém a chave na mesa e inicia conflito. Não se exige esse teste sem observador. |
 | Mover-se furtivamente | Usa Hide geral (CD 15) quando necessário e o movimento real; o total é comparado com a percepção de cada NPC. Exposição visual evidente não concede invisibilidade. |
 | Ilusão Menor do prisioneiro | Som alto de fuga no corredor, a 7,5 m da cama, duração de 1 minuto. Só existe Study/distração se a audição do guarda alcançar a emissão. O guarda escolhe examinar o som (Study): Investigação contra CD de magia 13 (INT 16, proficiência +2). Falha leva-o a investigar o ruído; sucesso reconhece a ilusão. |
 
@@ -108,6 +117,9 @@ A ilusão não enfeitiça, controla a mente nem garante sucesso contra o guarda.
 - Ouvir o pedido de ajuda pode levar o guarda à porta. Ao identificar o jogador,
   ele o aborda antes de avançar, pela [regra geral de conversa](../aplicacao/conversa-antes-do-combate.md). O roteiro do banheiro
   fica suspenso quando ele está alertado ou em combate.
+- O guarda é neutro e mau e habitualmente aceita propinas. Seu interesse financeiro
+  pesa mais que o dever, mas ele protege o emprego e teme represálias. Mantém a
+  suspeita não confirmada de que um dos prisioneiros é filho de um lorde importante.
 - No combate, a IA continua escolhendo deslocamento/ataque/espera do guarda,
   e as regras já existentes aplicam iniciativa, alcance, ações e oportunidades.
   A espada precisa ser obtida antes; o jogador começa com ataques desarmados.

@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "experiments": [
+    {
+      "id": "contextual-difficulty-20261117",
+      "scope": "game_flow_from_prepared_situation",
+      "authorization": "Usuário autorizou correção e novos lives; somente bateria nova. Dez casos inicialmente, reavaliação corretiva de três memórias e um furto; teto agregado 40 chamadas, atingido sem exceder.",
+      "git_head": "05dbf7cd44be8f5a0e3b8dd67a8d00bcd84c7246",
+      "worktree_dirty": true,
+      "sdk_attempts": 40,
+      "attempts": 14,
+      "outcomes": {
+        "passed": 11,
+        "failed": 3
+      },
+      "usage": {
+        "input_tokens": 478239,
+        "output_tokens": 8477,
+        "total_tokens": 486716,
+        "cached_input_tokens": 135139,
+        "cache_write_tokens": 342980,
+        "reasoning_tokens": 1833
+      },
+      "versioned_artifacts": [
+        {
+          "path": "docs/evidencias/2026-11-17-dificuldade-contextual/resumo.json",
+          "sha256": "14d714f613e0bbdbbd34718394e5519f57e005c7c4a31a557ac3e9cf56ac31f3",
+          "bytes": 45285
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-dificuldade-contextual/relatorio.md",
+          "sha256": "3cf16f4724aed24fd7c8ddc7ada10115037ae9d90cd20c26204733d4d72f54a6",
+          "bytes": 7103
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-dificuldade-contextual/contratos-enviados.json",
+          "sha256": "b3966cef6968ed3ecf4e791a7f3d8e77887abecda53c1dfe996f8da7bc0ea8e5",
+          "bytes": 154983
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-dificuldade-contextual/snapshot-final.json",
+          "sha256": "5db7cc425a85ae5ed78ba64ee0441f8781e2713f3d0ef86783e13ca947aefaf1",
+          "bytes": 1110005
+        }
+      ],
+      "local_artifacts": [
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-escuta-falha/result.json",
+          "sha256": "055a5308fed3a0c8da2d1fab47d2e40dfa6987db8cd9296db49d010852b0af8b",
+          "bytes": 198862
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-escuta-falha/trace.jsonl",
+          "sha256": "f917bc33ff0594b6b4bcc9fcda3bca44d9b09db05ca9c0403f2c684e91fdd76b",
+          "bytes": 184322
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-escuta-sucesso/result.json",
+          "sha256": "42b34c72c6516ac288c75db8e46e79d8bcfe08fac170a8eba8adc8691c5f42d3",
+          "bytes": 199544
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-escuta-sucesso/trace.jsonl",
+          "sha256": "143d84cd5a62c40347b868c1a3e58d7310cb858c74d179eae09eba71f53771b9",
+          "bytes": 185402
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-espada-oculta/result.json",
+          "sha256": "baed998fccdcaf1326db0d0a3937f8e4bd0d1f817eb4f67ecb2dbc3a2ac859e6",
+          "bytes": 254180
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-espada-oculta/trace.jsonl",
+          "sha256": "e648bb949bf84a378cbc561f65e2050f5873666b410d0d0f6cf7f3047369cfdb",
+          "bytes": 300534
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-furto-chave/result.json",
+          "sha256": "a38e2a65a08ea1cf974fc644649fa818b8f5d73e527af95fa000a472508157bb",
+          "bytes": 253531
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-furto-chave/trace.jsonl",
+          "sha256": "3e5fdd70c2a0d4e48e7112c0cee7ce030abfd931c568f6d30b5111f55622a4f1",
+          "bytes": 339171
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-grito-porta/result.json",
+          "sha256": "0581652f47eb4f9921d759743288c13b913b64ed5dbae67f3751cbdee3387a8b",
+          "bytes": 241341
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-grito-porta/trace.jsonl",
+          "sha256": "c8899cc5afd8848381aae31458d09d85ea369eeebe4889045f5ac4a2fa0dc54e",
+          "bytes": 247505
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-objeto-oculto/result.json",
+          "sha256": "3f68d62f24b051c59db14a864c0bc15eacdac10827c3259941c6b1c0a7b292f1",
+          "bytes": 196519
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-objeto-oculto/trace.jsonl",
+          "sha256": "5bd41a094508f8827fedb0a3bc0b7693621e6e4866210940538dd5583f461d65",
+          "bytes": 182922
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-voz-porta/result.json",
+          "sha256": "723c9ebf883e6169b6311342262b3f544e06bd8d610f238d8a5b61503a73c366",
+          "bytes": 216536
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/dificuldade-voz-porta/trace.jsonl",
+          "sha256": "f1511d9dc8041f2d51b43ed0bb717d6de52f7d5bac53bed59a133b2aa60e732b",
+          "bytes": 207082
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/memoria-chave-relato/result.json",
+          "sha256": "d21c085c7c217b1d4f70a803d4c22d07a63cb10fca760a3089dd42ae094dc86b",
+          "bytes": 164304
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/memoria-chave-relato/trace.jsonl",
+          "sha256": "d7e2321b33ebf27d0c114fb674f4b9322065f0aecea4189ac8f4beea7e353ea0",
+          "bytes": 220132
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/memoria-nobreza-escuta/result.json",
+          "sha256": "870e88b77c0d426ddce017d445b22a4110d9fc5a2e8a15961178d75e6de23baf",
+          "bytes": 190715
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/memoria-nobreza-escuta/trace.jsonl",
+          "sha256": "ee315041cac28f6a97977f578355f5be40537bea6de5c70ace286f945fd203cc",
+          "bytes": 210091
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/memoria-resposta-original/result.json",
+          "sha256": "466bc5920253a8f87eab883448d907622b5f5dff320ef4de36b0d6bd5807bb69",
+          "bytes": 191532
+        },
+        {
+          "path": "logs/live/difficulty/20261117T201931-23506e89/memoria-resposta-original/trace.jsonl",
+          "sha256": "13ddf748accd3c3ad916608d20b5f830dc6cf5a06a39bf9339bfc2249320911f",
+          "bytes": 211782
+        },
+        {
+          "path": "logs/live/difficulty/20261117T205228-c3ac0aa6/memoria-chave-relato/result.json",
+          "sha256": "2a293aab93890b54eab1ee2ce030cc98ef47e5a99092b218dde37483573f9dec",
+          "bytes": 79525
+        },
+        {
+          "path": "logs/live/difficulty/20261117T205228-c3ac0aa6/memoria-chave-relato/trace.jsonl",
+          "sha256": "0f47256588b3c5b73617d0a1d0b9ade112b85b2d74f332064bc53eccaa8f657f",
+          "bytes": 141595
+        },
+        {
+          "path": "logs/live/difficulty/20261117T205228-c3ac0aa6/memoria-nobreza-escuta/result.json",
+          "sha256": "7c2a6f3fcf6ad43d8745800c06f8f9afe52727ce63cfbd4c10483307b34ef580",
+          "bytes": 288328
+        },
+        {
+          "path": "logs/live/difficulty/20261117T205228-c3ac0aa6/memoria-nobreza-escuta/trace.jsonl",
+          "sha256": "d550f48c15eb02968ab1499246a5b9b7f3653401c934f16c0448bf1d174d9ab7",
+          "bytes": 289503
+        },
+        {
+          "path": "logs/live/difficulty/20261117T205228-c3ac0aa6/memoria-resposta-original/result.json",
+          "sha256": "dc1f66c066f53004ada60289d68fefe1caf12f037d49755bac85ebbdfe1e1f05",
+          "bytes": 298830
+        },
+        {
+          "path": "logs/live/difficulty/20261117T205228-c3ac0aa6/memoria-resposta-original/trace.jsonl",
+          "sha256": "459c0ae9b532d4bbcea1b5c1f1accba60335eefa9d11bebef38cc93d43f9c41b",
+          "bytes": 302495
+        },
+        {
+          "path": "logs/live/difficulty/20261117T205803-5d225ee7/dificuldade-furto-chave/result.json",
+          "sha256": "24a54893eef8222e18fb902bd00a4699d44f510a9031537279b93cd09f20aba2",
+          "bytes": 252764
+        },
+        {
+          "path": "logs/live/difficulty/20261117T205803-5d225ee7/dificuldade-furto-chave/trace.jsonl",
+          "sha256": "67520ffce70aac8c3037b658e8dcb4c3f9209ffdf98deace1695590950cf45a0",
+          "bytes": 339411
+        },
+        {
+          "path": "logs/live/difficulty/local-validation/full-suite.txt",
+          "sha256": "87fc38bfb77fccc3e65fafa9b9eeb706cdbca2538d6ec60feb5c0b5a1cb8472a",
+          "bytes": 13245
+        },
+        {
+          "path": "logs/live/difficulty/local-validation/revalidation.json",
+          "sha256": "e7a8a106eff0d36e690f8c957fe9b124d8d8fec2dfa95080309bc1aaccc3277c",
+          "bytes": 782
+        }
+      ]
+    }
+  ]
+}

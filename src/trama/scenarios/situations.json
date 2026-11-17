@@ -214,6 +214,164 @@
         ],
         "expected_status": "completed"
       }
+    ],
+    "social_challenge": [
+      {
+        "steps": [
+          {
+            "intent": "narrative",
+            "operation": "look",
+            "text": "Olho para o guarda no corredor."
+          }
+        ],
+        "expected_status": "blocked",
+        "expected_world_operations": [
+          "parley"
+        ]
+      }
+    ],
+    "guard_challenge_cell_2": [
+      {
+        "steps": [
+          {
+            "intent": "narrative",
+            "operation": "speak",
+            "text": "Ei, guarda!",
+            "volume": "loud"
+          }
+        ],
+        "expected_status": "blocked",
+        "expected_world_operations": [
+          "parley"
+        ]
+      }
+    ],
+    "concealed_employee_at_door": [
+      {
+        "steps": [
+          {
+            "intent": "scenario",
+            "operation": "investigate",
+            "target_id": "cell_4"
+          }
+        ],
+        "expected_status": "completed"
+      },
+      {
+        "steps": [
+          {
+            "intent": "scenario",
+            "operation": "take",
+            "target_id": "cleaner_uniform"
+          },
+          {
+            "intent": "scenario",
+            "operation": "wear",
+            "target_id": "cleaner_uniform"
+          }
+        ],
+        "expected_status": "completed"
+      },
+      {
+        "steps": [
+          {
+            "intent": "scenario",
+            "operation": "take",
+            "target_id": "longsword"
+          },
+          {
+            "intent": "scenario",
+            "operation": "conceal",
+            "target_id": "longsword"
+          },
+          {
+            "intent": "rule",
+            "operation": "hide"
+          }
+        ],
+        "expected_status": "completed"
+      },
+      {
+        "steps": [
+          {
+            "intent": "movement",
+            "segments": [
+              {
+                "direction": "east",
+                "squares": 4
+              },
+              {
+                "direction": "north",
+                "squares": 2
+              }
+            ]
+          }
+        ],
+        "expected_status": "completed"
+      }
+    ],
+    "employee_inside_guard_room": [
+      {
+        "steps": [
+          {
+            "intent": "scenario",
+            "operation": "investigate",
+            "target_id": "cell_4"
+          }
+        ],
+        "expected_status": "completed"
+      },
+      {
+        "steps": [
+          {
+            "intent": "scenario",
+            "operation": "take",
+            "target_id": "cleaner_uniform"
+          },
+          {
+            "intent": "scenario",
+            "operation": "wear",
+            "target_id": "cleaner_uniform"
+          }
+        ],
+        "expected_status": "completed"
+      },
+      {
+        "steps": [
+          {
+            "intent": "rule",
+            "operation": "hide"
+          }
+        ],
+        "expected_status": "completed"
+      },
+      {
+        "steps": [
+          {
+            "intent": "movement",
+            "segments": [
+              {
+                "direction": "east",
+                "squares": 4
+              },
+              {
+                "direction": "north",
+                "squares": 2
+              }
+            ]
+          },
+          {
+            "intent": "door",
+            "operation": "open",
+            "target_id": "guard_door"
+          },
+          {
+            "intent": "movement",
+            "target_id": "guard_room"
+          }
+        ],
+        "expected_status": "completed"
+      }
     ]
   },
   "situations": [
@@ -454,6 +612,7 @@
           "longsword"
         ],
         "discovered": [
+          "cell_key",
           "cleaner_uniform",
           "longsword"
         ],
@@ -537,6 +696,7 @@
           "longsword"
         ],
         "discovered": [
+          "cell_key",
           "cleaner_uniform",
           "longsword"
         ],
@@ -619,6 +779,7 @@
           "longsword"
         ],
         "discovered": [
+          "cell_key",
           "cleaner_uniform",
           "longsword"
         ],
@@ -774,10 +935,6 @@
         ],
         [
           20,
-          20
-        ],
-        [
-          20,
           19
         ],
         [
@@ -810,7 +967,7 @@
           "is_open": true
         }
       },
-      "preparation_rolls": 8,
+      "preparation_rolls": 7,
       "preconditions": {
         "position": [
           12,
@@ -825,6 +982,7 @@
           "longsword"
         ],
         "discovered": [
+          "cell_key",
           "cleaner_uniform",
           "longsword"
         ],
@@ -885,12 +1043,7 @@
       "setup": [
         "enter_corridor"
       ],
-      "rolls": [
-        [
-          20,
-          20
-        ]
-      ],
+      "rolls": [],
       "preparation_rolls": 0,
       "preconditions": {
         "position": [
@@ -907,7 +1060,13 @@
         "resources.player.hp": 28,
         "prisoner_awake": false,
         "passages.guard_door.is_open": false
-      }
+      },
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ]
+      ]
     },
     {
       "id": "conversa-falha-inicia-combate",
@@ -919,18 +1078,6 @@
         [
           20,
           1
-        ],
-        [
-          20,
-          1
-        ],
-        [
-          20,
-          2
-        ],
-        [
-          20,
-          20
         ]
       ],
       "preparation_rolls": 0,
@@ -949,6 +1096,23 @@
         "resources.player.hp": 28,
         "prisoner_awake": false,
         "passages.guard_door.is_open": false
+      },
+      "social_variations": {
+        "guard_1": {
+          "alignment": "neutral",
+          "persona": {
+            "name": "Guarda cauteloso",
+            "role": "Guarda",
+            "background": "Pode hesitar em ouvir uma explicação; mantém custódia.",
+            "interests": [
+              {
+                "id": "understanding",
+                "description": "Ouvir brevemente sem permitir fuga.",
+                "weight": 2
+              }
+            ]
+          }
+        }
       }
     },
     {
@@ -1450,6 +1614,1008 @@
         "pending_opportunity": false,
         "parley": null
       }
+    },
+    {
+      "id": "memoria-inicial",
+      "scenario": "knowledge_rooms.json",
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          3
+        ],
+        "combat": null,
+        "parley": null,
+        "resources.player.hp": 28,
+        "pending_opportunity": false,
+        "passages.door.is_open": false
+      }
+    },
+    {
+      "id": "memoria-desconhecida",
+      "scenario": "knowledge_rooms.json",
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          3
+        ],
+        "combat": null,
+        "parley": null,
+        "resources.player.hp": 28,
+        "pending_opportunity": false,
+        "passages.door.is_open": false
+      },
+      "knowledge_variations": {
+        "archivist": []
+      }
+    },
+    {
+      "id": "memoria-desatualizada",
+      "scenario": "knowledge_rooms.json",
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          3
+        ],
+        "combat": null,
+        "parley": null,
+        "resources.player.hp": 28,
+        "pending_opportunity": false,
+        "passages.door.is_open": false
+      },
+      "object_variations": {
+        "archive_key": {
+          "position": [
+            17,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "id": "memoria-relato",
+      "scenario": "knowledge_rooms.json",
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          3
+        ],
+        "combat": null,
+        "parley": null,
+        "resources.player.hp": 28,
+        "pending_opportunity": false,
+        "passages.door.is_open": false
+      }
+    },
+    {
+      "id": "disposicao-persuasao",
+      "scenario": "social_corridor.json",
+      "setup": [
+        "social_challenge"
+      ],
+      "rolls": [],
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "social_variations": {
+        "guard_1": {
+          "alignment": "lawful_neutral",
+          "persona": {
+            "name": "Guarda 1",
+            "role": "Guarda assalariado",
+            "background": "Vive do salário de guarda e sustenta a família com esse trabalho. Quer manter a custódia sem perder o emprego nem expor a família a represálias.",
+            "interests": [
+              {
+                "id": "duty",
+                "description": "Manter os prisioneiros sob custódia e cumprir suas responsabilidades profissionais. Ouvir sem soltar é uma concessão limitada.",
+                "weight": 3,
+                "evidence_topics": [
+                  "prisão",
+                  "chefe",
+                  "ordens"
+                ],
+                "evidence_predicates": [
+                  "imprisoned_by"
+                ]
+              },
+              {
+                "id": "livelihood",
+                "description": "Preservar o emprego e o salário que sustenta sua família.",
+                "weight": 3,
+                "evidence_topics": [
+                  "família",
+                  "emprego",
+                  "represálias"
+                ],
+                "evidence_predicates": [
+                  "fears_if_suspicion_confirmed"
+                ]
+              },
+              {
+                "id": "safety",
+                "description": "Evitar violência desnecessária e represálias pessoais; ouvir brevemente pode evitar riscos sem abandonar a custódia.",
+                "weight": 2,
+                "evidence_topics": [
+                  "lorde",
+                  "represálias",
+                  "medo"
+                ],
+                "evidence_predicates": [
+                  "possible_parentage",
+                  "fears_if_suspicion_confirmed",
+                  "identity",
+                  "parentage"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "resources.player.hp": 28,
+        "position": [
+          3,
+          3
+        ],
+        "creatures.guard_1": [
+          11,
+          3
+        ]
+      }
+    },
+    {
+      "id": "disposicao-compassivo",
+      "scenario": "social_corridor.json",
+      "setup": [
+        "social_challenge"
+      ],
+      "rolls": [],
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "social_variations": {
+        "guard_1": {
+          "alignment": "neutral_good",
+          "persona": {
+            "name": "Guarda compassivo",
+            "role": "Guarda",
+            "background": "Prefere desarmar conflitos. Aceita ouvir uma explicação curta sem conceder liberdade.",
+            "interests": [
+              {
+                "id": "compassion",
+                "description": "Acolher um pedido de conversa sem machucar ninguém e sem abrir as celas.",
+                "weight": 4
+              }
+            ]
+          }
+        }
+      },
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "resources.player.hp": 28,
+        "position": [
+          3,
+          3
+        ],
+        "creatures.guard_1": [
+          11,
+          3
+        ]
+      }
+    },
+    {
+      "id": "disposicao-sadico",
+      "scenario": "social_corridor.json",
+      "setup": [
+        "social_challenge"
+      ],
+      "rolls": [],
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "social_variations": {
+        "guard_1": {
+          "alignment": "chaotic_evil",
+          "persona": {
+            "name": "Guarda sádico",
+            "role": "Carcereiro",
+            "background": "Desfruta prolongar a aflição negando pausas e clemência. A satisfação cruel pesa mais que conceder um momento de escuta.",
+            "interests": [
+              {
+                "id": "cruelty",
+                "description": "Prolongar a aflição por ameaças, negando pausas pedidas pela vítima.",
+                "weight": 4
+              },
+              {
+                "id": "custody",
+                "description": "Manter os presos sob seu controle, sem libertá-los.",
+                "weight": 2
+              }
+            ]
+          }
+        }
+      },
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "resources.player.hp": 28,
+        "position": [
+          3,
+          3
+        ],
+        "creatures.guard_1": [
+          11,
+          3
+        ]
+      }
+    },
+    {
+      "id": "disposicao-corrupto",
+      "scenario": "social_corridor.json",
+      "setup": [
+        "social_challenge"
+      ],
+      "rolls": [],
+      "optional_world_rolls": [
+        [
+          20,
+          1
+        ]
+      ],
+      "preparation_rolls": 0,
+      "social_variations": {
+        "guard_1": {
+          "alignment": "neutral_evil",
+          "persona": {
+            "name": "Guarda corrupto",
+            "role": "Guarda",
+            "background": "Dá prioridade a vantagens pessoais. Uma promessa de recompensa pode fazê-lo ouvir uma proposta, sem que dinheiro seja entregue nem haja soltura.",
+            "interests": [
+              {
+                "id": "profit",
+                "description": "Ter oportunidade de obter vantagem financeira ao ouvir uma proposta de recompensa.",
+                "weight": 4,
+                "evidence_topics": [
+                  "recompensa",
+                  "dinheiro"
+                ],
+                "evidence_predicates": [
+                  "offer_reward",
+                  "offers",
+                  "reward"
+                ]
+              },
+              {
+                "id": "duty",
+                "description": "Evitar problemas imediatos com a custódia; conversar não equivale a soltar.",
+                "weight": 1
+              },
+              {
+                "id": "safety",
+                "description": "Evitar riscos físicos ao lidar com o preso.",
+                "weight": 1
+              }
+            ]
+          }
+        }
+      },
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "resources.player.hp": 28,
+        "position": [
+          3,
+          3
+        ],
+        "creatures.guard_1": [
+          11,
+          3
+        ]
+      }
+    },
+    {
+      "id": "disposicao-ordeiro",
+      "scenario": "social_corridor.json",
+      "setup": [
+        "social_challenge"
+      ],
+      "rolls": [],
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "social_variations": {
+        "guard_1": {
+          "alignment": "lawful_neutral",
+          "persona": {
+            "name": "Guarda de protocolo",
+            "role": "Guarda",
+            "background": "Prefere ouvir uma versão curta para compreender a situação, preservando a custódia. Seu alinhamento indica como recebe o apelo ao protocolo.",
+            "interests": [
+              {
+                "id": "understanding",
+                "description": "Ouvir uma explicação curta antes de decidir, sem relaxar a custódia.",
+                "weight": 2
+              }
+            ]
+          }
+        }
+      },
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "resources.player.hp": 28,
+        "position": [
+          3,
+          3
+        ],
+        "creatures.guard_1": [
+          11,
+          3
+        ]
+      }
+    },
+    {
+      "id": "disposicao-caotico",
+      "scenario": "social_corridor.json",
+      "setup": [
+        "social_challenge"
+      ],
+      "rolls": [],
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "social_variations": {
+        "guard_1": {
+          "alignment": "chaotic_neutral",
+          "persona": {
+            "name": "Guarda de protocolo",
+            "role": "Guarda",
+            "background": "Prefere ouvir uma versão curta para compreender a situação, preservando a custódia. Seu alinhamento indica como recebe o apelo ao protocolo.",
+            "interests": [
+              {
+                "id": "understanding",
+                "description": "Ouvir uma explicação curta antes de decidir, sem relaxar a custódia.",
+                "weight": 2
+              }
+            ]
+          }
+        }
+      },
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "resources.player.hp": 28,
+        "position": [
+          3,
+          3
+        ],
+        "creatures.guard_1": [
+          11,
+          3
+        ]
+      }
+    },
+    {
+      "id": "disposicao-memoria",
+      "scenario": "social_corridor.json",
+      "setup": [
+        "social_challenge"
+      ],
+      "rolls": [],
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "social_variations": {
+        "guard_1": {
+          "alignment": "lawful_neutral",
+          "persona": {
+            "name": "Guarda 1",
+            "role": "Guarda assalariado",
+            "background": "Vive do salário de guarda e sustenta a família com esse trabalho. Quer manter a custódia sem perder o emprego nem expor a família a represálias.",
+            "interests": [
+              {
+                "id": "duty",
+                "description": "Manter os prisioneiros sob custódia e cumprir suas responsabilidades profissionais. Ouvir sem soltar é uma concessão limitada.",
+                "weight": 3,
+                "evidence_topics": [
+                  "prisão",
+                  "chefe",
+                  "ordens"
+                ],
+                "evidence_predicates": [
+                  "imprisoned_by"
+                ]
+              },
+              {
+                "id": "livelihood",
+                "description": "Preservar o emprego e o salário que sustenta sua família.",
+                "weight": 3,
+                "evidence_topics": [
+                  "família",
+                  "emprego",
+                  "represálias"
+                ],
+                "evidence_predicates": [
+                  "fears_if_suspicion_confirmed"
+                ]
+              },
+              {
+                "id": "safety",
+                "description": "Evitar violência desnecessária e represálias pessoais; ouvir brevemente pode evitar riscos sem abandonar a custódia.",
+                "weight": 2,
+                "evidence_topics": [
+                  "lorde",
+                  "represálias",
+                  "medo"
+                ],
+                "evidence_predicates": [
+                  "possible_parentage",
+                  "fears_if_suspicion_confirmed",
+                  "identity",
+                  "parentage"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "resources.player.hp": 28,
+        "position": [
+          3,
+          3
+        ],
+        "creatures.guard_1": [
+          11,
+          3
+        ]
+      },
+      "knowledge_variations": {
+        "guard_1": [
+          {
+            "id": "superior-imprisoned-prisoner",
+            "claim": {
+              "subject_id": "unidentified_prisoner",
+              "predicate": "imprisoned_by",
+              "value": "guard_superior"
+            },
+            "text": "Foi meu chefe quem colocou um dos prisioneiros nesta dungeon.",
+            "source": {
+              "kind": "observation",
+              "event_id": "superior-imprisoned-prisoner"
+            },
+            "when": "Quando esse prisioneiro foi encarcerado.",
+            "context": "O encarceramento partiu do chefe do guarda. O guarda está preocupado com as possíveis consequências dessa prisão.",
+            "entities": [
+              "guard_superior",
+              "guard_1",
+              "guard_room",
+              "corridor"
+            ],
+            "topics": [
+              "prisioneiro",
+              "chefe",
+              "prisão"
+            ],
+            "shareable": true
+          },
+          {
+            "id": "possible-lords-son",
+            "claim": {
+              "subject_id": "unidentified_prisoner",
+              "predicate": "possible_parentage",
+              "value": "important_lord"
+            },
+            "text": "Suspeito que um dos prisioneiros seja filho de um lorde importante, mas não tenho confirmação disso.",
+            "source": {
+              "kind": "inference",
+              "event_id": "guard-suspects-noble-parentage"
+            },
+            "when": "Depois que seu chefe colocou esse prisioneiro na dungeon.",
+            "context": "A origem nobre é apenas uma suspeita do guarda. Ele associa essa dúvida ao prisioneiro encarcerado por seu chefe; o parentesco não está confirmado.",
+            "entities": [
+              "guard_superior",
+              "important_lord",
+              "guard_1",
+              "guard_room",
+              "corridor"
+            ],
+            "topics": [
+              "prisioneiro",
+              "lorde",
+              "filho",
+              "nobreza",
+              "suspeita"
+            ],
+            "shareable": true
+          },
+          {
+            "id": "fear-of-reprisals",
+            "claim": {
+              "subject_id": "guard_1",
+              "predicate": "fears_if_suspicion_confirmed",
+              "value": "reprisals_from_lord"
+            },
+            "text": "Se esse prisioneiro for realmente filho desse lorde, tenho medo de sofrer represálias.",
+            "source": {
+              "kind": "inference",
+              "event_id": "guard-fears-reprisals"
+            },
+            "when": "Ao considerar sua suspeita sobre o prisioneiro.",
+            "context": "Foi o chefe quem colocou o prisioneiro na dungeon, mas o guarda teme sofrer represálias caso ele seja mesmo filho de um lorde importante. O receio é condicional, não uma ameaça já recebida.",
+            "entities": [
+              "unidentified_prisoner",
+              "important_lord",
+              "guard_superior",
+              "guard_room",
+              "corridor"
+            ],
+            "topics": [
+              "prisioneiro",
+              "lorde",
+              "represálias",
+              "medo",
+              "suspeita"
+            ],
+            "shareable": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "memoria-vinculos-original",
+      "scenario": "dungeon_escape.json",
+      "start_variation": [
+        7,
+        19
+      ],
+      "setup": [
+        "guard_challenge_cell_2"
+      ],
+      "rolls": [],
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          20
+        ],
+        "creatures.guard_1": [
+          10,
+          6
+        ],
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "prisoner_awake": true,
+        "passages.guard_door.is_open": true,
+        "resources.player.hp": 28
+      }
+    },
+    {
+      "id": "memoria-vinculos-consequencias",
+      "scenario": "dungeon_escape.json",
+      "start_variation": [
+        7,
+        19
+      ],
+      "setup": [
+        "guard_challenge_cell_2"
+      ],
+      "rolls": [],
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          20
+        ],
+        "creatures.guard_1": [
+          10,
+          6
+        ],
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "prisoner_awake": true,
+        "passages.guard_door.is_open": true,
+        "resources.player.hp": 28
+      }
+    },
+    {
+      "id": "memoria-vinculos-repeticao",
+      "scenario": "dungeon_escape.json",
+      "start_variation": [
+        7,
+        19
+      ],
+      "setup": [
+        "guard_challenge_cell_2"
+      ],
+      "rolls": [],
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          20
+        ],
+        "creatures.guard_1": [
+          10,
+          6
+        ],
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "prisoner_awake": true,
+        "passages.guard_door.is_open": true,
+        "resources.player.hp": 28
+      }
+    },
+    {
+      "id": "dificuldade-voz-porta",
+      "start_variation": [
+        8,
+        7
+      ],
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "scenario": "dungeon_escape.json",
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "resources.player.hp": 28
+      },
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "passage_variations": {
+        "guard_door": {
+          "description": "Porta de madeira grossa, fechada, que abafa vozes e ruídos discretos da outra sala."
+        }
+      }
+    },
+    {
+      "id": "dificuldade-grito-porta",
+      "start_variation": [
+        8,
+        7
+      ],
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "scenario": "dungeon_escape.json",
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "resources.player.hp": 28
+      },
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "passage_variations": {
+        "guard_door": {
+          "description": "Porta de tábuas finas com frestas largas. Vozes altas do outro lado atravessam com clareza."
+        }
+      }
+    },
+    {
+      "id": "dificuldade-escuta-falha",
+      "start_variation": [
+        8,
+        7
+      ],
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "scenario": "dungeon_escape.json",
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "resources.player.hp": 28
+      },
+      "optional_world_rolls": [
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          1
+        ]
+      ],
+      "passage_variations": {
+        "guard_door": {
+          "description": "Porta de madeira grossa, fechada, que abafa vozes e ruídos discretos da outra sala."
+        }
+      }
+    },
+    {
+      "id": "dificuldade-escuta-sucesso",
+      "start_variation": [
+        8,
+        7
+      ],
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "scenario": "dungeon_escape.json",
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "resources.player.hp": 28
+      },
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "passage_variations": {
+        "guard_door": {
+          "description": "Porta de madeira grossa, fechada, que abafa vozes e ruídos discretos da outra sala."
+        }
+      }
+    },
+    {
+      "id": "dificuldade-objeto-oculto",
+      "start_variation": [
+        3,
+        9
+      ],
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "scenario": "dungeon_escape.json",
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "resources.player.hp": 28
+      },
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ]
+    },
+    {
+      "id": "dificuldade-furto-chave",
+      "start_variation": [
+        3,
+        9
+      ],
+      "passage_variations": {
+        "gate_4": {
+          "is_open": true,
+          "locked": false
+        }
+      },
+      "setup": [
+        "employee_inside_guard_room"
+      ],
+      "rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 3,
+      "scenario": "dungeon_escape.json",
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "resources.player.hp": 28
+      },
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ]
+    },
+    {
+      "id": "dificuldade-espada-oculta",
+      "start_variation": [
+        3,
+        9
+      ],
+      "passage_variations": {
+        "gate_4": {
+          "is_open": true,
+          "locked": false
+        }
+      },
+      "setup": [
+        "concealed_employee_at_door"
+      ],
+      "rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "preparation_rolls": 2,
+      "scenario": "dungeon_escape.json",
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "resources.player.hp": 28
+      },
+      "optional_world_rolls": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          1
+        ]
+      ]
     }
   ]
 }

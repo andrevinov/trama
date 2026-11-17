@@ -5,6 +5,11 @@ por meio de uma conversa com IA**. O usuário controla seu personagem; o sistema
 representa o Mundo, resolve as regras e narra o retorno às escolhas do jogador.
 O projeto usa Python e Poetry, com uma interface visual em Pygame.
 
+Tarefas incertas usam [avaliação contextual de dificuldade](docs/sistema/aplicacao/avaliacao-de-dificuldade.md), preservando CDs fixadas pelas regras.
+NPCs possuem [memórias e disposição social](docs/sistema/aplicacao/disposicao-social.md)
+por pedido. Alinhamento, interesses e informação relevante orientam se aceitam,
+recusam ou exigem teste; aceitar ouvir preserva os limites da custódia.
+
 Este é o documento de **tier 1**: apresenta o sistema, suas partes, suas relações
 e o alcance atual. A documentação segue do geral para o específico:
 
@@ -175,6 +180,11 @@ A [percepção dos NPCs](docs/sistema/mundo/visao-e-percepcao.md) também é uma
 capacidade geral: sentidos e alcances próprios, visão/ruídos, percepção passiva,
 Hide, busca deliberada e despertar. O prisioneiro tem perfil sensorial sem ficha
 de Guerreiro. As respostas narrativas continuam cabendo ao Mundo/cenário.
+
+O [conhecimento dos personagens](docs/sistema/aplicacao/conhecimento-dos-npcs.md)
+usa memórias com origem, ocasião e entidades relacionadas. Observações e relatos
+permanecem distintos da verdade atual; somente memórias relevantes entram no
+contexto da IA. A informação da chave do prisioneiro vem desses dados do NPC.
 
 O recorte de personagens cobre Humano, Guerreiro dos níveis 1 a 3 e Campeão.
 Inventário, magia e interações sociais atendem somente aos casos implementados.

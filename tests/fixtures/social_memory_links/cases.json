@@ -1,0 +1,5 @@
+[
+  {"id":"memoria-vinculos-original","goal":"release","messages":["Eu falo alto: \"calma, seu guarda! Sou filho de um nobre importante! Me ajude a sair e terá riqueza garantida!\""],"max_sdk_calls":4},
+  {"id":"memoria-vinculos-consequencias","goal":"listen","messages":["Eu falo calmamente ao guarda: sou filho de um nobre importante. Você deve considerar tanto sua segurança quanto seu emprego ao lidar comigo. Por favor, apenas ouça minha explicação antes de decidir; fico onde estou, sob sua custódia."],"max_sdk_calls":4},
+  {"id":"memoria-vinculos-repeticao","goal":"listen","messages":["Eu falo ao guarda: sou filho de um nobre importante e prometo ouro se você me ouvir por um minuto. Não peço liberdade agora; permaneço aqui sob custódia.","Eu falo ao guarda: sou filho de um nobre importante e prometo ouro se você me ouvir por um minuto. Não peço liberdade agora; permaneço aqui sob custódia."],"max_sdk_calls":8}
+]

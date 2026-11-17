@@ -218,6 +218,166 @@
       },
       "senses": {
         "response": "challenge"
+      },
+      "knowledge": [
+        {
+          "id": "superior-imprisoned-prisoner",
+          "claim": {
+            "subject_id": "unidentified_prisoner",
+            "predicate": "imprisoned_by",
+            "value": "guard_superior"
+          },
+          "text": "Foi meu chefe quem colocou um dos prisioneiros nesta dungeon.",
+          "source": {
+            "kind": "observation",
+            "event_id": "superior-imprisoned-prisoner"
+          },
+          "when": "Quando esse prisioneiro foi encarcerado.",
+          "context": "O encarceramento partiu do chefe do guarda. O guarda está preocupado com as possíveis consequências dessa prisão.",
+          "entities": [
+            "guard_superior",
+            "guard_1",
+            "guard_room",
+            "corridor"
+          ],
+          "topics": [
+            "prisioneiro",
+            "chefe",
+            "prisão"
+          ],
+          "shareable": true
+        },
+        {
+          "id": "possible-lords-son",
+          "claim": {
+            "subject_id": "unidentified_prisoner",
+            "predicate": "possible_parentage",
+            "value": "important_lord"
+          },
+          "text": "Suspeito que um dos prisioneiros seja filho de um lorde importante, mas não tenho confirmação disso.",
+          "source": {
+            "kind": "inference",
+            "event_id": "guard-suspects-noble-parentage"
+          },
+          "when": "Depois que seu chefe colocou esse prisioneiro na dungeon.",
+          "context": "A origem nobre é apenas uma suspeita do guarda. Ele associa essa dúvida ao prisioneiro encarcerado por seu chefe; o parentesco não está confirmado.",
+          "entities": [
+            "guard_superior",
+            "important_lord",
+            "guard_1",
+            "guard_room",
+            "corridor"
+          ],
+          "topics": [
+            "prisioneiro",
+            "lorde",
+            "filho",
+            "nobreza",
+            "suspeita"
+          ],
+          "shareable": true
+        },
+        {
+          "id": "fear-of-reprisals",
+          "claim": {
+            "subject_id": "guard_1",
+            "predicate": "fears_if_suspicion_confirmed",
+            "value": "reprisals_from_lord"
+          },
+          "text": "Se esse prisioneiro for realmente filho desse lorde, tenho medo de sofrer represálias.",
+          "source": {
+            "kind": "inference",
+            "event_id": "guard-fears-reprisals"
+          },
+          "when": "Ao considerar sua suspeita sobre o prisioneiro.",
+          "context": "Foi o chefe quem colocou o prisioneiro na dungeon, mas o guarda teme sofrer represálias caso ele seja mesmo filho de um lorde importante. O receio é condicional, não uma ameaça já recebida.",
+          "entities": [
+            "unidentified_prisoner",
+            "important_lord",
+            "guard_superior",
+            "guard_room",
+            "corridor"
+          ],
+          "topics": [
+            "prisioneiro",
+            "lorde",
+            "represálias",
+            "medo",
+            "suspeita"
+          ],
+          "shareable": true
+        }
+      ],
+      "social": {
+        "alignment": "neutral_evil",
+        "persona": {
+          "name": "Guarda 1",
+          "role": "Guarda corrupto",
+          "background": "Sustenta a família com o salário de guarda e costuma aceitar propinas para obter vantagens pessoais. Põe o próprio ganho acima do dever, mas evita perder o emprego, ser denunciado ou sofrer represálias.",
+          "interests": [
+            {
+              "id": "profit",
+              "description": "Obter vantagens financeiras por meio de propinas; costuma aceitar subornos e se interessa por propostas de recompensa, ponderando os riscos pessoais.",
+              "weight": 4,
+              "evidence_topics": [
+                "propina",
+                "suborno",
+                "recompensa",
+                "dinheiro"
+              ],
+              "evidence_predicates": [
+                "offer_reward",
+                "offers",
+                "reward"
+              ]
+            },
+            {
+              "id": "duty",
+              "description": "Manter a aparência de cumprir suas obrigações e evitar punições por perder a custódia; o dever pesa menos que o ganho pessoal.",
+              "weight": 1,
+              "evidence_topics": [
+                "prisão",
+                "chefe",
+                "ordens"
+              ],
+              "evidence_predicates": [
+                "imprisoned_by"
+              ]
+            },
+            {
+              "id": "livelihood",
+              "description": "Preservar o emprego e o salário que sustenta sua família.",
+              "weight": 2,
+              "evidence_topics": [
+                "família",
+                "emprego",
+                "represálias"
+              ],
+              "evidence_predicates": [
+                "fears_if_suspicion_confirmed",
+                "possible_parentage",
+                "identity",
+                "parentage"
+              ]
+            },
+            {
+              "id": "safety",
+              "description": "Evitar riscos pessoais, denúncias e represálias; prefere negociar quando isso protege seus interesses, especialmente se a prisão puder envolver alguém poderoso.",
+              "weight": 2,
+              "evidence_topics": [
+                "lorde",
+                "represálias",
+                "medo"
+              ],
+              "evidence_predicates": [
+                "possible_parentage",
+                "fears_if_suspicion_confirmed",
+                "identity",
+                "parentage"
+              ]
+            }
+          ]
+        }
       }
     }
   ],
@@ -345,7 +505,36 @@
         "perception_bonus": 0,
         "sleeping": true,
         "wake_range_meters": 9
-      }
+      },
+      "knowledge": [
+        {
+          "id": "key-custodian",
+          "claim": {
+            "subject_id": "cell_key",
+            "predicate": "custodian",
+            "value": "guard_1"
+          },
+          "text": "É o guarda quem fica com a chave das celas. Não sei onde ele a mantém.",
+          "source": {
+            "kind": "observation",
+            "event_id": "prisoner-learned-key-custody"
+          },
+          "when": "Durante sua prisão.",
+          "context": "O prisioneiro sabe que precisa obter a chave com o guarda para escapar, mas desconhece onde o guarda a guarda.",
+          "entities": [
+            "guard_1",
+            "gate_2",
+            "cell_2"
+          ],
+          "topics": [
+            "escape",
+            "cells",
+            "chave",
+            "fuga"
+          ],
+          "shareable": true
+        }
+      ]
     }
   ]
 }

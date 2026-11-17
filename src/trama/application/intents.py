@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Protocol
 from trama.distances import CELL_METERS, meters
+from trama.knowledge import Claim
 
 
 DIRECTIONS = {
@@ -87,9 +88,13 @@ class NarrativeIntent:
     operation: str = "look"
     target_id: str | None = None
     volume: str = "normal"
+    claims: tuple[Claim, ...] = ()
 
     def __post_init__(self):
-        if (self.volume not in {"quiet", "normal", "loud"}
+        if (not isinstance(self.claims, tuple) or len(self.claims) > 3
+                or any(not isinstance(c, Claim) for c in self.claims)
+                or self.claims and self.operation not in {'speak', 'challenge'}
+                or self.volume not in {"quiet", "normal", "loud"}
                 or (self.operation not in {"speak", "challenge"} and self.volume != "normal") or not isinstance(self.text, str) or not self.text.strip() or len(self.text) > 2000
                 or self.operation not in NARRATIVE_OPERATIONS or self.target_id is not None):
             raise ValueError("Intenção narrativa inválida.")

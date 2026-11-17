@@ -66,11 +66,13 @@ class Passage:
     is_open: bool
     locked: bool
     connects: tuple[str, str]
+    description: str = ''
 
     def __post_init__(self) -> None:
         if (not self.id or not self.name or self.kind not in {"gate", "door"}
                 or type(self.is_open) is not bool or type(self.locked) is not bool
-                or len(self.connects) != 2 or self.connects[0] == self.connects[1]):
+                or len(self.connects) != 2 or self.connects[0] == self.connects[1]
+                or not isinstance(self.description, str) or len(self.description) > 1000):
             raise ValueError("Passagem inválida.")
         if self.is_open and self.locked:
             raise ValueError("Uma passagem aberta não pode estar trancada.")
@@ -125,7 +127,7 @@ class Scene:
         areas = tuple(Area(**area) for area in data["areas"])
         passages = tuple(Passage(
             id=p["id"], name=p["name"], kind=p["kind"], position=Position(*p["position"]),
-            is_open=p["is_open"], locked=p["locked"], connects=tuple(p["connects"]),
+            is_open=p["is_open"], locked=p["locked"], connects=tuple(p["connects"]), description=p.get('description', ''),
         ) for p in data["passages"])
         objects = tuple(SceneObject(
             id=o["id"], name=o["name"], position=Position(*o["position"]),

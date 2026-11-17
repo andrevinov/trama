@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from conftest import sourced_plan, world_actions
+from conftest import with_judgments, sourced_plan, world_actions
 
 from trama.application.conversation import Conversation
 from trama.application.dialogue import Speech
@@ -127,6 +127,7 @@ def test_failed_npc_action_does_not_block_the_next_npc_or_repeat_decisions(dice)
     session.execute(RuleIntent('start_combat'))
     decisions = []
 
+    @with_judgments
     def decide(context):
         if context['phase'] != 'npc_turn':
             return WorldPlan()

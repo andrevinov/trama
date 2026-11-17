@@ -139,7 +139,7 @@ def test_world_checkpoint_at_reached_endpoint_still_fires_with_fractional_remain
 def test_narrative_player_intent_receives_world_dialogue_without_mechanical_action(prison):
     conversation = Conversation(prison)
     speech = conversation.prepare("Pergunto se tem alguém aí.")
-    world = WorldPlan((WorldReaction(0, None, (WorldAction("guard_1", "say", "Quem está aí?"),)),))
+    world = WorldPlan((WorldReaction(0, None, (WorldAction("guard_1", "say", "Quem está aí?", volume='loud'),)),))
     before = prison.state
     report = conversation.execute(sourced_plan(ActionPlan((NarrativeIntent(speech.on, "speak"),)), speech.on), world)
     assert prison.state == before and prison.budget == ActionBudget()

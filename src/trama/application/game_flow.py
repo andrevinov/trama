@@ -231,7 +231,8 @@ class GameFlow:
             self._request(FlowStage.WORLD, self.conversation.world_context(plan), self.world_director.decide)
 
     def _execute_player(self, world: WorldPlan):
-        self.report = self.report.merge(self.conversation.execute(self._player_plan, world, player_prompt=self.speech.on))
+        self.report = self.report.merge(self.conversation.execute(self._player_plan, world, player_prompt=self.speech.on,
+            require_adjudications=self.world_director is not None))
         self._continue_turns()
 
     def _npc_active(self) -> bool:
@@ -253,7 +254,7 @@ class GameFlow:
 
     def _accept_npc_turn(self, world: WorldPlan):
         previous_reason = self.report.stop_reason
-        npc_report = self.conversation.execute_npc_turn(world)
+        npc_report = self.conversation.execute_npc_turn(world, require_adjudications=self.world_director is not None)
         self.report = self.report.merge(npc_report)
         if self.session.pending_opportunity:
             # Guarda os efeitos parciais sem tratar uma escolha resolvida como erro.
@@ -308,6 +309,7 @@ class GameFlow:
         return ' '.join(parts)
 
     def _fail(self, error: Exception, *, stage: str | None = None):
+        self.session.adjudication.strict = False
         self.error = error
         self.pending_request = None
         self.status = FlowStatus.FAILED

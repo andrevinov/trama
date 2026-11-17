@@ -52,7 +52,7 @@ class WorldExecutor:
                 events.append(event)
                 events.extend(self.session.drain_world_events())
                 if action.operation == 'influence':
-                    return events, (None if event['accepted'] else 'A tentativa de conversa foi recusada; a iniciativa determina quem age agora.')
+                    return events, (None if event['accepted'] else 'O NPC recusou este pedido e aguarda sua resposta; a conversa continua sem iniciativa automática.')
                 if action.operation == 'start_conflict' or (previous_mode == GameMode.NARRATED
                         and self.session.mode == GameMode.TURN_BASED):
                     return events, 'O conflito começou; a iniciativa determina quem age agora.'
@@ -137,15 +137,32 @@ class WorldExecutor:
                     'stop_reason': 'O NPC exige uma resposta. Você pode conversar antes do combate.',
                     'stop_code': 'parley_pending'}
         if action.operation == 'influence':
-            return session.resolve_influence(npc.id, action.influence, action.text)
+            # Gravações antigas às vezes repetem referências privadas em
+            # memory_ids. Validá-las não transforma o raciocínio em fala.
+            for id in action.memory_ids:
+                try:
+                    memory = session.knowledge.store.get(npc.id, id)
+                except ValueError as error:
+                    raise WorldError(str(error)) from error
+                if (action.influence.assessment is None or memory.claim not in
+                        {e.claim for e in action.influence.assessment.memory_effects}):
+                    raise WorldError('Referência privada de Influence não fundamentada na avaliação.')
+            resolved = session.resolve_influence(npc.id, action.influence, action.text)
+            if action.memory_ids:
+                resolved['private_memory_ids'] = list(action.memory_ids)
+            return resolved
         if session.parley_pending and action.operation in {'move', 'open', 'close', 'attack'}:
             raise WorldError('O NPC deve aguardar a resposta à abordagem antes de se aproximar ou atacar.')
         if npc.id not in encounter.sheets and action.operation != 'say':
             raise WorldError('Um NPC sem ficha de combate pode perceber, buscar e falar; não recebe ações de Guerreiro.')
         if action.operation == "say":
-            session.emit_noise(npc.id, npc.position, action.volume, 'Fala de um NPC.')
+            communication = session.knowledge.communicate(npc.id, action.text, npc.position,
+                                                           action.volume, memory_ids=action.memory_ids)
+            session.emit_noise(npc.id, npc.position, action.volume, 'Fala de um NPC.', speech=True)
             # A fala é um acontecimento audível decidido pelo Mundo, não visão através de paredes.
-            return {**event, "perceptible": True, "speaker": npc.name, "volume": action.volume}
+            return {**event, **communication, "perceptible": encounter.player_id in communication['heard_by'],
+                    'changed': bool(communication['learned_memory_ids']),
+                    "speaker": npc.name, "volume": action.volume}
         if action.operation == "end_conflict":
             if encounter.combat is None:
                 raise WorldError("Não há conflito para encerrar.")
@@ -218,6 +235,7 @@ class WorldExecutor:
             if result.changed:
                 session.scene = session.scene.with_passage(passage.id, result.is_open)
                 session.grid = session.scene.movement_grid
+                session.knowledge.observe_scene()
                 if encounter.combat:
                     encounter.budgets[npc.id] = result.budget
                 else:

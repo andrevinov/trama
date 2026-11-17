@@ -8,6 +8,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
+from conftest import judged_output
 
 from trama import simulator
 from trama.bootstrap import compose_game, open_game
@@ -166,7 +167,7 @@ def test_changed_application_defaults_reach_simulator_window_and_live_compositio
 
     def live_client(**kwargs):
         client = original(**kwargs)
-        client.responses.create.side_effect = lambda **kw: SimpleNamespace(status='completed', output=[], output_text=json.dumps(next(answers)), usage=None)
+        client.responses.create.side_effect = lambda **kw: SimpleNamespace(status='completed', output=[], output_text=json.dumps(judged_output(next(answers), kw)), usage=None)
         return client
 
     monkeypatch.setattr(openai_services, 'OpenAI', live_client)

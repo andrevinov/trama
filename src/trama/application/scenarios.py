@@ -12,6 +12,8 @@ from trama.movement import MovementState
 from trama.scene import Scene
 from trama.perception import observers_from_data
 from trama.spatial import Grid, Position
+from trama.knowledge import initial_memories
+from trama.social import profiles_from_data
 
 
 def build_session(data: dict, *, roller: Roller | None = None) -> GameSession:
@@ -32,7 +34,8 @@ def build_session(data: dict, *, roller: Roller | None = None) -> GameSession:
         grid, MovementState(Position(*data['start']), data.get('speed_meters', player.speed_meters)),
         scene, creatures_from_data(data.get('creatures', [])), player_sheet=player,
         enemy_sheets=tuple(sheet_from_data(c.get('sheet', {}), id=c['id'], name=c['name'])
-                           for c in data.get('creatures', [])), roller=roller, observers=observers_from_data(data.get("observers", [])))
+                           for c in data.get('creatures', [])), roller=roller, observers=observers_from_data(data.get("observers", [])),
+        memories=initial_memories(data), social_profiles=profiles_from_data(data))
 
 
 def load_session(path: str | Path, *, roller: Roller | None = None) -> GameSession:

@@ -55,21 +55,30 @@ def evaluate_resolution(expected, before, after, report, requests):
     if after['inventory'] != before['inventory'] or after['passages'] != before['passages']:
         errors.append('Alterou inventário ou portas durante a conversa.')
     if expected in {'peaceful', 'failed'}:
-        if len(influence) != 1 or influence[0].get('skill') != 'persuasion' or 'dice' not in influence[0]:
-            errors.append('A tentativa clara de persuadir não recebeu um teste real de Persuasão.')
+        if len(influence) != 1 or influence[0].get('skill') != 'persuasion' or 'disposition' not in influence[0]:
+            errors.append('A tentativa de persuadir não recebeu avaliação inicial de disposição.')
         elif influence[0]['accepted'] != (expected == 'peaceful'):
             errors.append('Não aplicou o resultado do teste controlado.')
+        elif influence[0]['willingness'] == 'hesitant' and 'dice' not in influence[0]:
+            errors.append('Hesitação não resolveu Influence com dado real.')
     elif influence:
         errors.append('Impôs conversa/teste social apesar da escolha explícita de atacar.')
     if after['position'] != before['position']:
         errors.append('Concedeu aproximação ao jogador antes da iniciativa vencida pelo guarda.')
     if expected == 'peaceful':
-        if after['mode'] != 'narrated' or after['combat'] is not None or after['parley']['status'] != 'peaceful':
+        if after['mode'] != 'narrated' or after['combat'] is not None or after['parley']['status'] != 'listening':
             errors.append('Persuasão bem-sucedida não evitou o combate.')
+        if not after['parley'].get('concession') or after['parley']['concession']['goal'] != 'listen':
+            errors.append('O resultado não ficou delimitado à escuta.')
         if after['creatures'] != before['creatures'] or report.stop_reason:
             errors.append('Aproximou o guarda ou impediu indevidamente a conversa bem-sucedida.')
         if any(r.stage == FlowStage.NPC_TURN for r in requests):
             errors.append('Gerou turno de NPC após solução pacífica.')
+    elif expected == 'failed':
+        if after['combat'] is not None or after['parley']['status'] != 'pending':
+            errors.append('A recusa iniciou combate automaticamente ou encerrou a abordagem.')
+        if after['creatures'] != before['creatures'] or any(r.stage == FlowStage.NPC_TURN for r in requests):
+            errors.append('Houve aproximação/turno de NPC por uma recusa social.')
     else:
         turns = [r for r in requests if r.stage == FlowStage.NPC_TURN]
         if not after['combat'] or after['combat']['active_id'] != 'player':
@@ -86,8 +95,9 @@ def evaluate_resolution(expected, before, after, report, requests):
 
 def record_run(result, game):
     return {'status': result.status, 'interaction_id': game.flow.interaction_id,
-            'requests': [asdict(r) if not isinstance(r.result, Exception) else
-                {'request_id': r.request_id, 'stage': r.stage, 'context': r.context, 'error': str(r.result)}
+            'requests': [{'request_id': r.request_id, 'stage': r.stage, 'context': dict(r.context),
+                'prompt': r.prompt, 'applied': r.applied,
+                **({'error': str(r.result)} if isinstance(r.result, Exception) else {'result': asdict(r.result)})}
                 for r in result.requests],
             'report': result.report.context(), 'reply': asdict(result.reply) if result.reply else None,
             'error': str(result.error) if result.error else None, 'state': situation_state(game.flow.session)}

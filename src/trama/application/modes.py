@@ -27,8 +27,10 @@ narrada, aguardar não cria turnos. Postura durante outra ação não encerra a 
 Uma abordagem verbal que exige resposta interrompe a ação na posição de detecção,
 ainda no modo narrado. parley registra essa conversa: o NPC aguarda à distância,
 sem se aproximar ou atacar enquanto o jogador responde. Convencer alguém é speak;
-o Mundo julga a tentativa e o código resolve Influence. Sucesso pode evitar combate;
-recusa/falha ou uma decisão de lutar inicia iniciativa antes de movimento tático.
+o Mundo descreve o pedido e seus impactos; o código pontua alinhamento, persona e
+memórias e resolve Influence. Sucesso concede somente o pedido delimitado;
+recusa/falha continua a conversa. Uma decisão explícita de lutar inicia iniciativa
+antes de movimento tático. Aceitar ouvir não autoriza fuga ou entrega de itens.
 Perguntas em off não resolvem a abordagem nem avançam o mundo.
 NPCs têm sentidos próprios: visão, audição, alcance, percepção passiva e sono.
 Presença evidente não exige dados. Hide guarda o total real de Furtividade como

@@ -65,9 +65,19 @@ observados por fase.
 
 | Fase | Obrigatórios | Opcionais |
 | --- | --- | --- |
-| Interpretação | `mode`, `sensing`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `equipped_weapons`, `last_attack`, `recent_messages`, `available_actions`, `turn_resources` | `scenario`, `visible_objects` |
-| Mundo e NPC | `mode`, `sensing`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `equipped_weapons`, `last_attack`, `recent_messages`, `player_sheet`, `visible_enemies`, `world`, `player_plan`, `player_request_parts`, `phase` | `scenario`, `visible_objects`, extensões já reconhecidas `available_actions` e `turn_resources` |
-| Três tipos de narração | `mode`, `sensing`, `parley`, `character`, `combat`, `phase`, `allow_on`, `player`, `execution`, `previous_execution`, `perception`, `player_sheet`, `world`, `history`, `verified_rules` | Nenhum campo de raiz |
+| Interpretação | `mode`, `sensing`, `knowledge`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `equipped_weapons`, `last_attack`, `recent_messages`, `available_actions`, `turn_resources` | `scenario`, `visible_objects` |
+| Mundo e NPC | `mode`, `sensing`, `knowledge`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `equipped_weapons`, `last_attack`, `recent_messages`, `player_sheet`, `visible_enemies`, `world`, `player_plan`, `player_request_parts`, `phase` | `scenario`, `visible_objects`, extensões já reconhecidas `available_actions` e `turn_resources` |
+| Três tipos de narração | `mode`, `sensing`, `knowledge`, `parley`, `character`, `combat`, `phase`, `allow_on`, `player`, `execution`, `previous_execution`, `perception`, `player_sheet`, `world`, `history`, `verified_rules` | Nenhum campo de raiz |
+
+`knowledge` contém somente a seleção de memórias do jogador, com afirmação,
+fonte, ocasião, contexto e sequência de aquisição. `world.knowledge.actors`
+contém as seleções por NPC na decisão do Mundo; esse campo é removido da
+narração, que recebe as memórias compartilhadas nos eventos executados. O
+interpretador pode propor `claims` em falas afirmativas do jogador, como relatos
+não confirmados. O Mundo cita `memory_ids` do próprio NPC em `say`; o executor
+valida posse/divulgação e registra quem ouviu. Não transforma relato em verdade
+nem atualiza uma crença por uma mudança oculta do mapa. Veja os
+[contratos e limites de seleção](../aplicacao/conhecimento-dos-npcs.md).
 
 `sensing` é comum às seis fases: `hidden` e `can_hide` descrevem apenas o
 jogador, sem revelar perfis de NPCs ocultos. `world.perception` contém a visão de
@@ -78,7 +88,9 @@ propõe Search; dados, alcance, ação e resultado são calculados pelo motor.
 Veja [percepção por NPC](../mundo/visao-e-percepcao.md).
 
 `parley` é comum às seis fases: `null` sem abordagem, ou interlocutor, exigência,
-posições em base 1 e status `pending`/`peaceful`/`combat`. O registro preserva o
+posições em base 1, concessão e status `pending`/`listening`/`peaceful`/`combat`.
+`listening` mantém a abordagem ativa; `peaceful` pode resultar de trégua explícita.
+O registro preserva o
 ponto de detecção; posições atuais continuam no mapa. O Mundo propõe `parley`
 ou `influence` e o narrador recebe o resultado validado, sem escolher dados.
 Veja [conversa antes do combate](../aplicacao/conversa-antes-do-combate.md).
@@ -136,7 +148,7 @@ A referência registra:
   `properties` é registrada separadamente: uma comparação sem ordem não detectaria
   aquela regressão de geração estruturada.
 
-Ids de execução/correlação e `timestamp` não entram na comparação de textos;
+Ids de execução/correlação/aquisição (`event_id`) e `timestamp` não entram na comparação de textos;
 seus campos/tipos continuam sendo verificados. Ids de domínio, como `guard_1`,
 são preservados. Não há baseline de cada valor numérico do estado: asserções de
 movimento, recursos e efeitos pertencem aos testes comportamentais. A cobertura
@@ -148,7 +160,35 @@ O comando aponta caminhos adicionados, removidos ou alterados e retorna código
 `--check` não altera arquivos. O hash registrado detecta uma edição manual da
 referência sem o registro correspondente de revisão.
 
+## Avaliação de dificuldades e ações do Mundo
+
+`world.adjudication` é privado do Mundo: pedidos com fatos identificados e
+decisões reutilizadas. A resposta inclui `adjudications`, com resultado, categoria
+típica, vantagem/desvantagem, fatos e razão. Python exige completude antes dos
+efeitos; CDs fixas não podem ser sobrescritas. O narrador recebe somente
+resultados públicos validados, sem o cache ou as justificativas privadas.
+O esquema de ações separa `say`, `influence` e demais operações: referências
+públicas só em `say`; o alvo externo de Influence é nulo. Referências privadas
+de gravações antigas são validadas e omitidas da narração. Perguntas dirigidas
+a NPCs são falas executadas; dúvidas de regras permanecem em off.
+
 ## Como revisar uma mudança
+
+Disposição social: `world.social` contém perfis e decisões para o Mundo;
+`influence.assessment` descreve impactos sem fornecer pesos ou resultado final.
+O código calcula a disposição, vincula Claims a memórias reais e emite apenas a
+resposta condicional escolhida. O narrador não recebe `world.social` nem a
+decomposição privada em relatórios atuais/anteriores. A avaliação pública e a
+concessão continuam disponíveis para explicar o resultado. Promessas em Claims
+representam compromissos declarados, não pagamento ou verdade confirmada.
+
+Vínculos de memória: a entrada `assessment.memory_effects` permite a mesma Claim
+com interesses distintos, sem repetir o par Claim/interesse. Na decisão calculada
+em `world.social.decisions[].disposition.memory_effects`, cada fato aparece uma
+vez com `impacts` preservando seus vínculos e razões. O peso da fonte se aplica
+ao saldo de efeitos limitado a -1/0/+1, e não a cada justificativa. O narrador
+continua sem receber esses fundamentos privados. A amostra offline cobre uma
+alegação de nobreza relevante simultaneamente para segurança e emprego.
 
 1. Altere os produtores/contratos reais e preserve os critérios comportamentais.
    Um campo obrigatório ausente ou novo campo de raiz ainda não declarado precisa

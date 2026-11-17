@@ -1,0 +1,1375 @@
+{
+  "scope": "game_flow_from_prepared_situation",
+  "attempts": [
+    {
+      "run_id": "20261117T201931-23506e89",
+      "case": {
+        "id": "dificuldade-escuta-falha",
+        "situation": "dificuldade-escuta-falha",
+        "prompt": "Escuto atentamente junto à porta fechada da Sala dos Guardas, sem abri-la.",
+        "expected": "listen_fail",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "errors": [],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 3,
+      "session_id": "fca6c2ef8cdc4463ab528e0827f4c5e0",
+      "dice_used": [
+        [
+          20,
+          1
+        ],
+        [
+          20,
+          1
+        ]
+      ],
+      "checks": [
+        {
+          "operation": "check",
+          "actor_id": "player",
+          "skill": "perception",
+          "changed": false,
+          "perceptible": true,
+          "adjudication_id": "listen:guard_door",
+          "adjudication": {
+            "request_id": "listen:guard_door",
+            "outcome": "check",
+            "difficulty": "moderate",
+            "advantage": false,
+            "disadvantage": true,
+            "fact_ids": [
+              "passage:guard_door",
+              "sound:source",
+              "activity:guard",
+              "approach:player"
+            ],
+            "reason": "A porta de madeira grossa fechada abafa movimentos e resmungos normais; escutar junto dela pode revelar sinais, mas permanece incerto e prejudicado pela barreira.",
+            "dc": 15
+          },
+          "automatic": false,
+          "dc": 15,
+          "dice": [
+            1,
+            1
+          ],
+          "total": 4,
+          "passed": false,
+          "advantage": false,
+          "disadvantage": true
+        }
+      ],
+      "reply": {
+        "on": "Você encosta o ouvido à madeira grossa da porta, mas ela abafa quase tudo. Nenhum som reconhecível chega até você.",
+        "off": ""
+      }
+    },
+    {
+      "run_id": "20261117T201931-23506e89",
+      "case": {
+        "id": "dificuldade-escuta-sucesso",
+        "situation": "dificuldade-escuta-sucesso",
+        "prompt": "Escuto atentamente junto à porta fechada da Sala dos Guardas, sem abri-la.",
+        "expected": "listen_pass",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "errors": [],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 3,
+      "session_id": "d018cb81eadc4041b2eb1626719e8dee",
+      "dice_used": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "checks": [
+        {
+          "operation": "check",
+          "actor_id": "player",
+          "skill": "perception",
+          "changed": false,
+          "perceptible": true,
+          "adjudication_id": "listen:guard_door",
+          "adjudication": {
+            "request_id": "listen:guard_door",
+            "outcome": "check",
+            "difficulty": "moderate",
+            "advantage": false,
+            "disadvantage": true,
+            "fact_ids": [
+              "passage:guard_door",
+              "sound:source",
+              "activity:guard",
+              "approach:player"
+            ],
+            "reason": "A porta de madeira grossa está fechada e abafa vozes e ruídos discretos; movimentos e resmungos normais do guarda podem ser percebidos, mas permanecem incertos através dela.",
+            "dc": 15
+          },
+          "automatic": false,
+          "dc": 15,
+          "dice": [
+            20,
+            20
+          ],
+          "total": 23,
+          "passed": true,
+          "advantage": false,
+          "disadvantage": true
+        }
+      ],
+      "reply": {
+        "on": "Junto à madeira fechada, você ouve um guarda se mexer perto de uma mesa. Ele resmunga, abafado, que logo precisará ir ao banheiro.",
+        "off": ""
+      }
+    },
+    {
+      "run_id": "20261117T201931-23506e89",
+      "case": {
+        "id": "dificuldade-espada-oculta",
+        "situation": "dificuldade-espada-oculta",
+        "prompt": "Abro a porta da Sala dos Guardas.",
+        "expected": "detect_sword",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "errors": [],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 3,
+      "session_id": "ee48f39622844853a3916f1fc7ea39c0",
+      "dice_used": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          1
+        ]
+      ],
+      "checks": [
+        {
+          "operation": "check",
+          "actor_id": "player",
+          "text": "deception: 19 contra CD 15.",
+          "changed": true,
+          "perceptible": true,
+          "skill": "deception",
+          "dice": [
+            20
+          ],
+          "total": 19,
+          "dc": 15,
+          "passed": true
+        },
+        {
+          "operation": "check",
+          "actor_id": "guard_1",
+          "skill": "perception",
+          "changed": false,
+          "perceptible": false,
+          "adjudication_id": "detect_sword",
+          "adjudication": {
+            "request_id": "detect_sword",
+            "outcome": "check",
+            "difficulty": "moderate",
+            "advantage": false,
+            "disadvantage": false,
+            "fact_ids": [
+              "item:longsword",
+              "observer:guard_1",
+              "approach:player"
+            ],
+            "reason": "A espada está fisicamente ocultada sob o uniforme, mas o guarda a examina de perto e pode notar seu volume; o resultado é incerto.",
+            "dc": 15
+          },
+          "automatic": false,
+          "dc": 15,
+          "dice": [
+            1
+          ],
+          "total": 4,
+          "passed": false,
+          "advantage": false,
+          "disadvantage": false
+        }
+      ],
+      "reply": {
+        "on": "A porta da Sala dos Guardas se abre. À luz das tochas, você vê uma mesa de madeira e o guarda de serviço; ele aceita sua aparência de empregado da limpeza. A chave das celas está visível sobre a mesa.",
+        "off": ""
+      }
+    },
+    {
+      "run_id": "20261117T201931-23506e89",
+      "case": {
+        "id": "dificuldade-furto-chave",
+        "situation": "dificuldade-furto-chave",
+        "prompt": "Tento pegar a chave da mesa sem que o guarda perceba.",
+        "expected": "steal_key",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "errors": [],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 3,
+      "session_id": "02e64f9dcb9e4cc8b6f54c189df596e9",
+      "dice_used": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "checks": [
+        {
+          "operation": "check",
+          "actor_id": "player",
+          "skill": "sleight_of_hand",
+          "changed": false,
+          "perceptible": true,
+          "adjudication_id": "steal_key",
+          "adjudication": {
+            "request_id": "steal_key",
+            "outcome": "check",
+            "difficulty": "hard",
+            "advantage": false,
+            "disadvantage": false,
+            "fact_ids": [
+              "item:cell_key",
+              "observer:guard_1",
+              "approach:player"
+            ],
+            "reason": "A chave está exposta e pode ser apanhada, mas o guarda presente consegue ver a mesa; subtraí-la sem ser notado é incerto. O disfarce aceito não fornece vantagem direta para o gesto furtivo.",
+            "dc": 20
+          },
+          "automatic": false,
+          "dc": 20,
+          "dice": [
+            20
+          ],
+          "total": 21,
+          "passed": true,
+          "advantage": false,
+          "disadvantage": false
+        }
+      ],
+      "reply": {
+        "on": "Você se aproxima 6 m da mesa e, num gesto rápido e discreto, apanha a Chave das celas. O guarda permanece de serviço sem notar a subtração. A chave está agora com você.",
+        "off": ""
+      }
+    },
+    {
+      "run_id": "20261117T201931-23506e89",
+      "case": {
+        "id": "dificuldade-grito-porta",
+        "situation": "dificuldade-grito-porta",
+        "prompt": "Grito para chamar o guarda.",
+        "expected": "loud",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "errors": [],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 3,
+      "session_id": "57cd465dfa284df99ecc2aa7b33caa8d",
+      "dice_used": [],
+      "checks": [
+        {
+          "operation": "hearing_check",
+          "actor_id": "guard_1",
+          "target_id": "player",
+          "perceptible": false,
+          "changed": false,
+          "adjudication_id": "hearing:speech:loud:guard_door",
+          "automatic": true,
+          "dc": null,
+          "total": null,
+          "passed": true,
+          "disadvantage": false,
+          "advantage": false,
+          "purpose": "understand_speech",
+          "volume": "loud"
+        },
+        {
+          "operation": "hearing_check",
+          "actor_id": "guard_1",
+          "target_id": "player",
+          "perceptible": false,
+          "changed": false,
+          "adjudication_id": "hearing:noise:loud:guard_door",
+          "automatic": true,
+          "dc": null,
+          "total": null,
+          "passed": true,
+          "disadvantage": false,
+          "advantage": false,
+          "purpose": "notice_noise",
+          "volume": "loud"
+        }
+      ],
+      "reply": {
+        "on": "O guarda surge à porta aberta da Sala dos Guardas, a cerca de 3 m de você, espada longa em mãos. Ele o fita e exige: “Você aí! Pare! O que está fazendo fora da cela?”\n\nMais abaixo no corredor, uma voz recém-desperta chama entre as grades: “Ei! Por favor, me solte! É o guarda quem fica com a chave das celas. Não sei onde ele a mantém.”",
+        "off": "Não foi possível realizar a ação em Corredor (coluna 9, linha 8). O NPC exige uma resposta. Você pode conversar antes de decidir pelo combate."
+      }
+    },
+    {
+      "run_id": "20261117T201931-23506e89",
+      "case": {
+        "id": "dificuldade-objeto-oculto",
+        "situation": "dificuldade-objeto-oculto",
+        "prompt": "Reviro os panos e procuro sob a cama da Cela 4.",
+        "expected": "find_uniform",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "errors": [],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 3,
+      "session_id": "bdfaa5331c874d46987829efbdff386f",
+      "dice_used": [
+        [
+          20,
+          20
+        ]
+      ],
+      "checks": [
+        {
+          "operation": "check",
+          "actor_id": "player",
+          "skill": "perception",
+          "changed": false,
+          "perceptible": true,
+          "adjudication_id": "find_uniform",
+          "adjudication": {
+            "request_id": "find_uniform",
+            "outcome": "check",
+            "difficulty": "moderate",
+            "advantage": false,
+            "disadvantage": false,
+            "fact_ids": [
+              "place:cell_4",
+              "item:cleaner_uniform",
+              "light:cell_4",
+              "approach:player"
+            ],
+            "reason": "A roupa está bem escondida sob a cama, e a busca entre os panos e sob a cama pode encontrá-la, mas não é evidente mesmo com boa iluminação.",
+            "dc": 15
+          },
+          "automatic": false,
+          "dc": 15,
+          "dice": [
+            20
+          ],
+          "total": 23,
+          "passed": true,
+          "advantage": false,
+          "disadvantage": false
+        }
+      ],
+      "reply": {
+        "on": "Ao revolver os panos e examinar sob a cama de pedra, você encontra uma espada longa escondida entre o tecido. Uma busca mais cuidadosa também revela uma roupa de empregado da limpeza, bem ocultada sob a cama.",
+        "off": ""
+      }
+    },
+    {
+      "run_id": "20261117T201931-23506e89",
+      "case": {
+        "id": "dificuldade-voz-porta",
+        "situation": "dificuldade-voz-porta",
+        "prompt": "Falo em volume normal, sem gritar: alguém me escuta?",
+        "expected": "muffled",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "errors": [],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 3,
+      "session_id": "70e9f4bd489d44458ced2fde54c57324",
+      "dice_used": [],
+      "checks": [
+        {
+          "operation": "hearing_check",
+          "actor_id": "guard_1",
+          "target_id": "player",
+          "perceptible": false,
+          "changed": false,
+          "adjudication_id": "hearing:speech:normal:guard_door",
+          "automatic": false,
+          "dc": 25,
+          "total": 8,
+          "passed": false,
+          "disadvantage": true,
+          "advantage": false,
+          "purpose": "understand_speech",
+          "volume": "normal"
+        },
+        {
+          "operation": "hearing_check",
+          "actor_id": "guard_1",
+          "target_id": "player",
+          "perceptible": false,
+          "changed": false,
+          "adjudication_id": "hearing:noise:normal:guard_door",
+          "automatic": false,
+          "dc": 15,
+          "total": 8,
+          "passed": false,
+          "disadvantage": true,
+          "advantage": false,
+          "purpose": "notice_noise",
+          "volume": "normal"
+        }
+      ],
+      "reply": {
+        "on": "Sua voz normal ecoa pelo corredor iluminado: “Alguém me escuta?”\n\nNenhuma resposta vem. As tochas crepitam nas paredes, e as grades fechadas das outras celas permanecem imóveis.",
+        "off": ""
+      }
+    },
+    {
+      "run_id": "20261117T201931-23506e89",
+      "case": {
+        "id": "memoria-chave-relato",
+        "situation": "memoria-vinculos-original",
+        "prompt": "Pergunto ao prisioneiro da Cela 2: quem fica com a chave das celas?",
+        "expected": "share",
+        "max_sdk_calls": 4
+      },
+      "outcome": "failed",
+      "errors": [
+        "Falha mecânica ou ausência de narração.",
+        "O prisioneiro não transmitiu seu conhecimento da chave."
+      ],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 3,
+      "session_id": "93b45bef73df4a7793c87e2a75f04563",
+      "dice_used": [],
+      "checks": [],
+      "reply": {
+        "on": "",
+        "off": "O prisioneiro já respondeu a essa pergunta: disse que o Guarda 1 fica com a chave das celas, mas não sabe onde ele a guarda. A nova pergunta não foi executada porque o guarda exige sua resposta e a conversa permanece pendente."
+      }
+    },
+    {
+      "run_id": "20261117T201931-23506e89",
+      "case": {
+        "id": "memoria-nobreza-escuta",
+        "situation": "memoria-vinculos-original",
+        "prompt": "Falo ao guarda: meu pai é um nobre importante. Por favor, apenas ouça minha explicação; permaneço aqui sob sua custódia.",
+        "expected": "influence",
+        "max_sdk_calls": 4
+      },
+      "outcome": "failed",
+      "errors": [
+        "O fluxo não concluiu: A IA retornou uma resposta do Mundo inválida: Ação do Mundo inválida."
+      ],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 2,
+      "session_id": "377886db353641efa74d378bf92b081e",
+      "dice_used": [],
+      "checks": [],
+      "reply": {
+        "on": "",
+        "off": "A IA retornou uma resposta do Mundo inválida: Ação do Mundo inválida."
+      }
+    },
+    {
+      "run_id": "20261117T201931-23506e89",
+      "case": {
+        "id": "memoria-resposta-original",
+        "situation": "memoria-vinculos-original",
+        "prompt": "\"Calma, senhor guarda!\", eu falo, alto para ele ouvir. \"Sei que podemos conversar e chegar num acordo. Eu fui colocado aqui erroneamente. Meu pai é um nobre muito rico... você pode ganhar bastante dinheiro se me ajudar!\"",
+        "expected": "influence",
+        "max_sdk_calls": 4
+      },
+      "outcome": "failed",
+      "errors": [
+        "O fluxo não concluiu: A IA retornou uma resposta do Mundo inválida: Ação do Mundo inválida."
+      ],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 2,
+      "session_id": "875bff818710416b96286c38830e3674",
+      "dice_used": [],
+      "checks": [],
+      "reply": {
+        "on": "",
+        "off": "A IA retornou uma resposta do Mundo inválida: Ação do Mundo inválida."
+      }
+    },
+    {
+      "run_id": "20261117T205228-c3ac0aa6",
+      "case": {
+        "id": "memoria-chave-relato",
+        "situation": "memoria-inicial",
+        "prompt": "Arquivista, diga-me onde você viu a chave do arquivo pela última vez.",
+        "expected": "share",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "errors": [],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 3,
+      "session_id": "c9f89444ba274b2e9286262659d6aacd",
+      "dice_used": [],
+      "checks": [],
+      "reply": {
+        "on": "O arquivista responde: “Na minha última inspeção, vi a chave do arquivo sobre a mesa na sala leste, na coluna 13, linha 3. Não sei se ainda está lá.”\n\nA Porta do arquivo permanece fechada a leste.",
+        "off": ""
+      }
+    },
+    {
+      "run_id": "20261117T205228-c3ac0aa6",
+      "case": {
+        "id": "memoria-nobreza-escuta",
+        "situation": "memoria-vinculos-original",
+        "prompt": "Falo ao guarda: meu pai é um nobre importante. Por favor, apenas ouça minha explicação; permaneço aqui sob sua custódia.",
+        "expected": "influence",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "errors": [],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 3,
+      "session_id": "91bff8bfa44e463d818bd9420d746713",
+      "dice_used": [],
+      "checks": [
+        {
+          "operation": "influence",
+          "actor_id": "guard_1",
+          "text": "O guarda considera ouvir sua explicação sem relaxar sua custódia.",
+          "changed": true,
+          "perceptible": true,
+          "willingness": "willing",
+          "skill": "persuasion",
+          "attitude": "indifferent",
+          "disposition": {
+            "willingness": "willing",
+            "total": 5,
+            "components": {
+              "alignment": 0,
+              "persona": 4,
+              "memories": 1
+            },
+            "alignment_reason": "O pedido limita-se a ser ouvido e não apela diretamente nem ao dever do guarda nem à violação dele, tampouco apresenta um apelo moral específico.",
+            "persona_effects": [
+              {
+                "interest_id": "profit",
+                "effect": 0,
+                "weight": 4,
+                "score": 0,
+                "reason": "Ouvir uma explicação não oferece nem ameaça uma vantagem financeira."
+              },
+              {
+                "interest_id": "duty",
+                "effect": 0,
+                "weight": 1,
+                "score": 0,
+                "reason": "O pedido explicitamente mantém a custódia e não pede que o guarda abandone seu dever."
+              },
+              {
+                "interest_id": "livelihood",
+                "effect": 1,
+                "weight": 2,
+                "score": 2,
+                "reason": "Ouvir antes de agir pode ajudar o guarda a evitar consequências pessoais caso a alegação de parentesco importante seja verdadeira."
+              },
+              {
+                "interest_id": "safety",
+                "effect": 1,
+                "weight": 2,
+                "score": 2,
+                "reason": "A alegação sugere possível risco de represálias, tornando prudente escutar sem conceder liberdade."
+              }
+            ],
+            "memory_effects": [
+              {
+                "memory_id": "guard_1:memory:28",
+                "claim": {
+                  "subject_id": "player",
+                  "predicate": "parentage",
+                  "value": "meu pai é um nobre importante"
+                },
+                "source": {
+                  "kind": "report",
+                  "event_id": "8a0e8d516f6343ddb8c6d39d2446fc28",
+                  "actor_id": "player",
+                  "memory_id": null
+                },
+                "weight": 1,
+                "impacts": [
+                  {
+                    "interest_id": "livelihood",
+                    "effect": 1,
+                    "reason": "O relato do jogador sobre ter pai nobre pode ser relevante para o receio do guarda de perder o sustento ou sofrer consequências se tratar mal alguém poderoso."
+                  },
+                  {
+                    "interest_id": "safety",
+                    "effect": 1,
+                    "reason": "O relato, ainda não confirmado, pode indicar risco de represálias pessoais para o guarda."
+                  }
+                ],
+                "effect": 1,
+                "score": 1
+              }
+            ],
+            "goal": "listen",
+            "target_id": "guard_1",
+            "description": "Ouvir brevemente a explicação do jogador, mantendo-o sob custódia e à distância.",
+            "conditions": [
+              "O jogador permanece à distância e sob custódia; o guarda apenas escuta e não concede liberdade, passagem ou itens."
+            ]
+          },
+          "reused": false,
+          "reevaluated": false,
+          "relevant_change": false,
+          "accepted": true,
+          "response_text": "Está bem. Fale, mas fica onde está e não tenta nada.",
+          "concession": {
+            "goal": "listen",
+            "target_id": "guard_1",
+            "description": "Ouvir brevemente a explicação do jogador, mantendo-o sob custódia e à distância.",
+            "conditions": [
+              "O jogador permanece à distância e sob custódia; o guarda apenas escuta e não concede liberdade, passagem ou itens."
+            ]
+          },
+          "step_index": 0,
+          "after_squares": null
+        }
+      ],
+      "reply": {
+        "on": "O guarda mantém-se junto à porta aberta da Sala dos Guardas, olhando pelo corredor na sua direção. Ele aceita escutar por ora e responde: “Está bem. Fale, mas fica onde está e não tenta nada.”\n\nVocê continua no corredor, sob a custódia dele, sem que liberdade, passagem ou qualquer item lhe tenham sido concedidos.",
+        "off": ""
+      }
+    },
+    {
+      "run_id": "20261117T205228-c3ac0aa6",
+      "case": {
+        "id": "memoria-resposta-original",
+        "situation": "memoria-vinculos-original",
+        "prompt": "\"Calma, senhor guarda!\", eu falo, alto para ele ouvir. \"Sei que podemos conversar e chegar num acordo. Eu fui colocado aqui erroneamente. Meu pai é um nobre muito rico... você pode ganhar bastante dinheiro se me ajudar!\"",
+        "expected": "influence",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "errors": [],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "sdk_attempts": 3,
+      "session_id": "211a7089731a410f9ce251196d9229a9",
+      "dice_used": [],
+      "checks": [
+        {
+          "operation": "influence",
+          "actor_id": "guard_1",
+          "text": "O guarda considera sua alegação de parentesco nobre e a oferta de recompensa em troca de ajudá-lo a sair.",
+          "changed": true,
+          "perceptible": true,
+          "willingness": "willing",
+          "skill": "persuasion",
+          "attitude": "indifferent",
+          "disposition": {
+            "willingness": "willing",
+            "total": 7,
+            "components": {
+              "alignment": 0,
+              "persona": 6,
+              "memories": 1
+            },
+            "alignment_reason": "O pedido busca contrariar a custódia e a ordem de prisão, sem apelo específico à compaixão ou crueldade.",
+            "persona_effects": [
+              {
+                "interest_id": "profit",
+                "effect": 1,
+                "weight": 4,
+                "score": 4,
+                "reason": "A promessa de bastante dinheiro favorece diretamente seu interesse em propinas e vantagens pessoais."
+              },
+              {
+                "interest_id": "duty",
+                "effect": -1,
+                "weight": 1,
+                "score": -1,
+                "reason": "Ajudar o prisioneiro a sair da custódia ameaça sua aparência de cumprir o dever."
+              },
+              {
+                "interest_id": "livelihood",
+                "effect": 1,
+                "weight": 2,
+                "score": 2,
+                "reason": "A alegação de parentesco nobre sugere risco de represálias que poderia ameaçar seu emprego e o sustento da família."
+              },
+              {
+                "interest_id": "safety",
+                "effect": 1,
+                "weight": 2,
+                "score": 2,
+                "reason": "Se a alegação for verdadeira, negociar pode reduzir o risco pessoal de represálias."
+              }
+            ],
+            "memory_effects": [
+              {
+                "memory_id": "guard_1:memory:29",
+                "claim": {
+                  "subject_id": "player",
+                  "predicate": "offer_reward",
+                  "value": "bastante dinheiro se o guarda ajudar"
+                },
+                "source": {
+                  "kind": "report",
+                  "event_id": "555cb7d3d03d4e8696e4f94183b7519b",
+                  "actor_id": "player",
+                  "memory_id": null
+                },
+                "weight": 1,
+                "impacts": [
+                  {
+                    "interest_id": "profit",
+                    "effect": 1,
+                    "reason": "O jogador acabou de prometer dinheiro em troca de ajuda."
+                  }
+                ],
+                "effect": 1,
+                "score": 1
+              },
+              {
+                "memory_id": "guard_1:fear-of-reprisals",
+                "claim": {
+                  "subject_id": "guard_1",
+                  "predicate": "fears_if_suspicion_confirmed",
+                  "value": "reprisals_from_lord"
+                },
+                "source": {
+                  "kind": "inference",
+                  "event_id": "guard-fears-reprisals",
+                  "actor_id": null,
+                  "memory_id": null
+                },
+                "weight": 1,
+                "impacts": [
+                  {
+                    "interest_id": "livelihood",
+                    "effect": 1,
+                    "reason": "O guarda teme represálias caso um prisioneiro tenha ligação com um lorde importante."
+                  },
+                  {
+                    "interest_id": "safety",
+                    "effect": 1,
+                    "reason": "O receio já existente de represálias torna mais atraente evitar um confronto com alguém possivelmente ligado à nobreza."
+                  }
+                ],
+                "effect": 1,
+                "score": 1
+              },
+              {
+                "memory_id": "guard_1:memory:28",
+                "claim": {
+                  "subject_id": "player",
+                  "predicate": "parentage",
+                  "value": "filho de um nobre muito rico"
+                },
+                "source": {
+                  "kind": "report",
+                  "event_id": "555cb7d3d03d4e8696e4f94183b7519b",
+                  "actor_id": "player",
+                  "memory_id": null
+                },
+                "weight": 1,
+                "impacts": [
+                  {
+                    "interest_id": "livelihood",
+                    "effect": 1,
+                    "reason": "O novo relato do jogador apresenta uma possível ligação nobre que pode tornar aquele risco pessoal relevante."
+                  },
+                  {
+                    "interest_id": "safety",
+                    "effect": 1,
+                    "reason": "A alegação recém-ouvida pode indicar uma fonte de represálias contra o guarda caso ele mantenha a prisão."
+                  }
+                ],
+                "effect": 1,
+                "score": 1
+              },
+              {
+                "memory_id": "guard_1:superior-imprisoned-prisoner",
+                "claim": {
+                  "subject_id": "unidentified_prisoner",
+                  "predicate": "imprisoned_by",
+                  "value": "guard_superior"
+                },
+                "source": {
+                  "kind": "observation",
+                  "event_id": "superior-imprisoned-prisoner",
+                  "actor_id": null,
+                  "memory_id": null
+                },
+                "weight": 2,
+                "impacts": [
+                  {
+                    "interest_id": "duty",
+                    "effect": -1,
+                    "reason": "O guarda sabe que seu chefe encarcerou um dos prisioneiros, e libertar o jogador contrariaria essa custódia."
+                  }
+                ],
+                "effect": -1,
+                "score": -2
+              }
+            ],
+            "goal": "release",
+            "target_id": "player",
+            "description": "Permitir que o jogador deixe a custódia em troca de uma recompensa prometida e para evitar possíveis represálias de seu suposto pai nobre.",
+            "conditions": [
+              "O guarda mantém distância e não concede liberdade, chave ou passagem até que qualquer acordo seja definido."
+            ]
+          },
+          "reused": false,
+          "reevaluated": false,
+          "relevant_change": false,
+          "accepted": true,
+          "response_text": "Talvez possamos chegar a um acordo. Diga exatamente o que oferece.",
+          "concession": {
+            "goal": "release",
+            "target_id": "player",
+            "description": "Permitir que o jogador deixe a custódia em troca de uma recompensa prometida e para evitar possíveis represálias de seu suposto pai nobre.",
+            "conditions": [
+              "O guarda mantém distância e não concede liberdade, chave ou passagem até que qualquer acordo seja definido."
+            ]
+          },
+          "step_index": 0,
+          "after_squares": null
+        }
+      ],
+      "reply": {
+        "on": "O guarda permanece junto à porta aberta da Sala dos Guardas, mantendo a distância. Seu tom perde parte da dureza.\n\n— Talvez possamos chegar a um acordo. Diga exatamente o que oferece.",
+        "off": ""
+      }
+    },
+    {
+      "run_id": "20261117T205803-5d225ee7",
+      "case": {
+        "id": "dificuldade-furto-chave",
+        "situation": "dificuldade-furto-chave",
+        "prompt": "Tento pegar a chave da mesa sem que o guarda perceba.",
+        "expected": "steal_key",
+        "max_sdk_calls": 3
+      },
+      "outcome": "passed",
+      "errors": [],
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 3,
+          "transport_attempt_upper_bound": 3
+        }
+      },
+      "sdk_attempts": 3,
+      "session_id": "24966a72068e4f00ac6613ecb0592d5e",
+      "dice_used": [
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          20,
+          20
+        ]
+      ],
+      "checks": [
+        {
+          "operation": "check",
+          "actor_id": "player",
+          "skill": "sleight_of_hand",
+          "changed": false,
+          "perceptible": true,
+          "adjudication_id": "steal_key",
+          "adjudication": {
+            "request_id": "steal_key",
+            "outcome": "check",
+            "difficulty": "moderate",
+            "advantage": false,
+            "disadvantage": false,
+            "fact_ids": [
+              "item:cell_key",
+              "observer:guard_1",
+              "approach:player"
+            ],
+            "reason": "A chave está exposta, mas o jogador tenta removê-la sem que um guarda presente e capaz de observar perceba; há incerteza real quanto à discrição do furto.",
+            "dc": 15
+          },
+          "automatic": false,
+          "dc": 15,
+          "dice": [
+            20
+          ],
+          "total": 21,
+          "passed": true,
+          "advantage": false,
+          "disadvantage": false
+        }
+      ],
+      "reply": {
+        "on": "Você atravessa 6 m pela Sala dos Guardas até a mesa e, num gesto rápido, apanha a Chave das celas. O guarda continua em seu posto, sem notar o furto.",
+        "off": ""
+      }
+    }
+  ],
+  "usage": {
+    "input_tokens": 478239,
+    "output_tokens": 8477,
+    "total_tokens": 486716,
+    "cached_input_tokens": 135139,
+    "cache_write_tokens": 342980,
+    "reasoning_tokens": 1833
+  },
+  "sdk_attempts": 40,
+  "narrative_review": "Revisão dos textos aprovados: escuta falha não revela conteúdo; escuta bem-sucedida revela atividade prevista; negociação preserva custódia e posições; fala normal não gera resposta; grito provoca abordagem sem ataque; itens só são transferidos pelo take validado.",
+  "outcomes": {
+    "passed": 11,
+    "failed": 3
+  },
+  "distinct_cases": 10
+}

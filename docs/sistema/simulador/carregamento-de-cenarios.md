@@ -87,7 +87,7 @@ poetry run trama-simulator --situation ataque-com-movimento-insuficiente --debug
 | `investigar-sem-sair-do-lugar` | Cela 4 aberta; o pedido avaliado pelo teste proíbe aproximação. |
 | `abordagem-distante` | Jogador no corredor antes do ruído; dados levam o guarda à primeira detecção junto à porta. |
 | `conversa-evita-combate` | Mesmo ponto inicial, com Persuasão favorável após a abordagem. |
-| `conversa-falha-inicia-combate` | Mesmo ponto inicial, com Persuasão falha e iniciativa favorável ao guarda. |
+| `conversa-falha-inicia-combate` (id histórico) | Perfil neutro/cauteloso e Persuasão falha; recusa sem iniciativa automática. |
 | `conversa-jogador-ataca` | Mesmo ponto inicial, com iniciativa favorável ao guarda quando o jogador escolhe lutar. |
 | `investigar-com-ataque-de-oportunidade` | Personagem junto ao guarda, em combate, com banheiro acessível. |
 
@@ -100,12 +100,27 @@ Os identificadores `turno-npc-distante` e `turno-npc-aproxima-e-ataca` usam o
 corredor genérico `npc_turn_corridor.json`, com combate preparado por operação
 pública. Consulte os [critérios de conclusão do turno](../qualidade/turnos-npc-live.md).
 
+Os quatro identificadores `memoria-*` usam `knowledge_rooms.json`, com arquivista,
+aprendiz e conhecimento inicial por NPC. As [condições e critérios](../qualidade/conhecimento-live.md)
+incluem ausência de memória, posição oculta diferente da lembrança e relato novo.
+
+As três situações `memoria-vinculos-*` usam a dungeon e seu guarda corrupto, com
+abordagem preparada em [8,20] e guarda em [10,6]. Os [casos de vínculos sociais](../qualidade/vinculos-memoria-live.md)
+cobrem uma mesma alegação afetando vários interesses sem multiplicar sua pontuação.
+
 Cada situação declara:
 
 - `id` e `scenario`: identificação e nome de recurso JSON existente no pacote, sem caminhos externos.
 - `start_variation`, `sense_variations` e `lighting_variations`: posição inicial,
   perfis sensoriais por id de NPC e casas `dim`/`dark`, validados pelo carregador.
 - `passage_variations`: mudanças explícitas de `is_open`/`locked` antes da construção.
+- `knowledge_variations`: substitui a lista de memórias de NPCs existentes;
+  `object_variations` varia somente a posição de objetos estáticos declarados.
+- `social_variations`: substitui o perfil social de NPCs existentes; alinhamento,
+  persona e interesses passam pelo mesmo validador do cenário. As sete situações
+  `disposicao-*` do corredor genérico demonstram os perfis e a relevância de novas
+  informações. Veja [disposição social](../aplicacao/disposicao-social.md).
+  Os dados passam pelos mesmos construtores e validadores do cenário.
 - `setup`: grupos de planos determinísticos; cada etapa declara seu `intent` e os
   campos dos construtores reais de movimento, porta, regra, narrativa ou cenário.
 - `rolls` e `optional_world_rolls`: pares `[faces, valor]` na ordem de consumo.

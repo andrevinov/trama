@@ -16,7 +16,7 @@ from unittest.mock import Mock
 import pygame
 import pytest
 
-from conftest import sourced_output
+from conftest import sourced_output, judged_output, without_correlation_ids
 from trama.application.intents import RuleIntent
 from trama.bootstrap import open_game
 from trama.ui.movement_window import MovementWindow, WINDOW_SIZE
@@ -110,7 +110,7 @@ def observe(entry, case, control, tmp_path, capture_logs):
     client.base_url = 'https://offline.test'
     def create(**parameters):
         return SimpleNamespace(status='completed', output=[], usage=None,
-                               output_text=json.dumps(sdk_output(case, parameters, control)))
+                               output_text=json.dumps(judged_output(sdk_output(case, parameters, control), parameters)))
     client.responses.create.side_effect = create
     surge = case == 'surge'
     if surge:
@@ -180,11 +180,7 @@ def errors_for(case, observed):
 
 
 def normalized(value):
-    if isinstance(value, dict):
-        return {k: normalized(v) for k, v in value.items() if k != 'execution_id'}
-    if isinstance(value, list):
-        return [normalized(v) for v in value]
-    return value
+    return without_correlation_ids(value)
 
 
 def write_proof(path, control, observations, errors):
@@ -214,7 +210,7 @@ def test_real_ui_and_runner_share_requests_and_satisfy_independent_positive_crit
             turns = [json.loads(p['input']) for p in observed['requests']
                      if p['text']['format']['name'] == 'world_response' and json.loads(p['input'])['phase'] == 'npc_turn']
             assert len(turns) == 1 and turns[0]['combat']['active_id'] == 'guard_1'
-    assert graphical['after'] == headless['after']
+    assert normalized(graphical['after']) == normalized(headless['after'])
     assert normalized(graphical['report'].context()) == normalized(headless['report'].context())
     def requests(observed):
         return [{**p, 'input': normalized(json.loads(p['input']))} for p in observed['requests']]
@@ -229,7 +225,7 @@ def test_equal_ui_and_runner_results_do_not_hide_missing_player_effects(control,
     case = 'surge' if control == 'surge_only' else case_for('investigate')
     graphical = observe('window', case, control, tmp_path, capture_logs)
     headless = observe('runner', case, control, tmp_path, capture_logs)
-    assert graphical['after'] == headless['after']  # A igualdade isolada aprovaria o defeito.
+    assert normalized(graphical['after']) == normalized(headless['after'])  # A igualdade isolada aprovaria o defeito.
     for observed in (graphical, headless):
         errors = errors_for(case, observed)
         assert errors

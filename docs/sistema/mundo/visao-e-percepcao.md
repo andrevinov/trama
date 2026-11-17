@@ -49,12 +49,31 @@ alcance. O alcance normal configurável do observador recebe estes fatores:
 | Normal (`normal`) | 1 | 21 m |
 | Alta (`loud`) | 5 | 105 m |
 
+Para **fala normal com contato visual mútuo atual**, o Trama aplica margem de
+50% ao alcance auditivo do ouvinte: **31,5 m** no humano padrão. É uma decisão
+de condução solicitada pelo usuário, não outra regra de D&D. Vale para falas do
+jogador e de NPCs, inclusive transmissão de informação e resposta social.
+O estímulo marca `speech=true`; passos, portas e outros ruídos não recebem a
+margem. Sussurros, gritos, despertar de adormecidos e capacidades auditivas
+desabilitadas conservam seus limites. Ambos precisam enxergar-se pelas condições
+atuais de visão, luz e alcance; percepção antiga não basta. O percurso acústico
+continua limitado: paredes e portas não são ignoradas pelo contato de conversa.
+
 São parâmetros de condução do Trama, não círculos auditivos universais impostos
 pelo livro. Uma emissão fora do alcance não gera teste. O som segue um menor
 caminho geométrico pelo espaço arquitetônico, contornando paredes; cada porta
 fechada acrescenta **6 m de atenuação equivalente**. Grades não recebem esse
 acréscimo. Sem percurso arquitetônico, não há audição. Ocupantes, terreno difícil
 e objetos de mobília não fecham o ar da casa nesta aproximação.
+
+No fluxo com IA, alcance indica possibilidade de ouvir. Portas no percurso
+recebem [avaliação contextual](../aplicacao/avaliacao-de-dificuldade.md) por volume
+e finalidade: perceber o som ou compreender palavras. O resultado pode exigir
+Percepção passiva (10+bônus, ±5 por vantagem/desvantagem) ou impedir audição.
+Não há penalidade universal automática para toda porta; descrições opcionais
+de passagens fornecem fatos como espessura e frestas. A política é reutilizada
+enquanto esses fatos persistirem. Despertar continua usando o limiar próprio
+do adormecido; não recebe uma rolagem nova.
 
 Não há simulação de decibéis, materiais, ecos ou escolha de rota de menor
 atenuação entre várias rotas geométricas. A distância é de grade, com diagonais

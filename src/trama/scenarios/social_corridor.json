@@ -1,0 +1,98 @@
+{
+  "title": "Disposição dos guardas",
+  "width": 15,
+  "height": 5,
+  "start": [
+    2,
+    2
+  ],
+  "areas": [
+    {
+      "id": "corridor",
+      "name": "Corredor",
+      "x": 1,
+      "y": 1,
+      "width": 13,
+      "height": 3,
+      "description": "Corredor iluminado. Um guarda mantém a custódia. Conversar não autoriza fugir ou obter itens."
+    }
+  ],
+  "passages": [],
+  "player": {
+    "level": 3,
+    "armor": "none",
+    "weapons": []
+  },
+  "creatures": [
+    {
+      "id": "guard_1",
+      "name": "Guarda 1",
+      "position": [
+        10,
+        2
+      ],
+      "hostile": true,
+      "senses": {
+        "response": "challenge"
+      },
+      "sheet": {
+        "level": 1,
+        "weapons": [
+          "longsword"
+        ]
+      },
+      "social": {
+        "alignment": "lawful_neutral",
+        "persona": {
+          "name": "Guarda 1",
+          "role": "Guarda assalariado",
+          "background": "Vive do salário de guarda e sustenta a família com esse trabalho. Quer manter a custódia sem perder o emprego nem expor a família a represálias.",
+          "interests": [
+            {
+              "id": "duty",
+              "description": "Manter os prisioneiros sob custódia e cumprir suas responsabilidades profissionais. Ouvir sem soltar é uma concessão limitada.",
+              "weight": 3,
+              "evidence_topics": [
+                "prisão",
+                "chefe",
+                "ordens"
+              ],
+              "evidence_predicates": [
+                "imprisoned_by"
+              ]
+            },
+            {
+              "id": "livelihood",
+              "description": "Preservar o emprego e o salário que sustenta sua família.",
+              "weight": 3,
+              "evidence_topics": [
+                "família",
+                "emprego",
+                "represálias"
+              ],
+              "evidence_predicates": [
+                "fears_if_suspicion_confirmed"
+              ]
+            },
+            {
+              "id": "safety",
+              "description": "Evitar violência desnecessária e represálias pessoais; ouvir brevemente pode evitar riscos sem abandonar a custódia.",
+              "weight": 2,
+              "evidence_topics": [
+                "lorde",
+                "represálias",
+                "medo"
+              ],
+              "evidence_predicates": [
+                "possible_parentage",
+                "fears_if_suspicion_confirmed",
+                "identity",
+                "parentage"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

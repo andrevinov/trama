@@ -10,7 +10,11 @@ uma nova implementação não transforma resultados antigos em aprovação atual
 - [16/11/2026 — Movimento contextual](2026-11-16-movimento-contextual/relatorio.md): experimento pelo fluxo compartilhado, com [manifesto](2026-11-16-movimento-contextual/manifesto.json).
 - [16/11/2026 — Preservação das análises](2026-11-16-preservacao-das-analises/relatorio.md): inventário offline de três registros, com [hashes e relocações](2026-11-16-preservacao-das-analises/manifesto.json); nenhuma nova medição de IA.
 - [16/11/2026 — Conclusão de turnos de NPCs](2026-11-16-conclusao-turnos-npc/relatorio.md): execução focada, falhas preservadas e reavaliação após corrigir a instrução de movimento.
+- [17/11/2026 — Conhecimento dos NPCs](2026-11-17-conhecimento-npcs/relatorio.md): memórias, informação antiga e relatos; quatro casos live aprovados na revisão medida e refinamentos finais locais.
+- [17/11/2026 — Disposição social](2026-11-17-disposicao-social/relatorio.md): alinhamento, persona e novas informações; correções de critérios, falha real no registro de ofertas e aprovação focada após correção, com memória live incompleta.
+- [17/11/2026 — Vínculos por memória](2026-11-17-vinculos-memoria/relatorio.md): mesma alegação em vários interesses sem pontuação duplicada; três casos aprovados nas execuções registradas, com falha semântica inicial preservada.
 
+- [17/11/2026 — Dificuldades contextuais e memórias](2026-11-17-dificuldade-contextual/relatorio.md): dez casos novos com execução aprovada, três falhas iniciais preservadas e 40 chamadas ao SDK.
 Logs brutos permanecem nos diretórios locais indicados nos relatórios, ignorados
 pelo Git. Estes relatórios não equivalem a autorização para repetir chamadas.
 

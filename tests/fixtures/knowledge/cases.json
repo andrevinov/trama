@@ -1,0 +1,36 @@
+[
+  {
+    "id": "memoria-inicial",
+    "expected": "known",
+    "messages": [
+      "Arquivista, onde você viu a chave do arquivo pela última vez?"
+    ],
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "memoria-desconhecida",
+    "expected": "unknown",
+    "messages": [
+      "Arquivista, onde você viu a chave do arquivo pela última vez?"
+    ],
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "memoria-desatualizada",
+    "expected": "stale",
+    "messages": [
+      "Arquivista, onde você viu a chave do arquivo pela última vez?"
+    ],
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "memoria-relato",
+    "expected": "report",
+    "messages": [
+      "Arquivista, onde você viu a chave do arquivo pela última vez?",
+      "Arquivista, disseram-me que a chave do arquivo foi levada para a coluna 18, linha 3. Estou lhe contando o que ouvi.",
+      "Arquivista, qual é sua informação mais recente sobre a localização da chave do arquivo? Diga quem te contou."
+    ],
+    "max_sdk_calls": 12
+  }
+]

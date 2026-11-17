@@ -1,0 +1,576 @@
+{
+  "schema_version": 1,
+  "experiments": [
+    {
+      "id": "social-disposition-20261117",
+      "scope": "game_flow_from_prepared_situation",
+      "authorization": "Implementar e executar somente os testes novos; teto agregado comunicado de 48 chamadas SDK, 45 efetivas em três baterias, falhas preservadas.",
+      "git_head": "05dbf7cd44be8f5a0e3b8dd67a8d00bcd84c7246",
+      "worktree_dirty": true,
+      "summary": {
+        "sdk_attempts": 45,
+        "usage": {
+          "input_tokens": 309892,
+          "output_tokens": 10496,
+          "total_tokens": 320388,
+          "cached_input_tokens": 149109,
+          "cache_write_tokens": 160648,
+          "reasoning_tokens": 2212
+        },
+        "runs": [
+          {
+            "run_id": "20261117T125757-e78c63de",
+            "case_id": "disposicao-caotico",
+            "outcome": "failed",
+            "sdk_calls": 3,
+            "messages_observed": 1,
+            "messages_required": 1,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 4,
+                "transport_attempt_upper_bound": 4
+              }
+            },
+            "error": {
+              "type": "AssertionError",
+              "message": "O pedido de escuta virou outro tipo de concessão.\nassert not ['O pedido de escuta virou outro tipo de concessão.']"
+            }
+          },
+          {
+            "run_id": "20261117T125757-e78c63de",
+            "case_id": "disposicao-compassivo",
+            "outcome": "failed",
+            "sdk_calls": 3,
+            "messages_observed": 1,
+            "messages_required": 1,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 4,
+                "transport_attempt_upper_bound": 4
+              }
+            },
+            "error": {
+              "type": "AssertionError",
+              "message": "O pedido de escuta virou outro tipo de concessão.\nassert not ['O pedido de escuta virou outro tipo de concessão.']"
+            }
+          },
+          {
+            "run_id": "20261117T125757-e78c63de",
+            "case_id": "disposicao-corrupto",
+            "outcome": "failed",
+            "sdk_calls": 3,
+            "messages_observed": 1,
+            "messages_required": 3,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 12,
+                "transport_attempt_upper_bound": 12
+              }
+            },
+            "error": {
+              "type": "AssertionError",
+              "message": "O pedido de escuta virou outro tipo de concessão.\nassert not ['O pedido de escuta virou outro tipo de concessão.']"
+            }
+          },
+          {
+            "run_id": "20261117T125757-e78c63de",
+            "case_id": "disposicao-memoria",
+            "outcome": "failed",
+            "sdk_calls": 3,
+            "messages_observed": 1,
+            "messages_required": 4,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 16,
+                "transport_attempt_upper_bound": 16
+              }
+            },
+            "error": {
+              "type": "AssertionError",
+              "message": "O pedido de escuta virou outro tipo de concessão.\nassert not ['O pedido de escuta virou outro tipo de concessão.']"
+            }
+          },
+          {
+            "run_id": "20261117T125757-e78c63de",
+            "case_id": "disposicao-ordeiro",
+            "outcome": "failed",
+            "sdk_calls": 3,
+            "messages_observed": 1,
+            "messages_required": 1,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 4,
+                "transport_attempt_upper_bound": 4
+              }
+            },
+            "error": {
+              "type": "AssertionError",
+              "message": "O pedido de escuta virou outro tipo de concessão.\nassert not ['O pedido de escuta virou outro tipo de concessão.']"
+            }
+          },
+          {
+            "run_id": "20261117T125757-e78c63de",
+            "case_id": "disposicao-persuasao",
+            "outcome": "failed",
+            "sdk_calls": 3,
+            "messages_observed": 1,
+            "messages_required": 1,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 4,
+                "transport_attempt_upper_bound": 4
+              }
+            },
+            "error": {
+              "type": "AssertionError",
+              "message": "O pedido de escuta virou outro tipo de concessão.\nassert not ['O pedido de escuta virou outro tipo de concessão.']"
+            }
+          },
+          {
+            "run_id": "20261117T125757-e78c63de",
+            "case_id": "disposicao-sadico",
+            "outcome": "failed",
+            "sdk_calls": 3,
+            "messages_observed": 1,
+            "messages_required": 1,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 4,
+                "transport_attempt_upper_bound": 4
+              }
+            },
+            "error": {
+              "type": "AssertionError",
+              "message": "O pedido de escuta virou outro tipo de concessão.\nassert not ['O pedido de escuta virou outro tipo de concessão.']"
+            }
+          },
+          {
+            "run_id": "20261117T130036-0f151ea9",
+            "case_id": "disposicao-corrupto",
+            "outcome": "failed",
+            "sdk_calls": 6,
+            "messages_observed": 2,
+            "messages_required": 3,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 11,
+                "transport_attempt_upper_bound": 11
+              }
+            },
+            "error": {
+              "type": "AssertionError",
+              "message": "A nova recompensa não mudou a disposição do guarda corrupto.\nassert not ['A nova recompensa não mudou a disposição do guarda corrupto.']"
+            }
+          },
+          {
+            "run_id": "20261117T130036-0f151ea9",
+            "case_id": "disposicao-memoria",
+            "outcome": "failed",
+            "sdk_calls": 9,
+            "messages_observed": 3,
+            "messages_required": 4,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 15,
+                "transport_attempt_upper_bound": 15
+              }
+            },
+            "error": {
+              "type": "AssertionError",
+              "message": "Faltou uma avaliação social única do pedido.\nassert not ['Faltou uma avaliação social única do pedido.']"
+            }
+          },
+          {
+            "run_id": "20261117T130410-5a2d7006",
+            "case_id": "disposicao-corrupto",
+            "outcome": "passed",
+            "sdk_calls": 9,
+            "messages_observed": 3,
+            "messages_required": 3,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 9,
+                "transport_attempt_upper_bound": 9
+              }
+            },
+            "error": null
+          }
+        ]
+      },
+      "versioned_artifacts": [
+        {
+          "path": "docs/evidencias/2026-11-17-disposicao-social/reavaliacao-criterios.json",
+          "sha256": "9a6549ada8e13d94b2ba88cec87b7d76fb1cb1cbc572f73b645ce25cf3863f89",
+          "bytes": 1548
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-disposicao-social/relatorio.md",
+          "sha256": "3f12a7b414254505e85d36134cfb260f2cbf07395a8ee951b776e32ee13b434f",
+          "bytes": 6655
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-disposicao-social/revisao-final.json",
+          "sha256": "ed74e2c5aba5b9dac197d0e3c0b28dd998a0640bfd5a496ca588aabde2623da6",
+          "bytes": 819689
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-disposicao-social/revisao-inicial.json",
+          "sha256": "f7e928816ad3fb7da255cd0d6ab40504b1c25caf372149c5ef1b1263c9942f7b",
+          "bytes": 652990
+        }
+      ],
+      "local_artifacts": [
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-caotico/result.json",
+          "sha256": "7fe389eec3e834ab44e41f56d6825ac9ae02abc742eeb65fdb74b293a1973151",
+          "bytes": 88707
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-caotico/trace.jsonl",
+          "sha256": "b974dfe50ef031c8486f0be148a49787d99a14d0674ba8438c79d9a56f41874f",
+          "bytes": 143755
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-compassivo/result.json",
+          "sha256": "9491628af7d0758683d997e2fe133e6618d4cace251d0a47b3f4446ab79b4e5f",
+          "bytes": 88340
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-compassivo/trace.jsonl",
+          "sha256": "5c0b5bde62ac031961716fd031e2bc85221e1dd7aaf9fe2b5acbd4d024d52fc5",
+          "bytes": 142273
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-corrupto/result.json",
+          "sha256": "1642aa5d741249af42d4f42eae97dbc550aec118ea3ab4a834d1a219b93f308e",
+          "bytes": 91301
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-corrupto/trace.jsonl",
+          "sha256": "de22ee653abbce218526891fe3c8222f3d25f72a2ce2431e3250da0109efe233",
+          "bytes": 144201
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-memoria/result.json",
+          "sha256": "15019db97ca1b6c14f9d6e3fb1684ebedaaf36c4a4bfc70f76a938f336cd627b",
+          "bytes": 111373
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-memoria/trace.jsonl",
+          "sha256": "003f8c18287bf1aee71b8e5e8f397b5f20007a03e95c0fa8773a08de8998d29c",
+          "bytes": 154436
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-ordeiro/result.json",
+          "sha256": "cd4a1dc3121c476c1f24a854a5bce1ee9e624d7881a56927218d0d677fa9df34",
+          "bytes": 88097
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-ordeiro/trace.jsonl",
+          "sha256": "54e507da768e5dc1e17cc3fa4f69444e85c43fa8077e1035e473c3945581dd2a",
+          "bytes": 141471
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-persuasao/result.json",
+          "sha256": "b620b95b1fe589d12e5a60d9424322ea26cbf9c8ec91de6d99e2358e24a75532",
+          "bytes": 97902
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-persuasao/trace.jsonl",
+          "sha256": "cacc688e3e0d62402555888e1eb143c9f3a485ca3ba80b4a29ccb531106d77a3",
+          "bytes": 149476
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-sadico/result.json",
+          "sha256": "02004408b0a947188c593a778c7bfd099ec489c5d88837bf35c4966524dc9762",
+          "bytes": 90039
+        },
+        {
+          "path": "logs/live/social/20261117T125757-e78c63de/disposicao-sadico/trace.jsonl",
+          "sha256": "302f982cdc68d39c1c9665f231b6a521d867aa24067415ca1546e8917a499425",
+          "bytes": 146062
+        },
+        {
+          "path": "logs/live/social/20261117T130036-0f151ea9/disposicao-corrupto/result.json",
+          "sha256": "978b09dae5dadbf233122e77e7facf42259744e229a3626baa7bf8c128f93de6",
+          "bytes": 180919
+        },
+        {
+          "path": "logs/live/social/20261117T130036-0f151ea9/disposicao-corrupto/trace.jsonl",
+          "sha256": "a615af69ff6474fdc82bf0d7010ca34a7e731501a7c19599ae395eddad4d201c",
+          "bytes": 269880
+        },
+        {
+          "path": "logs/live/social/20261117T130036-0f151ea9/disposicao-memoria/result.json",
+          "sha256": "086a729abf98c3d39ac8e154bafe696f49566c394ed1dc0c35a3ffb9711bf511",
+          "bytes": 309419
+        },
+        {
+          "path": "logs/live/social/20261117T130036-0f151ea9/disposicao-memoria/trace.jsonl",
+          "sha256": "f4d19c1372199d15937b1d2cb660b88ec9cf6fd1f161c6c9b476fe32a3b4aa8c",
+          "bytes": 400420
+        },
+        {
+          "path": "logs/live/social/20261117T130410-5a2d7006/disposicao-corrupto/result.json",
+          "sha256": "c6c578fbb962d6c5a15cf88e75eb1659df5382cbe097dc6a02f99e73f7af7844",
+          "bytes": 289361
+        },
+        {
+          "path": "logs/live/social/20261117T130410-5a2d7006/disposicao-corrupto/trace.jsonl",
+          "sha256": "0eeef936f123f3d79422d7c9e4b7d1daa5c8a460ea564f4e934e9d1d08f04f30",
+          "bytes": 415799
+        }
+      ]
+    }
+  ]
+}

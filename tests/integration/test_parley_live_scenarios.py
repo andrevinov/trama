@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from conftest import sourced_plan
+from conftest import with_judgments, sourced_plan
 from trama.application.dialogue import Speech
 from trama.application.game_runner import RunStatus
 from trama.application.intents import ActionPlan, MovementIntent, NarrativeIntent, RuleIntent
@@ -16,6 +16,7 @@ from trama.application.situations import load_situation, situation_state
 from trama.application.world import WorldAction, WorldPlan, WorldReaction
 from trama.bootstrap import open_situation
 from trama.spatial import Position
+from trama.social import DispositionAssessment, PersonaEffect
 
 LIVE = runpy.run_path(str(Path(__file__).resolve().parents[1] / 'live/test_parley.py'))
 
@@ -28,15 +29,19 @@ def test_live_situation_and_independent_criteria_through_real_runner(case, monke
     with open_situation(situation, roller=roller, allow_unconfigured=True) as game:
         def interpret(prompt, context):
             intent = (MovementIntent((), False, '', 'cell_4') if prompt == case['messages'][0] else
-                RuleIntent('attack', 'guard_1', 'unarmed') if case['expected'] == 'attack' else NarrativeIntent(prompt, 'speak'))
+                RuleIntent('attack', 'guard_1', 'unarmed') if case['expected'] == 'attack' else NarrativeIntent(prompt, 'speak', volume='loud'))
             return sourced_plan(ActionPlan((intent,)), prompt)
 
+        @with_judgments
         def decide(context):
             if context['phase'] == 'npc_turn':
                 return WorldPlan((WorldReaction(0, 0, (WorldAction('guard_1', 'move', 'O guarda avança 9 m.', destination=Position(8, 10)),)),))
             if context['parley'] and context['parley']['status'] == 'pending' and case['expected'] != 'attack':
                 return WorldPlan((WorldReaction(0, None, (WorldAction('guard_1', 'influence', 'O guarda considera ouvir a explicação.',
-                    influence=InfluenceRequest('hesitant', 'persuasion')),)),))
+                    influence=InfluenceRequest(skill='persuasion', assessment=DispositionAssessment(
+                        'listen','player','Ouvir brevemente mantendo a custódia.',0,0,'Pedido neutro.',
+                        tuple(PersonaEffect(i.id,0,'Pedido neutro.') for i in game.flow.session.social.profiles['guard_1'].persona.interests),(),
+                        'Fique onde está. Vou ouvir.','Não. Volte à cela.',('Manter custódia e posição.',)))),)),))
             return WorldPlan()
 
         game.flow.interpreter = SimpleNamespace(interpret=interpret)

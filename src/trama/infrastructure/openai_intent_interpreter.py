@@ -2,6 +2,7 @@
 
 import json
 import logging
+from trama.knowledge import Claim
 from copy import deepcopy
 
 from openai import OpenAI
@@ -70,11 +71,16 @@ ATTACK_SCHEMA = {**RULE_SCHEMA, "properties": {**RULE_SCHEMA["properties"],
     "target_id": {"type": "string", "minLength": 1},
     "allow_approach": {"type": "boolean"}},
     "required": [*RULE_SCHEMA["required"], "allow_approach"]}
+CLAIM_SCHEMA = {"type": "object", "properties": {
+    name: {"type": "string", "minLength": 1, "maxLength": 120}
+    for name in ('subject_id', 'predicate', 'value')},
+    "required": ['subject_id', 'predicate', 'value'], "additionalProperties": False}
 NARRATIVE_SCHEMA = {"type": "object", "properties": {
     "operation": {"type": "string", "enum": list(NARRATIVE_OPERATIONS)},
     "text": {"type": "string", "minLength": 1, "maxLength": 2000},
-    "volume": {"type": "string", "enum": ["quiet", "normal", "loud"]}},
-    "required": ["operation", "text", "volume"], "additionalProperties": False}
+    "volume": {"type": "string", "enum": ["quiet", "normal", "loud"]},
+    "claims": {"type": "array", "maxItems": 3, "items": CLAIM_SCHEMA}},
+    "required": ["operation", "text", "volume", "claims"], "additionalProperties": False}
 
 SCENARIO_SCHEMA = {"type": "object", "properties": {
     "operation": {"type": "string", "enum": list(SCENARIO_OPERATIONS)},
@@ -124,7 +130,9 @@ cada origem devem corresponder às etapas vinculadas. Se move usa dash=true,
 operations inclui move,dash. Se ataque usa use_inspiration=true, inclui
 attack,inspiration, somente com autorização explícita do Jogador.
 
-Classifique também perguntas (question), negações (negated), citações (quoted)
+Pergunta explicitamente dirigida a um NPC é fala dentro do jogo: execute/speak,
+inclusive quando termina com interrogação; não é uma dúvida de regras em off.
+Classifique também perguntas de regras ao narrador (question), negações (negated), citações (quoted)
 e detalhes narrativos (narrative_detail): operations=[] e step_indices=[].
 Não use menções, perguntas, negações, discurso relatado, catálogo ou histórico
 como ordens de gastar recursos. 'Não uso Retomar o Fôlego; caminho até a porta'
@@ -228,6 +236,21 @@ e mantém o total como CD de detecção. Não escolha CD nem sucesso.
 Em speak/challenge, volume=quiet para sussurrar, loud para gritar e normal para
 fala comum. Nas outras intenções narrativas, volume=normal. Não transforme uma
 fala em percepção: o motor notifica os NPCs que efetivamente podem ouvi-la.
+knowledge contém somente memórias do jogador, com origem e contexto, não a
+verdade atual nem memórias privadas dos NPCs. Perguntar a um NPC em jogo usa
+speak; uma pergunta não afirma um fato. Em claims informe apenas afirmações
+concretas que o jogador está de fato comunicando, com subject_id, predicate e
+value. Use ids conhecidos em knowledge/map; localização usa predicate=location,
+value=position:coluna,linha, carried:id ou id de lugar referido. Esses dados são
+relatos não confirmados, nunca autorização para mudar o mundo. claims=[] em
+perguntas, negações, hipóteses, look e wait. Nunca invente uma afirmação para
+preencher o campo. Preserve a fala do jogador em text.
+Durante uma conversa, promessas e ofertas explícitas também são informação:
+registre a promessa declarada em claims, sem realizá-la. Para recompensa use
+subject_id=player, predicate=offer_reward e value descrevendo valor/condição;
+repetições equivalentes mantêm a mesma Claim. Isso não transfere dinheiro nem
+confirma que o jogador possa pagar. Uma alegação de filiação usa predicate=parentage
+e value descrevendo o parentesco alegado, sem torná-lo fato confirmado.
 Apenas olhar usa look, sem Search ou teste gratuito. Percepção pertence aos
 sentidos dos NPCs, não a um teste inventado pelo interpretador.
 
@@ -261,9 +284,13 @@ def parse_intent(text: str) -> PlayerIntent:
                 raise ValueError("Campos de interação inválidos")
             return ScenarioIntent(value["operation"], value["target_id"], value.get("allow_approach", True))
         if isinstance(value, dict) and value.get("operation") in NARRATIVE_OPERATIONS:
-            if set(value) not in ({"operation", "text"}, {"operation", "text", "volume"}):
+            if not {'operation', 'text'} <= set(value) or set(value) - {'operation', 'text', 'volume', 'claims'}:
                 raise ValueError("Campos de intenção narrativa inválidos")
-            return NarrativeIntent(value["text"], value["operation"], volume=value.get("volume", "normal"))
+            claims = value.get('claims', [])
+            if not isinstance(claims, list):
+                raise ValueError('claims deve ser uma lista de afirmações.')
+            return NarrativeIntent(value["text"], value["operation"], volume=value.get("volume", "normal"),
+                                   claims=tuple(Claim(**c) for c in claims))
         if isinstance(value, dict) and value.get("operation") in {"end_turn", "attack", "second_wind", "action_surge", "hide"}:
             if set(value) not in ({"operation", "target_id", "weapon", "use_inspiration"},
                                    {"operation", "target_id", "weapon", "use_inspiration", "allow_approach"}):

@@ -1,0 +1,65 @@
+[
+  {
+    "path": "logs/live/social/20261117T125757-e78c63de/disposicao-caotico/result.json",
+    "original": "failed",
+    "messages_observed": 1,
+    "messages_required": 1,
+    "corrected_errors": [
+      []
+    ]
+  },
+  {
+    "path": "logs/live/social/20261117T125757-e78c63de/disposicao-compassivo/result.json",
+    "original": "failed",
+    "messages_observed": 1,
+    "messages_required": 1,
+    "corrected_errors": [
+      []
+    ]
+  },
+  {
+    "path": "logs/live/social/20261117T125757-e78c63de/disposicao-corrupto/result.json",
+    "original": "failed",
+    "messages_observed": 1,
+    "messages_required": 3,
+    "corrected_errors": [
+      []
+    ]
+  },
+  {
+    "path": "logs/live/social/20261117T125757-e78c63de/disposicao-memoria/result.json",
+    "original": "failed",
+    "messages_observed": 1,
+    "messages_required": 4,
+    "corrected_errors": [
+      []
+    ]
+  },
+  {
+    "path": "logs/live/social/20261117T125757-e78c63de/disposicao-ordeiro/result.json",
+    "original": "failed",
+    "messages_observed": 1,
+    "messages_required": 1,
+    "corrected_errors": [
+      []
+    ]
+  },
+  {
+    "path": "logs/live/social/20261117T125757-e78c63de/disposicao-persuasao/result.json",
+    "original": "failed",
+    "messages_observed": 1,
+    "messages_required": 1,
+    "corrected_errors": [
+      []
+    ]
+  },
+  {
+    "path": "logs/live/social/20261117T125757-e78c63de/disposicao-sadico/result.json",
+    "original": "failed",
+    "messages_observed": 1,
+    "messages_required": 1,
+    "corrected_errors": [
+      []
+    ]
+  }
+]

@@ -11,6 +11,9 @@ from trama.distances import meters
 from trama.spatial import Position
 
 
+CONVERSATION_HEARING_MULTIPLIER = Decimal('1.5')
+
+
 @dataclass(frozen=True)
 class Senses:
     sight_range_meters: Decimal | None = None
@@ -73,10 +76,12 @@ class Noise:
     position: Position
     volume: str = 'normal'
     reason: str = 'Ruído.'
+    speech: bool = False
 
     def __post_init__(self):
         if (not isinstance(self.actor_id, str) or not self.actor_id or not isinstance(self.position, Position)
-                or self.volume not in {'quiet', 'normal', 'loud'} or not self.reason.strip()):
+                or self.volume not in {'quiet', 'normal', 'loud'} or not self.reason.strip()
+                or type(self.speech) is not bool):
             raise ValueError('Estímulo auditivo inválido.')
 
     @property

@@ -1,0 +1,8 @@
+{
+  "source": "logs/live/difficulty/20261117T201931-23506e89/memoria-resposta-original/trace.jsonl",
+  "timestamp": "2026-11-17T20:19:55.542+00:00",
+  "session_id": "875bff818710416b96286c38830e3674",
+  "interaction_id": "c91f5a0cea964bf39834f0562a57d9e6",
+  "ai_call_id": "d01099c539364c1db845d5421e9d56a5",
+  "source_line_sha256": "552bc25291535d3425eb2c8bc581b27db57cb5b395560765a9d4a14768428cbe"
+}

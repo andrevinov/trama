@@ -30,15 +30,21 @@ destino, a ação é rejeitada. Isso não escolhe alvos ou táticas pelo NPC.
 Se um movimento parar antes do destino, inclusive por saldo insuficiente no
 turno, o relatório preserva a posição, o custo e o motivo da parada. As ações
 seguintes da resposta não são executadas, evitando tentar um ataque cuja
-aproximação falhou. Em turno de NPC, o fluxo pausa sem avançar a iniciativa ou
-repetir automaticamente a decisão. Os logs incluem o percurso encontrado e
+aproximação falhou. Em turno de NPC, o fluxo encerra a vez após resolver o possível, registrando
+a continuação impedida; não repete automaticamente a decisão. Os logs incluem o percurso encontrado e
 `world.reaction_interrupted` com motivo e quantidade de ações restantes.
 
-Uma resposta pode depender de `PerceptionCheck`: o código rola d20 + Percepção,
-compara com a CD proposta (1 a 30 neste recorte) e só executa as ações condicionadas se passar. A CD é
-uma decisão do mestre contextualizada em `reason`. Não há regra inventada de
-distância fixa para ouvir passos através de uma porta. Os testes do Jogador
-continuam fora dos comandos deste incremento.
+A [avaliação contextual de dificuldades](avaliacao-de-dificuldade.md) usa
+`WorldPlan.adjudications`, resolvidas antes das ações. O código solicita apenas
+tarefas que precisam de julgamento e valida IDs, fatos e completude. Categorias
+típicas e vantagem/desvantagem são propostas; dados, CDs fixas e efeitos continuam
+no motor. Não há chamada extra ao provedor para essa avaliação.
+
+`PerceptionCheck` permanece legível em gravações anteriores: sua execução usa
+Search real com os sentidos do NPC e o total guardado de Furtividade, sem aceitar
+uma CD substituta proposta pelo Mundo. A aquisição de memórias exige compreensão
+da fala, separadamente de perceber sua voz. Referências públicas `memory_ids`
+aparecem somente em `say`; Influence usa fundamentação privada.
 
 Descrições e falas são narrativas. Alterações mecânicas exigem operações
 estruturadas. `describe` não cria objetos, obstáculos ou condições persistentes;

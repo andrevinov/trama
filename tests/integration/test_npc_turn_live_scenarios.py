@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from conftest import sourced_plan
+from conftest import with_judgments, sourced_plan
 from trama.application.dialogue import Speech
 from trama.application.game_runner import RunStatus
 from trama.application.intents import ActionPlan, RuleIntent
@@ -26,6 +26,7 @@ def test_live_preparation_criteria_and_reset(case, monkeypatch):
     situation = load_situation(case['id'])
     roller = situation.new_roller()
     with open_situation(situation, roller=roller, allow_unconfigured=True) as game:
+        @with_judgments
         def decide(context):
             if context['phase'] != 'npc_turn':
                 return WorldPlan()

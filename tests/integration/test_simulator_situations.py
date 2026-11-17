@@ -8,6 +8,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
+from conftest import without_correlation_ids
 
 from trama import simulator
 from trama.application.dialogue import Speech
@@ -48,7 +49,7 @@ def test_cli_and_headless_open_same_validated_situation(id, position, mode, spen
     monkeypatch.setattr(simulator, 'run_window', window)
     simulator.main()
     with open_situation(load_situation(id), allow_unconfigured=True) as game:
-        assert situation_state(game.flow.session) == observed[0]
+        assert without_correlation_ids(situation_state(game.flow.session)) == without_correlation_ids(observed[0])
     constructor.assert_not_called()
 
 
@@ -67,7 +68,7 @@ def test_reset_replays_preparation_dice_history_and_execution_memory(monkeypatch
             assert report.status == 'completed'
             assert set(game.flow.session.dungeon.discovered) == {'longsword', 'cleaner_uniform'}
             assert game.runner.reset().status == 'completed'
-            assert situation_state(game.flow.session) == initial
+            assert without_correlation_ids(situation_state(game.flow.session)) == without_correlation_ids(initial)
             assert roller.used == [[20, 20]]
             assert len(roller.pending) == 1
             previous = game.flow.conversation.narration_context()['previous_execution']['execution']

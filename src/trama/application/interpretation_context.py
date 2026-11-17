@@ -40,6 +40,7 @@ def compact_context(context: dict) -> dict:
         "mode": context.get("mode", "narrated"), "map": map_context,
         "parley": deepcopy(context.get("parley")),
         "sensing": deepcopy(context.get("sensing", {"hidden": False, "can_hide": False})),
+        'knowledge': deepcopy(context.get('knowledge', [])),
         "character": {key: character[key] for key in ("column", "row", "current_area", "speed_meters", "remaining_meters") if key in character},
         "visible_creatures": deepcopy(context.get("visible_creatures", [])),
         "combat": ({key: combat[key] for key in ("round", "active_id", "player_turn") if key in combat} if combat else None),

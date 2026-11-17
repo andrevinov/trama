@@ -12,6 +12,8 @@ from trama.application.world import PerceptionCheck, WorldAction, WorldError, Wo
 from trama.infrastructure.openai_json import DEFAULT_MODEL, request_json
 from trama.observability import log_context, new_id
 from trama.spatial import Position
+from trama.social import GOALS, assessment_from_data
+from trama.difficulty import Adjudication, DIFFICULTY_CLASSES
 
 logger = logging.getLogger(__name__)
 
@@ -20,14 +22,35 @@ def object_schema(properties):
     return {"type": "object", "properties": properties, "required": list(properties), "additionalProperties": False}
 
 
+SOCIAL_CLAIM_SCHEMA = object_schema({k: {'type': 'string', 'minLength': 1, 'maxLength': 120}
+                                   for k in ('subject_id', 'predicate', 'value')})
+EFFECT_SCHEMA = object_schema({
+    'interest_id': {'type': 'string', 'minLength': 1, 'maxLength': 80},
+    'effect': {'type': 'integer', 'enum': [-1, 0, 1]},
+    'reason': {'type': 'string', 'minLength': 1, 'maxLength': 500},
+})
+MEMORY_EFFECT_SCHEMA = object_schema({'claim': SOCIAL_CLAIM_SCHEMA, **EFFECT_SCHEMA['properties']})
+ASSESSMENT_SCHEMA = object_schema({
+    'goal': {'type': 'string', 'enum': list(GOALS)},
+    'target_id': {'type': 'string', 'minLength': 1, 'maxLength': 120},
+    'description': {'type': 'string', 'minLength': 1, 'maxLength': 500},
+    'order': {'type': 'integer', 'enum': [-1, 0, 1]},
+    'morality': {'type': 'integer', 'enum': [-1, 0, 1]},
+    'alignment_reason': {'type': 'string', 'minLength': 1, 'maxLength': 500},
+    'persona_effects': {'type': 'array', 'maxItems': 8, 'items': EFFECT_SCHEMA},
+    'memory_effects': {'type': 'array', 'maxItems': 6, 'items': MEMORY_EFFECT_SCHEMA},
+    'accepted_reply': {'type': 'string', 'minLength': 1, 'maxLength': 700},
+    'refused_reply': {'type': 'string', 'minLength': 1, 'maxLength': 700},
+    'conditions': {'type': 'array', 'maxItems': 6, 'items': {'type': 'string', 'minLength': 1, 'maxLength': 120}},
+})
 INFLUENCE_SCHEMA = object_schema({
-    'willingness': {'type': 'string', 'enum': ['willing', 'unwilling', 'hesitant']},
     'skill': {'type': ['string', 'null'], 'enum': [None, 'persuasion', 'deception', 'intimidation', 'performance']},
     'attitude': {'type': 'string', 'enum': ['friendly', 'indifferent', 'hostile']},
+    'assessment': ASSESSMENT_SCHEMA,
 })
 POSITION_SCHEMA = object_schema({"column": {"type": "integer", "minimum": 1},
                                  "row": {"type": "integer", "minimum": 1}})
-ACTION_SCHEMA = object_schema({
+ACTION_FIELDS = {
     "actor_id": {"type": "string"},
     "operation": {"type": "string", "enum": ["describe", "say", "move", "open", "close", "attack", "wait", "start_conflict", "end_conflict", "parley", "influence", "search"]},
     "text": {"type": "string", "minLength": 1, "maxLength": 2000},
@@ -36,6 +59,31 @@ ACTION_SCHEMA = object_schema({
     "weapon": {"type": "string", "enum": ["greatsword", "flail", "javelin", "longsword", "unarmed"]},
     "influence": {"anyOf": [INFLUENCE_SCHEMA, {"type": "null"}]},
     "volume": {"type": "string", "enum": ["quiet", "normal", "loud"]},
+    "memory_ids": {"type": "array", "maxItems": 6, "items": {"type": "string", "minLength": 1, "maxLength": 160}},
+}
+# A API não pode produzir referências de fala em operações não verbais.
+# O parser ainda lê referências privadas de Influence em gravações anteriores.
+ACTION_SCHEMA = {'anyOf': [
+    object_schema({**ACTION_FIELDS, 'operation': {'type': 'string', 'enum': ['say']},
+                   'influence': {'type': 'null'}, 'target_id': {'type': 'null'},
+                   'destination': {'type': 'null'}}),
+    object_schema({**ACTION_FIELDS, 'operation': {'type': 'string', 'enum': ['influence']},
+                   'target_id': {'type': 'null'}, 'destination': {'type': 'null'},
+                   'influence': INFLUENCE_SCHEMA,
+                   'volume': {'type': 'string', 'enum': ['normal']},
+                   'memory_ids': {'type': 'array', 'maxItems': 0, 'items': {'type': 'string'}}}),
+    object_schema({**ACTION_FIELDS,
+                   'operation': {'type': 'string', 'enum': [op for op in ACTION_FIELDS['operation']['enum'] if op not in {'say','influence'}]},
+                   'influence': {'type': 'null'},
+                   'memory_ids': {'type': 'array', 'maxItems': 0, 'items': {'type': 'string'}}}),
+]}
+ADJUDICATION_SCHEMA = object_schema({
+    'request_id': {'type': 'string', 'minLength': 1, 'maxLength': 200},
+    'outcome': {'type': 'string', 'enum': ['automatic', 'check', 'impossible']},
+    'difficulty': {'type': ['string', 'null'], 'enum': [None, *DIFFICULTY_CLASSES]},
+    'advantage': {'type': 'boolean'}, 'disadvantage': {'type': 'boolean'},
+    'fact_ids': {'type': 'array', 'minItems': 1, 'maxItems': 12, 'items': {'type': 'string'}},
+    'reason': {'type': 'string', 'minLength': 1, 'maxLength': 500},
 })
 CHECK_SCHEMA = object_schema({"actor_id": {"type": "string"}, "dc": {"type": "integer", "minimum": 1, "maximum": 30},
                               "reason": {"type": "string", "minLength": 1}})
@@ -46,15 +94,51 @@ REACTION_SCHEMA = object_schema({
     "interrupt": {"type": "boolean"}, "reason": {"type": "string"},
     "check": {"anyOf": [CHECK_SCHEMA, {"type": "null"}]},
 })
-WORLD_SCHEMA = object_schema({"reactions": {"type": "array", "maxItems": 10, "items": REACTION_SCHEMA}})
+WORLD_SCHEMA = object_schema({
+    'adjudications': {'type': 'array', 'maxItems': 32, 'items': ADJUDICATION_SCHEMA},
+    "reactions": {"type": "array", "maxItems": 10, "items": REACTION_SCHEMA}})
 
 INSTRUCTIONS = MODE_INSTRUCTIONS + """
+Antes de propor respostas, resolva world.adjudication.requests em adjudications.
+Informe exatamente uma decisão por request_id solicitado, nenhuma para testes
+não solicitados; requests=[] exige adjudications=[]. Não reavalie cached.
+Esta avaliação ocorre antes dos dados e não é uma ação de NPC. Não altera o
+plano do jogador. Use SOMENTE fatos dos requests, citando seus fact_ids.
+Não invente ruído ambiente, materiais, ferramentas, distrações ou busca ativa.
+outcome=automatic dispensa dado porque o êxito é evidente; impossible indica
+impossibilidade fundamentada; check indica incerteza e exige difficulty típica:
+very_easy=5, easy=10, moderate=15, hard=20, very_hard=25, nearly_impossible=30.
+advantage/disadvantage representam circunstâncias, não modificadores numéricos.
+Nos dois resultados sem teste, difficulty=null e ambos os modificadores=false.
+Nenhuma avaliação pode mudar CA, Hide CD15, CD do total de Furtividade, Influence
+max(15,INT), CD de magia, alcance físico, recursos ou geometria. Regras fixas
+continuam no código e não aparecem como requests de CD contextual.
+Em hearing, julgue a dificuldade de perceber aquela categoria de som através
+das portas citadas. O código confere distância e sentidos de cada ouvinte. Uma
+porta fechada abafa fala normal/sons discretos: quando há incerteza, Percepção
+com desvantagem é uma opção apropriada; não conclua que qualquer som ao alcance
+é automaticamente percebido. Grito pode ser evidente apesar da porta; ouvir
+não é identificar a fonte ou enxergar através dela. sound:purpose=notice_noise
+avalia notar o som; understand_speech exige compreender suas palavras, o que
+pode ser mais difícil ou impossível mesmo quando a voz é perceptível.
+Não presuma que o estímulo
+potencial já ocorreu. Não antecipe fala/ação do NPC que depende de ouvi-lo:
+o motor resolve detecção e rotinas depois dos resultados.
+Nos demais requests, avalie a tarefa concreta e sua incerteza. As descrições
+de fatos delimitam o alvo e a abordagem. O código escolhe a perícia e executa
+efeitos; não conceda novos objetos nem descreva sucesso antes da resolução.
+Em influence, target_id e destination externos são null. O alvo do pedido
+fica em influence.assessment.target_id (por exemplo, player para sua soltura).
+
 Quando world.scenario existir, siga adjudication e os estados desse cenário.
 No simulador de fuga, o código já resolve rotina, detecção sensorial, descobertas, disfarce,
 ilusão, abertura mágica inicial e libertação. Na phase player_action retorne
-reactions=[] quando parley não estiver pending; não duplique testes, mova NPCs ou
-antecipe iniciativa. EXCEÇÃO: com parley.status=pending, resolva a resposta atual
-pelo contrato geral abaixo; não retorne vazio para uma tentativa clara de convencer. Narração de
+reactions=[] quando parley não estiver pending/listening; não duplique testes, mova NPCs ou
+antecipe iniciativa. EXCEÇÃO: com parley.status=pending ou listening, resolva a resposta atual
+pelo contrato geral abaixo; não retorne vazio para uma tentativa clara de convencer.
+Também responda com say a perguntas dirigidas a um NPC consciente sobre suas
+memórias, após speak, usando memory_ids; isso não duplica detecção nem permite
+ações físicas gratuitas. Narração de
 NPCs e detalhes usa os fatos calculados depois da execução. Na phase npc_turn,
 resolva normalmente as ações do guarda em combate usando a arma de sua ficha.
 
@@ -94,6 +178,21 @@ Cada action tem actor_id de um NPC existente (NUNCA player), operation e text
 explicando seu ato. actor_id='world' só pode describe (detalhe narrativo sem efeito
 mecânico). describe não cria objetos/obstáculos nem altera fatos persistentes.
 say produz fala audível: text é a fala do NPC, sem expor conhecimento oculto ao jogador.
+world.knowledge.actors contém uma seleção limitada das memórias de cada NPC.
+São crenças com fonte e contexto; o mapa completo de mestre não autoriza um NPC
+a saber tudo. Ao responder sobre um fato, cite em memory_ids as memórias DO
+PRÓPRIO falante usadas; sem informação pertinente, admita que não sabe. Para
+saudações e falas sem conteúdo factual use memory_ids=[]. Em outras operações
+também use []. Memória shareable=false não pode ser divulgada. Saber algo não
+obriga o NPC a revelá-lo: considere situação, interesses e disposição.
+Quando o jogador pergunta algo a um NPC, proponha say após speak (after_squares=null)
+se uma resposta for apropriada; o narrador não inventa falas para substituir isso.
+Uma observação passada vale para aquela ocasião: diga quando viu, sem garantir
+que o objeto ainda esteja lá. Um report é relato de actor_id, não confirmação;
+atribua a fonte, inclusive quando o relato recente contradiz uma observação
+antiga. Cite ambas se precisar explicar a dúvida. Não atualize memórias pela
+verdade global: só o motor registra o que foi percebido ou ouvido. Ouvintes
+conscientes aprendem as memórias citadas como relatos com proveniência.
 volume é quiet para sussurro, loud para grito e normal para fala comum. Nas outras
 operações use volume=normal. O código valida quem pode ouvir, sem inferir pelo texto.
 move usa destination={column,row} em base 1; o código calcula o caminho de menor
@@ -121,23 +220,61 @@ parley representa uma abordagem verbal: exige resposta e interrompe imediatament
 sem iniciar iniciativa. text é a fala do NPC (ex.: "Pare! O que está fazendo aqui?").
 A aproximação hostil narrada para na primeira percepção: não peça para o guarda
 andar até ficar adjacente antes de abordar. Ver alguém não é ordem de atacar.
-Com parley.status=pending, o NPC aguarda a resposta à distância registrada.
+Com parley.status=pending ou listening, o NPC aguarda a resposta à distância registrada.
 Uma fala clara tentando acalmar, explicar, mentir ou ameaçar deve receber influence,
 na MESMA etapa speak/challenge, after_squares=null, depois da fala executada.
 Não interrompa a fala em after_squares=0 nem presuma persuasão pela simples detecção.
-influence é o julgamento do Mundo, não uma ação extra do jogador. Informe
-influence={willingness,skill,attitude}. willing aceita sem rolar; unwilling recusa
-sem rolar; hesitant usa persuasion/deception/intimidation/performance conforme a
-fala, sem pedir ao jogador que nomeie perícia. skill=null fora de hesitant.
-Não considere todo guarda irredutível: um pedido razoável para ouvir uma explicação
-ou evitar violência normalmente é hesitant. Uma pergunta simples pode receber say
-sem teste e continuar pending. A atitude é Friendly/Indifferent/Hostile, não o
-booleano hostile do mapa (esse só identifica adversários de combate). Use
-indifferent quando o NPC ainda está disposto a ouvir; justifique em text o pedido
-avaliado e a disposição, sem inventar o resultado. O código deriva CD e rola.
-Sucesso aceita o pedido de evitar combate; recusa/falha inicia iniciativa,
-preservando posições. Não acrescente start_conflict, movimento, ataque ou uma
-fala que pressuponha sucesso/falha na mesma resposta de influence.
+influence descreve o pedido e os impactos, não escolhe a disposição final. Informe
+skill apropriada e attitude, mais assessment. O código calcula a soma e só rola
+Influence se resultar hesitant. Aplique a persona em world.social.profiles;
+creature.hostile não é a atitude social. Informe a perícia mesmo quando imagina
+que não haverá dado. Atitude indifferent é o padrão sem favor/aversão estabelecidos.
+Em assessment: goal é listen/release/access/information; target_id identifica o
+alvo conhecido. Use sempre o mesmo goal/target para o mesmo pedido reformulado.
+release é pedido de liberdade, soltura ou ajuda para escapar/sair da prisão.
+access é permissão de entrar em uma área ou usar uma passagem sem encerrar
+custódia; não é sinônimo de libertação. listen é somente conceder escuta;
+information é compartilhar informação. Preserve o pedido efetivo do jogador.
+description delimita a concessão: ouvir brevemente não é libertar ou deixar fugir.
+order=1 apela a dever/código/ordem, -1 a autonomia contra essas restrições, 0 neutro.
+morality=1 apela a cuidado/compaixão, -1 a exploração/crueldade, 0 neutro. Justifique
+em alignment_reason. Isso descreve o pedido; não inverta sinais pelo alinhamento
+do NPC. Alinhamentos são tendências, não obrigam todos os indivíduos a agir igual.
+persona_effects lista CADA interesse uma vez: interest_id existente, effect=1
+se o pedido o favorece, -1 se o ameaça, 0 se não altera, com reason. Não presuma
+que ouvir sem relaxar a custódia ameaça o emprego; avalie o pedido limitado.
+memory_effects usa claim={subject_id,predicate,value}, interest_id, effect e reason.
+Um mesmo fato pode aparecer ligado a interesses DIFERENTES, cada vínculo uma
+única vez. O código agrupa pela Claim e pontua o fato uma vez: soma os efeitos
+dos vínculos, limita a -1/0/+1 e aplica o peso da fonte. Dois efeitos positivos
+não duplicam a força da evidência; efeitos opostos se compensam. As razões de
+todos os vínculos ficam registradas. Não repita o mesmo par Claim/interest_id.
+Cite somente crenças próprias em world.knowledge e relatos da fala atual em
+player_plan.claims que o NPC possa ouvir. O motor vincula à memória real após a
+fala. Cada interesse define evidence_topics/evidence_predicates: não force uma
+memória irrelevante nessa lista. Um novo relato relevante pode mudar a avaliação,
+mas não vira verdade confirmada. Informações sobre cor de roupa/clima não mudam
+um pedido de ouvir, salvo vínculo real com os interesses declarados.
+O código reutiliza o resultado do mesmo pedido sem nova informação relevante:
+não tente outra perícia/atitude/argumento equivalente só para rerrolar. A alegação
+nova de origem nobre pode importar a quem teme represálias; vincule a claim
+real da fala à autopreservação, sem exigir que seja verdadeira ou acreditada.
+Uma nova alegação de filiação nobre relevante deve aparecer com a Claim exata
+da fala atual em memory_effects, como relato não confirmado. A suspeita antiga
+sobre um prisioneiro não identificado não substitui esse novo relato sobre o
+jogador; se usar as duas crenças, preserve suas identidades e fontes distintas.
+Quando uma oferta/alegação nova muda o impacto da persona, cite TAMBÉM sua
+Claim ouvida em memory_effects, vinculada ao interesse afetado. Só mudar
+persona_effects sem registrar evidência nova reutiliza a decisão anterior.
+accepted_reply e refused_reply são falas condicionais curtas, sem pressupor o
+resultado. O código escolhe e emite SOMENTE a fala correspondente. Em listen,
+accepted_reply concede ouvir mantendo distância/custódia; conditions explicita
+os limites, sem entregar chave, abrir cela, ordenar deslocamento ou dar liberdade.
+refused_reply recusa e pode reiterar ordem/pedir prova; não cria ataque automático.
+Não acrescente say, movimento, ataque ou start_conflict para antecipar o resultado
+da MESMA avaliação. Uma decisão explícita de violência é outra ação, não efeito
+automático de unwilling nem de falha no dado. reactions=[] não substitui a
+avaliação inicial de um pedido de concessão durante a abordagem.
 Se o jogador declara ataque, o código inicia iniciativa antes da aproximação;
 não insista em conversa. Se recusa a ordem e tenta fugir, start_conflict pode
 ocorrer antes do deslocamento; não conceda avanço gratuito para nenhum lado.
@@ -179,6 +316,7 @@ def _fields(value, expected):
 def parse_world_plan(text: str) -> WorldPlan:
     try:
         value = json.loads(text)
+        value.setdefault('adjudications', [])  # Transporte de gravações antigas.
         _fields(value, WORLD_SCHEMA["properties"])
         if not isinstance(value["reactions"], list):
             raise WorldError("Respostas do Mundo devem ser uma lista.")
@@ -192,7 +330,8 @@ def parse_world_plan(text: str) -> WorldPlan:
                 # Aceita gravações antigas; o schema atual exige o campo na API.
                 action.setdefault('influence', None)
                 action.setdefault('volume', 'normal')
-                _fields(action, ACTION_SCHEMA["properties"])
+                action.setdefault('memory_ids', [])
+                _fields(action, ACTION_FIELDS)
                 destination = action["destination"]
                 if destination is not None:
                     _fields(destination, POSITION_SCHEMA["properties"])
@@ -201,20 +340,31 @@ def parse_world_plan(text: str) -> WorldPlan:
                     destination = Position(destination["column"] - 1, destination["row"] - 1)
                 influence = action['influence']
                 if influence is not None:
-                    _fields(influence, INFLUENCE_SCHEMA['properties'])
-                    influence = InfluenceRequest(**influence)
+                    if set(influence) == {'willingness', 'skill', 'attitude'}:
+                        influence = InfluenceRequest(**influence)  # Leitura histórica; não autoriza executar sem avaliação.
+                    else:
+                        _fields(influence, INFLUENCE_SCHEMA['properties'])
+                        influence = InfluenceRequest(skill=influence['skill'], attitude=influence['attitude'],
+                                                     assessment=assessment_from_data(influence['assessment']))
+                if not isinstance(action['memory_ids'], list):
+                    raise WorldError('memory_ids deve ser uma lista.')
                 actions.append(WorldAction(action["actor_id"], action["operation"], action["text"],
-                                           action["target_id"], destination, action["weapon"], influence, action["volume"]))
+                                           action["target_id"], destination, action["weapon"], influence, action["volume"],
+                                           tuple(action['memory_ids'])))
             check = item["check"]
             if check is not None:
                 _fields(check, CHECK_SCHEMA["properties"])
                 check = PerceptionCheck(**check)
             reactions.append(WorldReaction(item["step_index"], item["after_squares"], tuple(actions),
                                            item["interrupt"], item["reason"], check))
-        return WorldPlan(tuple(reactions))
+        decisions = []
+        for decision in value['adjudications']:
+            _fields(decision, ADJUDICATION_SCHEMA['properties'])
+            decisions.append(Adjudication(**{**decision, 'fact_ids': tuple(decision['fact_ids'])}))
+        return WorldPlan(tuple(reactions), tuple(decisions))
     except (ValueError, TypeError, KeyError, AttributeError) as error:
         logger.error("ai.world_rejected", extra={"data": {"reason": str(error)}}, exc_info=True)
-        raise WorldError("A IA retornou uma resposta do Mundo inválida.") from error
+        raise WorldError(f"A IA retornou uma resposta do Mundo inválida: {error}") from error
 
 
 class OpenAIWorldDirector:

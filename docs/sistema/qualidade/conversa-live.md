@@ -24,23 +24,27 @@ As rolagens declaradas cobrem somente a decisão social e a iniciativa posterior
 | Situação | Critério principal | Chamadas normais / teto |
 | --- | --- | --- |
 | `abordagem-distante` | Interromper após 3 m do jogador, em [8,20]; guarda em [10,6], conversa pendente, sem iniciativa/dano. | 4 / 5 |
-| `conversa-evita-combate` | Nova fala recebe Persuasão real, sucesso evita combate; ninguém se move ou gasta recursos. | 7 / 9 |
-| `conversa-falha-inicia-combate` | Persuasão falha, iniciativa começa na posição de detecção; guarda vence, conclui turno legal e devolve controle. | 8 / 10 |
+| `conversa-evita-combate` | Avaliação inicial concede apenas escuta: disposto sem dado, hesitante com Persuasão. Custódia preservada. | 7 / 9 |
+| `conversa-falha-inicia-combate` (id histórico) | Perfil neutro/cauteloso e dado baixo recusam escuta sem iniciativa nem aproximação automáticas. | 7 / 10 |
 | `conversa-jogador-ataca` | Ataque explícito dispensa teste social; guarda vence iniciativa antes de qualquer movimento do jogador. | 8 / 10 |
 
-Nos dois últimos casos o guarda ainda está distante demais para golpear: pode
+No caso de ataque explícito o guarda ainda está distante demais para golpear: pode
 aguardar ou caminhar até 9 m, sem dano ao jogador. O pedido de ataque permanece
 não executado antes da vez do jogador. Os critérios verificam coordenadas,
 relatórios, posições enviadas no primeiro `npc_turn`, dados realmente consumidos,
 PV, recursos, inventário, portas e ausência de erros do NPC. Não calculam o
 esperado chamando o algoritmo de movimento/visão ou tomando o plano como prova.
 
-Os casos de Persuasão fixam uma avaliação hesitante com atitude indiferente, em
-que uma explicação pode evitar violência. Não exigem frase literal do modelo.
-Julgamento sem teste ou com outra atitude/perícia reprova esse caso claro; não é
-reinterpretado como sucesso para acomodar uma saída. As outras disposições e
-vantagem/desvantagem possuem testes locais. A regressão local também demonstra
-que os critérios rejeitam o guarda já avançado até [9,16].
+O sucesso não fixa disposição hesitante: ela vem da nova avaliação de persona,
+alinhamento e memórias. O caso de recusa usa uma variação explícita de perfil
+neutro com um interesse de peso 2, que mantém hesitação e consome o d20 baixo.
+As falas sociais especificam voz alta para alcançar o guarda distante pelo
+caminho auditivo real. Não se exige redação literal do modelo. A posição do bug
+original, guarda já em [9,16], continua sendo rejeitada pelos critérios.
+
+Esta suíte antiga foi corrigida, mas não executada neste incremento. O pedido
+original foi também incluído no corredor audível da [bateria nova de disposição](disposicao-live.md),
+com perfis variados. A avaliação e as evidências dessa bateria têm escopo próprio.
 
 Automação exige narração em on, mas não certifica toda a semântica de texto livre.
 Revisão humana deve conferir: ordem audível à distância, oportunidade de responder,

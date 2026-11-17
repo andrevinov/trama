@@ -16,13 +16,16 @@ from trama.application.dialogue import Speech
 from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, MovementSegment, RequestPart, RuleIntent, ScenarioIntent, NarrativeIntent
 from trama.application.scenarios import build_session, load_session
 from trama.application.parley import InfluenceRequest
+from trama.social import DispositionAssessment, MemoryEffect, PersonaEffect
 from trama.application.world import WorldAction, WorldPlan, WorldReaction
 from trama.infrastructure import openai_intent_interpreter, openai_narrator, openai_world_director
 from trama.spatial import Position
+from trama.knowledge import Claim
+from trama.difficulty import Adjudication
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / 'docs/contracts/ai-contexts.json'
-VOLATILE_FIELDS = frozenset({'execution_id', 'session_id', 'interaction_id', 'operation_id', 'ai_call_id', 'timestamp'})
+VOLATILE_FIELDS = frozenset({'execution_id', 'session_id', 'interaction_id', 'operation_id', 'ai_call_id', 'timestamp', 'event_id'})
 
 
 class ReviewRoller:
@@ -50,19 +53,48 @@ def action(conversation, prompt, intent):
 def sample_contexts():
     """Observa projeções reais nos seis tipos de contexto; não simula respostas de IA."""
     samples = []
+    # Memória inicial -> fala referenciada -> relato do jogador, sem dados de IA.
+    c = Conversation(load_session(ROOT / 'src/trama/scenarios/knowledge_rooms.json'))
+    speech, plan = action(c, 'Arquivista, onde viu a chave?', NarrativeIntent('Onde viu a chave?', 'speak'))
+    samples.extend((c.interpretation_context(), c.world_context(plan)))
+    report = c.execute(plan, WorldPlan((WorldReaction(0, None, (WorldAction('archivist', 'say',
+        'Na última inspeção, vi a chave na mesa.', memory_ids=('archivist:key-on-desk',)),)),)))
+    samples.extend((c.narration_context(speech, report), c.interpretation_context()))
+    speech, plan = action(c, 'Disseram que a chave foi para a coluna 18, linha 3.',
+        NarrativeIntent('Disseram que a chave foi para a coluna 18, linha 3.', 'speak',
+                        claims=(Claim('archive_key', 'location', 'position:18,3'),)))
+    report = c.execute(plan)
+    samples.extend((c.world_context(plan), c.narration_context(speech, report),
+                    c.narration_context(c.prepare('[O que o arquivista sabe?]'))))
     c = Conversation(load_session(ROOT / 'src/trama/scenarios/dungeon_escape.json', roller=ReviewRoller(20, 20)))
     samples.append(c.narration_context(initial=True))
     # Preparação mecânica até a grade aberta: os dados e as regras são os da aplicação.
     c.execute(ActionPlan((ScenarioIntent('sneak', 'gate_4'), DoorIntent('open', 'gate_4'))))
     speech, plan = action(c, 'Eu checo a cela, procurando por algo útil.', ScenarioIntent('investigate', 'cell_4'))
-    samples.extend((c.interpretation_context(), c.world_context(plan)))
-    report = c.execute(plan)
+    world_context = c.world_context(plan)
+    samples.extend((c.interpretation_context(), world_context))
+    decisions = tuple(Adjudication(r['id'], 'check', 'moderate', False, False,
+        (next(iter(r['facts'])),), 'Amostra offline da decisão contextual validada.')
+        for r in world_context['world']['adjudication']['requests'])
+    report = c.execute(plan, WorldPlan(adjudications=decisions), require_adjudications=True)
     samples.append(c.narration_context(speech, report))
     samples.append(c.interpretation_context())  # Itens conhecidos, lista não vazia.
     samples.append(c.narration_context(c.prepare('[O que descobri?]')))
     speech, plan = action(c, 'Olho ao redor.', NarrativeIntent('Olho ao redor.', 'look'))
     report = c.execute(plan)
     samples.append(c.narration_context(speech, report))  # Memória de testes de perícia permanece narrável.
+
+    data = json.loads((ROOT / 'src/trama/scenarios/dungeon_escape.json').read_text())
+    data['start'] = [8, 7]
+    acoustic = Conversation(build_session(data, roller=ReviewRoller()))
+    speech, plan = action(acoustic, 'Falo normalmente.', NarrativeIntent('Falo normalmente.', 'speak'))
+    context = acoustic.world_context(plan)
+    samples.append(context)
+    decisions = tuple(Adjudication(r['id'], 'check', 'moderate', False, True,
+        (next(iter(r['facts'])),), 'Porta fechada abafa o som nesta amostra offline.')
+        for r in context['world']['adjudication']['requests'])
+    report = acoustic.execute(plan, WorldPlan(adjudications=decisions), require_adjudications=True)
+    samples.extend((acoustic.world_context(plan), acoustic.narration_context(speech, report)))
 
     data = json.loads((ROOT / 'src/trama/scenarios/dungeon_escape.json').read_text())
     data['start'] = [9, 3]
@@ -109,17 +141,27 @@ def sample_contexts():
     # Abordagem e Influence gerais, sem adjudicação da dungeon ou payload alternativo.
     for persuasion_roll in (20, 1):
         c = Conversation(build_session(dict(width=24, height=3, start=[1, 1], creatures=[
-            dict(id='watcher', name='Vigia', position=[20, 1], hostile=True)]),
+            dict(id='watcher', name='Vigia', position=[12, 1], hostile=True,
+                social=dict(alignment='neutral', persona=dict(name='Vigia', role='Guarda',
+                    background='Protege sua integridade e emprego.', interests=[
+                        dict(id=id, description='Interesse afetado por origem nobre.', weight=2,
+                             evidence_predicates=['parentage']) for id in ('safety', 'livelihood')])))]),
             roller=ReviewRoller(persuasion_roll, 1, 2, 20)))
         speech, plan = action(c, 'Olho o corredor.', NarrativeIntent('Olho o corredor.', 'look'))
         report = c.execute(plan, WorldPlan((WorldReaction(0, 0, (
             WorldAction('watcher', 'parley', 'Pare! Identifique-se.'),)),)))
         samples.extend((c.interpretation_context(), c.world_context(plan), c.narration_context(speech, report),
                         c.narration_context(c.prepare('[Posso conversar?]'))))
-        speech, plan = action(c, 'Não lute; ouça minha explicação.', NarrativeIntent('Não lute; ouça minha explicação.', 'speak'))
+        claim = Claim('player', 'parentage', 'noble_heir')
+        text = 'Sou herdeiro de um nobre; ouça minha explicação.'
+        speech, plan = action(c, text, NarrativeIntent(text, 'speak', claims=(claim,)))
         report = c.execute(plan, WorldPlan((WorldReaction(0, None, (
             WorldAction('watcher', 'influence', 'O vigia hesita em aceitar a explicação.',
-                        influence=InfluenceRequest('hesitant', 'persuasion')),)),)))
+                        influence=InfluenceRequest(skill='persuasion', assessment=DispositionAssessment(
+                            'listen', 'player', 'Ouvir sem permitir fuga.', 0, 0, 'Pedido neutro.',
+                            tuple(PersonaEffect(id, 0, 'Pedido limitado.') for id in ('safety', 'livelihood')),
+                            tuple(MemoryEffect(claim, id, 1, 'Alegação de origem nobre.') for id in ('safety', 'livelihood')),
+                            'Fique onde está. Vou ouvir.', 'Não. Volte à cela.', ('Manter posição.',)))),)),)))
         samples.extend((c.narration_context(speech, report), c.interpretation_context(), c.world_context(plan)))
         if c.session.encounter.combat:
             samples.append(c.world_context())

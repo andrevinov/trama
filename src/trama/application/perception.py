@@ -10,7 +10,7 @@ from trama.application.routing import path_to_cells
 from trama.dice import roll_d20
 from trama.distances import CELL_METERS
 from trama.movement import MovementError
-from trama.perception import Noise
+from trama.perception import CONVERSATION_HEARING_MULTIPLIER, Noise, Observer, Senses
 from trama.spatial import Position
 from trama.vision import line_of_sight
 
@@ -37,6 +37,7 @@ class PerceptionSystem:
         self._observation_key = (session.state.position, session.scene,
                                  tuple((o.id, o.position) for o in self.observers()))
         self._sound_cache = {}
+        self._sound_barriers = {}
         self._scene_key = None
 
     def observers(self):
@@ -75,6 +76,7 @@ class PerceptionSystem:
         key = (s.scene, s.grid)
         if key != self._scene_key:
             self._sound_cache.clear()
+            self._sound_barriers.clear()
             self._scene_key = key
         pair = (origin, target)
         if pair not in self._sound_cache:
@@ -88,19 +90,57 @@ class PerceptionSystem:
                 path = path_to_cells(grid, origin, frozenset({target}))
                 doors = {p.position for p in s.scene.passages if p.kind == 'door' and not p.is_open} if s.scene else set()
                 self._sound_cache[pair] = len(path) * CELL_METERS + sum(Decimal('6') for p in path if p in doors)
+                self._sound_barriers[pair] = tuple(sorted(p.id for p in s.scene.passages
+                    if p.position in path and p.position in doors)) if s.scene else ()
             except MovementError:
                 self._sound_cache[pair] = None
+                self._sound_barriers[pair] = ()
         return self._sound_cache[pair]
 
-    def hears(self, observer, noise, *, waking=False):
+    def sound_barriers(self, origin, target):
+        self.sound_distance(origin, target)
+        return self._sound_barriers[(origin, target)]
+
+    def hears(self, observer, noise, *, waking=False, adjudicate=True):
         senses = observer.senses
         if not senses.can_hear or observer.id == noise.actor_id:
             return False
         reach = (senses.wake_range_meters if waking else senses.hearing_range_meters) * noise.multiplier
+        if (not waking and noise.speech and noise.volume == 'normal'
+                and self._mutual_sight(observer, noise)):
+            reach *= CONVERSATION_HEARING_MULTIPLIER
         if distance(observer.position, noise.position) > reach:
             return False
         actual = self.sound_distance(noise.position, observer.position)
-        return actual is not None and actual <= reach
+        if actual is None or actual > reach:
+            return False
+        if waking or not adjudicate:
+            return True
+        decision = self.session.adjudication.hearing(observer, noise, self.sound_barriers(noise.position, observer.position))
+        hidden_dc = self.hidden_total if noise.actor_id == self.session.encounter.player_id else None
+        if decision is None:
+            return hidden_dc is None or senses.passive(self.bonus(observer)) >= hidden_dc
+        total = dc = None
+        heard = decision.outcome == 'automatic'
+        if decision.outcome == 'check' or (hidden_dc is not None and decision.outcome != 'impossible'):
+            dc = hidden_dc if hidden_dc is not None else decision.dc
+            senses = observer.senses
+            advantage = senses.advantage or decision.advantage
+            disadvantage = senses.disadvantage or decision.disadvantage
+            total = 10 + self.bonus(observer) + (5 if advantage and not disadvantage else -5 if disadvantage and not advantage else 0)
+            heard = total >= dc
+        self.session.adjudication.record_hearing(observer, noise, decision, total, dc, heard)
+        return heard
+
+    def _mutual_sight(self, listener, noise):
+        """Contato visual atual; lembrança de um interlocutor não amplia audição."""
+        s = self.session
+        if noise.actor_id == s.encounter.player_id:
+            speaker = Observer(noise.actor_id, 'Jogador', s.state.position, Senses(perception_bonus=0))
+        else:
+            speaker = next((o for o in self.observers() if o.id == noise.actor_id), None)
+        return (speaker is not None and speaker.position == noise.position
+                and self.sees(listener, speaker.position) and self.sees(speaker, listener.position))
 
     def _record(self, observer, target_id, level, sense, position, reason):
         previous = self.awareness.get(observer.id, {}).get(target_id)
@@ -117,6 +157,10 @@ class PerceptionSystem:
 
     def evaluate(self, noise=None):
         s, events = self.session, []
+        if noise is not None and noise.speech:
+            # Notar a voz não implica compreender as palavras. A comunicação
+            # avalia o conteúdo separadamente, antes de publicar este estímulo.
+            noise = replace(noise, speech=False)
         player = s.encounter.player_id
         initial_hidden = self.hidden_total
         observers = self.observers()
@@ -146,8 +190,6 @@ class PerceptionSystem:
                 if noise.actor_id == player and visible:
                     continue
                 hidden = initial_hidden if noise.actor_id == player else None
-                if hidden is not None and observer.senses.passive(self.bonus(observer)) < hidden:
-                    continue
                 level = 'located' if hidden is not None else 'heard'
                 if hidden is not None and getattr(observer, 'hostile', False):
                     self.hidden_total = None
@@ -181,7 +223,11 @@ class PerceptionSystem:
             raise ActionError('A mesma busca já foi resolvida; é necessária uma mudança relevante ou novo turno.')
         visible = self.sees(observer, s.state.position)
         audible = self.hears(observer, Noise(s.encounter.player_id, s.state.position,
-                            'quiet' if self.hidden_total is not None else 'normal', 'Presença do jogador.'))
+                            'quiet' if self.hidden_total is not None else 'normal', 'Presença do jogador.'), adjudicate=False)
+        hearing = s.adjudication.hearing(observer, Noise(s.encounter.player_id, s.state.position,
+            'quiet' if self.hidden_total is not None else 'normal'), self.sound_barriers(s.state.position, observer.position)) if audible else None
+        if hearing and hearing.outcome == 'impossible':
+            audible = False
         if not visible and not audible:
             raise PerceptionRangeError('A busca não alcança o jogador por nenhum sentido disponível.')
         dc = self.hidden_total
@@ -194,8 +240,9 @@ class PerceptionSystem:
             budget = None
         dim = s.scene.dim if s.scene else frozenset()
         impaired = visible and not audible and s.state.position in dim
-        roll = roll_d20(s.encounter.roller, self.bonus(observer), advantage=observer.senses.advantage,
-                        disadvantage=observer.senses.disadvantage or impaired)
+        roll = roll_d20(s.encounter.roller, self.bonus(observer),
+            advantage=observer.senses.advantage or bool(not visible and hearing and hearing.advantage),
+            disadvantage=observer.senses.disadvantage or impaired or bool(not visible and hearing and hearing.disadvantage))
         self.searches.add(signature)
         if budget is not None:
             s.encounter.budgets[actor_id] = budget

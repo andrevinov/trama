@@ -45,12 +45,14 @@ mensagem pelo mesmo runner/janela; não há entrada de simulador alternativa.
 O interpretador traduz a fala em `speak` ou `challenge`. O Mundo julga o pedido,
 sem decidir o resultado dos dados, por `WorldAction(influence)` após essa fala
 (`after_squares=null`). O executor recusa esse julgamento antes da fala ou numa
-etapa sem comunicação. O pedido contém disposição, perícia e atitude:
+etapa sem comunicação ou cuja fala não foi ouvida pelo NPC. O pedido contém
+[avaliação de alinhamento, persona e memórias](disposicao-social.md), perícia,
+atitude e concessão delimitada. O código calcula a disposição:
 
 | Disposição | Resolução |
 | --- | --- |
 | `willing` | Aceitação sem teste. |
-| `unwilling` | Recusa sem teste; neste confronto, inicia iniciativa. |
+| `unwilling` | Recusa sem teste; mantém a abordagem, sem iniciativa automática. |
 | `hesitant` | Python rola a perícia pertinente: Persuasão, Enganação, Intimidação ou Atuação. |
 
 Na hesitação, a CD é o maior entre 15 e a Inteligência do NPC, conforme o padrão
@@ -60,12 +62,11 @@ combate e não determina sozinho a atitude social. A IA deve justificar seu
 julgamento a partir da conversa e dos fatos, sem inferir sucesso da intenção.
 Não há gasto automático de Inspiração ou Mente Tática.
 
-Sucesso registra `peaceful` e evita este confronto, mantendo posições, PV e
-recursos. O NPC não volta a exigir a mesma resposta só por continuar vendo o
-personagem. Isso não altera sua ficha/facção nem proíbe nova abordagem justificada
-ou iniciativa por outra ação hostil. Recusa/falha registra `combat` e rola iniciativa
-**antes** de qualquer aproximação adicional. O resultado encerra essa resposta do
-Mundo: ações subsequentes que presumam sucesso/falha não são executadas.
+Aceitar ouvir registra `listening` e conserva custódia e posições. Recusa/falha
+mantém `pending`, sem combate por si só. O código escolhe a fala condicional
+correspondente ao resultado; não concede liberdade por uma simples escuta.
+O mesmo pedido reutiliza o resultado, salvo informação nova relevante à persona.
+Isso não altera ficha/facção nem proíbe iniciativa por uma ação hostil posterior.
 
 Um ataque declarado pelo jogador segue o fluxo existente de iniciativa antes da
 aproximação contextual. O jogador pode abrir mão da conversa. Resistência ou fuga
@@ -77,14 +78,14 @@ O NPC que vencer só recebe movimento, ação e recursos normais de seu turno.
 Este incremento mantém uma conversa pendente por vez, com um NPC interlocutor.
 Não implementa negociação entre grupos, reputação, relógio social, idiomas,
 Influence de animais, captura, concessões de inventário ou um catálogo geral de
-acordos. O resultado coberto é evitar ou iniciar o confronto; não concede todos
-os efeitos materiais que uma fala possa pedir. Julgamentos impossíveis dispensam
-rolagem e dependem da disposição que o Mundo fundamentou.
+acordos. O resultado executável coberto é escuta limitada; não concede efeitos
+materiais só porque uma fala os pediu. Alinhamento, interesses e memórias
+informam a disposição segundo a política numérica explícita do Trama.
 
 Reiniciar remove a abordagem e acordos locais; perguntas off e falhas de narração
 preservam o estado. Os contextos das seis fases incluem `parley`, nulo quando não
 há registro. Eventos `game.parley_started` e `game.influence_resolved` preservam
-posições, disposição, perícia, CD, dados, resultado e iniciativa quando aplicável.
+posições, disposição, perícia, CD, dados, resultado e concessão quando aplicável.
 
 `tests/integration/test_parley.py` testa a regra numa sessão genérica, sem dungeon,
 com dados controlados. A regressão da dungeon verifica a parada junto à porta.

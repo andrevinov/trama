@@ -27,6 +27,8 @@ from trama.scene import Scene
 from trama.spatial import Position
 from trama.vision import line_of_sight
 from trama.perception import Noise, Observer, Senses, observers_from_data
+from trama.knowledge import Claim, initial_memories
+from trama.social import profiles_from_data
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,7 @@ def coordinate(p: Position) -> list[int]:
 class DungeonState:
     inventory: set[str] = field(default_factory=set)
     discovered: set[str] = field(default_factory=set)
+    exposed_items: set[str] = field(default_factory=set)
     clothing: str = 'rags'
     sword_concealed: bool = False
     disguise: str = 'untested'
@@ -78,7 +81,8 @@ class DungeonSession(GameSession):
                                          for c in data['creatures']), roller=roller,
                       observers=observers_from_data(data.get('observers', [])) or (Observer(
                           'prisoner', 'Prisioneiro', Position(*data['dungeon']['prisoner_position']),
-                          Senses(perception_bonus=0, sleeping=True)),))
+                          Senses(perception_bonus=0, sleeping=True)),), memories=initial_memories(data),
+                      social_profiles=profiles_from_data(data))
         session.definition = deepcopy(data['dungeon'])
         session.items = {i['id']: deepcopy(i) for i in session.definition['items']}
         session.title = data.get('title', cls.title)
@@ -88,6 +92,7 @@ class DungeonSession(GameSession):
     def _initialize_dungeon(self):
         prisoner = self.perception.observer('prisoner')
         self.dungeon = DungeonState(prisoner_awake=not self.perception.sleeping(prisoner))
+        self.dungeon.exposed_items = {id for id, item in self.items.items() if item['discovery'] == 'visible'}
         self.prisoner_position = prisoner.position
         self.item_positions = {id: Position(*item['position']) for id, item in self.items.items()}
         self._events = []
@@ -105,6 +110,32 @@ class DungeonSession(GameSession):
                      perceptible=perceptible, **data)
         self._events.append(event)
         logger.info('dungeon.' + operation, extra={'data': event})
+        if operation in {'item_taken', 'drop', 'item_found'} and 'item_id' in data:
+            item = data['item_id']
+            if operation in {'drop', 'item_found'}:
+                self.dungeon.exposed_items.add(item)
+            position = self.state.position if operation in {'item_taken', 'drop'} else self.item_positions[item]
+            value = 'carried:player' if operation == 'item_taken' else f'position:{position.x + 1},{position.y + 1}'
+            self.knowledge.observe(Claim(item, 'location', value), text, position,
+                                   context='Manipulação ou descoberta de objeto presenciada.', entities=(actor_id,),
+                                   excluded=data.get('unnoticed_by', ()))
+
+    def observable_facts(self):
+        yield from super().observable_facts()
+        if not hasattr(self, 'dungeon'):
+            return
+        for id, item in self.items.items():
+            if id in self.dungeon.inventory or id not in self.dungeon.exposed_items:
+                continue
+            position = self.item_positions[id]
+            yield dict(claim=Claim(id, 'location', f'position:{position.x + 1},{position.y + 1}'),
+                       text=f'{item["name"]} está na coluna {position.x + 1}, linha {position.y + 1}.',
+                       position=position, context='Objeto exposto observado diretamente.', entities=(item['area'],))
+
+    def on_knowledge(self, memory):
+        if (hasattr(self, 'dungeon') and memory.owner_id == self.encounter.player_id
+                and memory.claim.subject_id in self.items):
+            self.dungeon.discovered.add(memory.claim.subject_id)
 
     def _passage(self, id):
         passage = next((p for p in self.scene.passages if p.id == id), None)
@@ -130,7 +161,58 @@ class DungeonSession(GameSession):
     def _guard_sees_player(self):
         return self._guard_available() and self.npc_sees_player('guard_1')
 
-    def _check(self, actor, skill, dc):
+    def contextual_check(self, id):
+        def make(id, kind, skill, description, facts):
+            return self.adjudication._request(id, kind, skill, description,
+                {**facts, 'approach:player': self.adjudication.approach})
+        if id == 'find_uniform' and 'cleaner_uniform' not in self.dungeon.discovered:
+            return make(id, 'hidden_object', 'perception', 'Encontrar a roupa de limpeza escondida sob a cama durante uma busca.',
+                {'place:cell_4': self.scene.area_at(self.item_positions['cleaner_uniform']).description,
+                 'item:cleaner_uniform': 'Roupa de empregado bem escondida sob a cama; não é a espada visível entre os panos.',
+                 'light:cell_4': ('dark' if self.item_positions['cleaner_uniform'] in self.scene.dark else
+                                  'dim' if self.item_positions['cleaner_uniform'] in self.scene.dim else 'bright')})
+        if id == 'steal_key' and self._guard_available():
+            return make(id, 'unnoticed_theft', 'sleight_of_hand', 'Pegar a chave da mesa sem que o guarda presente perceba o furto.',
+                {'item:cell_key': 'Chave exposta sobre a mesa; não está em bolso nem trancada.',
+                 'observer:guard_1': 'Avaliação condicionada à presença de um guarda com visão do furto. '
+                     'Se ele não puder observar, o código não exige este teste. Um disfarce aceito não oculta a mão.'})
+        if id == 'detect_sword':
+            return make(id, 'concealed_object', 'perception', 'O guarda examina se o visitante esconde uma espada longa sob o uniforme.',
+                {'item:longsword': 'Espada longa ocultada sob uma roupa de empregado, não invisibilidade mágica.',
+                 'observer:guard_1': 'Guarda presente com visão do visitante; examina o volume sob a roupa.'})
+        if id.startswith('listen:'):
+            target = id.split(':', 1)[1]
+            if target not in {'gate_2', 'guard_door', 'bathroom_door'}:
+                return None
+            passage = self._passage(target)
+            sound = ('Respiração discreta de um prisioneiro.' if target == 'gate_2' else
+                     'Movimentos e resmungos em volume normal do guarda, na área em que ele realmente está.')
+            return make(id, 'listen', 'perception', 'Escutar atentamente do lado da passagem, sem abri-la.',
+                {f'passage:{target}': {'kind': passage.kind, 'is_open': passage.is_open, 'name': passage.name,
+                                     'description': passage.description},
+                 'sound:source': sound, 'activity:guard': self.dungeon.guard_activity})
+        return None
+
+    def contextual_check_requests(self, steps):
+        ids = set()
+        for step in steps:
+            operation, target = step['operation'], step.get('target_id')
+            if operation == 'investigate' and target == 'cell_4':
+                ids.add('find_uniform')
+            if operation == 'listen':
+                ids.add('listen:' + target)
+            if operation == 'take' and target == 'cell_key' and self._guard_available() and self.perception.sees(self.guard, self.item_positions['cell_key']):
+                ids.add('steal_key')
+        might_conceal = self.dungeon.sword_concealed or any(s['operation'] == 'conceal' for s in steps)
+        has_sword = 'longsword' in self.dungeon.inventory or any(s['operation'] == 'take' and s.get('target_id') == 'longsword' for s in steps)
+        if (steps and any(s['operation'] in {'move', 'open', 'wear', 'conceal', 'deceive', 'take'} for s in steps)
+                and might_conceal and has_sword and not getattr(self, '_sword_checked', False)):
+            ids.add('detect_sword')
+        return tuple(r for id in sorted(ids) if (r := self.contextual_check(id)) is not None)
+
+    def _check(self, actor, skill, dc, *, contextual_id=None):
+        if contextual_id:
+            return self.adjudication.check(contextual_id, actor, skill, dc)
         state, roll, total = ability_check(self.encounter.sheets[actor], self.encounter.states[actor],
                                           skill, dc, self.encounter.roller)
         self.encounter.states[actor] = state
@@ -156,7 +238,9 @@ class DungeonSession(GameSession):
             if area and self.state.position not in area.cells:
                 return SpatialRequirement('inside_area', area.id, area.cells)
         elif operation == 'take' and target in self.items and target not in self.dungeon.inventory:
-            return self.reach_requirement(target, self.item_positions[target], include_target=True)
+            position = self.remembered_item_position(target)
+            if position is not None:
+                return self.reach_requirement(target, position, include_target=True)
         elif operation in {'listen', 'unlock'}:
             passage = next((p for p in self.scene.passages if p.id == target), None)
             if passage and (operation != 'unlock' or passage.locked):
@@ -179,6 +263,8 @@ class DungeonSession(GameSession):
                 raise ActionError('Encontre o objeto antes de pegá-lo.')
             if target in self.dungeon.inventory:
                 raise ActionError('Você já carrega esse objeto.')
+            if self.remembered_item_position(target) is None:
+                raise ActionError('Você conhece o objeto, mas não uma localização até a qual possa caminhar.')
         if operation in {'listen', 'unlock'}:
             passage = self._passage(target)
             if operation == 'unlock':
@@ -217,7 +303,9 @@ class DungeonSession(GameSession):
                 return path_to_cells(self._movement_grid(), self.state.position, goals), Decimal('0')
             position = self.prisoner_position
         elif target in self.known_objects():
-            position = self.item_positions[target]
+            position = self.remembered_item_position(target)
+            if position is None:
+                raise MovementError('Você não conhece uma localização desse objeto.')
         if position is not None:
             goals = frozenset(Position(position.x + dx, position.y + dy)
                               for dx, dy in (*DIRECTIONS.values(), (0, 0))
@@ -229,7 +317,26 @@ class DungeonSession(GameSession):
     def known_objects(self):
         return {id for id, item in self.items.items()
                 if id in self.dungeon.inventory or id in self.dungeon.discovered
-                or (item['discovery'] == 'visible' and self.item_positions[id] in self.visibility.visible)}
+                or (id in self.dungeon.exposed_items and self.item_positions[id] in self.visibility.visible)}
+
+    def remembered_item_position(self, id):
+        if id in self.dungeon.inventory:
+            return self.state.position
+        actual = self.item_positions[id]
+        if id in self.dungeon.exposed_items and actual in self.visibility.visible:
+            return actual
+        memories = sorted(self.knowledge.store.select('player', entities=(id,)), key=lambda m: -m.acquired_at)
+        for memory in memories:
+            if memory.claim.subject_id == id and memory.claim.predicate == 'location':
+                if memory.claim.value.startswith('position:'):
+                    try:
+                        x, y = map(int, memory.claim.value.removeprefix('position:').split(','))
+                        remembered = Position(x - 1, y - 1)
+                        return remembered if self.grid.contains(remembered) else None
+                    except ValueError:
+                        return None
+                return None
+        return None
 
     def map_view(self):
         visible = self.visibility.visible
@@ -238,7 +345,7 @@ class DungeonSession(GameSession):
             markers.append(dict(kind='ally', label='P', position=coordinate(self.prisoner_position)))
         markers.extend(dict(kind='item', position=coordinate(self.item_positions[id]))
                        for id in self.known_objects() if id not in self.dungeon.inventory
-                       and self.item_positions[id] in visible)
+                       and id in self.dungeon.exposed_items and self.item_positions[id] in visible)
         sheet = self.character_context()
         return dict(title=self.title, compact=True, markers=markers,
                     passage_lock_labels={p.id: ('trancada' if p.locked else 'destrancada')
@@ -256,13 +363,16 @@ class DungeonSession(GameSession):
             context['sword_concealed'] = self.dungeon.sword_concealed
         return context
 
-    def interpreter_context(self):
-        context = super().interpreter_context()
+    def interpreter_context(self, *, knowledge_query=''):
+        context = super().interpreter_context(knowledge_query=knowledge_query)
         state = self.dungeon
         known = self.known_objects()
-        context['visible_objects'] = [dict(id=id, name=item['name'], position=coordinate(self.item_positions[id]),
+        context['visible_objects'] = [dict(id=id, name=item['name'],
+                                           position=(coordinate(self.remembered_item_position(id))
+                                                     if self.remembered_item_position(id) is not None else None),
                                            carried=id in state.inventory,
-                                           visible=self.item_positions[id] in self.visibility.visible and id not in state.inventory)
+                                           visible=id in state.exposed_items and self.item_positions[id] in self.visibility.visible
+                                           and id not in state.inventory)
                                       for id, item in self.items.items() if id in known]
         if self.prisoner_position in self.visibility.visible and not state.companion_escaped:
             next(c for c in context['visible_creatures'] if c['id'] == 'prisoner')['free'] = state.prisoner_free
@@ -296,11 +406,11 @@ class DungeonSession(GameSession):
                           clothing='Trapos de lã', inventory=[],
                           spell='Minor Illusion; som ilusório, CD 13, alcance 9 m, duração 1 minuto; lã dos próprios trapos.'),
             initial_event='A grade da Cela 1 acabou de se abrir magicamente, sem ninguém próximo. O jogador ouviu a fechadura e o metal; não sabe a causa.',
-            adjudication='Rotina, itens, disfarce e ilusão são resolvidos pelo cenário. Visão, audição, sono, Hide e Search pertencem ao motor geral por NPC; consulte world.perception e não duplique detecções/testes. Sem parley pendente, não antecipe deslocamento/conflito. Com parley pendente, julgue a fala via influence após speak/challenge; resistência explícita pode iniciar conflito. A abordagem e Influence são regras gerais do Trama. Em combate resolva o turno do guarda normalmente.',
+            adjudication='Rotina, itens, disfarce e ilusão são resolvidos pelo cenário. Visão, audição, sono, Hide e Search pertencem ao motor geral por NPC; consulte world.perception e não duplique detecções/testes. Sem parley pendente, não antecipe deslocamento/conflito. Com conversa pending/listening, avalie a concessão via influence após speak/challenge, usando world.social. Recusa ou falha não cria iniciativa automática; violência exige decisão explícita. A abordagem e Influence são regras gerais do Trama. Em combate resolva o turno do guarda normalmente.',
             routine='Após dois intervalos de espera em exploração, o guarda vai ao banheiro por quatro ações do jogador; retorna à mesa depois. Escutar revela sinais dessa rotina.',
-            checks={'investigation_uniform': 15, 'listen': 10, 'deception': 15,
-                    'sword_notice': 10, 'concealed_sword_notice': 15, 'hide': 15,
-                    'illusion_investigation': 13})
+            checks={'deception': max(15, self.encounter.sheets['guard_1'].abilities.intelligence),
+                    'hide': 15, 'illusion_investigation': 13},
+            contextual_checks=['find_uniform', 'listen', 'steal_key', 'detect_sword'])
         context['world']['scenario']['prisoner']['spellcasting'] = {'intelligence': 16, 'proficiency_bonus': 2, 'spell_save_dc': 13}
         context['world']['conditions'] = ['Tochas fixadas à parede: não bloqueiam movimento nem visão. Iluminação normal, sem visão no escuro para humanos.',
             'Grades permitem visão; paredes e portas fechadas bloqueiam visão e passagem.',
@@ -406,8 +516,10 @@ class DungeonSession(GameSession):
                 if 'longsword' not in state.discovered:
                     state.discovered.add('longsword')
                     self._event('item_found', 'Uma espada longa está sob os panos.', item_id='longsword')
-                passed, _ = self._check('player', 'investigation', 15)
-                if passed and 'cleaner_uniform' not in state.discovered:
+                passed = False
+                if 'cleaner_uniform' not in state.discovered:
+                    passed, _ = self._check('player', 'perception', 15, contextual_id='find_uniform')
+                if passed:
                     state.discovered.add('cleaner_uniform')
                     self._event('item_found', 'Você encontra roupa de empregado da limpeza bem escondida sob a cama.', item_id='cleaner_uniform')
                 changed = True
@@ -417,22 +529,25 @@ class DungeonSession(GameSession):
             if target not in self.items:
                 raise ActionError('Objeto desconhecido.')
             if operation == 'take':
+                unnoticed_by = ()
                 if target in state.inventory:
                     raise ActionError('Você já carrega esse objeto.')
                 if target not in self.known_objects() or not self._near(self.item_positions[target]):
                     raise ActionError('Encontre o objeto e aproxime-se para pegá-lo.')
                 self._pay_interaction()
                 if target == 'cell_key' and self._guard_sees_player():
-                    passed, _ = self._check('player', 'sleight_of_hand', 13)
+                    passed, _ = self._check('player', 'sleight_of_hand', 13, contextual_id='steal_key')
                     if not passed:
                         self._start_conflict('O guarda flagra a tentativa de pegar a chave.')
                         return RuleResult(dict(operation=operation, changed=False, summary='A chave continua na mesa.'),
                                           'O guarda flagrou o furto; a iniciativa determina quem age agora.')
+                    unnoticed_by = ('guard_1',)
                 state.inventory.add(target)
                 if target == 'longsword':
                     self.encounter.sheets['player'] = replace(self.encounter.player_sheet, weapons=('longsword',))
                     self._sword_checked = False
-                self._event('item_taken', f'Você pega {self.items[target]["name"]}.', actor_id='player', item_id=target)
+                self._event('item_taken', f'Você pega {self.items[target]["name"]}.', actor_id='player', item_id=target,
+                            unnoticed_by=list(unnoticed_by))
             else:
                 if target not in state.inventory:
                     raise ActionError('Você não carrega esse objeto.')
@@ -482,7 +597,15 @@ class DungeonSession(GameSession):
             if not self._near(passage.position):
                 raise ActionError('Aproxime-se da porta ou grade para escutar.')
             self._pay_action()
-            passed, _ = self._check('player', 'perception', 10)
+            source = self.prisoner_position if target == 'gate_2' else self.guard.position
+            observer = Observer('player', 'Jogador', self.state.position, Senses(perception_bonus=0))
+            physical = self.perception.hears(observer, Noise('prisoner' if target == 'gate_2' else 'guard_1', source,
+                'quiet' if target == 'gate_2' else 'normal'), adjudicate=False)
+            if not physical or self.contextual_check('listen:' + target) is None:
+                self._event('listening_unavailable', 'Nenhum som relevante alcança o personagem pela passagem.', actor_id='player')
+                passed = False
+            else:
+                passed, _ = self._check('player', 'perception', 10, contextual_id='listen:' + target)
             if passed:
                 text = ('Você ouve o guarda no banheiro; os passos deixaram a mesa.' if state.guard_activity == 'bathroom'
                         else 'Um único guarda se mexe junto à mesa. Ele resmunga que logo precisará ir ao banheiro.')
@@ -531,8 +654,11 @@ class DungeonSession(GameSession):
             self._event('say', 'Obrigado! O prisioneiro desperta e fala baixo ao ver sua grade aberta.', actor_id='prisoner')
             self.emit_noise('prisoner', self.prisoner_position, 'quiet', 'Agradecimento em voz baixa.')
             return
-        self._event('say', 'Ei! Por favor, me solte! A chave está na mesa do guarda!', actor_id='prisoner')
-        self.dungeon.discovered.add('cell_key')  # Informação dita pelo prisioneiro; não concede o item.
+        memories = tuple(m for m in self.knowledge.store.select('prisoner', topics=('escape',), limit=6) if m.shareable)[:1]
+        text = 'Ei! Por favor, me solte!' + (' ' + memories[0].text if memories else '')
+        communication = self.knowledge.communicate('prisoner', text, self.prisoner_position, 'loud',
+                                                   memory_ids=tuple(m.id for m in memories))
+        self._event('say', text, actor_id='prisoner', **communication)
         self.emit_noise('prisoner', self.prisoner_position, 'loud',
                         'O pedido de socorro do prisioneiro ecoa nas celas.')
 
@@ -588,7 +714,7 @@ class DungeonSession(GameSession):
             elif 'longsword' in state.inventory and not getattr(self, '_sword_checked', False):
                 self._inspect_sword()
             return
-        passed, _ = self._check('player', 'deception', 15)
+        passed, _ = self._check('player', 'deception', max(15, self.encounter.sheets['guard_1'].abilities.intelligence))
         state.disguise = 'accepted' if passed else 'failed'
         self._event('disguise', 'O guarda aceita a identificação como empregado da limpeza.' if passed
                     else 'O guarda desconfia do uniforme e reconhece a tentativa de fuga.', accepted=passed)
@@ -598,8 +724,12 @@ class DungeonSession(GameSession):
             self._inspect_sword()
 
     def _inspect_sword(self):
+        if self.dungeon.sword_concealed:
+            passed, _ = self._check('guard_1', 'perception', 15, contextual_id='detect_sword')
+        else:
+            passed = True
+            self._event('visible_weapon', 'O guarda vê a espada exposta, sem precisar de um teste.', actor_id='guard_1')
         self._sword_checked = True
-        passed, _ = self._check('guard_1', 'perception', 15 if self.dungeon.sword_concealed else 10)
         if passed:
             self.dungeon.disguise = 'failed'
             self._start_conflict('O guarda percebe a espada; o disfarce cai.')

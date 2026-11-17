@@ -150,8 +150,8 @@ O mapa desenha a posição validada pela aplicação, nos dois modos.
 
 Uma ordem que exige resposta pode interromper a ação em modo narrado. `parley`
 registra interlocutor e posições de detecção; o NPC aguarda a resposta sem ganhar
-aproximação gratuita. Uma fala pode receber julgamento de Influence: sucesso
-permite evitar o confronto, recusa/falha inicia iniciativa nas posições atuais.
+aproximação gratuita. Uma fala pode receber avaliação de disposição e Influence:
+aceitar ouvir mantém custódia e posição; recusa/falha não inicia combate sozinha.
 Ataque explícito pode iniciar combate diretamente. Perguntas off preservam a
 abordagem. Veja [contrato, referências e limites](conversa-antes-do-combate.md).
 

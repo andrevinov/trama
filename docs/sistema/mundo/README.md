@@ -54,6 +54,10 @@ A visão filtra criaturas e elementos visíveis nas projeções do jogador. A se
 também pode guardar itens conhecidos ou carregados que não estão no campo de
 visão. A construção desses contextos pertence à aplicação.
 
+Os personagens também têm [memórias contextualizadas](../aplicacao/conhecimento-dos-npcs.md):
+uma localização lembrada ou relatada não é a posição oculta atual de um objeto.
+Percepção e comunicação alimentam essas memórias pelas operações da aplicação.
+
 O diretor do Mundo e o narrador podem receber estado completo para manter
 coerência. Isso não autoriza revelar segredos: a narração deve respeitar os fatos
 perceptíveis e as descobertas registradas. A avaliação dos textos pela

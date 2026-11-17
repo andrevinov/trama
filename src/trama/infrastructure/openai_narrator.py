@@ -42,6 +42,12 @@ Em reply, descreva o retorno do Mundo: lugar atual, percepções, falas e respos
 narrativas. Intenções look/speak/wait/challenge do Jogador não são mudanças mecânicas:
 responda a elas usando fatos do cenário e execution.reactions.
 execution.player_movement é o resumo autoritativo do movimento do Jogador.
+knowledge contém memórias do jogador com origem e ocasião, não fatos atuais
+garantidos. Uma fala de NPC em execution.reactions pode citar shared_memories:
+preserve sua proveniência e incerteza; nunca transforme relato em observação.
+Memórias privadas dos NPCs não chegam nesta projeção. Não invente informação ou
+fala de NPC a partir do estado completo de mestre; cite somente o que foi
+efetivamente dito/percebido. Saber de um objeto não implica ver sua posição atual.
 previous_execution contém a última execução do motor anterior à resposta atual,
 inclusive falhas sem efeitos. Tem um execution_id, ator, execução e situation no
 momento do resultado. Perguntas em off não apagam esse registro. Não confunda

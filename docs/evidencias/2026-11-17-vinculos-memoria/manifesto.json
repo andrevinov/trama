@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "experiments": [
+    {
+      "id": "memory-evidence-links-20261117",
+      "scope": "game_flow_from_prepared_situation",
+      "authorization": "Usuário solicitou corrigir rejeição e criar/rodar três lives. Teto agregado de 16 chamadas; uma revisão somente do original após correção concreta do contrato.",
+      "git_head": "05dbf7cd44be8f5a0e3b8dd67a8d00bcd84c7246",
+      "worktree_dirty": true,
+      "regression_source": {
+        "source": "logs/trama.jsonl",
+        "session_id": "dff07d768e90449c81bdd79d2f2fad16",
+        "interaction_id": "e96eba4ba822425e94b547d0fe81b0a0",
+        "ai_call_id": "1bd1b18dbb7b4660818711dba56c8684",
+        "timestamp": "2026-11-17T13:43:28.147+00:00",
+        "source_line_sha256": "c42e5ebd56449685371ddc7629a961f348f97744d04dbefc42798d0704dfa961",
+        "output_sha256": "54f5c7b14b39f71ea84901b6cd69347d7fedaff55bc11a2d9be84532e14c2039"
+      },
+      "summary": {
+        "sdk_attempts": 15,
+        "usage": {
+          "input_tokens": 200709,
+          "output_tokens": 5547,
+          "total_tokens": 206256,
+          "cached_input_tokens": 32058,
+          "cache_write_tokens": 168606,
+          "reasoning_tokens": 1070
+        },
+        "runs": [
+          {
+            "run_id": "20261117T141938-7e865c3f",
+            "case_id": "memoria-vinculos-consequencias",
+            "outcome": "passed",
+            "sdk_attempts": 3,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 4,
+                "transport_attempt_upper_bound": 4
+              }
+            },
+            "results": [
+              {
+                "goal": "listen",
+                "willingness": "willing",
+                "components": {
+                  "alignment": 0,
+                  "persona": 4,
+                  "memories": 2
+                },
+                "group_sizes": [
+                  2,
+                  2
+                ],
+                "reused": false
+              }
+            ],
+            "error": null
+          },
+          {
+            "run_id": "20261117T141938-7e865c3f",
+            "case_id": "memoria-vinculos-original",
+            "outcome": "failed",
+            "sdk_attempts": 3,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 4,
+                "transport_attempt_upper_bound": 4
+              }
+            },
+            "results": [
+              {
+                "goal": "access",
+                "willingness": "hesitant",
+                "components": {
+                  "alignment": 0,
+                  "persona": -1,
+                  "memories": 1
+                },
+                "group_sizes": [
+                  1,
+                  2,
+                  2
+                ],
+                "reused": false
+              }
+            ],
+            "error": {
+              "type": "AssertionError",
+              "message": "O Mundo mudou o pedido de liberdade/escuta.; A alegação de nobreza não foi considerada como relato não confirmado do jogador.\nassert not ['O Mundo mudou o pedido de liberdade/escuta.', 'A alegação de nobreza não foi considerada como relato não confirmado do jogador.']"
+            }
+          },
+          {
+            "run_id": "20261117T141938-7e865c3f",
+            "case_id": "memoria-vinculos-repeticao",
+            "outcome": "passed",
+            "sdk_attempts": 6,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 8,
+                "transport_attempt_upper_bound": 8
+              }
+            },
+            "results": [
+              {
+                "goal": "listen",
+                "willingness": "willing",
+                "components": {
+                  "alignment": 0,
+                  "persona": 6,
+                  "memories": 2
+                },
+                "group_sizes": [
+                  2,
+                  1
+                ],
+                "reused": false
+              },
+              {
+                "goal": "listen",
+                "willingness": "willing",
+                "components": {
+                  "alignment": 0,
+                  "persona": 6,
+                  "memories": 2
+                },
+                "group_sizes": [
+                  2,
+                  1
+                ],
+                "reused": true
+              }
+            ],
+            "error": null
+          },
+          {
+            "run_id": "20261117T164734-f1d19b87",
+            "case_id": "memoria-vinculos-original",
+            "outcome": "passed",
+            "sdk_attempts": 3,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 4,
+                "transport_attempt_upper_bound": 4
+              }
+            },
+            "results": [
+              {
+                "goal": "release",
+                "willingness": "willing",
+                "components": {
+                  "alignment": 0,
+                  "persona": 6,
+                  "memories": 2
+                },
+                "group_sizes": [
+                  1,
+                  2
+                ],
+                "reused": false
+              }
+            ],
+            "error": null
+          }
+        ]
+      },
+      "versioned_artifacts": [
+        {
+          "path": "docs/evidencias/2026-11-17-vinculos-memoria/relatorio.md",
+          "sha256": "1b5e1bef355523ff81e0cea2ffaefc78b3a337568ed9e5be19c59c8a7c85330d",
+          "bytes": 6648
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-vinculos-memoria/revisao-final.json",
+          "sha256": "2e08836c4c63457b70e623adcf7f0020443e0f2738cf2acd141876ff548dfe51",
+          "bytes": 795157
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-vinculos-memoria/revisao-inicial.json",
+          "sha256": "3a4316bf2eddced0c31ad1945556206a0ab0a0b4a5c26ae3cf931c2888f4ec44",
+          "bytes": 670940
+        }
+      ],
+      "local_artifacts": [
+        {
+          "path": "logs/live/memory-links/20261117T141938-7e865c3f/memoria-vinculos-consequencias/result.json",
+          "sha256": "66e9e96aa03a721edf384ab279df0c88c848aa95eb6a7aee7533f304a688f965",
+          "bytes": 328441
+        },
+        {
+          "path": "logs/live/memory-links/20261117T141938-7e865c3f/memoria-vinculos-consequencias/trace.jsonl",
+          "sha256": "c8e74302d1be7c5c1d08a17ceb2f4e6730572414a2846a6a195cb18172b3d3d0",
+          "bytes": 287760
+        },
+        {
+          "path": "logs/live/memory-links/20261117T141938-7e865c3f/memoria-vinculos-original/result.json",
+          "sha256": "fbc43c10da9b4f55e0d346b9a62e654635add0bb0cda03bb1a8df69082ac1c75",
+          "bytes": 334983
+        },
+        {
+          "path": "logs/live/memory-links/20261117T141938-7e865c3f/memoria-vinculos-original/trace.jsonl",
+          "sha256": "780851692766bf2343ac013db77e81d1c8a1d62310497ce4d1c52e4334016da7",
+          "bytes": 295185
+        },
+        {
+          "path": "logs/live/memory-links/20261117T141938-7e865c3f/memoria-vinculos-repeticao/result.json",
+          "sha256": "35b08cab431f06629a43ed5edd2fafd719729c0554530d374989464478baf427",
+          "bytes": 636316
+        },
+        {
+          "path": "logs/live/memory-links/20261117T141938-7e865c3f/memoria-vinculos-repeticao/trace.jsonl",
+          "sha256": "8c60cd035f89542f1ba583d6d18b6824cc0708d16544888d7f9182f38d61ce7c",
+          "bytes": 488443
+        },
+        {
+          "path": "logs/live/memory-links/20261117T164734-f1d19b87/memoria-vinculos-original/result.json",
+          "sha256": "5797a96dec46e360441bd0ede716958139fd75607e8ab585e2a65ad2f27ed7eb",
+          "bytes": 329064
+        },
+        {
+          "path": "logs/live/memory-links/20261117T164734-f1d19b87/memoria-vinculos-original/trace.jsonl",
+          "sha256": "49623c6414a00c6c1fdb96e74e3acf491ae65e7422ea198c7144dbefaabcd472",
+          "bytes": 287959
+        }
+      ]
+    }
+  ]
+}

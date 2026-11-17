@@ -36,6 +36,7 @@ class ContextContract:
 
 F = ContextField
 STATE = {
+    'knowledge': F('array', 'KnowledgeSystem / KnowledgeStore.select', 'Memórias selecionadas do jogador; não inclui memórias privadas de NPCs nem verdade global.'),
     'sensing': F('object', 'GameSession.perception', 'Ocultação e possibilidade atual de esconder-se; não revela observadores ocultos.'),
     'mode': F('string', 'GameSession.mode', 'Modo narrado ou por turnos.'),
     'character': F('object', 'GameSession.interpreter_context', 'Posição e recursos atuais do jogador.'),
@@ -84,14 +85,23 @@ CONTRACTS = {
         ('world', 'player_sheet', 'recent_messages[].off', 'map.blocked', 'map.difficult')),
     ContextKind.WORLD_ACTION: ContextContract(WORLD, 'Mestre completo avaliando a proposta do jogador.'),
     ContextKind.NPC_TURN: ContextContract(WORLD, 'Mestre completo para o NPC ativo; proposta do jogador vazia.'),
-    ContextKind.NARRATION_INITIAL: ContextContract(NARRATION, 'Descrição inicial limitada à percepção; world só para coerência.'),
-    ContextKind.NARRATION_RESULT: ContextContract(NARRATION, 'Narra efeitos validados e responde off; não executa intenções.'),
-    ContextKind.NARRATION_OFF: ContextContract(NARRATION, 'Explica regras/memória sem ação nova nem fala on.'),
+    ContextKind.NARRATION_INITIAL: ContextContract(NARRATION, 'Descrição inicial limitada à percepção; world só para coerência.',
+        ('world.social', 'world.knowledge', 'world.adjudication', 'execution.reactions[].disposition', 'execution.reactions[].private_memory_ids', 'previous_execution.execution.reactions[].disposition', 'execution.reactions[].adjudication', 'previous_execution.execution.reactions[].adjudication', 'previous_execution.execution.reactions[].private_memory_ids')),
+    ContextKind.NARRATION_RESULT: ContextContract(NARRATION, 'Narra efeitos validados e responde off; não executa intenções.',
+        ('world.social', 'world.knowledge', 'world.adjudication', 'execution.reactions[].disposition', 'execution.reactions[].private_memory_ids', 'previous_execution.execution.reactions[].disposition', 'execution.reactions[].adjudication', 'previous_execution.execution.reactions[].adjudication', 'previous_execution.execution.reactions[].private_memory_ids')),
+    ContextKind.NARRATION_OFF: ContextContract(NARRATION, 'Explica regras/memória sem ação nova nem fala on.',
+        ('world.social', 'world.knowledge', 'world.adjudication', 'execution.reactions[].disposition', 'execution.reactions[].private_memory_ids', 'previous_execution.execution.reactions[].disposition', 'execution.reactions[].adjudication', 'previous_execution.execution.reactions[].adjudication', 'previous_execution.execution.reactions[].private_memory_ids')),
 }
 
 # Tipos críticos internos. Demais extensões internas também entram na revisão
 # estrutural offline, sem transformar eventos e cenários em um esquema fechado.
 INTERNAL = {
+    'knowledge[]': 'object', 'knowledge[].owner_id': 'string', 'knowledge[].id': 'string',
+    'knowledge[].claim': 'object', 'knowledge[].claim.subject_id': 'string',
+    'knowledge[].claim.predicate': 'string', 'knowledge[].claim.value': 'string',
+    'knowledge[].source': 'object', 'knowledge[].source.kind': 'string',
+    'knowledge[].source.event_id': 'string', 'knowledge[].when': 'string',
+    'knowledge[].context': 'string', 'knowledge[].shareable': 'boolean', 'knowledge[].acquired_at': 'integer',
     'sensing.hidden': 'boolean', 'sensing.can_hide': 'boolean',
     'world.perception': 'object', 'world.perception.hidden': 'boolean',
     'world.perception.stealth_total': 'integer|null', 'world.perception.observers': 'array',

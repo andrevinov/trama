@@ -1,0 +1,607 @@
+{
+  "schema_version": 1,
+  "experiments": [
+    {
+      "id": "npc-knowledge-20261117",
+      "scope": "game_flow_from_prepared_situation",
+      "authorization": "Implementação e execução somente dos testes novos, solicitadas pelo usuário; teto agregado de 24 tentativas SDK.",
+      "git_head": "05dbf7cd44be8f5a0e3b8dd67a8d00bcd84c7246",
+      "worktree_dirty": true,
+      "summary": {
+        "sdk_attempts": 22,
+        "responses": 18,
+        "usage": {
+          "input_tokens": 117611,
+          "output_tokens": 2013,
+          "total_tokens": 119624,
+          "cached_input_tokens": 54338,
+          "cache_write_tokens": 63219,
+          "reasoning_tokens": 189
+        },
+        "runs": [
+          {
+            "run_id": "20261117T042916-a0224c11",
+            "case_id": "memoria-desatualizada",
+            "outcome": "failed",
+            "sdk_attempts": 1,
+            "responses": 0,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 4,
+                "transport_attempt_upper_bound": 4
+              }
+            },
+            "instructions_sha256": {
+              "action_plan": "24d5f6ef4ff86d94be5ab03c6232fce015953b40e2f7ac1d5ab6b75eab5465d9"
+            },
+            "result_path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-desatualizada/result.json",
+            "trace_path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-desatualizada/trace.jsonl"
+          },
+          {
+            "run_id": "20261117T042916-a0224c11",
+            "case_id": "memoria-desconhecida",
+            "outcome": "failed",
+            "sdk_attempts": 1,
+            "responses": 0,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 4,
+                "transport_attempt_upper_bound": 4
+              }
+            },
+            "instructions_sha256": {
+              "action_plan": "24d5f6ef4ff86d94be5ab03c6232fce015953b40e2f7ac1d5ab6b75eab5465d9"
+            },
+            "result_path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-desconhecida/result.json",
+            "trace_path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-desconhecida/trace.jsonl"
+          },
+          {
+            "run_id": "20261117T042916-a0224c11",
+            "case_id": "memoria-inicial",
+            "outcome": "failed",
+            "sdk_attempts": 1,
+            "responses": 0,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 4,
+                "transport_attempt_upper_bound": 4
+              }
+            },
+            "instructions_sha256": {
+              "action_plan": "24d5f6ef4ff86d94be5ab03c6232fce015953b40e2f7ac1d5ab6b75eab5465d9"
+            },
+            "result_path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-inicial/result.json",
+            "trace_path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-inicial/trace.jsonl"
+          },
+          {
+            "run_id": "20261117T042916-a0224c11",
+            "case_id": "memoria-relato",
+            "outcome": "failed",
+            "sdk_attempts": 1,
+            "responses": 0,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 12,
+                "transport_attempt_upper_bound": 12
+              }
+            },
+            "instructions_sha256": {
+              "action_plan": "24d5f6ef4ff86d94be5ab03c6232fce015953b40e2f7ac1d5ab6b75eab5465d9"
+            },
+            "result_path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-relato/result.json",
+            "trace_path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-relato/trace.jsonl"
+          },
+          {
+            "run_id": "20261117T104100-b6d33083",
+            "case_id": "memoria-desatualizada",
+            "outcome": "passed",
+            "sdk_attempts": 3,
+            "responses": 3,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 3,
+                "transport_attempt_upper_bound": 3
+              }
+            },
+            "instructions_sha256": {
+              "action_plan": "24d5f6ef4ff86d94be5ab03c6232fce015953b40e2f7ac1d5ab6b75eab5465d9",
+              "world_response": "a4f7a41821d396f012b81a52ee805ebcce85279258032ed188628f3c2614bd35",
+              "narrator_reply": "110d232003cbbf67651fd7042beac4a99e03048e42352445655c07667ab326f1"
+            },
+            "result_path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-desatualizada/result.json",
+            "trace_path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-desatualizada/trace.jsonl"
+          },
+          {
+            "run_id": "20261117T104100-b6d33083",
+            "case_id": "memoria-desconhecida",
+            "outcome": "passed",
+            "sdk_attempts": 3,
+            "responses": 3,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 3,
+                "transport_attempt_upper_bound": 3
+              }
+            },
+            "instructions_sha256": {
+              "action_plan": "24d5f6ef4ff86d94be5ab03c6232fce015953b40e2f7ac1d5ab6b75eab5465d9",
+              "world_response": "a4f7a41821d396f012b81a52ee805ebcce85279258032ed188628f3c2614bd35",
+              "narrator_reply": "110d232003cbbf67651fd7042beac4a99e03048e42352445655c07667ab326f1"
+            },
+            "result_path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-desconhecida/result.json",
+            "trace_path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-desconhecida/trace.jsonl"
+          },
+          {
+            "run_id": "20261117T104100-b6d33083",
+            "case_id": "memoria-inicial",
+            "outcome": "passed",
+            "sdk_attempts": 3,
+            "responses": 3,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 3,
+                "transport_attempt_upper_bound": 3
+              }
+            },
+            "instructions_sha256": {
+              "action_plan": "24d5f6ef4ff86d94be5ab03c6232fce015953b40e2f7ac1d5ab6b75eab5465d9",
+              "world_response": "a4f7a41821d396f012b81a52ee805ebcce85279258032ed188628f3c2614bd35",
+              "narrator_reply": "110d232003cbbf67651fd7042beac4a99e03048e42352445655c07667ab326f1"
+            },
+            "result_path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-inicial/result.json",
+            "trace_path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-inicial/trace.jsonl"
+          },
+          {
+            "run_id": "20261117T104100-b6d33083",
+            "case_id": "memoria-relato",
+            "outcome": "passed",
+            "sdk_attempts": 9,
+            "responses": 9,
+            "configuration": {
+              "model": "gpt-5.6-terra",
+              "timeout_seconds": 30,
+              "max_retries": 0,
+              "context_mode": "minimal",
+              "max_corrections": 1,
+              "schema_order": "operation-first",
+              "interpretation": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "narration": {
+                "max_output_tokens": 1000,
+                "reasoning_effort": "low"
+              },
+              "world": {
+                "max_output_tokens": 2000,
+                "reasoning_effort": "low"
+              },
+              "experiment": null,
+              "profile": "application_default",
+              "differences_from_default": {},
+              "enabled": true,
+              "sdk_version": "3.49.0",
+              "provider_host": "api.openai.com",
+              "client_source": "owned",
+              "call_budget": {
+                "max_calls": 11,
+                "transport_attempt_upper_bound": 11
+              }
+            },
+            "instructions_sha256": {
+              "action_plan": "24d5f6ef4ff86d94be5ab03c6232fce015953b40e2f7ac1d5ab6b75eab5465d9",
+              "world_response": "a4f7a41821d396f012b81a52ee805ebcce85279258032ed188628f3c2614bd35",
+              "narrator_reply": "110d232003cbbf67651fd7042beac4a99e03048e42352445655c07667ab326f1"
+            },
+            "result_path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-relato/result.json",
+            "trace_path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-relato/trace.jsonl"
+          }
+        ]
+      },
+      "measured_source": [
+        {
+          "original_path": "src/trama/knowledge.py",
+          "snapshot_path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/knowledge.py",
+          "sha256": "4c4c31a0524e0d0f1336c1d0e7d82321d1bb034012bb1fd6366fd2180ad9c553"
+        },
+        {
+          "original_path": "src/trama/application/knowledge.py",
+          "snapshot_path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/application/knowledge.py",
+          "sha256": "5389786531482243b1e5d71d42cf15a09ef222481df914306d4bda94d8effe8c"
+        },
+        {
+          "original_path": "src/trama/application/session.py",
+          "snapshot_path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/application/session.py",
+          "sha256": "20e8a33fc939f8c27d392138ca29a82de6c37c31119f70e7f536491bfaf350cc"
+        },
+        {
+          "original_path": "src/trama/application/dungeon.py",
+          "snapshot_path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/application/dungeon.py",
+          "sha256": "9c4965c6a15826e336acc8c84e2353eddc6d74f2a0f4437c7fc9b5270d699f54"
+        },
+        {
+          "original_path": "src/trama/application/conversation.py",
+          "snapshot_path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/application/conversation.py",
+          "sha256": "a6d17c8505e5fd036e2b47fa43b5369de0096e3a1f05115f3d4f831d3b894427"
+        },
+        {
+          "original_path": "src/trama/application/world_resolution.py",
+          "snapshot_path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/application/world_resolution.py",
+          "sha256": "50bea64fac42a45faf4a35cb7698a2f04233641fe463bfb75a8236566f01581d"
+        },
+        {
+          "original_path": "src/trama/infrastructure/openai_intent_interpreter.py",
+          "snapshot_path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/infrastructure/openai_intent_interpreter.py",
+          "sha256": "6cc3480e79799d0431d0876624e13ab334f4e940da180c1d0b807d1c2a517465"
+        },
+        {
+          "original_path": "src/trama/infrastructure/openai_world_director.py",
+          "snapshot_path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/infrastructure/openai_world_director.py",
+          "sha256": "234feac02fa5ad018303d2b99954169f729156fb64e9dcd8f20ba086ef065c3c"
+        },
+        {
+          "original_path": "src/trama/infrastructure/openai_narrator.py",
+          "snapshot_path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/infrastructure/openai_narrator.py",
+          "sha256": "e723d1e1c756d26e90058b66294b9c838f96215692ef7c073c1d66c0fd50b55e"
+        },
+        {
+          "original_path": "src/trama/scenarios/knowledge_rooms.json",
+          "snapshot_path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/scenarios/knowledge_rooms.json",
+          "sha256": "7e597b10176c414a8d5360ebf85fad0945b05c4194ab574020252122904cf6bd"
+        },
+        {
+          "original_path": "tests/live/test_npc_knowledge_live.py",
+          "snapshot_path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/tests/live/test_npc_knowledge_live.py",
+          "sha256": "f1ebe09b50d9435b7a080828f199ffb68e3f8b0899bcc4250e78efb58351ddc2"
+        }
+      ],
+      "final_source_sha256": {
+        "src/trama/knowledge.py": "ae9544cbbea32ce22a2a3a97422bde6314d254b926cc1e6d55308d60212cc231",
+        "src/trama/application/knowledge.py": "1e55cc6ae16ffc16ea8d7f64c4f5c2ba77125143fa4ac51ef101e04cc0dbbd4d",
+        "src/trama/application/session.py": "20e8a33fc939f8c27d392138ca29a82de6c37c31119f70e7f536491bfaf350cc",
+        "src/trama/application/dungeon.py": "9c4965c6a15826e336acc8c84e2353eddc6d74f2a0f4437c7fc9b5270d699f54",
+        "src/trama/application/conversation.py": "833fd3a2f701fee2b8678e3ddb07cd7997ad7da176259a1d50167339c38291b5",
+        "src/trama/application/world_resolution.py": "50bea64fac42a45faf4a35cb7698a2f04233641fe463bfb75a8236566f01581d",
+        "src/trama/infrastructure/openai_intent_interpreter.py": "6cc3480e79799d0431d0876624e13ab334f4e940da180c1d0b807d1c2a517465",
+        "src/trama/infrastructure/openai_world_director.py": "234feac02fa5ad018303d2b99954169f729156fb64e9dcd8f20ba086ef065c3c",
+        "src/trama/infrastructure/openai_narrator.py": "e723d1e1c756d26e90058b66294b9c838f96215692ef7c073c1d66c0fd50b55e",
+        "src/trama/scenarios/knowledge_rooms.json": "7e597b10176c414a8d5360ebf85fad0945b05c4194ab574020252122904cf6bd",
+        "tests/live/test_npc_knowledge_live.py": "f1ebe09b50d9435b7a080828f199ffb68e3f8b0899bcc4250e78efb58351ddc2"
+      },
+      "versioned_artifacts": [
+        {
+          "path": "docs/evidencias/2026-11-17-conhecimento-npcs/relatorio.md",
+          "bytes": 6414,
+          "sha256": "4b1397661cef6d92fe9d7ec6b7b9ce00f89deac71e8669c01738c94e46aee8f1"
+        }
+      ],
+      "local_artifacts": [
+        {
+          "path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-desatualizada/result.json",
+          "bytes": 17640,
+          "sha256": "52642e0247b244bde0c1d8bc4e4674794f11026cc1398d9191551002825a75dc"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-desatualizada/trace.jsonl",
+          "bytes": 63198,
+          "sha256": "e8b12a2adc70d62ffa284d6e4dd934170565e1f0873d5d31cefb0096e9fad867"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-desconhecida/result.json",
+          "bytes": 14982,
+          "sha256": "9a7299e32a7a316718cfb5a981b6772b125555f3efd0c2ac6a90ac7d1a10bf3c"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-desconhecida/trace.jsonl",
+          "bytes": 61806,
+          "sha256": "a721b46268ff15fd1a285104d53f27976531db22764d48f216866d70233f1330"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-inicial/result.json",
+          "bytes": 17505,
+          "sha256": "aed746796780a251ec10873f80792c986dffb15f3b06eb95bc3f35071b885dd8"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-inicial/trace.jsonl",
+          "bytes": 63187,
+          "sha256": "73c0223113e0f0c6b427ec113f995ef7c5ada026da4de1b5e1ca9ed9a3da7f24"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-relato/result.json",
+          "bytes": 17757,
+          "sha256": "57d901e4c75b421452a2ed6196bd207b901f95b41c10977b639fa2929031ebb0"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T042916-a0224c11/memoria-relato/trace.jsonl",
+          "bytes": 63187,
+          "sha256": "68dc9e094353676789a66bd3b0377dd18f46435da718d93cf3f7fddc512010ea"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-desatualizada/result.json",
+          "bytes": 86013,
+          "sha256": "023f46c583fe9bcf5f2bbdd02cc9c317866a49c44d311cdf84108e54d16ef379"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-desatualizada/trace.jsonl",
+          "bytes": 127285,
+          "sha256": "1e2a9cc07a77fb8f20ccbd9515488376577790cd7de9b1d2a6b36d2ab6f68d3b"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-desconhecida/result.json",
+          "bytes": 74732,
+          "sha256": "b5d64b96de6b2f61b4bc80c579c261d8a96b941ecc31cd50e49b0cfe4ea93e26"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-desconhecida/trace.jsonl",
+          "bytes": 118561,
+          "sha256": "0ab3a476dfd47e3b3f5aa7d245885e5553bcde4187646c1e91c6233385f9f20f"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-inicial/result.json",
+          "bytes": 85971,
+          "sha256": "be7099b72f526a90c13ac33aa2fc4a043e9789509ab90539fcb1beab40f2d5d3"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-inicial/trace.jsonl",
+          "bytes": 127372,
+          "sha256": "e3542679587a8e1df3060ca104f4bfe782fbea0241583b1c5e13caa3abf12d8d"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-relato/result.json",
+          "bytes": 305730,
+          "sha256": "10cc97e76e7a3fcb101d75ae9ba286d46bc8d2ff54112469be52a6013b911799"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/memoria-relato/trace.jsonl",
+          "bytes": 379109,
+          "sha256": "8cf992e2b44f18710f2fbf23a4b74d285d67456c66d3632a6e44a7f593a7a6f7"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/source-at-live.json",
+          "bytes": 3054,
+          "sha256": "402382f7fb6628fe0251e5c12cecd3ca6394940da78d7f54fc32b53b016c27eb"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/application/conversation.py",
+          "bytes": 35072,
+          "sha256": "a6d17c8505e5fd036e2b47fa43b5369de0096e3a1f05115f3d4f831d3b894427"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/application/dungeon.py",
+          "bytes": 49098,
+          "sha256": "9c4965c6a15826e336acc8c84e2353eddc6d74f2a0f4437c7fc9b5270d699f54"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/application/knowledge.py",
+          "bytes": 6064,
+          "sha256": "5389786531482243b1e5d71d42cf15a09ef222481df914306d4bda94d8effe8c"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/application/session.py",
+          "bytes": 43161,
+          "sha256": "20e8a33fc939f8c27d392138ca29a82de6c37c31119f70e7f536491bfaf350cc"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/application/world_resolution.py",
+          "bytes": 16383,
+          "sha256": "50bea64fac42a45faf4a35cb7698a2f04233641fe463bfb75a8236566f01581d"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/infrastructure/openai_intent_interpreter.py",
+          "bytes": 25503,
+          "sha256": "6cc3480e79799d0431d0876624e13ab334f4e940da180c1d0b807d1c2a517465"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/infrastructure/openai_narrator.py",
+          "bytes": 11354,
+          "sha256": "e723d1e1c756d26e90058b66294b9c838f96215692ef7c073c1d66c0fd50b55e"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/infrastructure/openai_world_director.py",
+          "bytes": 17765,
+          "sha256": "234feac02fa5ad018303d2b99954169f729156fb64e9dcd8f20ba086ef065c3c"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/knowledge.py",
+          "bytes": 9821,
+          "sha256": "4c4c31a0524e0d0f1336c1d0e7d82321d1bb034012bb1fd6366fd2180ad9c553"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/src/trama/scenarios/knowledge_rooms.json",
+          "bytes": 2266,
+          "sha256": "7e597b10176c414a8d5360ebf85fad0945b05c4194ab574020252122904cf6bd"
+        },
+        {
+          "path": "logs/live/knowledge/20261117T104100-b6d33083/source_snapshot/tests/live/test_npc_knowledge_live.py",
+          "bytes": 7713,
+          "sha256": "f1ebe09b50d9435b7a080828f199ffb68e3f8b0899bcc4250e78efb58351ddc2"
+        },
+        {
+          "path": "logs/live/knowledge/new-local-tests-final.txt",
+          "bytes": 99,
+          "sha256": "7c2dafb8b15cfe34e0b6dbf750990ee37edbced3cc967f4ce29733acef4f480d"
+        },
+        {
+          "path": "logs/live/knowledge/summary.json",
+          "bytes": 12232,
+          "sha256": "65f2f7b6603fa33a1ee6d5b9c45c736080ef282d25f274ffba5fe581600c8775"
+        }
+      ]
+    }
+  ]
+}

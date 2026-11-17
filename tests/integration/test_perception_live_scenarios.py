@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from conftest import sourced_plan
+from conftest import with_judgments, sourced_plan
 from trama.application.dialogue import Speech
 from trama.application.intents import ActionPlan, MovementIntent, NarrativeIntent, RuleIntent
 from trama.application.situations import load_situation, situation_state
@@ -35,6 +35,7 @@ def test_shared_sensory_situation_and_live_criteria(case, monkeypatch):
                 intent = NarrativeIntent(prompt, operation, volume=volume)
             return sourced_plan(ActionPlan((intent,)), prompt)
 
+        @with_judgments
         def decide(context):
             if case['expected'].startswith('search_') and not context['world']['perception']['last_search']:
                 return WorldPlan((WorldReaction(0, None, (WorldAction('watcher', 'search', 'O vigia procura quem está escondido.', 'player'),)),))

@@ -13,7 +13,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from conftest import scripted_responses, sourced_plan
+from conftest import with_judgments, scripted_responses, sourced_plan
 from trama.application.conversation import ExecutionReport
 from trama.application.dialogue import NarrationError, Speech
 from trama.application.game_flow import GameFlow, GameFlowError, FlowStage, FlowStatus
@@ -48,6 +48,7 @@ class Director:
         self.plans = deque(plans)
         self.calls = []
 
+    @with_judgments
     def decide(self, context):
         self.calls.append(deepcopy(context))
         plan = self.plans.popleft()
@@ -448,7 +449,7 @@ def test_npc_sequence_has_a_bound_if_executor_fails_to_advance(monkeypatch, dice
     session.execute(RuleIntent('start_combat'))
     flow = GameFlow(session, Interpreter(), Narrator(), Director(WorldPlan()))
     # Falha controlada do executor: não muda a iniciativa ao concluir a etapa.
-    monkeypatch.setattr(flow.conversation, 'execute_npc_turn', lambda world: ExecutionReport())
+    monkeypatch.setattr(flow.conversation, 'execute_npc_turn', lambda world, **kwargs: ExecutionReport())
     flow.submit('Ando.')
     respond(flow, FlowStage.NPC_TURN)
     assert flow.status == FlowStatus.FAILED and not flow.pending

@@ -27,7 +27,10 @@ como tal; sua aprovação não comprova o fluxo completo de uma partida.
 | Testes unitários | Regras e componentes isolados com entradas e resultados controlados. | [tests/unit](../../../tests/unit) |
 | Integração local | Componentes reais em conjunto, incluindo UI sem tela e transporte simulado quando necessário. | [tests/integration](../../../tests/integration) |
 | Live tests | Comportamentos com serviços reais e critérios declarados por suíte. | [tests/live](../../../tests/live/README.md) |
+| Disposição social | Alinhamento, persona, memória relevante e concessões limitadas na conversa. | [Bateria social](disposicao-live.md) |
+| Vínculos de memória | Um fato com consequências para vários interesses, contado uma vez. | [Três regressões live](vinculos-memoria-live.md) |
 | Conclusão de NPCs | Movimento limitado, continuação de ações, recuperação e devolução do controle. | [Turnos de NPCs](turnos-npc-live.md) |
+| Conhecimento dos NPCs | Origem, desconhecimento, informação antiga e transmissão de relatos. | [Conhecimento live](conhecimento-live.md) |
 | Análise parcial de interpretação | Comparar variantes do adaptador com expectativas independentes, sem executar ações do jogo. | [Análise de interpretação](analise-de-interpretacao.md) |
 | Preparação de situações | Construção de estados reproduzíveis por operações públicas e verificação de pré-condições. | [Preparação reproduzível](preparacao-de-cenarios.md), [fixtures contextuais](../../../tests/fixtures/contextual_movement/README.md) |
 | Contratos de contexto | Revisão de mudanças nos dados, instruções e esquemas construídos pela aplicação. | [Contratos e procedimento de revisão](../ia/contextos-e-contratos.md) |
@@ -85,6 +88,7 @@ preserva essa distinção. Uma execução por situação não mede repetibilidad
 
 | Assunto | Referência de tier 3 |
 | --- | --- |
+| Dificuldades contextuais e memórias live | [Casos, critérios e orçamento](dificuldade-live.md) |
 | Política dos live tests | [politica-live-tests](politica-live-tests.md) |
 | Preparação reproduzível de situações | [preparacao-de-cenarios](preparacao-de-cenarios.md) |
 | Análise parcial do contrato de interpretação | [analise-de-interpretacao](analise-de-interpretacao.md) |

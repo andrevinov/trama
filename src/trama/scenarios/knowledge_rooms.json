@@ -1,0 +1,110 @@
+{
+  "title": "Memórias do arquivo",
+  "width": 24,
+  "height": 5,
+  "start": [
+    7,
+    2
+  ],
+  "areas": [
+    {
+      "id": "west",
+      "name": "Sala oeste",
+      "x": 1,
+      "y": 1,
+      "width": 9,
+      "height": 3,
+      "description": "Uma sala iluminada, com um arquivista e seu aprendiz."
+    },
+    {
+      "id": "east",
+      "name": "Sala leste",
+      "x": 11,
+      "y": 1,
+      "width": 12,
+      "height": 3,
+      "description": "Uma sala de trabalho separada por uma porta de madeira."
+    }
+  ],
+  "passages": [
+    {
+      "id": "door",
+      "name": "Porta do arquivo",
+      "kind": "door",
+      "position": [
+        10,
+        2
+      ],
+      "is_open": false,
+      "locked": false,
+      "connects": [
+        "west",
+        "east"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "archive_key",
+      "name": "Chave do arquivo",
+      "position": [
+        12,
+        2
+      ],
+      "description": "Uma pequena chave de ferro."
+    }
+  ],
+  "player": {
+    "level": 3,
+    "armor": "none",
+    "weapons": []
+  },
+  "creatures": [],
+  "observers": [
+    {
+      "id": "archivist",
+      "name": "Arquivista",
+      "position": [
+        3,
+        1
+      ],
+      "knowledge": [
+        {
+          "id": "key-on-desk",
+          "claim": {
+            "subject_id": "archive_key",
+            "predicate": "location",
+            "value": "position:13,3"
+          },
+          "text": "Na última inspeção, vi a chave do arquivo sobre a mesa, na coluna 13, linha 3. Não sei se continua lá.",
+          "source": {
+            "kind": "observation",
+            "event_id": "last-inspection"
+          },
+          "when": "Na última inspeção, antes desta conversa.",
+          "context": "O arquivista inspecionou a sala leste e depois voltou para a sala oeste. Pode ajudar visitantes com informações do arquivo.",
+          "entities": [
+            "west",
+            "east",
+            "desk",
+            "archive_key"
+          ],
+          "topics": [
+            "arquivo",
+            "chave",
+            "keys"
+          ],
+          "shareable": true
+        }
+      ]
+    },
+    {
+      "id": "apprentice",
+      "name": "Aprendiz",
+      "position": [
+        4,
+        1
+      ]
+    }
+  ]
+}

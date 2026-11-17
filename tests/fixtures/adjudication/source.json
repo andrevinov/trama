@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-11-17T17:23:24.158+00:00",
+  "session_id": "329e25bd16f8463e9b2b84b2d9a9a249",
+  "interaction_id": "2aabef3cf3734f7699a009ed0bc72047",
+  "ai_call_id": "4ce9e29a9d3b48c6944080ea82bd4168",
+  "source_line_sha256": "8bfe84b87ad2743b6abed89e6881d3318591a3c618f622dd85a12a0d1047e3c8",
+  "output_sha256": "95569beaadf706ed12acfb7ec3beafa74b3768296d8fefa3aec0c8f00e6fc897",
+  "source": "logs/trama.jsonl"
+}

@@ -11,6 +11,7 @@ import re
 from trama.application.dialogue import DialogueMessage
 from trama.application.intents import (ActionPlan, DoorIntent, MovementIntent,
                                        MovementSegment, NarrativeIntent, RuleIntent, ScenarioIntent)
+from trama.knowledge import Claim
 from trama.observability import current_context, log_context, new_id
 
 logger = logging.getLogger(__name__)
@@ -58,6 +59,8 @@ def situation_state(session):
     area = session.scene.area_at(session.state.position) if session.scene else None
     dungeon = getattr(session, 'dungeon', None)
     return {
+        'social': session.social.context(tuple(session.social.profiles)),
+        'knowledge': session.knowledge.store.export(),
         'sensing': session.perception.context(),
         'parley': session.parley.context() if session.parley else None,
         'position': [session.state.position.x + 1, session.state.position.y + 1],
@@ -89,6 +92,8 @@ def declared_intent(data):
         values.setdefault('dash', False)
         values.setdefault('clarification', '')
         return MovementIntent(**values)
+    if kind == 'narrative' and 'claims' in values:
+        values['claims'] = tuple(Claim(**c) for c in values['claims'])
     constructors = {'door': DoorIntent, 'scenario': ScenarioIntent, 'rule': RuleIntent, 'narrative': NarrativeIntent}
     if kind not in constructors:
         raise SituationError(f'Tipo de intenção desconhecido: {kind}.')
@@ -99,7 +104,8 @@ class Situation:
     """Dados de preparação; não contém prompts, adaptadores ou critérios de sucesso live."""
 
     fields = {'id', 'scenario', 'setup', 'rolls', 'optional_world_rolls', 'preparation_rolls',
-              'preconditions', 'passage_variations', 'history', 'start_variation', 'sense_variations', 'lighting_variations'}
+              'preconditions', 'passage_variations', 'history', 'start_variation', 'sense_variations', 'lighting_variations',
+              'knowledge_variations', 'object_variations', 'social_variations'}
 
     def __init__(self, data, preparations):
         if not isinstance(data, dict) or not isinstance(preparations, dict):
@@ -152,6 +158,21 @@ class Situation:
             if actor is None or not isinstance(variation, dict):
                 raise SituationError(f'Variação de sentidos inválida: {id}.')
             actor['senses'] = {**actor.get('senses', {}), **variation}
+        for id, memories in self.data.get('knowledge_variations', {}).items():
+            actor = next((a for a in [*data.get('creatures', []), *data.get('observers', [])] if a['id'] == id), None)
+            if actor is None or not isinstance(memories, list):
+                raise SituationError(f'Variação de conhecimento inválida: {id}.')
+            actor['knowledge'] = deepcopy(memories)
+        for id, profile in self.data.get('social_variations', {}).items():
+            actor = next((a for a in [*data.get('creatures', []), *data.get('observers', [])] if a['id'] == id), None)
+            if actor is None or not isinstance(profile, dict):
+                raise SituationError(f'Variação social inválida: {id}.')
+            actor['social'] = deepcopy(profile)
+        for id, variation in self.data.get('object_variations', {}).items():
+            obj = next((o for o in data.get('objects', []) if o['id'] == id), None)
+            if obj is None or not isinstance(variation, dict) or set(variation) != {'position'}:
+                raise SituationError(f'Variação de objeto inválida: {id}.')
+            obj['position'] = deepcopy(variation['position'])
         for kind, positions in self.data.get('lighting_variations', {}).items():
             if kind not in {'dark', 'dim'} or not isinstance(positions, list):
                 raise SituationError('Variação de iluminação inválida.')
@@ -159,7 +180,9 @@ class Situation:
         for id, variation in self.data.get('passage_variations', {}).items():
             passage = next((p for p in data['passages'] if p['id'] == id), None)
             if (passage is None or not isinstance(variation, dict) or
-                    variation.keys() - {'is_open', 'locked'} or any(type(v) is not bool for v in variation.values())):
+                    variation.keys() - {'is_open', 'locked', 'description'}
+                    or any(type(v) is not bool for k, v in variation.items() if k != 'description')
+                    or ('description' in variation and not isinstance(variation['description'], str))):
                 raise SituationError(f'Variação de passagem inválida: {id}.')
             passage.update(variation)
         return data

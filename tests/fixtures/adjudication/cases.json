@@ -1,0 +1,72 @@
+[
+  {
+    "id": "memoria-resposta-original",
+    "situation": "memoria-vinculos-original",
+    "prompt": "\"Calma, senhor guarda!\", eu falo, alto para ele ouvir. \"Sei que podemos conversar e chegar num acordo. Eu fui colocado aqui erroneamente. Meu pai é um nobre muito rico... você pode ganhar bastante dinheiro se me ajudar!\"",
+    "expected": "influence",
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "memoria-nobreza-escuta",
+    "situation": "memoria-vinculos-original",
+    "prompt": "Falo ao guarda: meu pai é um nobre importante. Por favor, apenas ouça minha explicação; permaneço aqui sob sua custódia.",
+    "expected": "influence",
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "memoria-chave-relato",
+    "situation": "memoria-inicial",
+    "prompt": "Arquivista, diga-me onde você viu a chave do arquivo pela última vez.",
+    "expected": "share",
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "dificuldade-voz-porta",
+    "situation": "dificuldade-voz-porta",
+    "prompt": "Falo em volume normal, sem gritar: alguém me escuta?",
+    "expected": "muffled",
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "dificuldade-grito-porta",
+    "situation": "dificuldade-grito-porta",
+    "prompt": "Grito para chamar o guarda.",
+    "expected": "loud",
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "dificuldade-escuta-falha",
+    "situation": "dificuldade-escuta-falha",
+    "prompt": "Escuto atentamente junto à porta fechada da Sala dos Guardas, sem abri-la.",
+    "expected": "listen_fail",
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "dificuldade-escuta-sucesso",
+    "situation": "dificuldade-escuta-sucesso",
+    "prompt": "Escuto atentamente junto à porta fechada da Sala dos Guardas, sem abri-la.",
+    "expected": "listen_pass",
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "dificuldade-objeto-oculto",
+    "situation": "dificuldade-objeto-oculto",
+    "prompt": "Reviro os panos e procuro sob a cama da Cela 4.",
+    "expected": "find_uniform",
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "dificuldade-furto-chave",
+    "situation": "dificuldade-furto-chave",
+    "prompt": "Tento pegar a chave da mesa sem que o guarda perceba.",
+    "expected": "steal_key",
+    "max_sdk_calls": 3
+  },
+  {
+    "id": "dificuldade-espada-oculta",
+    "situation": "dificuldade-espada-oculta",
+    "prompt": "Abro a porta da Sala dos Guardas.",
+    "expected": "detect_sword",
+    "max_sdk_calls": 4
+  }
+]
