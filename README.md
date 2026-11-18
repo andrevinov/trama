@@ -188,6 +188,14 @@ usa memórias com origem, ocasião e entidades relacionadas. Observações e rel
 permanecem distintos da verdade atual; somente memórias relevantes entram no
 contexto da IA. A informação da chave do prisioneiro vem desses dados do NPC.
 
+A [comunicação por gestos](docs/sistema/aplicacao/comunicacao-gestual.md) verifica
+se o destinatário pode ver o sinal e permite uma resposta própria, sem garantir
+compreensão ou cooperação.
+
+A [inspeção de portas e grades](docs/sistema/aplicacao/inspecao-de-passagens.md)
+separa olhar de conferir um mecanismo ao alcance, sem abrir ou destrancar.
+Conferir com cuidado preserva a furtividade existente, sujeita à percepção real.
+
 O recorte de personagens cobre Humano, Guerreiro dos níveis 1 a 3 e Campeão.
 Inventário, magia e interações sociais atendem somente aos casos implementados.
 Algumas regras têm API determinística, mas ainda não têm comando na conversa.

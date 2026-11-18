@@ -6,6 +6,7 @@ enquanto esses fatos persistem. Distância, sentido e CD fixa continuam no motor
 
 from copy import deepcopy
 from dataclasses import asdict
+from hashlib import sha256
 import json
 import logging
 
@@ -51,9 +52,23 @@ class AdjudicationSystem:
     def prepare(self, steps, *, approach=''):
         self.approach = approach
         requests = {r['id']: r for r in self.session.contextual_check_requests(steps)}
-        noisy = not steps or any(s.get('operation') in {'move', 'open', 'close', 'speak', 'challenge', 'sneak', 'wait', 'wake'}
+        # Gestos não emitem som; sua possível resposta falada pode precisar de acústica.
+        noisy = not steps or any((not s.get('clarification') and s.get('operation') in {'move', 'open', 'close', 'speak', 'challenge', 'gesture', 'sneak', 'wait', 'wake'})
+            or s.get('operation') == 'inspect_passage' and s.get('method') == 'mechanism'
             or any(p.get('proposed_path') for p in s.get('preparation', [])) for s in steps)
         s = self.session
+        from trama.spatial import Position
+        gesture_origin = s.state.position
+        for step in steps:
+            path = step.get('proposed_path') or next((p['proposed_path'] for p in step.get('preparation', [])
+                                                    if p.get('proposed_path')), [])
+            if path:
+                gesture_origin = Position(path[-1][0] - 1, path[-1][1] - 1)
+            if step.get('operation') == 'gesture' and step.get('subtle'):
+                for observer in s.perception.observers():
+                    if s.perception.sees(observer, gesture_origin):
+                        request = self.gesture_request(observer, step['text'], origin=gesture_origin)
+                        requests[request['id']] = request
         if noisy and s.scene:
             player = Observer(s.encounter.player_id, 'Jogador', s.state.position,
                               Senses(perception_bonus=s.encounter.player_sheet.skill_bonus('perception')))
@@ -84,6 +99,35 @@ class AdjudicationSystem:
         return dict(requests=deepcopy(list(self.issued.values())), cached=[dict(request_id=id,
             **{k: v for k, v in self._current(r).context().items() if k != 'request_id'})
             for id, r in requests.items() if self._current(r) is not None])
+
+    def gesture_request(self, observer, text, *, origin=None):
+        s = self.session
+        origin = s.state.position if origin is None else origin
+        from trama.distances import CELL_METERS
+        distance = float(CELL_METERS * max(abs(observer.position.x - origin.x),
+                                         abs(observer.position.y - origin.y)))
+        id = f'gesture:{observer.id}:{origin.x},{origin.y}:' + sha256(text.encode()).hexdigest()[:12]
+        return self._request(id, 'visual_signal', 'perception',
+            'Notar este gesto sutil, não decifrar seu significado nem aceitar o pedido. Usa Percepção passiva; sem busca ativa.',
+            {'gesture:appearance': text, 'gesture:distance_meters': distance,
+             'gesture:observer': observer.senses.context(s.perception.bonus(observer)),
+             'gesture:dim': bool(s.scene and origin in s.scene.dim and
+                                 distance > float(observer.senses.darkvision_meters))})
+
+    def sees_gesture(self, observer, intent):
+        request = self.gesture_request(observer, intent.text)
+        decision = self.decision(request, 15)
+        s = self.session
+        dim = request['facts']['gesture:dim']
+        advantage = observer.senses.advantage or decision.advantage
+        disadvantage = observer.senses.disadvantage or decision.disadvantage or dim
+        total = 10 + s.perception.bonus(observer) + (5 if advantage and not disadvantage
+                    else -5 if disadvantage and not advantage else 0)
+        seen = decision.outcome == 'automatic' or decision.outcome == 'check' and total >= decision.dc
+        logger.info('adjudication.gesture_resolved', extra={'data': dict(actor_id=observer.id,
+            request_id=request['id'], outcome=decision.outcome, dc=decision.dc,
+            passive_total=total if decision.outcome == 'check' else None, seen=seen)})
+        return seen
 
     def begin(self, decisions, *, strict=False):
         proposed = {a.request_id: a for a in decisions}

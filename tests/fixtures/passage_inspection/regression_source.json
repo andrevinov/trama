@@ -1,0 +1,191 @@
+{
+  "session_id": "bf2a71683fbb42559b38f72988ed1617",
+  "interaction_id": "e1784f993e3e4f56912c1d2da9e6cb9c",
+  "original_path": "logs/trama.jsonl",
+  "original_file_sha256": "e0a9dec8f8e0030ef5f412a00645adb019af760aed712f26be0679b04b3067d2",
+  "events": [
+    {
+      "line": 261,
+      "sha256": "907ce3efb4bf854cdbe0fd849301f5cbceb9e0a8206e0718f065f82b80df475b",
+      "event": {
+        "schema_version": 1,
+        "timestamp": "2026-11-17T22:57:07.082+00:00",
+        "level": "DEBUG",
+        "component": "trama.application.conversation",
+        "event": "conversation.player_message",
+        "session_id": "bf2a71683fbb42559b38f72988ed1617",
+        "interaction_id": "e1784f993e3e4f56912c1d2da9e6cb9c",
+        "operation_id": null,
+        "ai_call_id": null,
+        "data": {
+          "text": "Eu checo se a Cela 4 está trancada, sem fazer barulho."
+        },
+        "error": null
+      }
+    },
+    {
+      "line": 273,
+      "sha256": "01d011e9197b59dccf88ba62ed518eeee0253a7234ebf69d9725fcfacbfc91f9",
+      "event": {
+        "schema_version": 1,
+        "timestamp": "2026-11-17T22:57:12.178+00:00",
+        "level": "DEBUG",
+        "component": "trama.infrastructure.openai_intent_interpreter",
+        "event": "ai.decision",
+        "session_id": "bf2a71683fbb42559b38f72988ed1617",
+        "interaction_id": "e1784f993e3e4f56912c1d2da9e6cb9c",
+        "operation_id": null,
+        "ai_call_id": "018936ca95ef4549bee0e1c96d39ec54",
+        "data": {
+          "plan": {
+            "steps": [
+              {
+                "segments": [],
+                "dash": false,
+                "clarification": "Não há uma ação disponível para verificar diretamente se a grade está trancada. Você quer tentar abri-la silenciosamente ou tentar destrancá-la?",
+                "target_id": null
+              }
+            ],
+            "request_parts": [
+              {
+                "text": "Eu checo se a Cela 4 está trancada, sem fazer barulho.",
+                "kind": "unsupported",
+                "operations": [
+                  "clarify"
+                ],
+                "step_indices": [
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "line": 288,
+      "sha256": "218c61583785631c7afc4efee36c028dce260ff4111ea26ff6d29c1a8a352d34",
+      "event": {
+        "schema_version": 1,
+        "timestamp": "2026-11-17T22:57:15.069+00:00",
+        "level": "DEBUG",
+        "component": "trama.infrastructure.openai_world_director",
+        "event": "ai.world_decision",
+        "session_id": "bf2a71683fbb42559b38f72988ed1617",
+        "interaction_id": "e1784f993e3e4f56912c1d2da9e6cb9c",
+        "operation_id": null,
+        "ai_call_id": "b9b39c8edb6e4d8ebb364ea7a089eb4b",
+        "data": {
+          "plan": {
+            "reactions": [],
+            "adjudications": [
+              {
+                "request_id": "hearing:noise:normal:guard_door",
+                "outcome": "check",
+                "difficulty": "moderate",
+                "advantage": false,
+                "disadvantage": true,
+                "fact_ids": [
+                  "door:guard_door",
+                  "sound:volume",
+                  "sound:purpose"
+                ],
+                "reason": "Uma porta fechada abafa um ruído normal; ainda pode ser notado, mas com incerteza."
+              },
+              {
+                "request_id": "hearing:speech:normal:guard_door",
+                "outcome": "check",
+                "difficulty": "hard",
+                "advantage": false,
+                "disadvantage": true,
+                "fact_ids": [
+                  "door:guard_door",
+                  "sound:volume",
+                  "sound:purpose"
+                ],
+                "reason": "Compreender palavras ditas em volume normal através da porta fechada é consideravelmente incerto."
+              }
+            ],
+            "intent": null
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "line": 298,
+      "sha256": "2e945c7ddfd4b183982e94c71af9cba7c89e4d2a506ca6c8730d3f1cdcc2502f",
+      "event": {
+        "schema_version": 1,
+        "timestamp": "2026-11-17T22:57:15.076+00:00",
+        "level": "INFO",
+        "component": "trama.application.conversation",
+        "event": "conversation.plan_completed",
+        "session_id": "bf2a71683fbb42559b38f72988ed1617",
+        "interaction_id": "e1784f993e3e4f56912c1d2da9e6cb9c",
+        "operation_id": null,
+        "ai_call_id": null,
+        "data": {
+          "report": {
+            "events": [],
+            "progress": false,
+            "stop_reason": "Não há uma ação disponível para verificar diretamente se a grade está trancada. Você quer tentar abri-la silenciosamente ou tentar destrancá-la?",
+            "unperformed_steps": 0,
+            "world_events": [],
+            "narrative_interaction": false,
+            "narrative_details": [],
+            "questions": [],
+            "failures": [
+              {
+                "actor_id": "player",
+                "actor_name": "Jogador",
+                "operation": "move",
+                "code": "invalid_movement",
+                "message": "Não há uma ação disponível para verificar diretamente se a grade está trancada. Você quer tentar abri-la silenciosamente ou tentar destrancá-la?",
+                "cause": "Não há uma ação disponível para verificar diretamente se a grade está trancada. Você quer tentar abri-la silenciosamente ou tentar destrancá-la?",
+                "origin": {
+                  "x": 7,
+                  "y": 9
+                },
+                "destination": null,
+                "position_after": {
+                  "x": 7,
+                  "y": 9
+                },
+                "obstacle": null,
+                "skipped_actions": [],
+                "target_id": null
+              }
+            ],
+            "execution_id": "34c562c53a724973951ce283fcccf700"
+          },
+          "status": "blocked"
+        },
+        "error": null
+      }
+    },
+    {
+      "line": 305,
+      "sha256": "799d4e4bdde9e20c77de6e4ab654dbfaec6f1ff1a5510f7ccb01b9827f8aec04",
+      "event": {
+        "schema_version": 1,
+        "timestamp": "2026-11-17T22:57:16.815+00:00",
+        "level": "DEBUG",
+        "component": "trama.infrastructure.openai_narrator",
+        "event": "ai.narration",
+        "session_id": "bf2a71683fbb42559b38f72988ed1617",
+        "interaction_id": "e1784f993e3e4f56912c1d2da9e6cb9c",
+        "operation_id": null,
+        "ai_call_id": "504bba329d534f1392fb771c89e963cc",
+        "data": {
+          "reply": {
+            "on": "",
+            "off": "Você permaneceu junto à Grade da Cela 4. Não há uma ação disponível para apenas verificar diretamente se ela está trancada; seria preciso tentar abri-la em silêncio ou tentar destrancá-la."
+          }
+        },
+        "error": null
+      }
+    }
+  ]
+}

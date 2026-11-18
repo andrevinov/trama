@@ -10,7 +10,7 @@ from trama.infrastructure.openai_json import DEFAULT_MODEL, OpenAIRequestError, 
 
 from trama.application.intents import (
     DIRECTIONS, MovementIntent, MovementSegment, DoorIntent, PlayerIntent, InterpretationError, ActionPlan, RuleIntent, NarrativeIntent, NARRATIVE_OPERATIONS,
-    RequestPart, REQUEST_KINDS, PLAN_OPERATIONS, ScenarioIntent, SCENARIO_OPERATIONS,
+    RequestPart, REQUEST_KINDS, PLAN_OPERATIONS, ScenarioIntent, SCENARIO_OPERATIONS, InspectionIntent, GestureIntent,
 )
 from trama.application.modes import MODE_INSTRUCTIONS
 from trama.application.authorization import PlanAuthorizationError, validate_player_plan
@@ -55,6 +55,22 @@ DOOR_SCHEMA = {"type": "object", "properties": {
     "allow_approach": {"type": "boolean"}},
     "required": ["operation", "target_id", "allow_approach"], "additionalProperties": False}
 
+INSPECTION_SCHEMA = {"type": "object", "properties": {
+    "operation": {"type": "string", "enum": ["inspect_passage"]},
+    "target_id": {"type": "string", "minLength": 1},
+    "method": {"type": "string", "enum": ["visual", "mechanism"]},
+    "volume": {"type": "string", "enum": ["quiet", "normal"]},
+    "allow_approach": {"type": "boolean"}},
+    "required": ["operation", "target_id", "method", "volume", "allow_approach"], "additionalProperties": False}
+
+GESTURE_SCHEMA = {"type": "object", "properties": {
+    'operation': {'type': 'string', 'enum': ['gesture']},
+    'target_id': {'type': 'string', 'minLength': 1},
+    'text': {'type': 'string', 'minLength': 1, 'maxLength': 1000},
+    'message': {'type': 'string', 'maxLength': 1000},
+    'subtle': {'type': 'boolean'}},
+    'required': ['operation', 'target_id', 'text', 'message', 'subtle'], 'additionalProperties': False}
+
 RULE_SCHEMA = {
     "type": "object",
     "properties": {
@@ -98,7 +114,7 @@ PLAN_SCHEMA = {
             "step_indices": {"type": "array", "maxItems": 10, "items": {"type": "integer", "minimum": 0, "maximum": 9}},
         }, "required": ["text", "kind", "operations", "step_indices"], "additionalProperties": False}},
                    "steps": {"type": "array", "minItems": 0, "maxItems": 10,
-                             "items": {"anyOf": [INTENT_SCHEMA, ATTACK_SCHEMA, RULE_SCHEMA, NARRATIVE_SCHEMA, SCENARIO_SCHEMA, DOOR_SCHEMA]}}},
+                             "items": {"anyOf": [INTENT_SCHEMA, ATTACK_SCHEMA, RULE_SCHEMA, NARRATIVE_SCHEMA, SCENARIO_SCHEMA, DOOR_SCHEMA, INSPECTION_SCHEMA, GESTURE_SCHEMA]}}},
     "required": ["request_parts", "steps"], "additionalProperties": False,
 }
 
@@ -166,12 +182,44 @@ move com segments=[], dash=false, target_id=null e clarification em português.
 Preserve etapas anteriores suportadas. Não peça esclarecimento para postura
 narrativa nem para uma caminhada com destino ou coordenadas definidos.
 
-Operações básicas: move, open, close, attack, end_turn, second_wind,
+Operações básicas: move, open, close, inspect_passage, gesture, attack, end_turn, second_wind,
 action_surge, look, speak, wait, challenge. available_actions descreve seu uso;
 são capacidades suportadas, não ordens para usá-las. Não invente outras operações,
 resultados de dados ou respostas do Mundo. Caminhar nunca autoriza atacar.
 look/speak/wait/challenge não mudam posição, portas, PV ou recursos. O
 movimento real é executado como move, inclusive quando preparado pela aplicação. O Mundo decide seus NPCs.
+
+Sinais, gestos, acenos, piscadelas e mímica DIRIGIDOS a um NPC são comunicação:
+execute/gesture, nunca apenas narrative_detail. target_id vem de communication_targets
+ou visible_creatures, inclusive um NPC conhecido que não esteja visível agora;
+o motor verifica se ELE consegue ver o jogador. Não declare sucesso nem mova o
+personagem para tornar o gesto possível. Sem alvo identificável, peça esclarecimento.
+text descreve SOMENTE o movimento exterior observável; message registra a intenção
+do jogador, sem torná-la entendimento do NPC. Ex.: sinal para confirmar a história:
+text='Faço um gesto pedindo a palavra ao prisioneiro.', message='Quero que confirme
+minha história.' Não invente código previamente combinado, significado secreto,
+resposta ou fala do NPC. subtle=true em piscadelas/gestos finos ou discretos;
+false para acenos e sinais claros. Discreto não garante que terceiros não vejam.
+Um simples assentir comunicativo também usa gesture. Postura sem destinatário ou
+intenção comunicativa continua detalhe narrativo. Não transforme gesto em speak,
+não acrescente fala/Hide/teste. Preserve fala e gesto como etapas distintas quando
+o jogador pedir ambos, na ordem real da mensagem.
+
+Inspecionar uma porta ou grade usa inspect_passage e target_id da PASSAGEM,
+não investigate no cômodo. 'Checo se a Cela 4 está trancada' significa conferir
+seu acesso: inspect_passage/gate_4, method=mechanism. É uma capacidade geral,
+inclusive sem scenario, não uma operação não suportada. Conferir exige alcance;
+allow_approach=true permite aproximar, false preserva 'sem sair do lugar'.
+volume=quiet preserva pedidos de cuidado, silêncio ou ausência de barulho;
+silêncio é uma tentativa, não sucesso garantido. Não acrescente hide nem outro
+sneak para uma conferência cuidadosa. O motor mantém a furtividade existente.
+Quando o jogador limita a ação a OLHAR/OBSERVAR, use method=visual,
+allow_approach=false, volume=normal, sem deslocamento ou manipulação, mesmo
+que queira saber se está trancada. Aparência fechada não prova trancamento:
+locked=null é desconhecido; nunca invente o resultado. Inspeção não autoriza
+open, unlock, entrada no cômodo, chaves, arrombamento ou desarmar armadilhas.
+Sem alvo identificável e sem referência inequívoca no contexto/histórico,
+peça esclarecimento; não escolha uma porta por conta própria.
 
 move usa segmentos/destino; open/close usam operation, target_id e allow_approach.
 Abrir ou fechar uma passagem autoriza a aproximação necessária: allow_approach=true
@@ -277,6 +325,14 @@ def parse_intent(text: str) -> PlayerIntent:
     """Valida novamente a saída externa, inclusive tipos e campos inesperados."""
     try:
         value = json.loads(text)
+        if isinstance(value, dict) and value.get('operation') == 'gesture':
+            if set(value) != {'operation', 'target_id', 'text', 'message', 'subtle'}:
+                raise ValueError('Campos de comunicação gestual inválidos')
+            return GestureIntent(value['target_id'], value['text'], value['message'], value['subtle'])
+        if isinstance(value, dict) and value.get('operation') == 'inspect_passage':
+            if set(value) != {'operation', 'target_id', 'method', 'volume', 'allow_approach'}:
+                raise ValueError('Campos de inspeção inválidos')
+            return InspectionIntent(value['target_id'], value['method'], value['volume'], value['allow_approach'])
         if isinstance(value, dict) and value.get("operation") in {"open", "close"} and set(value) == {"operation", "target_id", "allow_approach"}:
             return DoorIntent(value["operation"], value["target_id"], value["allow_approach"])
         if isinstance(value, dict) and value.get("operation") in SCENARIO_OPERATIONS:

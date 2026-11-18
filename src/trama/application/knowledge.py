@@ -17,6 +17,8 @@ class KnowledgeSystem:
         self.store = KnowledgeStore(memories)
         self.communications = []
         self.communication_sequence = 0
+        self.known_actor_ids = {o.id for o in session.perception.observers()
+                                if o.position in session.visibility.visible}
         owners = {session.encounter.player_id, *(c.id for c in session.creatures), *(o.id for o in session.observers)}
         if any(m.owner_id not in owners for m in memories):
             raise KnowledgeError('Memória inicial pertence a personagem inexistente.')
@@ -40,8 +42,20 @@ class KnowledgeSystem:
                                  entities=entities, topics=topics) for owner in owners)
 
     def observe_scene(self):
+        self.known_actor_ids.update(o.id for o in self.session.perception.observers()
+                                    if o.position in self.session.visibility.visible)
         for fact in self.session.observable_facts():
             self.observe(**fact)
+
+    def inspect_lock(self, passage):
+        """Conferir pelo tato não comunica o resultado aos espectadores."""
+        return self._learn(self.session.encounter.player_id,
+            Claim(passage.id, 'locked', 'true' if passage.locked else 'false'),
+            f'{passage.name} está ' + ('trancada.' if passage.locked else 'destrancada.'),
+            MemorySource('observation', current_context().get('operation_id') or new_id()),
+            when='Ao conferir o mecanismo durante a partida.',
+            context='Estado conferido diretamente; não autoriza abrir ou destrancar.',
+            entities=tuple(passage.connects), topics=('fechadura',))
 
     def references(self, actor_id, ids):
         try:
@@ -69,6 +83,7 @@ class KnowledgeSystem:
                                 Senses(perception_bonus=self.session.encounter.player_sheet.skill_bonus('perception')))
             if self.session.perception.hears(listener, noise):
                 hearers.append(player)
+                self.known_actor_ids.add(actor_id)
         event_id = new_id()
         self.communication_sequence += 1
         self.communications.append(dict(sequence=self.communication_sequence, actor_id=actor_id,
@@ -96,6 +111,12 @@ class KnowledgeSystem:
     def communications_for(self, actor_id):
         result = []
         for event in self.communications:
+            if event.get('medium') == 'gesture':
+                if actor_id == event['actor_id'] or actor_id in event['seen_by']:
+                    result.append(dict(sequence=event['sequence'], actor_id=event['actor_id'],
+                        medium='gesture', target_id=event['target_id'], understood=None,
+                        text=event['text'], volume=None))
+                continue
             heard = actor_id == event['actor_id'] or actor_id in event['heard_by']
             seen = actor_id in event['seen_by']
             if heard or seen:
@@ -104,8 +125,19 @@ class KnowledgeSystem:
         return result
 
     def public_communications(self):
-        return [{k: e[k] for k in ('sequence','actor_id','text','volume','heard_by')}
+        return [{k: e[k] for k in ('sequence','actor_id','text','volume','heard_by',
+                                  *(('medium', 'target_id', 'seen_by') if e.get('medium') == 'gesture' else ()))}
                 for e in self.communications if e['player_perceived']]
+
+    def gesture(self, intent, seen_by):
+        """Registra somente o movimento visível; intenção não vira informação aprendida."""
+        self.communication_sequence += 1
+        event = dict(sequence=self.communication_sequence, actor_id=self.session.encounter.player_id,
+                     medium='gesture', target_id=intent.target_id, text=intent.text, volume=None,
+                     heard_by=[], seen_by=list(seen_by), player_perceived=True)
+        self.communications.append(event)
+        self.communications = self.communications[-12:]
+        return {k: event[k] for k in ('sequence', 'medium', 'heard_by', 'seen_by')}
 
     def context(self, query=''):
         s = self.session

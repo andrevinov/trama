@@ -71,3 +71,12 @@ livre gerada por IA. A [bateria live](../qualidade/agencia-live.md) confere o ca
 real, privacidade, respostas efetivas, ausência de efeitos não executados e inclui
 revisão semântica das narrações. Testes locais exercitam a espera limitada,
 continuidade, consultas off, iniciativa antes de ataques, erro e reinício.
+
+## Resposta pontual a gesto
+
+Um destinatário que recebeu comunicação gestual também pode ser acompanhado,
+mesmo sem abordagem ou ficha de combate. Se o Mundo já respondeu naquela etapa,
+ninguém repete a decisão. Caso contrário, cria-se uma intenção `one_shot`, com
+apenas o movimento observado e conhecimento próprio; após fala/espera fundamentada,
+o acompanhamento pontual termina. Isso não concede ações físicas gratuitas.
+Veja [comunicação gestual](comunicacao-gestual.md).

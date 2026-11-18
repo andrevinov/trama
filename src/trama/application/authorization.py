@@ -7,7 +7,7 @@ de consentimento. Regras de estado continuam validadas pela sessão a cada etapa
 import logging
 
 from trama.application.dialogue import split_speech
-from trama.application.intents import ActionPlan, DoorIntent, InterpretationError, MovementIntent, RuleIntent, ScenarioIntent
+from trama.application.intents import ActionPlan, DoorIntent, InspectionIntent, GestureIntent, InterpretationError, MovementIntent, RuleIntent, ScenarioIntent
 
 logger = logging.getLogger(__name__)
 
@@ -60,13 +60,16 @@ def validate_player_plan(prompt: str, plan: ActionPlan, context: dict | None = N
         fixtures = {o["id"] for o in scene.get("objects", []) if o.get("visible")}
         destinations = passages | {a["id"] for a in scene.get("areas", [])} | objects
         visible = {c["id"] for c in context.get("visible_creatures", [])}
+        communication_targets = {c['id'] for c in context.get('communication_targets', [])} | visible
         for index, step in enumerate(plan.steps):
             if isinstance(step, MovementIntent):
                 if step.clarification and index != len(plan.steps) - 1:
                     raise PlanAuthorizationError("O esclarecimento deve encerrar o plano.")
                 if step.target_id is not None and step.target_id not in destinations | visible | fixtures:
                     raise PlanAuthorizationError("O destino não existe no contexto visível do Jogador.")
-            elif isinstance(step, DoorIntent) and step.target_id not in passages:
+            elif isinstance(step, GestureIntent) and step.target_id not in communication_targets:
+                raise PlanAuthorizationError('O destinatário do gesto não é um personagem conhecido.')
+            elif isinstance(step, (DoorIntent, InspectionIntent)) and step.target_id not in passages:
                 raise PlanAuthorizationError("A passagem não existe no contexto do Jogador.")
             elif isinstance(step, ScenarioIntent):
                 capabilities = context.get("scenario", {}).get("operations", [])

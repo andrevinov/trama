@@ -90,6 +90,8 @@ preserva essa distinção. Uma execução por situação não mede repetibilidad
 | --- | --- |
 | Dificuldades contextuais e memórias live | [Casos, critérios e orçamento](dificuldade-live.md) |
 | Agência e narração live | [Casos, orçamento e revisão](agencia-live.md) |
+| Comunicação por gestos live | [Casos, critérios e orçamento](gestos-live.md) |
+| Inspeção de passagens live | [Casos, critérios e orçamento](inspecao-live.md) |
 | Política dos live tests | [politica-live-tests](politica-live-tests.md) |
 | Preparação reproduzível de situações | [preparacao-de-cenarios](preparacao-de-cenarios.md) |
 | Análise parcial do contrato de interpretação | [analise-de-interpretacao](analise-de-interpretacao.md) |

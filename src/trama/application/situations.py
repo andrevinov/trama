@@ -10,7 +10,7 @@ import re
 
 from trama.application.dialogue import DialogueMessage
 from trama.application.intents import (ActionPlan, DoorIntent, MovementIntent,
-                                       MovementSegment, NarrativeIntent, RuleIntent, ScenarioIntent)
+                                       MovementSegment, NarrativeIntent, RuleIntent, ScenarioIntent, InspectionIntent, GestureIntent)
 from trama.knowledge import Claim
 from trama.observability import current_context, log_context, new_id
 
@@ -96,7 +96,7 @@ def declared_intent(data):
         return MovementIntent(**values)
     if kind == 'narrative' and 'claims' in values:
         values['claims'] = tuple(Claim(**c) for c in values['claims'])
-    constructors = {'door': DoorIntent, 'scenario': ScenarioIntent, 'rule': RuleIntent, 'narrative': NarrativeIntent}
+    constructors = {'door': DoorIntent, 'inspection': InspectionIntent, 'gesture': GestureIntent, 'scenario': ScenarioIntent, 'rule': RuleIntent, 'narrative': NarrativeIntent}
     if kind not in constructors:
         raise SituationError(f'Tipo de intenção desconhecido: {kind}.')
     return constructors[kind](**values)
@@ -182,7 +182,7 @@ class Situation:
         for id, variation in self.data.get('passage_variations', {}).items():
             passage = next((p for p in data['passages'] if p['id'] == id), None)
             if (passage is None or not isinstance(variation, dict) or
-                    variation.keys() - {'is_open', 'locked', 'description'}
+                    variation.keys() - {'is_open', 'locked', 'description', 'lock_checkable'}
                     or any(type(v) is not bool for k, v in variation.items() if k != 'description')
                     or ('description' in variation and not isinstance(variation['description'], str))):
                 raise SituationError(f'Variação de passagem inválida: {id}.')

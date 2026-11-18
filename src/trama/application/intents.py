@@ -1,6 +1,6 @@
 """Contratos das intenções, independentes do provedor de IA e dos executores."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Protocol
 from trama.distances import CELL_METERS, meters
@@ -62,6 +62,25 @@ class DoorIntent:
 
 
 @dataclass(frozen=True)
+class InspectionIntent:
+    """Observar uma passagem ou conferir seu mecanismo, sem operá-la."""
+
+    target_id: str
+    method: str = 'mechanism'
+    volume: str = 'normal'
+    allow_approach: bool = True
+    operation: str = field(default='inspect_passage', init=False)
+
+    def __post_init__(self):
+        if (not isinstance(self.target_id, str) or not self.target_id
+                or self.method not in {'visual', 'mechanism'}
+                or self.volume not in {'quiet', 'normal'}
+                or type(self.allow_approach) is not bool
+                or self.method == 'visual' and (self.allow_approach or self.volume != 'normal')):
+            raise ValueError('Inspeção de passagem inválida.')
+
+
+@dataclass(frozen=True)
 class RuleIntent:
     operation: str
     target_id: str | None = None
@@ -100,6 +119,24 @@ class NarrativeIntent:
             raise ValueError("Intenção narrativa inválida.")
 
 
+@dataclass(frozen=True)
+class GestureIntent:
+    """Descrição visível e intenção de comunicação; entender/cooperar são decisões do NPC."""
+
+    target_id: str
+    text: str
+    message: str = ''
+    subtle: bool = False
+    operation: str = field(default='gesture', init=False)
+
+    def __post_init__(self):
+        if (not isinstance(self.target_id, str) or not self.target_id
+                or not isinstance(self.text, str) or not self.text.strip() or len(self.text) > 1000
+                or not isinstance(self.message, str) or len(self.message) > 1000
+                or type(self.subtle) is not bool):
+            raise ValueError('Comunicação gestual inválida.')
+
+
 SCENARIO_OPERATIONS = ("investigate", "take", "drop", "wear", "conceal", "unlock",
                        "listen", "sneak", "wake", "deceive", "escape")
 
@@ -118,11 +155,11 @@ class ScenarioIntent:
             raise ValueError("Interação de cenário inválida.")
 
 
-PlayerIntent = MovementIntent | DoorIntent | RuleIntent | NarrativeIntent | ScenarioIntent
+PlayerIntent = MovementIntent | DoorIntent | InspectionIntent | GestureIntent | RuleIntent | NarrativeIntent | ScenarioIntent
 
 
 REQUEST_KINDS = ("execute", "question", "negated", "quoted", "narrative_detail", "unsupported", "conditional", "unclear")
-PLAN_OPERATIONS = ("hide", "move", "open", "close", "attack", "end_turn", "second_wind", "action_surge",
+PLAN_OPERATIONS = ("hide", "move", "open", "close", "inspect_passage", "gesture", "attack", "end_turn", "second_wind", "action_surge",
                    *NARRATIVE_OPERATIONS, *SCENARIO_OPERATIONS, "clarify", "dash", "inspiration")
 
 
@@ -148,7 +185,7 @@ class ActionPlan:
 
     def __post_init__(self) -> None:
         if (len(self.steps) > 10 or (not self.steps and not self.request_parts)
-                or not all(isinstance(step, (MovementIntent, DoorIntent, RuleIntent, NarrativeIntent, ScenarioIntent)) for step in self.steps)
+                or not all(isinstance(step, (MovementIntent, DoorIntent, InspectionIntent, GestureIntent, RuleIntent, NarrativeIntent, ScenarioIntent)) for step in self.steps)
                 or len(self.request_parts) > 20 or not all(isinstance(p, RequestPart) for p in self.request_parts)):
             raise ValueError("Plano deve conter até 10 operações e até 20 trechos de origem.")
 

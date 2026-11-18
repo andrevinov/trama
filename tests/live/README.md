@@ -214,3 +214,13 @@ até treze considerando correções. Apenas coletar testes não chama a API.
 A bateria nova de [dificuldades contextuais e referências de memória](../../docs/sistema/qualidade/dificuldade-live.md) roda isoladamente em `test_contextual_difficulty_live.py`; dez casos, até 40 chamadas agregadas no experimento autorizado.
 
 [Agência e fidelidade da narração](../../docs/sistema/qualidade/agencia-live.md): três casos novos em `test_npc_agency_live.py`, com orçamento e autorização separados.
+
+A bateria de [inspeção de passagens](../../docs/sistema/qualidade/inspecao-live.md)
+tem quatro casos novos em `test_passage_inspection_live.py`, com preparação e
+critérios verificados offline e quatro aprovações na medição de 17/11/2026.
+Autorização separada para uma tentativa por caso,
+teto de 15 chamadas; criar/coletar não executa IA real.
+
+[Comunicação por gestos](../../docs/sistema/qualidade/gestos-live.md): quatro
+casos novos em `test_gestural_communication_live.py`, teto separado de 18 chamadas
+e uma tentativa por caso. Preparação e critérios verificados sem rede.

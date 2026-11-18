@@ -32,8 +32,24 @@ class AgencySystem:
             return []
         acted = {e.get('actor_id') for e in report.world_events if e['operation'] in
                  {'say', 'influence', 'parley', 'move', 'start_conflict', 'resume_activity'}}
+        candidates = dict(previous)
+        for event in report.events:
+            if event['operation'] == 'gesture' and event.get('received'):
+                actor = event['target_id']
+                responded = any(e.get('actor_id') == actor and e['operation'] in {'say', 'wait', 'influence'}
+                    and e.get('step_index') == event.get('step_index') and e.get('after_squares') is None
+                    for e in report.world_events)
+                if responded:
+                    acted.add(actor)
+                else:
+                    acted.discard(actor)
+                    if actor not in self.intents:
+                        self.engage(actor, 'Responder ao gesto percebido.')
+                        self.intents[actor].update(goal='Decidir como responder ao gesto observado, sem obediência automática.',
+                                                  one_shot=True)
+                    candidates.setdefault(actor, event['sequence'] - 1)
         result = []
-        for actor in previous:
+        for actor in candidates:
             if actor not in self.intents or actor in acted:
                 continue
             try:
@@ -46,7 +62,7 @@ class AgencySystem:
             # Uma troca só provoca acompanhamento se chegar ao NPC por algum
             # sentido. Lembrança de posição não é visão ou audição atuais.
             heard = any(actor in e['heard_by'] for e in s.knowledge.communications[-8:]
-                        if e['sequence'] > previous[actor])
+                        if e['sequence'] > candidates[actor])
             if not s.npc_sees_player(actor) and not heard:
                 continue
             self.intents[actor]['unattended_interactions'] += 1
@@ -100,6 +116,8 @@ class AgencySystem:
         if any(a.operation == 'wait' for a in actions):
             current['waits_used'] += 1
         logger.info('agency.intent_updated', extra={'data': current.copy()})
+        if current.get('one_shot'):
+            self.close(decision.actor_id)
 
     def close(self, actor):
         self.intents.pop(actor, None)

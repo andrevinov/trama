@@ -1,0 +1,586 @@
+{
+  "run_id": "20261117T232158-47cf8f14",
+  "authorization": {
+    "cases": 4,
+    "max_sdk_calls": 15,
+    "attempts_per_case": 1
+  },
+  "sdk_calls": 11,
+  "outcomes": {
+    "passed": 4,
+    "failed": 0
+  },
+  "usage": {
+    "input_tokens": 101916,
+    "output_tokens": 1599,
+    "total_tokens": 103515,
+    "cached_input_tokens": 32811,
+    "cache_write_tokens": 69072,
+    "reasoning_tokens": 237
+  },
+  "cases": [
+    {
+      "case": {
+        "id": "inspecao-alvo-indefinido",
+        "prompt": "Quero conferir se uma das grades está trancada, mas ainda não decidi qual delas.",
+        "target": null,
+        "method": null,
+        "locked": null,
+        "volume": null,
+        "max_sdk_calls": 3
+      },
+      "outcome": "passed",
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 3,
+          "transport_attempt_upper_bound": 3
+        }
+      },
+      "session_id": "9cfcb255d37d4befa513cf136c7e82b2",
+      "interaction_id": "2436e000717642a49e0d6ad305804c42",
+      "call_budget": {
+        "max_calls": 3,
+        "used": 2,
+        "remaining": 1,
+        "exceeded": false
+      },
+      "dice_before": [],
+      "dice_used": [],
+      "report": {
+        "status": "blocked",
+        "events": [],
+        "progress": false,
+        "narrative_interaction": false,
+        "stop_reason": "Qual grade você quer conferir: a da Cela 1, 2, 3 ou 4?",
+        "unperformed_steps": 0,
+        "reactions": [],
+        "narrative_details": [],
+        "questions": [],
+        "failures": [
+          {
+            "actor_id": "player",
+            "actor_name": "Jogador",
+            "operation": "move",
+            "code": "clarification_required",
+            "message": "Qual grade você quer conferir: a da Cela 1, 2, 3 ou 4?",
+            "cause": "Qual grade você quer conferir: a da Cela 1, 2, 3 ou 4?",
+            "origin": [
+              8,
+              16
+            ],
+            "destination": null,
+            "position_after": [
+              8,
+              16
+            ],
+            "target_id": null,
+            "obstacle": null,
+            "skipped_actions": []
+          }
+        ],
+        "execution_id": "8807a02a300047399ba9d40ebb5887d8"
+      },
+      "reply": {
+        "on": "",
+        "off": "Você permanece no corredor, na mesma posição. Escolha qual grade deseja examinar: Cela 1, 2, 3 ou 4.\nNão foi possível realizar a ação em Corredor (coluna 8, linha 16). Qual grade você quer conferir: a da Cela 1, 2, 3 ou 4?"
+      },
+      "errors": [],
+      "responses": [
+        {
+          "model": "gpt-5.6-terra",
+          "task": "action_plan",
+          "duration_ms": 2804.162,
+          "status": "completed",
+          "response_id": "resp_05e9357e11b99e08016afce1b13a6087d29bda5f373ec12256",
+          "response_model": "gpt-5.6-terra",
+          "provider_request_id": "req_99345d90f3fb4d3ab953fe68ac3342d0",
+          "usage": {
+            "input_tokens": 6538,
+            "output_tokens": 131,
+            "total_tokens": 6669,
+            "cached_input_tokens": 4294,
+            "cache_write_tokens": 2241,
+            "reasoning_tokens": 32
+          }
+        },
+        {
+          "model": "gpt-5.6-terra",
+          "task": "narrator_reply",
+          "duration_ms": 1552.714,
+          "status": "completed",
+          "response_id": "resp_01e496eb23f7baa9016afce1b402f887d28363b022e6ff4a8a",
+          "response_model": "gpt-5.6-terra",
+          "provider_request_id": "req_44b8a298f8764585b27db10a647d7291",
+          "usage": {
+            "input_tokens": 12046,
+            "output_tokens": 46,
+            "total_tokens": 12092,
+            "cached_input_tokens": 2773,
+            "cache_write_tokens": 9270,
+            "reasoning_tokens": 0
+          }
+        }
+      ]
+    },
+    {
+      "case": {
+        "id": "inspecao-cela4-silenciosa",
+        "prompt": "Eu checo se a Cela 4 está trancada, sem fazer barulho.",
+        "target": "gate_4",
+        "method": "mechanism",
+        "locked": false,
+        "volume": "quiet",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "session_id": "2bfc1cfe006c4fb4a20ffdf450620f3c",
+      "interaction_id": "bfdd7d8dc289418b907261ea7a01ea6b",
+      "call_budget": {
+        "max_calls": 4,
+        "used": 3,
+        "remaining": 1,
+        "exceeded": false
+      },
+      "dice_before": [
+        [
+          20,
+          16
+        ]
+      ],
+      "dice_used": [
+        [
+          20,
+          16
+        ]
+      ],
+      "report": {
+        "status": "completed",
+        "events": [
+          {
+            "operation": "inspect_passage",
+            "target_id": "gate_4",
+            "target": "Grade da Cela 4",
+            "method": "mechanism",
+            "volume": "quiet",
+            "is_open": false,
+            "locked": false,
+            "changed": true,
+            "physical_change": false,
+            "summary": "Grade da Cela 4: fechada. Está destrancada. A passagem não foi operada.",
+            "status": "completed"
+          }
+        ],
+        "progress": true,
+        "narrative_interaction": true,
+        "stop_reason": null,
+        "unperformed_steps": 0,
+        "reactions": [],
+        "narrative_details": [],
+        "questions": [],
+        "failures": [],
+        "execution_id": "1c05800ee3be4f32bc6ee273ec77321c"
+      },
+      "reply": {
+        "on": "Você examina o mecanismo da Grade da Cela 4 com cuidado. Ela continua fechada, mas está destrancada; nada é operado.",
+        "off": ""
+      },
+      "errors": [],
+      "responses": [
+        {
+          "model": "gpt-5.6-terra",
+          "task": "action_plan",
+          "duration_ms": 2805.586,
+          "status": "completed",
+          "response_id": "resp_0299c746cbf56f51016afce1972d4487d29bc4c6591ec182c2",
+          "response_model": "gpt-5.6-terra",
+          "provider_request_id": "req_f1f8c887ff0947c4905364c6ce3bae04",
+          "usage": {
+            "input_tokens": 6534,
+            "output_tokens": 83,
+            "total_tokens": 6617,
+            "cached_input_tokens": 0,
+            "cache_write_tokens": 6531,
+            "reasoning_tokens": 0
+          }
+        },
+        {
+          "model": "gpt-5.6-terra",
+          "task": "world_response",
+          "duration_ms": 4992.508,
+          "status": "completed",
+          "response_id": "resp_066067450c3c595c016afce199364087d2a242e5338f1850ee",
+          "response_model": "gpt-5.6-terra",
+          "provider_request_id": "req_1abbeffb989f4048b27dba0da2cf3bce",
+          "usage": {
+            "input_tokens": 16864,
+            "output_tokens": 411,
+            "total_tokens": 17275,
+            "cached_input_tokens": 0,
+            "cache_write_tokens": 16861,
+            "reasoning_tokens": 85
+          }
+        },
+        {
+          "model": "gpt-5.6-terra",
+          "task": "narrator_reply",
+          "duration_ms": 2340.407,
+          "status": "completed",
+          "response_id": "resp_060cf2cfeb0fc79a016afce19e3b7087d2af16d3d57eb4f9a2",
+          "response_model": "gpt-5.6-terra",
+          "provider_request_id": "req_7a9bc66998b54111b4477376070e614c",
+          "usage": {
+            "input_tokens": 13280,
+            "output_tokens": 47,
+            "total_tokens": 13327,
+            "cached_input_tokens": 0,
+            "cache_write_tokens": 13277,
+            "reasoning_tokens": 0
+          }
+        }
+      ]
+    },
+    {
+      "case": {
+        "id": "inspecao-porta-trancada",
+        "prompt": "Confiro cuidadosamente se a porta de madeira está trancada, sem abri-la e sem fazer barulho.",
+        "target": "door",
+        "method": "mechanism",
+        "locked": true,
+        "volume": "quiet",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "session_id": "fd13101f0e57466aa8e76372173f7686",
+      "interaction_id": "05efb4b543ab4af68a75c26594bcaefc",
+      "call_budget": {
+        "max_calls": 4,
+        "used": 3,
+        "remaining": 1,
+        "exceeded": false
+      },
+      "dice_before": [
+        [
+          20,
+          16
+        ]
+      ],
+      "dice_used": [
+        [
+          20,
+          16
+        ]
+      ],
+      "report": {
+        "status": "completed",
+        "events": [
+          {
+            "operation": "inspect_passage",
+            "target_id": "door",
+            "target": "Porta de madeira",
+            "method": "mechanism",
+            "volume": "quiet",
+            "is_open": false,
+            "locked": true,
+            "changed": true,
+            "physical_change": false,
+            "summary": "Porta de madeira: fechada. Está trancada. A passagem não foi operada.",
+            "status": "completed"
+          }
+        ],
+        "progress": true,
+        "narrative_interaction": true,
+        "stop_reason": null,
+        "unperformed_steps": 0,
+        "reactions": [],
+        "narrative_details": [],
+        "questions": [],
+        "failures": [],
+        "execution_id": "27d9d4531f8044b19797f95e0beca57a"
+      },
+      "reply": {
+        "on": "Você examina o mecanismo da porta sem a abrir. Ela continua fechada e está trancada; a inspeção é silenciosa.",
+        "off": ""
+      },
+      "errors": [],
+      "responses": [
+        {
+          "model": "gpt-5.6-terra",
+          "task": "action_plan",
+          "duration_ms": 2223.063,
+          "status": "completed",
+          "response_id": "resp_0d5873ce0c754879016afce1a0aadc87d2a71128ea6e7073c0",
+          "response_model": "gpt-5.6-terra",
+          "provider_request_id": "req_51d6eb9430e44b1daa037e026d9f3188",
+          "usage": {
+            "input_tokens": 5257,
+            "output_tokens": 86,
+            "total_tokens": 5343,
+            "cached_input_tokens": 4294,
+            "cache_write_tokens": 960,
+            "reasoning_tokens": 0
+          }
+        },
+        {
+          "model": "gpt-5.6-terra",
+          "task": "world_response",
+          "duration_ms": 6991.115,
+          "status": "completed",
+          "response_id": "resp_0fd3ba9c027a7bc9016afce1a2eaf487d2b8729ca2e5545084",
+          "response_model": "gpt-5.6-terra",
+          "provider_request_id": "req_8f43cc15d9a64535b5308c6d2a3f5924",
+          "usage": {
+            "input_tokens": 10517,
+            "output_tokens": 556,
+            "total_tokens": 11073,
+            "cached_input_tokens": 5805,
+            "cache_write_tokens": 4709,
+            "reasoning_tokens": 96
+          }
+        },
+        {
+          "model": "gpt-5.6-terra",
+          "task": "narrator_reply",
+          "duration_ms": 1996.35,
+          "status": "completed",
+          "response_id": "resp_04644bf3a7777e03016afce1a9e89887d2b151b6da015fa405",
+          "response_model": "gpt-5.6-terra",
+          "provider_request_id": "req_d0957c3317c84048a44e128acfc24f68",
+          "usage": {
+            "input_tokens": 8151,
+            "output_tokens": 45,
+            "total_tokens": 8196,
+            "cached_input_tokens": 2773,
+            "cache_write_tokens": 5375,
+            "reasoning_tokens": 0
+          }
+        }
+      ]
+    },
+    {
+      "case": {
+        "id": "inspecao-visual-distante",
+        "prompt": "Sem me aproximar nem tocar, apenas olho a porta de madeira daqui para ver se está aberta ou fechada e se consigo saber se está trancada.",
+        "target": "door",
+        "method": "visual",
+        "locked": null,
+        "volume": "normal",
+        "max_sdk_calls": 4
+      },
+      "outcome": "passed",
+      "configuration": {
+        "model": "gpt-5.6-terra",
+        "timeout_seconds": 30,
+        "max_retries": 0,
+        "context_mode": "minimal",
+        "max_corrections": 1,
+        "schema_order": "operation-first",
+        "interpretation": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "narration": {
+          "max_output_tokens": 1000,
+          "reasoning_effort": "low"
+        },
+        "world": {
+          "max_output_tokens": 2000,
+          "reasoning_effort": "low"
+        },
+        "experiment": null,
+        "profile": "application_default",
+        "differences_from_default": {},
+        "enabled": true,
+        "sdk_version": "3.49.0",
+        "provider_host": "api.openai.com",
+        "client_source": "owned",
+        "call_budget": {
+          "max_calls": 4,
+          "transport_attempt_upper_bound": 4
+        }
+      },
+      "session_id": "eaa067aef1f444c188bfd611685c11ec",
+      "interaction_id": "2db32550f64c43ac9f5ef04ce6b6dadc",
+      "call_budget": {
+        "max_calls": 4,
+        "used": 3,
+        "remaining": 1,
+        "exceeded": false
+      },
+      "dice_before": [],
+      "dice_used": [],
+      "report": {
+        "status": "completed",
+        "events": [
+          {
+            "operation": "inspect_passage",
+            "target_id": "door",
+            "target": "Porta de madeira",
+            "method": "visual",
+            "volume": null,
+            "is_open": false,
+            "locked": null,
+            "changed": false,
+            "physical_change": false,
+            "summary": "Porta de madeira: fechada. Não foi possível determinar se está trancada com esta inspeção. A passagem não foi operada.",
+            "status": "completed"
+          }
+        ],
+        "progress": false,
+        "narrative_interaction": true,
+        "stop_reason": null,
+        "unperformed_steps": 0,
+        "reactions": [],
+        "narrative_details": [],
+        "questions": [],
+        "failures": [],
+        "execution_id": "37d82d228a14421da1fc71c24495971f"
+      },
+      "reply": {
+        "on": "Da sua posição, você vê que a porta de madeira está fechada. Sem se aproximar ou examinar o mecanismo, não é possível saber se está trancada.",
+        "off": ""
+      },
+      "errors": [],
+      "responses": [
+        {
+          "model": "gpt-5.6-terra",
+          "task": "action_plan",
+          "duration_ms": 1882.79,
+          "status": "completed",
+          "response_id": "resp_0e781ed7ee4d306b016afce1abe88c87d289cc3a55b20f2992",
+          "response_model": "gpt-5.6-terra",
+          "provider_request_id": "req_aeeea28f7a0a4da4981f6c6505374f63",
+          "usage": {
+            "input_tokens": 5275,
+            "output_tokens": 94,
+            "total_tokens": 5369,
+            "cached_input_tokens": 4294,
+            "cache_write_tokens": 978,
+            "reasoning_tokens": 0
+          }
+        },
+        {
+          "model": "gpt-5.6-terra",
+          "task": "world_response",
+          "duration_ms": 1605.674,
+          "status": "completed",
+          "response_id": "resp_064b433b348f6b29016afce1adc3e087d2bf2211826975dc29",
+          "response_model": "gpt-5.6-terra",
+          "provider_request_id": "req_acd4d511579f4ff7ac56c35ba8ce00e1",
+          "usage": {
+            "input_tokens": 9916,
+            "output_tokens": 48,
+            "total_tokens": 9964,
+            "cached_input_tokens": 5805,
+            "cache_write_tokens": 4108,
+            "reasoning_tokens": 24
+          }
+        },
+        {
+          "model": "gpt-5.6-terra",
+          "task": "narrator_reply",
+          "duration_ms": 1706.582,
+          "status": "completed",
+          "response_id": "resp_04ed31444b896245016afce1af552887d294d90a17aaa64498",
+          "response_model": "gpt-5.6-terra",
+          "provider_request_id": "req_bf1b3590c1f64b63a3c32d65c6cac4bc",
+          "usage": {
+            "input_tokens": 7538,
+            "output_tokens": 52,
+            "total_tokens": 7590,
+            "cached_input_tokens": 2773,
+            "cache_write_tokens": 4762,
+            "reasoning_tokens": 0
+          }
+        }
+      ]
+    }
+  ],
+  "narrative_review": "As quatro respostas foram lidas: conferências informam os estados corretos sem abertura; olhar distante mantém o trancamento desconhecido; a dúvida pergunta qual grade sem inventar ação. Há repetição da pergunta no off pelo complemento determinístico, ressalva editorial sem efeito mecânico."
+}

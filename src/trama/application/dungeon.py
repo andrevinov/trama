@@ -12,7 +12,7 @@ import logging
 from trama.actions import ActionError
 from trama.application.encounter import RuleResult
 from trama.application.intents import (
-    DIRECTIONS, DoorIntent, MovementIntent, NarrativeIntent, RuleIntent,
+    DIRECTIONS, DoorIntent, InspectionIntent, MovementIntent, NarrativeIntent, RuleIntent,
     ScenarioIntent, SCENARIO_OPERATIONS,
 )
 from trama.application.modes import GameMode
@@ -96,7 +96,6 @@ class DungeonSession(GameSession):
         self.prisoner_position = prisoner.position
         self.item_positions = {id: Position(*item['position']) for id, item in self.items.items()}
         self._events = []
-        self._examined_locks = set()
         self._sword_checked = False
         player = self.encounter.player_id
         self.encounter.states[player] = replace(self.encounter.states[player], javelins_remaining=0)
@@ -348,9 +347,7 @@ class DungeonSession(GameSession):
                        and id in self.dungeon.exposed_items and self.item_positions[id] in visible)
         sheet = self.character_context()
         return dict(title=self.title, compact=True, markers=markers,
-                    passage_lock_labels={p.id: ('trancada' if p.locked else 'destrancada')
-                                         if p.id in self._examined_locks or p.is_open
-                                         else 'fechadura não examinada' for p in self.scene.passages},
+                    passage_lock_labels=super().map_view()['passage_lock_labels'],
                     equipment=sheet['clothing'] + ' · Itens: ' + (', '.join(sheet['inventory']) or 'nenhum'),
                     legend='P: prisioneiro · dourado: tochas / itens')
 
@@ -376,11 +373,6 @@ class DungeonSession(GameSession):
                                       for id, item in self.items.items() if id in known]
         if self.prisoner_position in self.visibility.visible and not state.companion_escaped:
             next(c for c in context['visible_creatures'] if c['id'] == 'prisoner')['free'] = state.prisoner_free
-        context['world']['map'] = deepcopy(context['map'])
-        # A aparência de uma fechadura não revela se está trancada.
-        for passage in context['map']['scene']['passages']:
-            if passage['id'] not in getattr(self, '_examined_locks', set()) and not passage['is_open']:
-                passage['locked'] = None
         context['scenario'] = dict(id='dungeon_escape', operations=list(SCENARIO_OPERATIONS),
             objective='Atravessar a Porta de Saída, na Sala dos Guardas.',
             clothing=context['player_sheet']['clothing'], inventory=sorted(state.inventory),
@@ -418,12 +410,6 @@ class DungeonSession(GameSession):
             'Não narre chave, arma escondida, uniforme ou identidade do mago antes da descoberta registrada.']
         return context
 
-    def _operate_door(self, intent):
-        passage = self._passage(intent.target_id)
-        if passage.is_open != (intent.operation == 'open') and self._near(passage.position):
-            self._examined_locks.add(intent.target_id)
-        return super()._operate_door(intent)
-
     def _execute(self, intent, **options):
         if self.dungeon.escaped:
             raise ActionError('A fuga já foi concluída. Reinicie para jogar novamente.')
@@ -436,10 +422,11 @@ class DungeonSession(GameSession):
         if isinstance(intent, MovementIntent) and not intent.clarification:
             return self._travel(intent, **options)
         result = super()._execute(intent, **options)
+        if isinstance(intent, InspectionIntent) and intent.method == 'visual':
+            return result
         if isinstance(intent, DoorIntent):
             if not result.changed:
                 return result
-            self._examined_locks = getattr(self, '_examined_locks', set()) | {intent.target_id}
             if result.changed and intent.operation == 'open' and intent.target_id == 'gate_2':
                 self._free_prisoner()
             if result.changed:
@@ -589,7 +576,7 @@ class DungeonSession(GameSession):
             self._pay_interaction()
             self.scene = replace(self.scene, passages=tuple(replace(p, locked=False) if p.id == target else p
                                                            for p in self.scene.passages))
-            self._examined_locks = getattr(self, '_examined_locks', set()) | {target}
+            self.remember_lock(next(p for p in self.scene.passages if p.id == target))
             self._event('unlocked', f'{passage.name} destrancada; ainda está fechada.', actor_id='player', target_id=target)
             changed = True
         elif operation == 'listen':

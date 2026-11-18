@@ -45,6 +45,7 @@ STATE = {
     'combat': F('object|null', 'GameSession.combat_context', 'Iniciativa/vez atual, ou null fora de combate.'),
 }
 KNOWN = {
+    'communication_targets': F('array', 'KnowledgeSystem / GameSession', 'Identidades conhecidas para comunicação; não revela posição de NPC fora de visão.'),
     'map': F('object', 'build_context / compact_context', 'Grade em metros e arquitetura nomeada; não é somente a área vista.'),
     'visible_creatures': F('array', 'GameSession.visibility / DungeonSession', 'Criaturas vistas, com identidade e posição.'),
     'equipped_weapons': F('array', 'GameSession.encounter.player_sheet', 'Ids das armas atualmente equipadas.'),
@@ -142,7 +143,7 @@ INTERNAL = {
     'perception.visible_objects[]': 'object',
     'perception.communications': 'array', 'perception.communications[]': 'object',
     'perception.communications[].actor_id': 'string', 'perception.communications[].text': 'string',
-    'perception.communications[].volume': 'string', 'perception.communications[].heard_by': 'array',
+    'perception.communications[].volume': 'string|null', 'perception.communications[].heard_by': 'array',
     'perception.communications[].sequence': 'integer',
     'history[]': 'object', 'history[].role': 'string', 'history[].on': 'string', 'history[].off': 'string',
     'verified_rules[]': 'string',
@@ -222,9 +223,13 @@ def validate_context(kind: ContextKind, context: dict) -> None:
                 or any(m.get('owner_id') != actor for m in context['knowledge'])):
             raise ContextError(f'{kind}: identidade ou memória de outro personagem.')
         for communication in context['observations'].get('communications', []):
-            if type(communication.get('understood')) is not bool or (
-                    not communication['understood'] and communication.get('text') is not None):
+            gesture = communication.get('medium') == 'gesture'
+            if (gesture and (communication.get('understood') is not None or not isinstance(communication.get('text'), str))
+                    or not gesture and (type(communication.get('understood')) is not bool or (
+                        not communication['understood'] and communication.get('text') is not None))):
                 raise ContextError(f'{kind}: uma fala inaudível não pode transmitir palavras ao NPC.')
+            if gesture and {'message', 'intended_message'} & communication.keys():
+                raise ContextError(f'{kind}: intenção privada de um gesto não é percepção do NPC.')
     if kind.value.startswith('narration_'):
         if context['phase'] != ('initial' if kind == ContextKind.NARRATION_INITIAL else 'reply'):
             raise ContextError(f'{kind}.phase: fase de narração incompatível.')

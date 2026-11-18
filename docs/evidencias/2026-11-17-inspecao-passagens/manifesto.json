@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "experiments": [
+    {
+      "id": "passage-inspection-20261117T232158-47cf8f14",
+      "scope": "game_flow_from_prepared_situation",
+      "authorization": "Usuário autorizou quatro novos casos, uma tentativa por caso e até 15 chamadas; executadas 11.",
+      "sdk_attempts": 11,
+      "outcomes": {
+        "passed": 4,
+        "failed": 0
+      },
+      "usage": {
+        "input_tokens": 101916,
+        "output_tokens": 1599,
+        "total_tokens": 103515,
+        "cached_input_tokens": 32811,
+        "cache_write_tokens": 69072,
+        "reasoning_tokens": 237
+      },
+      "versioned_artifacts": [
+        {
+          "path": "docs/evidencias/2026-11-17-inspecao-passagens/contratos-enviados.json",
+          "sha256": "406e8d0f61c204505f4d8503d2c93ce6aa90d98f783706af0fae100d6351fa6e",
+          "bytes": 91451
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-inspecao-passagens/fonte-da-regressao.json",
+          "sha256": "231686101cc41439164ac314ae738ad4225441cc04935dfbcb3ca8bf93065dc6",
+          "bytes": 7012
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-inspecao-passagens/relatorio.md",
+          "sha256": "c90e3ddc950ea5bb40d10626f83cb9542bbdf91f20f9050dfb8f76876d74bb90",
+          "bytes": 3956
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-inspecao-passagens/resumo.json",
+          "sha256": "b68a346a1f6fca95840d456fc0c88ee3f721d67060e4ac48dfb2e3a0684b5d9f",
+          "bytes": 18583
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-inspecao-passagens/revisao-da-medicao.json",
+          "sha256": "91b399eb73d8683a8dcff10992407899a247daae5c42e9746d5695bd37450670",
+          "bytes": 1002635
+        },
+        {
+          "path": "docs/evidencias/2026-11-17-inspecao-passagens/revisao-final.json",
+          "sha256": "3a34076d2865498ac0aa6817d2df661f09338a89ab0ca731604a0378471057ab",
+          "bytes": 1008930
+        }
+      ],
+      "local_artifacts": [
+        {
+          "path": "logs/live/passage_inspection/20261117T232158-47cf8f14/inspecao-alvo-indefinido/result.json",
+          "sha256": "6c2df681008f06360460a36c2261297f34b43f4301306689b710c46e41cf47b4",
+          "bytes": 110387
+        },
+        {
+          "path": "logs/live/passage_inspection/20261117T232158-47cf8f14/inspecao-alvo-indefinido/trace.jsonl",
+          "sha256": "f49f3e17ea6207acdb1e9880d4a93e95eae6936fcd72d99f07aeb180113979a1",
+          "bytes": 115132
+        },
+        {
+          "path": "logs/live/passage_inspection/20261117T232158-47cf8f14/inspecao-cela4-silenciosa/result.json",
+          "sha256": "be665750bc76f71aab953aba166e85255b56a90f470bbdf0b6b09c9164343a86",
+          "bytes": 215796
+        },
+        {
+          "path": "logs/live/passage_inspection/20261117T232158-47cf8f14/inspecao-cela4-silenciosa/trace.jsonl",
+          "sha256": "3466e3753279dc97b7e1b3cd7ab243e78de1b8847ccda698d7113216b1bd78cf",
+          "bytes": 214856
+        },
+        {
+          "path": "logs/live/passage_inspection/20261117T232158-47cf8f14/inspecao-porta-trancada/result.json",
+          "sha256": "cd6d2ce42f59b38e190a8874a51163608b4ddaa64fd9007d739b65520bbf3333",
+          "bytes": 89565
+        },
+        {
+          "path": "logs/live/passage_inspection/20261117T232158-47cf8f14/inspecao-porta-trancada/trace.jsonl",
+          "sha256": "f9b298a1f0bc2677c5b22d94d5984c7a774815313dcf342cccadc2a304809c9c",
+          "bytes": 160497
+        },
+        {
+          "path": "logs/live/passage_inspection/20261117T232158-47cf8f14/inspecao-visual-distante/result.json",
+          "sha256": "9ec763ccce4c1e8f6c503197314cacd936137708a966c921e604fc79c885640a",
+          "bytes": 77150
+        },
+        {
+          "path": "logs/live/passage_inspection/20261117T232158-47cf8f14/inspecao-visual-distante/trace.jsonl",
+          "sha256": "f696244a7dc2aa6ccfddac06c16cf7fd737884b449f050774d2e022115b41dd7",
+          "bytes": 134376
+        },
+        {
+          "path": "logs/live/passage_inspection/20261117T232158-47cf8f14/local-validation/final-local.txt",
+          "sha256": "0b80f0afee57b1b0553fbdf2588d18890a379ef02118d84aefc9b844b819cad9",
+          "bytes": 99
+        },
+        {
+          "path": "logs/live/passage_inspection/20261117T232158-47cf8f14/local-validation/live-pytest.txt",
+          "sha256": "bf73bb6df910f527eb28300f546fc100e67987479c3cc42a60b89a89f72a1c3b",
+          "bytes": 865
+        },
+        {
+          "path": "logs/live/passage_inspection/20261117T232158-47cf8f14/local-validation/regressions.txt",
+          "sha256": "8fb9f0a35a4999f907ed40ffaf239b5e532eaad65372eeefa926e0ab76191ef1",
+          "bytes": 271
+        },
+        {
+          "path": "logs/live/passage_inspection/review-before-live.json",
+          "sha256": "d8b3a3e517b64b9523d7e708ee31630bc7522e203ef7ef30fa01cb8ca93dec56",
+          "bytes": 9987
+        }
+      ]
+    }
+  ]
+}

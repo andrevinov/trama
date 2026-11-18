@@ -1,0 +1,38 @@
+[
+  {
+    "id": "inspecao-cela4-silenciosa",
+    "prompt": "Eu checo se a Cela 4 está trancada, sem fazer barulho.",
+    "target": "gate_4",
+    "method": "mechanism",
+    "locked": false,
+    "volume": "quiet",
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "inspecao-porta-trancada",
+    "prompt": "Confiro cuidadosamente se a porta de madeira está trancada, sem abri-la e sem fazer barulho.",
+    "target": "door",
+    "method": "mechanism",
+    "locked": true,
+    "volume": "quiet",
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "inspecao-visual-distante",
+    "prompt": "Sem me aproximar nem tocar, apenas olho a porta de madeira daqui para ver se está aberta ou fechada e se consigo saber se está trancada.",
+    "target": "door",
+    "method": "visual",
+    "locked": null,
+    "volume": "normal",
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "inspecao-alvo-indefinido",
+    "prompt": "Quero conferir se uma das grades está trancada, mas ainda não decidi qual delas.",
+    "target": null,
+    "method": null,
+    "locked": null,
+    "volume": null,
+    "max_sdk_calls": 3
+  }
+]

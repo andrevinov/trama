@@ -11,6 +11,8 @@ fluxo completo. Os dados e as escolhas de cada fixture continuam explícitos.
 
 | Suíte em `tests/live` | Casos | Escopo efetivo | Limite |
 | --- | ---: | --- | --- |
+| `test_gestural_communication_live.py` | 4 | Fluxo oficial: sinal bloqueado, aceno recebido e piscadelas próxima/distante com passiva contextual. | Preparações e oráculos offline; sem medição paga. [Casos e limites](gestos-live.md). |
+| `test_passage_inspection_live.py` | 4 | Fluxo oficial: conferência silenciosa, porta trancada, observação distante e esclarecimento sem ação. | [Quatro casos aprovados](../../evidencias/2026-11-17-inspecao-passagens/relatorio.md), 11 chamadas; refinamentos finais verificados localmente. [Casos e limites](inspecao-live.md). |
 | `test_npc_agency_live.py` | 3 | Fluxo oficial: agência após conversas paralelas, observações próprias e perguntas off sem avanços. | [Três casos aprovados](../../evidencias/2026-11-17-agencia-npcs/relatorio.md); consulta off reavaliada após refinamento de linguagem, 33 chamadas no total. [Casos e limites](agencia-live.md). |
 | `test_contextual_difficulty_live.py` | 10 | Fluxo oficial: três conversas com referências de memória e sete tarefas contextuais; CDs fixas ficam no código. | [Dez casos aprovados nas execuções medidas](../../evidencias/2026-11-17-dificuldade-contextual/relatorio.md), três falhas iniciais preservadas; [critérios e limites](dificuldade-live.md). |
 | `test_memory_evidence_links_live.py` | 3 | Fluxo compartilhado na dungeon: frase real, vários interesses por alegação e repetição sem outra rolagem. | Três casos com execuções aprovadas; original reavaliado após ajuste de categoria/fonte. [Falha preservada e limites](../../evidencias/2026-11-17-vinculos-memoria/relatorio.md). |

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "gesto-prisioneiro-sem-visao",
+    "prompt": "Faço um sinal para o outro prisioneiro falar algo, confirmando a minha história.",
+    "target": "prisoner",
+    "received": false,
+    "blocked": true,
+    "subtle": false,
+    "max_sdk_calls": 4
+  },
+  {
+    "id": "gesto-aceno-visivel",
+    "prompt": "Aceno com a mão para meu companheiro e faço um sinal para ele falar algo, confirmando a minha história.",
+    "target": "companion",
+    "received": true,
+    "blocked": false,
+    "subtle": false,
+    "max_sdk_calls": 5
+  },
+  {
+    "id": "gesto-piscadela-proxima",
+    "prompt": "Dou uma piscadela para meu companheiro aqui ao lado, querendo que ele aguarde.",
+    "target": "companion",
+    "received": true,
+    "blocked": false,
+    "subtle": true,
+    "max_sdk_calls": 5
+  },
+  {
+    "id": "gesto-piscadela-distante",
+    "prompt": "Sem me aproximar, dou uma piscadela para meu companheiro lá longe, querendo que ele aguarde.",
+    "target": "companion",
+    "received": false,
+    "blocked": false,
+    "subtle": true,
+    "max_sdk_calls": 4
+  }
+]

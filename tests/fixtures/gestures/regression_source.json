@@ -1,0 +1,383 @@
+{
+  "original_path": "logs/trama.jsonl",
+  "original_file_sha256": "c1c24ea257fa2f8252b7cc4b1f4e67cb9717425340fb59c8d269823e6e5d74ed",
+  "events": [
+    {
+      "line": 547,
+      "sha256": "43c3941cd51e0965ba88d0d04e71bb9a51ec6792b4b9ffee9980a87178b69a5a",
+      "event": {
+        "schema_version": 1,
+        "timestamp": "2026-11-17T23:56:23.141+00:00",
+        "level": "DEBUG",
+        "component": "trama.application.conversation",
+        "event": "conversation.player_message",
+        "session_id": "f8c0c9845da046a99b10f51e55d3fd17",
+        "interaction_id": "78f84e59bb5d4d8f8af8f166542ba55f",
+        "operation_id": null,
+        "ai_call_id": null,
+        "data": {
+          "text": "\"Basta mandar uma carta para o correio da Vila Formosa, que é uma vila aqui perto. Todos conhecem Dom Benedicto, enderece a carta a ele. Explique que está com seu filho Reginaldo e o servo Guilhermo sob sua custódia. Assim que ele receber a carta, virá aqui imediatamente!\"\n\nFaço um sinal para o outro prisioneiro falar algo, confirmando a minha história."
+        },
+        "error": null
+      }
+    },
+    {
+      "line": 559,
+      "sha256": "a22c4da8939f684231548264a0fec02f1dbf24850899fec9ed28b6d0a19e0d46",
+      "event": {
+        "schema_version": 1,
+        "timestamp": "2026-11-17T23:56:31.508+00:00",
+        "level": "DEBUG",
+        "component": "trama.infrastructure.openai_intent_interpreter",
+        "event": "ai.decision",
+        "session_id": "f8c0c9845da046a99b10f51e55d3fd17",
+        "interaction_id": "78f84e59bb5d4d8f8af8f166542ba55f",
+        "operation_id": null,
+        "ai_call_id": "5f4b9be532c14e138518f060be9ddeb2",
+        "data": {
+          "plan": {
+            "steps": [
+              {
+                "text": "Basta mandar uma carta para o correio da Vila Formosa, que é uma vila aqui perto. Todos conhecem Dom Benedicto, enderece a carta a ele. Explique que está com seu filho Reginaldo e o servo Guilhermo sob sua custódia. Assim que ele receber a carta, virá aqui imediatamente!",
+                "operation": "speak",
+                "target_id": null,
+                "volume": "normal",
+                "claims": [
+                  {
+                    "subject_id": "prisoner",
+                    "predicate": "parentage",
+                    "value": "filho de Dom Benedicto de Avignon"
+                  },
+                  {
+                    "subject_id": "prisoner",
+                    "predicate": "custody",
+                    "value": "guard_1"
+                  },
+                  {
+                    "subject_id": "player",
+                    "predicate": "custody",
+                    "value": "guard_1"
+                  }
+                ]
+              }
+            ],
+            "request_parts": [
+              {
+                "text": "\"Basta mandar uma carta para o correio da Vila Formosa, que é uma vila aqui perto. Todos conhecem Dom Benedicto, enderece a carta a ele. Explique que está com seu filho Reginaldo e o servo Guilhermo sob sua custódia. Assim que ele receber a carta, virá aqui imediatamente!\"",
+                "kind": "execute",
+                "operations": [
+                  "speak"
+                ],
+                "step_indices": [
+                  0
+                ]
+              },
+              {
+                "text": "Faço um sinal para o outro prisioneiro falar algo, confirmando a minha história.",
+                "kind": "narrative_detail",
+                "operations": [],
+                "step_indices": []
+              }
+            ]
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "line": 588,
+      "sha256": "b872ede639a005b6aaa20b4b33804269beaeabd0eab1d5384d5950d261845a1e",
+      "event": {
+        "schema_version": 1,
+        "timestamp": "2026-11-17T23:56:43.960+00:00",
+        "level": "INFO",
+        "component": "trama.application.conversation",
+        "event": "conversation.plan_completed",
+        "session_id": "f8c0c9845da046a99b10f51e55d3fd17",
+        "interaction_id": "78f84e59bb5d4d8f8af8f166542ba55f",
+        "operation_id": null,
+        "ai_call_id": null,
+        "data": {
+          "report": {
+            "events": [
+              {
+                "operation": "speak",
+                "changed": true,
+                "text": "Basta mandar uma carta para o correio da Vila Formosa, que é uma vila aqui perto. Todos conhecem Dom Benedicto, enderece a carta a ele. Explique que está com seu filho Reginaldo e o servo Guilhermo sob sua custódia. Assim que ele receber a carta, virá aqui imediatamente!",
+                "volume": "normal",
+                "memory_ids": [],
+                "claims": [
+                  {
+                    "subject_id": "prisoner",
+                    "predicate": "parentage",
+                    "value": "filho de Dom Benedicto de Avignon"
+                  },
+                  {
+                    "subject_id": "prisoner",
+                    "predicate": "custody",
+                    "value": "guard_1"
+                  },
+                  {
+                    "subject_id": "player",
+                    "predicate": "custody",
+                    "value": "guard_1"
+                  }
+                ],
+                "shared_memories": [],
+                "heard_by": [
+                  "guard_1",
+                  "prisoner"
+                ],
+                "learned_memory_ids": [
+                  "guard_1:memory:33",
+                  "guard_1:memory:34",
+                  "guard_1:memory:35",
+                  "prisoner:memory:36",
+                  "prisoner:memory:37",
+                  "prisoner:memory:38"
+                ],
+                "summary": "Interação recebida, sem alteração mecânica do estado ou posição.",
+                "status": "completed"
+              }
+            ],
+            "progress": true,
+            "stop_reason": null,
+            "unperformed_steps": 0,
+            "world_events": [
+              {
+                "operation": "influence",
+                "actor_id": "guard_1",
+                "text": "O guarda avalia a proposta de enviar uma carta a Dom Benedicto e libertar os dois detidos, mantendo-se à distância no corredor.",
+                "changed": true,
+                "perceptible": true,
+                "willingness": "willing",
+                "skill": "deception",
+                "attitude": "indifferent",
+                "disposition": {
+                  "willingness": "willing",
+                  "total": 9,
+                  "components": {
+                    "alignment": 0,
+                    "persona": 6,
+                    "memories": 3
+                  },
+                  "alignment_reason": "O pedido busca que o guarda deixe de cumprir a custódia em troca de uma negociação particular; não apela a dever ou compaixão.",
+                  "persona_effects": [
+                    {
+                      "interest_id": "profit",
+                      "effect": 1,
+                      "weight": 4,
+                      "score": 4,
+                      "reason": "A libertação continua vinculada à recompensa prometida anteriormente, que pode render ganho pessoal ao guarda."
+                    },
+                    {
+                      "interest_id": "duty",
+                      "effect": -1,
+                      "weight": 1,
+                      "score": -1,
+                      "reason": "Libertar os detidos contrariaria a obrigação do guarda de mantê-los sob custódia."
+                    },
+                    {
+                      "interest_id": "livelihood",
+                      "effect": 1,
+                      "weight": 2,
+                      "score": 2,
+                      "reason": "A alegação específica de parentesco com Dom Benedicto torna mais plausível o risco pessoal de manter um possível filho de nobre preso."
+                    },
+                    {
+                      "interest_id": "safety",
+                      "effect": 1,
+                      "weight": 2,
+                      "score": 2,
+                      "reason": "A carta proposta e a alegada chegada imediata de Dom Benedicto tornam mais saliente a possibilidade de represálias se a custódia continuar."
+                    }
+                  ],
+                  "memory_effects": [
+                    {
+                      "memory_id": "guard_1:memory:33",
+                      "claim": {
+                        "subject_id": "prisoner",
+                        "predicate": "parentage",
+                        "value": "filho de Dom Benedicto de Avignon"
+                      },
+                      "source": {
+                        "kind": "report",
+                        "event_id": "bbd7d054914b45849a59641a077b0063",
+                        "actor_id": "player",
+                        "memory_id": null
+                      },
+                      "weight": 1,
+                      "impacts": [
+                        {
+                          "interest_id": "livelihood",
+                          "effect": 1,
+                          "reason": "O relato atual identifica o prisioneiro como filho de Dom Benedicto, o que pode afetar a segurança financeira e o emprego do guarda se houver consequências."
+                        },
+                        {
+                          "interest_id": "safety",
+                          "effect": 1,
+                          "reason": "O relato atual sugere que um nobre poderoso pode tomar conhecimento da prisão, elevando o receio de represálias."
+                        }
+                      ],
+                      "effect": 1,
+                      "score": 1
+                    },
+                    {
+                      "memory_id": "guard_1:possible-lords-son",
+                      "claim": {
+                        "subject_id": "unidentified_prisoner",
+                        "predicate": "possible_parentage",
+                        "value": "important_lord"
+                      },
+                      "source": {
+                        "kind": "inference",
+                        "event_id": "guard-suspects-noble-parentage",
+                        "actor_id": null,
+                        "memory_id": null
+                      },
+                      "weight": 1,
+                      "impacts": [
+                        {
+                          "interest_id": "livelihood",
+                          "effect": 1,
+                          "reason": "A suspeita prévia do guarda sobre um prisioneiro de origem importante torna o novo relato mais relevante para seu emprego."
+                        },
+                        {
+                          "interest_id": "safety",
+                          "effect": 1,
+                          "reason": "A suspeita prévia reforça o temor condicional do guarda de sofrer consequências por manter esse prisioneiro detido."
+                        }
+                      ],
+                      "effect": 1,
+                      "score": 1
+                    },
+                    {
+                      "memory_id": "guard_1:fear-of-reprisals",
+                      "claim": {
+                        "subject_id": "guard_1",
+                        "predicate": "fears_if_suspicion_confirmed",
+                        "value": "reprisals_from_lord"
+                      },
+                      "source": {
+                        "kind": "inference",
+                        "event_id": "guard-fears-reprisals",
+                        "actor_id": null,
+                        "memory_id": null
+                      },
+                      "weight": 1,
+                      "impacts": [
+                        {
+                          "interest_id": "safety",
+                          "effect": 1,
+                          "reason": "O próprio guarda teme represálias caso sua suspeita sobre a origem do prisioneiro seja confirmada."
+                        }
+                      ],
+                      "effect": 1,
+                      "score": 1
+                    },
+                    {
+                      "memory_id": "guard_1:superior-imprisoned-prisoner",
+                      "claim": {
+                        "subject_id": "unidentified_prisoner",
+                        "predicate": "imprisoned_by",
+                        "value": "guard_superior"
+                      },
+                      "source": {
+                        "kind": "observation",
+                        "event_id": "superior-imprisoned-prisoner",
+                        "actor_id": null,
+                        "memory_id": null
+                      },
+                      "weight": 2,
+                      "impacts": [
+                        {
+                          "interest_id": "duty",
+                          "effect": 1,
+                          "reason": "O guarda sabe que seu superior ordenou o encarceramento, o que torna abandonar a custódia um risco funcional."
+                        }
+                      ],
+                      "effect": 1,
+                      "score": 2
+                    }
+                  ],
+                  "goal": "release",
+                  "target_id": "player",
+                  "description": "Libertar o jogador e permitir que ele saia da custódia, junto do prisioneiro que ele identifica como Reginaldo de Avignon, mediante o envio de uma carta a Dom Benedicto de Avignon pedindo recompensa.",
+                  "conditions": [
+                    "O guarda aceita apenas encaminhar a carta e continuar a conversa à distância.",
+                    "O guarda não entrega chaves, não abre grades e não permite saída imediata."
+                  ]
+                },
+                "reused": false,
+                "reevaluated": true,
+                "relevant_change": true,
+                "accepted": true,
+                "response_text": "Certo. Vou mandar a carta — mas vocês continuam onde estão até eu saber que essa história é segura para mim.",
+                "concession": {
+                  "goal": "release",
+                  "target_id": "player",
+                  "description": "Libertar o jogador e permitir que ele saia da custódia, junto do prisioneiro que ele identifica como Reginaldo de Avignon, mediante o envio de uma carta a Dom Benedicto de Avignon pedindo recompensa.",
+                  "conditions": [
+                    "O guarda aceita apenas encaminhar a carta e continuar a conversa à distância.",
+                    "O guarda não entrega chaves, não abre grades e não permite saída imediata."
+                  ]
+                },
+                "step_index": 0,
+                "after_squares": null
+              },
+              {
+                "operation": "say",
+                "actor_id": "guard_1",
+                "speaker": "Guarda 1",
+                "text": "Certo. Vou mandar a carta — mas vocês continuam onde estão até eu saber que essa história é segura para mim.",
+                "changed": false,
+                "volume": "normal",
+                "perceptible": true,
+                "memory_ids": [],
+                "claims": [],
+                "shared_memories": [],
+                "heard_by": [
+                  "player"
+                ],
+                "learned_memory_ids": [],
+                "step_index": 0,
+                "after_squares": null
+              }
+            ],
+            "narrative_interaction": true,
+            "narrative_details": [
+              "Faço um sinal para o outro prisioneiro falar algo, confirmando a minha história."
+            ],
+            "questions": [],
+            "failures": [],
+            "execution_id": "f6e1b0dcb1934446b3673a1baa931a1a"
+          },
+          "status": "completed"
+        },
+        "error": null
+      }
+    },
+    {
+      "line": 595,
+      "sha256": "6413f60e1157ea595820a6f7668fca23c4fc7b4e8f658c752154b7f07a07e9a8",
+      "event": {
+        "schema_version": 1,
+        "timestamp": "2026-11-17T23:56:46.170+00:00",
+        "level": "DEBUG",
+        "component": "trama.infrastructure.openai_narrator",
+        "event": "ai.narration",
+        "session_id": "f8c0c9845da046a99b10f51e55d3fd17",
+        "interaction_id": "78f84e59bb5d4d8f8af8f166542ba55f",
+        "operation_id": null,
+        "ai_call_id": "647f84ed5d6e45b5b150771a65d9b3ad",
+        "data": {
+          "reply": {
+            "on": "O guarda permanece à entrada da Sala dos Guardas, mantendo a distância. Depois de escutar sua explicação, ele responde:\n\n“Certo. Vou mandar a carta — mas vocês continuam onde estão até eu saber que essa história é segura para mim.”\n\nSeu sinal ao prisioneiro não produz uma resposta registrada. Você continua no corredor, diante da Cela 2; a grade dela permanece fechada.",
+            "off": ""
+          }
+        },
+        "error": null
+      }
+    }
+  ]
+}

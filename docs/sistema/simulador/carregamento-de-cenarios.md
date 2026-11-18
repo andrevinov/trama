@@ -152,3 +152,9 @@ preparação. [test_simulator_situations.py](../../../tests/integration/test_sim
 confere seleção pela CLI, equivalência com a entrada sem janela, reinício e
 rejeição antes de chamar modelos. O teste de empacotamento também abre uma
 situação diretamente do wheel, sem checkout.
+
+As quatro situações `inspecao-*` reproduzem conferência silenciosa, porta
+trancada, observação distante e dúvida de alvo. Veja os
+[casos de inspeção](../qualidade/inspecao-live.md). Passagens também aceitam
+`lock_checkable` na definição e em `passage_variations`; a preparação aceita
+`intent=inspection`, pelo mesmo contrato geral da aplicação.

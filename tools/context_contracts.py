@@ -13,7 +13,7 @@ from pathlib import Path
 from trama.application.context_contracts import CONTRACTS, INTERNAL, OPTIONAL_INTERNAL, ContextKind
 from trama.application.conversation import Conversation
 from trama.application.dialogue import Speech
-from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, MovementSegment, RequestPart, RuleIntent, ScenarioIntent, NarrativeIntent
+from trama.application.intents import ActionPlan, DoorIntent, InspectionIntent, GestureIntent, MovementIntent, MovementSegment, RequestPart, RuleIntent, ScenarioIntent, NarrativeIntent
 from trama.application.scenarios import build_session, load_session
 from trama.application.parley import InfluenceRequest
 from trama.social import DispositionAssessment, MemoryEffect, PersonaEffect
@@ -54,6 +54,25 @@ def action(conversation, prompt, intent):
 def sample_contexts():
     """Observa projeções reais nos seis tipos de contexto; não simula respostas de IA."""
     samples = []
+    gestures = Conversation(build_session(dict(width=9, height=5, start=[2, 2],
+        observers=[dict(id='friend', name='Companheiro', position=[3, 2])]), roller=ReviewRoller()))
+    speech, plan = action(gestures, 'Faço um sinal ao companheiro.', GestureIntent('friend',
+        'Aceno com a mão.', 'Quero que fale.'))
+    samples.extend((gestures.interpretation_context(), gestures.world_context(plan)))
+    checkpoint = gestures.session.agency.checkpoint()
+    report = gestures.execute(plan)
+    gestures.session.agency.pending(report, checkpoint)
+    samples.extend((gestures.agency_context('friend'), gestures.narration_context(speech, report)))
+    _, subtle = action(gestures, 'Dou uma piscadela.', GestureIntent('friend', 'Pisco um olho.', 'Peço apoio.', True))
+    samples.append(gestures.world_context(subtle))
+    # Aparência desconhecida -> conferência ao alcance, sem alterar a passagem.
+    inspection = Conversation(load_session(ROOT / 'src/trama/scenarios/perception_rooms.json', roller=ReviewRoller()))
+    for method in ('visual', 'mechanism'):
+        speech, plan = action(inspection, 'Confiro a porta.', InspectionIntent('door', method,
+            'quiet' if method == 'mechanism' else 'normal', method == 'mechanism'))
+        samples.extend((inspection.interpretation_context(), inspection.world_context(plan)))
+        report = inspection.execute(plan)
+        samples.extend((inspection.narration_context(speech, report), inspection.interpretation_context()))
     # Acompanhamento real de uma abordagem, com cochicho visto e não ouvido.
     agency = Conversation(build_session(dict(width=25,height=6,start=[2,2],creatures=[
         dict(id='sentinel',name='Sentinela',position=[18,2])]), roller=ReviewRoller()))

@@ -387,6 +387,17 @@
           "parley"
         ]
       }
+    ],
+    "inspection_hide": [
+      {
+        "steps": [
+          {
+            "intent": "rule",
+            "operation": "hide"
+          }
+        ],
+        "expected_status": "completed"
+      }
     ]
   },
   "situations": [
@@ -2861,6 +2872,228 @@
           20
         ]
       ]
+    },
+    {
+      "id": "inspecao-cela4-silenciosa",
+      "scenario": "dungeon_escape.json",
+      "start_variation": [
+        7,
+        9
+      ],
+      "setup": [
+        "inspection_hide"
+      ],
+      "rolls": [
+        [
+          20,
+          16
+        ]
+      ],
+      "preparation_rolls": 1,
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "position": [
+          8,
+          10
+        ],
+        "sensing.stealth_total": 17,
+        "passages.gate_4.is_open": false,
+        "passages.gate_4.locked": false
+      }
+    },
+    {
+      "id": "inspecao-porta-trancada",
+      "scenario": "perception_rooms.json",
+      "start_variation": [
+        9,
+        2
+      ],
+      "setup": [
+        "inspection_hide"
+      ],
+      "rolls": [
+        [
+          20,
+          16
+        ]
+      ],
+      "preparation_rolls": 1,
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "position": [
+          10,
+          3
+        ],
+        "sensing.stealth_total": 17,
+        "passages.door.is_open": false,
+        "passages.door.locked": true
+      },
+      "passage_variations": {
+        "door": {
+          "locked": true
+        }
+      }
+    },
+    {
+      "id": "inspecao-visual-distante",
+      "scenario": "perception_rooms.json",
+      "start_variation": [
+        4,
+        2
+      ],
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "position": [
+          5,
+          3
+        ],
+        "passages.door.is_open": false,
+        "passages.door.locked": true
+      },
+      "passage_variations": {
+        "door": {
+          "locked": true
+        }
+      }
+    },
+    {
+      "id": "inspecao-alvo-indefinido",
+      "scenario": "dungeon_escape.json",
+      "start_variation": [
+        7,
+        15
+      ],
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "position": [
+          8,
+          16
+        ]
+      }
+    },
+    {
+      "id": "gesto-prisioneiro-sem-visao",
+      "scenario": "dungeon_escape.json",
+      "start_variation": [
+        7,
+        19
+      ],
+      "setup": [
+        "guard_challenge_cell_2"
+      ],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          8,
+          20
+        ],
+        "creatures.guard_1": [
+          10,
+          6
+        ],
+        "mode": "narrated",
+        "combat": null,
+        "parley.status": "pending",
+        "prisoner_awake": true,
+        "passages.guard_door.is_open": true,
+        "resources.player.hp": 28
+      }
+    },
+    {
+      "id": "gesto-aceno-visivel",
+      "scenario": "watched_conversation.json",
+      "start_variation": [
+        2,
+        2
+      ],
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "position": [
+          3,
+          3
+        ]
+      },
+      "sense_variations": {
+        "warden": {
+          "response": "observe",
+          "can_see": false,
+          "can_hear": false
+        }
+      }
+    },
+    {
+      "id": "gesto-piscadela-proxima",
+      "scenario": "watched_conversation.json",
+      "start_variation": [
+        2,
+        2
+      ],
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "position": [
+          3,
+          3
+        ]
+      },
+      "sense_variations": {
+        "warden": {
+          "response": "observe",
+          "can_see": false,
+          "can_hear": false
+        }
+      }
+    },
+    {
+      "id": "gesto-piscadela-distante",
+      "scenario": "watched_conversation.json",
+      "start_variation": [
+        22,
+        2
+      ],
+      "setup": [],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "mode": "narrated",
+        "combat": null,
+        "parley": null,
+        "position": [
+          23,
+          3
+        ]
+      },
+      "sense_variations": {
+        "warden": {
+          "response": "observe",
+          "can_see": false,
+          "can_hear": false
+        }
+      }
     }
   ]
 }

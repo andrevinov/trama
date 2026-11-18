@@ -8,7 +8,7 @@ import logging
 
 from trama.actions import ActionError, DoorActionResult
 from trama.application.dialogue import DialogueMessage, Speech, split_speech
-from trama.application.intents import ActionPlan, DoorIntent, MovementIntent, NarrativeIntent, RuleIntent
+from trama.application.intents import ActionPlan, DoorIntent, InspectionIntent, GestureIntent, MovementIntent, NarrativeIntent, RuleIntent
 from trama.application.session import GameSession
 from trama.distances import CELL_METERS
 from trama.movement import MovementError, MovementResult
@@ -104,7 +104,8 @@ class Conversation:
         combat = self.session.combat_context()
         self._last_execution = deepcopy({
             "execution_id": report.execution_id, "actor_id": actor_id,
-            "actor_name": self.session.encounter.sheets[actor_id].name,
+            "actor_name": (self.session.encounter.sheets[actor_id].name if actor_id in self.session.encounter.sheets
+                           else self.session.perception.observer(actor_id).name),
             "execution": self._execution_context(report),
             "situation": {"mode": self.session.mode.value, "combat": combat,
                           "player_position": [self.session.state.position.x + 1, self.session.state.position.y + 1],
@@ -213,7 +214,8 @@ class Conversation:
         self.session.adjudication.begin(world.adjudications, strict=require_adjudications)
         def record(chunk, preparation_for=None):
             nonlocal progress, narrative_interaction, reason
-            events.extend(({**e, "preparation_for": preparation_for} if preparation_for else e) for e in chunk.events)
+            events.extend(({**e, "preparation_for": preparation_for} if preparation_for else
+                           {**e, 'step_index': index} if e['operation'] == 'gesture' else e) for e in chunk.events)
             world_events.extend(chunk.world_events)
             failures.extend(chunk.failures)
             progress |= chunk.progress
@@ -224,16 +226,29 @@ class Conversation:
             attempted += 1
             origin = self.session.state.position
             try:
+                if isinstance(intent, MovementIntent) and intent.clarification:
+                    reason = intent.clarification
+                    failures.append(action_failure(self.session, intent, reason, origin=origin,
+                                                   code='clarification_required'))
+                    break
+                if isinstance(intent, GestureIntent):
+                    self.session.validate_preparation(intent)
                 reactions = [r for r in world.reactions if r.step_index == index]
+                if isinstance(intent, GestureIntent) and any(r.after_squares is not None for r in reactions):
+                    raise WorldError('Respostas ao gesto exigem sua execução e percepção antes da reação.')
                 if any(r.after_squares not in (None, 0) for r in reactions) and not isinstance(intent, MovementIntent) and not hasattr(intent, "allow_approach"):
                     raise WorldError("Esta etapa não possui percurso para pontos de resposta do Mundo.")
                 def react(checkpoint):
                     for reaction in reactions:
                         if reaction.after_squares != checkpoint:
                             continue
+                        if isinstance(intent, GestureIntent) and checkpoint is None and (
+                                not self.session.last_communication or
+                                intent.target_id not in self.session.last_communication.get('seen_by', [])):
+                            continue
                         if any(a.operation == 'influence' for a in reaction.actions) and (
-                                checkpoint is not None or not isinstance(intent, NarrativeIntent)
-                                or intent.operation not in {'speak', 'challenge'}):
+                                checkpoint is not None or not isinstance(intent, (NarrativeIntent, GestureIntent))
+                                or intent.operation not in {'speak', 'challenge', 'gesture'}):
                             raise WorldError('Influence exige uma fala do jogador executada antes do julgamento.')
                         old_mode = self.session.mode
                         responses, interruption = executor.reaction(reaction)
@@ -390,7 +405,7 @@ class Conversation:
         elif isinstance(result, RuleResult):
             event = {**result.event, "status": "blocked" if result.stop_reason or mode_stop else result.event.get("status", "completed")}
             return ExecutionReport((event,), result.event["changed"], result.stop_reason or mode_stop,
-                                   narrative_interaction=isinstance(intent, NarrativeIntent), world_events=scenario_events)
+                                   narrative_interaction=isinstance(intent, (NarrativeIntent, InspectionIntent, GestureIntent)), world_events=scenario_events)
 
     def execute_npc_turn(self, world: WorldPlan, *, require_adjudications=False) -> ExecutionReport:
         if world.intent is not None:
@@ -544,11 +559,13 @@ class Conversation:
                 "PHB 2024: movimento em casas de 1,5 m; terreno difícil custa 3 m por casa.",
                 "Em modo por turnos, PHB 2024, Dash: usa a ação para adicionar movimento igual à velocidade no turno.",
                 "Em modo por turnos, PHB 2024, objetos/Utilize: primeira interação gratuita; seguinte usa a ação.",
+                "Trama: inspect_passage visual não manipula nem revela trancamento desconhecido. Conferir mecanismo simples e acessível exige alcance/interação, sem abrir/destrancar ou novo teste; volume quiet mantém a ocultação se não houver detecção real. Mecanismo inacessível continua desconhecido.",
                 "PHB 2024, visão: Jogador humano sem visão no escuro; NPCs usam seus próprios sentidos. Paredes/portas fechadas bloqueiam visão.",
                 "PHB 2024: Hide usa Furtividade CD 15 e guarda o total como CD de detecção; passiva é 10+bônus, com ajustes por vantagem/desvantagem. Search deliberado usa sentidos e ação do NPC em combate. Cota de malha impõe desvantagem em Furtividade.",
                 "Trama: alcances auditivos configuráveis usam referência fixa 7 de 2d6 do DMG 2024; porta fechada atenua 6 m equivalentes. Sono usa limiar próprio de despertar, sem teste de Percepção inconsciente. Não se rerrola por casa sem nova busca/mudança relevante.",
                 "Trama: fala normal com contato visual mútuo atual recebe 50% de margem auditiva (humano: 31,5 m). Sussurros, gritos, ruídos incidentais e despertar mantêm os alcances originais; visão e percurso acústico continuam validados.",
                 "O Mundo decide respostas dos guardas; só narre como realizados os efeitos validados em execution.reactions.",
+                "PHB 2024: comunicação breve pode usar gestos no turno. Trama: gesture exige visão do destinatário; sinais sutis usam avaliação contextual e Percepção passiva. Notar não garante entender ou cooperar, e a intenção privada não é uma fala recebida.",
                 "Dificuldade contextual: o Mundo avalia fatos antes dos dados, e o código aplica o resultado automático, impossibilidade ou teste com CD típica/modificadores. Hearing usa passiva com -5 na desvantagem; compreender fala é separado de notar ruído. CDs fixas de Hide, Search contra Furtividade, Influence e magia não são substituídas pela IA.",
                 "PHB 2024, Guerreiro 1–3: Defesa +1 CA com armadura. Retomar o Fôlego: ação bônus, cura 1d10+nível, 2 usos; descanso curto recupera 1 e longo recupera todos.",
                 "Guerreiro 2: Surto de Ação concede uma ação extra, exceto Magia; um uso por descanso curto/longo. Novo turno não recupera usos da classe.",

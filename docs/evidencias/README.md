@@ -17,6 +17,8 @@ uma nova implementação não transforma resultados antigos em aprovação atual
 - [17/11/2026 — Dificuldades contextuais e memórias](2026-11-17-dificuldade-contextual/relatorio.md): dez casos novos com execução aprovada, três falhas iniciais preservadas e 40 chamadas ao SDK.
 - [17/11/2026 — Agência dos NPCs e fatos da narração](2026-11-17-agencia-npcs/relatorio.md): três casos novos aprovados, espera limitada, cochichos privados e off sem avanços; 33 chamadas incluindo revisão de linguagem.
 
+- [17/11/2026 — Inspeção de passagens](2026-11-17-inspecao-passagens/relatorio.md): quatro casos novos aprovados, 11 chamadas; conferência sem abertura, memória de trancamento e esclarecimento sem ação.
+
 Logs brutos permanecem nos diretórios locais indicados nos relatórios, ignorados
 pelo Git. Estes relatórios não equivalem a autorização para repetir chamadas.
 

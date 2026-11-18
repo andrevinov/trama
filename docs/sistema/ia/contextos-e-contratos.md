@@ -11,8 +11,8 @@ projeções continuam sendo calculadas pelo estado atual da aplicação:
 
 1. `context.build_context` produz posição, grade, arquitetura e criaturas vistas.
 2. `GameSession.interpreter_context` agrega ficha, combate e estado do Mundo.
-   `DungeonSession` agrega o roteiro e mascara fechaduras ainda não examinadas
-   na projeção do jogador, preservando a verdade em `world`.
+   A sessão geral mascara fechaduras ainda não examinadas na projeção do jogador,
+   preservando a verdade em `world`; `DungeonSession` agrega o roteiro.
 3. `Conversation` publica contextos por fase, construídos dessas informações,
    histórico e relatórios reais. Cada saída é um `AIContext` validado.
 4. `GameFlow` agenda a fase e envia o contexto aos adaptadores. A janela não
@@ -42,7 +42,7 @@ usado para montar à mão contextos dos testes de fluxo completo.
 | `narration_off` | `Conversation.narration_context(Speech(off=...))` | Pergunta exclusivamente off: não contém ação/reação nova em `execution`, não autoriza fala on e pode consultar `previous_execution`. |
 
 A arquitetura nomeada não equivale ao campo de visão: o interpretador já recebe
-ids/posições dos cômodos e passagens para resolver destinos. Na dungeon, uma
+ids/posições dos cômodos e passagens para resolver destinos. Em qualquer cenário, uma
 fechadura fechada ainda não examinada usa `locked=null` nessa projeção. Objetos
 estáticos entram no mapa mínimo somente quando vistos; itens do inventário
 incluem também os conhecidos/carregados. Uma lembrança de objeto não significa
@@ -65,8 +65,8 @@ observados por fase.
 
 | Fase | Obrigatórios | Opcionais |
 | --- | --- | --- |
-| Interpretação | `mode`, `sensing`, `knowledge`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `equipped_weapons`, `last_attack`, `recent_messages`, `available_actions`, `turn_resources` | `scenario`, `visible_objects` |
-| Mundo e NPC | `mode`, `sensing`, `knowledge`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `equipped_weapons`, `last_attack`, `recent_messages`, `player_sheet`, `visible_enemies`, `world`, `player_plan`, `player_request_parts`, `phase` | `scenario`, `visible_objects`, extensões já reconhecidas `available_actions` e `turn_resources` |
+| Interpretação | `mode`, `sensing`, `knowledge`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `communication_targets`, `equipped_weapons`, `last_attack`, `recent_messages`, `available_actions`, `turn_resources` | `scenario`, `visible_objects` |
+| Mundo e NPC | `mode`, `sensing`, `knowledge`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `communication_targets`, `equipped_weapons`, `last_attack`, `recent_messages`, `player_sheet`, `visible_enemies`, `world`, `player_plan`, `player_request_parts`, `phase` | `scenario`, `visible_objects`, extensões já reconhecidas `available_actions` e `turn_resources` |
 | Três tipos de narração | `mode`, `sensing`, `knowledge`, `parley`, `character`, `combat`, `phase`, `allow_on`, `player`, `execution`, `previous_execution`, `perception`, `player_sheet`, `world`, `history`, `verified_rules` | Nenhum campo de raiz |
 
 `knowledge` contém somente a seleção de memórias do jogador, com afirmação,
@@ -223,3 +223,13 @@ A narração recebe `perception.communications`, com volume e ouvintes das falas
 percebidas pelo jogador. Essa memória permanece disponível em perguntas off sem
 ações novas. Objetivos e razões privadas do acompanhamento não são narráveis.
 Veja [intenções dos NPCs](../aplicacao/intencoes-dos-npcs.md).
+
+## Comunicação gestual
+
+`communication_targets` contém somente identidade e visibilidade de NPCs conhecidos
+para interpretação e Mundo, sem posições ocultas. `gesture` separa descrição
+observável e intenção privada. A narração recebe o resultado executado; o
+contexto individual do NPC recebe somente o movimento visto, com `medium=gesture`,
+`understood=null` e sem a intenção privada. `seen_by` substitui audição nessa
+comunicação. Destinatário sem abordagem pode receber uma decisão pontual
+`one_shot`, encerrada após responder. Veja [comunicação gestual](../aplicacao/comunicacao-gestual.md).

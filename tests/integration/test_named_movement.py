@@ -53,7 +53,8 @@ def test_named_prompt_uses_map_context_and_python_route(session, prompt, target,
     gate, door = context["map"]["scene"]["passages"]
     assert gate["is_open"] is True
     assert door["is_open"] is False
-    assert door["locked"] is False
+    # A porta ainda não foi inspecionada: o interpretador não conhece a fechadura.
+    assert door["locked"] is None
     assert gate["connects"] == ["cell", "corridor"]
     assert door["connects"] == ["corridor", "guard_room"]
 

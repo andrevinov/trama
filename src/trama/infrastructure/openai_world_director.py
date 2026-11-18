@@ -129,11 +129,30 @@ resume_activity encerra a conversa e retoma a atividade existente: não move,
 não entrega chave/dinheiro nem solta prisioneiros. start_conflict rola iniciativa
 nas posições atuais; nenhum movimento ou ataque ocorre antes dela. Essas duas
 operações encerram o plano e devem vir por último. Não use influence para uma
-fala que não ocorreu/que o NPC não ouviu. Nessa fase, a espera à distância da
+comunicação que não ocorreu ou que o NPC não percebeu. Nessa fase, a espera à distância da
 primeira abordagem não impede cobrar uma resposta ou mudar de situação.
 Nas demais fases, intent=null; não atualize intenções antes dos efeitos reais.
 
 Antes de propor respostas, resolva world.adjudication.requests em adjudications.
+gesture é comunicação visual dirigida, inclusive para NPC sem ficha ou abordagem.
+text descreve o que pode ser visto; message é intenção privada, não informação
+telepática. O motor valida a visão do destinatário e registra seen_by/received.
+Responda ao gesto SOMENTE após sua execução, after_squares=null: pode ser say ou
+wait fundamentado, conforme conhecimentos e interesses do destinatário. Não
+ignore esse NPC por estar negociando com outro. Não invente confirmação de fatos
+que ele não sabe nem obediência automática; pode perguntar, recusar ou não entender.
+Em npc_agency, uma intenção one_shot pede resposta pontual a um gesto percebido;
+use somente as observações próprias recebidas. Não requer parley e não cria
+movimento, ataque, item ou libertação. Um NPC sem ficha pode falar ou aguardar.
+Em requests kind=visual_signal, julgue notar o movimento fino/discreto, não
+entender a mensagem. Distância, luz e tamanho aparente importam; piscadela distante
+pode ser impossível mesmo vendo o corpo. Resultado check usa Percepção PASSIVA
+do observador, com modificadores contextuais, sem inventar nova rolagem de Hide.
+Sinal claro tem recepção determinística quando visto; não acrescente CD gratuita.
+inspect_passage é uma inspeção, não uma tentativa de abrir/destrancar ou entrar.
+O motor resolve alcance, interação, conhecimento do mecanismo e emissão de som.
+method=visual não manipula; mechanism usa o volume declarado. Não acrescente
+testes de Furtividade nem reações de detecção sem base na percepção real.
 Informe exatamente uma decisão por request_id solicitado, nenhuma para testes
 não solicitados; requests=[] exige adjudications=[]. Não reavalie cached.
 Esta avaliação ocorre antes dos dados e não é uma ação de NPC. Não altera o
@@ -172,10 +191,10 @@ antecipe iniciativa. EXCEÇÃO: com parley.status=pending ou listening, resolva 
 pelo contrato geral abaixo; não retorne vazio para uma tentativa clara de convencer.
 Também responda com say a perguntas dirigidas a um NPC consciente sobre suas
 memórias, após speak, usando memory_ids; isso não duplica detecção nem permite
-ações físicas gratuitas. Narração de
-NPCs e detalhes usa os fatos calculados depois da execução. Na phase npc_turn,
+ações físicas gratuitas. Respostas a gesture seguem igualmente o contrato acima,
+sem exigir pergunta falada. Narração de NPCs e detalhes usa os fatos calculados
+depois da execução. Na phase npc_turn,
 resolva normalmente as ações do guarda em combate usando a arma de sua ficha.
-
 O motor avalia visão, audição e sono após os passos, falas e mudanças de portas.
 Não antecipe esses resultados com parley, check ou aproximação gratuitos. NPCs
 que ainda não perceberam o jogador não sabem onde ele está. reactions=[] é o
@@ -255,8 +274,9 @@ sem iniciar iniciativa. text é a fala do NPC (ex.: "Pare! O que está fazendo a
 A aproximação hostil narrada para na primeira percepção: não peça para o guarda
 andar até ficar adjacente antes de abordar. Ver alguém não é ordem de atacar.
 Com parley.status=pending ou listening, o NPC aguarda a resposta à distância registrada.
-Uma fala clara tentando acalmar, explicar, mentir ou ameaçar deve receber influence,
-na MESMA etapa speak/challenge, after_squares=null, depois da fala executada.
+Uma fala clara ou um apelo gestual compreensível tentando acalmar, explicar,
+mentir ou ameaçar o interlocutor da abordagem deve receber influence na MESMA
+etapa speak/challenge/gesture, after_squares=null, depois da comunicação percebida.
 Não interrompa a fala em after_squares=0 nem presuma persuasão pela simples detecção.
 influence descreve o pedido e os impactos, não escolhe a disposição final. Informe
 skill apropriada e attitude, mais assessment. O código calcula a soma e só rola

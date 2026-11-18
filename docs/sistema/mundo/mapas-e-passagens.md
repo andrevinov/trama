@@ -16,6 +16,11 @@ Uma passagem aberta não pode estar trancada. `Scene` exige ids únicos entre
 áreas/passagens/objetos, áreas não sobrepostas dentro do mapa e passagem
 adjacente às duas áreas conectadas.
 
+`Passage.lock_checkable`, booleano com padrão `true`, declara se o mecanismo
+simples permite conferir o trancamento sem abrir a passagem. `false` mantém o
+resultado desconhecido nessa interação. É um recorte do Trama; veja
+[inspeção de passagens](../aplicacao/inspecao-de-passagens.md).
+
 ## Construção e grades derivadas
 
 `Scene.from_data` transforma as áreas em piso, acrescenta casas de passagens

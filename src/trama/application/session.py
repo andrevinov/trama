@@ -1,6 +1,7 @@
 """Coordena intenções e estado: movimento, ações, visão e criaturas."""
 
 from dataclasses import replace
+from copy import deepcopy
 from decimal import Decimal
 import logging
 from time import perf_counter
@@ -11,7 +12,7 @@ from trama.movement import (
 )
 from trama.scene import Scene
 from trama.application.intents import (
-    DIRECTIONS, DoorIntent, PlayerIntent, MovementIntent, RuleIntent, NarrativeIntent, ScenarioIntent,
+    DIRECTIONS, DoorIntent, InspectionIntent, GestureIntent, PlayerIntent, MovementIntent, RuleIntent, NarrativeIntent, ScenarioIntent,
 )
 from trama.application.routing import path_to, path_to_cells
 from trama.application.preparation import SpatialRequirement
@@ -38,6 +39,10 @@ from trama.perception import Noise, Observer
 from trama.observability import log_context, new_id
 
 logger = logging.getLogger(__name__)
+
+
+class GestureVisibilityError(ActionError):
+    code = 'gesture_not_visible'
 
 
 class GameSession:
@@ -99,6 +104,7 @@ class GameSession:
         self._initial_social_profiles = dict(social_profiles or {})
         self.social = DispositionSystem(self, self._initial_social_profiles)
         self.last_communication = None
+        self._examined_locks: dict[str, bool] = {}
         self.adjudication = AdjudicationSystem(self)
         self.agency = AgencySystem(self)
         self.reset_version = 0
@@ -127,7 +133,9 @@ class GameSession:
                     "blocks_movement": o.blocks_movement, "blocks_vision": o.blocks_vision}
                    for o in self.scene.objects if o.position in self.visibility.visible] if self.scene else []
         return {"title": "Cela e Guardas", "compact": False, "markers": markers,
-                "passage_lock_labels": {}, "equipment": "",
+                "passage_lock_labels": {p.id: ('fechadura não examinada' if self.known_lock_state(p) is None
+                    else 'trancada' if self.known_lock_state(p) else 'destrancada')
+                    for p in self.scene.passages} if self.scene else {}, "equipment": "",
                 "legend": "Humano · visão normal · áreas claras: visão atual"}
 
     def drain_world_events(self) -> tuple[dict, ...]:
@@ -221,7 +229,10 @@ class GameSession:
             raise ActionError('Não há conversa pendente com esse NPC.')
         if not isinstance(request, InfluenceRequest):
             raise ActionError('Informe o julgamento da tentativa de Influence.')
-        if not self.last_communication or actor_id not in self.last_communication['heard_by']:
+        communication = self.last_communication
+        received = (communication.get('seen_by', []) if communication and communication.get('medium') == 'gesture'
+                    else communication.get('heard_by', []) if communication else [])
+        if actor_id not in received:
             raise ActionError('O NPC não ouviu a fala; fale mais alto ou estabeleça comunicação audível antes de tentar influenciá-lo.')
         event = self.social.resolve(actor_id, request, reason)
         self.parley = replace(self.parley, status='listening' if event['accepted'] else 'pending',
@@ -229,7 +240,7 @@ class GameSession:
         npc = self.perception.observer(actor_id)
         response = event['response_text']
         self.agency.answered(actor_id, response)
-        volume = self.last_communication.get('volume', 'normal')
+        volume = self.last_communication.get('volume') or 'normal'
         communication = self.knowledge.communicate(actor_id, response, npc.position, volume)
         self._events.append(dict(operation='say', actor_id=actor_id, speaker=npc.name, text=response,
                                  changed=False, volume=volume, perceptible=self.encounter.player_id in communication['heard_by'],
@@ -319,6 +330,9 @@ class GameSession:
                                    "target_visible": any(c.id == last["target_id"] and c.position in self.visibility.visible
                                                          for c in self.creatures)} if last else None)
         context["equipped_weapons"] = list(self.encounter.player_sheet.weapons)
+        context['communication_targets'] = [dict(id=o.id, name=o.name,
+            visible=o.position in self.visibility.visible) for o in self.perception.observers()
+            if o.id in self.knowledge.known_actor_ids or o.position in self.visibility.visible]
         if self.mode == GameMode.NARRATED:
             context["character"].update(remaining_meters=None, turn=None,
                                         action_used=False, free_interaction_used=False)
@@ -326,7 +340,7 @@ class GameSession:
             "perception": self.perception.context(),
             "opportunity_attacks": {"player": "automatic" if self.auto_opportunity else "confirm",
                                     "guards": "automatic", "reach_meters": 1.5},
-            "map": context["map"],
+            "map": deepcopy(context["map"]),
             "npcs": [{**enemy_summary(self.encounter.sheets[c.id], self.encounter.states[c.id]),
                       "column": c.position.x + 1, "row": c.position.y + 1,
                       "hostile": c.hostile, "visible_to_player": c.position in self.visibility.visible,
@@ -340,7 +354,21 @@ class GameSession:
         }
         context['knowledge'], context['world']['knowledge'] = self.knowledge.context(knowledge_query)
         context['world']['social'] = self.social.context([a['actor_id'] for a in context['world']['knowledge']['actors']])
+        for passage in context['map'].get('scene', {}).get('passages', []):
+            passage['locked'] = self.known_lock_state(next(p for p in self.scene.passages if p.id == passage['id']))
         return context
+
+    def known_lock_state(self, passage):
+        """Último estado conferido; uma mudança oculta não atualiza a lembrança."""
+        if passage.is_open and passage.position in self.visibility.visible:
+            return False
+        return self._examined_locks.get(passage.id)
+
+    def remember_lock(self, passage):
+        changed = self._examined_locks.get(passage.id) != passage.locked
+        self._examined_locks[passage.id] = passage.locked
+        self.knowledge.inspect_lock(passage)
+        return changed
 
     def contextual_check_requests(self, steps):
         """Extensões de cenário declaram somente tarefas sem CD fixada por regra."""
@@ -363,6 +391,10 @@ class GameSession:
 
     def spatial_requirement(self, intent) -> SpatialRequirement | None:
         """Consulta sem rolagens, gastos ou decisões de linguagem natural."""
+        if isinstance(intent, InspectionIntent) and intent.method == 'mechanism' and self.scene:
+            passage = next((p for p in self.scene.passages if p.id == intent.target_id), None)
+            if passage and self.reach_requirement(passage.id, passage.position):
+                return SpatialRequirement('in_reach', passage.id, self.scene.destination_cells(passage.id))
         if isinstance(intent, DoorIntent) and self.scene:
             passage = next((p for p in self.scene.passages if p.id == intent.target_id), None)
             if passage and passage.is_open != (intent.operation == 'open'):
@@ -377,10 +409,23 @@ class GameSession:
 
     def validate_preparation(self, intent) -> None:
         """Condições conhecidas que não devem provocar caminhada inútil."""
-        if self.parley_pending and not isinstance(intent, NarrativeIntent) and not (
+        if self.parley_pending and not isinstance(intent, (NarrativeIntent, GestureIntent)) and not (
+                isinstance(intent, InspectionIntent) and intent.method == 'visual') and not (
                 isinstance(intent, RuleIntent) and intent.operation in {'attack', 'start_combat'}):
             raise ActionError('Responda à abordagem antes de continuar: você pode conversar ou iniciar combate.')
-        if isinstance(intent, DoorIntent):
+        if isinstance(intent, GestureIntent):
+            self.encounter.require_turn(self.encounter.player_id)
+            self.gesture_recipient(intent.target_id)
+        elif isinstance(intent, InspectionIntent):
+            self.encounter.require_turn(self.encounter.player_id)
+            passage = next((p for p in self.scene.passages if p.id == intent.target_id), None) if self.scene else None
+            if passage is None:
+                raise ActionError('A passagem informada não existe neste mapa.')
+            if intent.method == 'visual' and passage.position not in self.visibility.visible:
+                raise ActionError('A passagem não está visível daqui.')
+            if intent.method == 'mechanism' and self.mode == GameMode.TURN_BASED:
+                self.budget.spend_interaction()  # Valida antes da aproximação, sem gastar.
+        elif isinstance(intent, DoorIntent):
             self.encounter.require_turn(self.encounter.player_id)
             passage = next((p for p in self.scene.passages if p.id == intent.target_id), None) if self.scene else None
             if passage is None:
@@ -466,6 +511,8 @@ class GameSession:
 
     def _execute(self, intent: PlayerIntent, *, movement_path=None, include_remainder=True) -> MovementResult | DoorActionResult | RuleResult:
         self.validate_preparation(intent)
+        if isinstance(intent, GestureIntent):
+            return self._execute_gesture(intent)
         if isinstance(intent, ScenarioIntent) and intent.operation == 'sneak':
             if any(getattr(o, 'hostile', False) and self.perception.sees(o, self.state.position) for o in self.perception.observers()):
                 raise ActionError('Um inimigo já vê você na área iluminada; furtividade não concede invisibilidade.')
@@ -492,11 +539,15 @@ class GameSession:
                 self.encounter.require_turn(self.encounter.player_id)
             self.state = replace(self.state, free_meters=Decimal("0"))
             return self._execute_rule(intent)
+        if isinstance(intent, InspectionIntent) and intent.method == 'visual':
+            return self._inspect_passage(intent)
         self.encounter.require_turn(self.encounter.player_id)
         if not isinstance(intent, MovementIntent):
             self.state = replace(self.state, free_meters=Decimal("0"))
         if isinstance(intent, DoorIntent):
             return self._operate_door(intent)
+        if isinstance(intent, InspectionIntent):
+            return self._inspect_passage(intent)
         if not isinstance(intent, MovementIntent):
             raise ActionError("Esta sessão não implementa essa interação de cenário.")
         if intent.clarification:
@@ -638,6 +689,34 @@ class GameSession:
             result = replace(result, event={**result.event, "conflict_ended": ended.event})
         return result
 
+    def gesture_recipient(self, target_id):
+        npc = self.perception.observer(target_id)
+        if not self.perception.sees(npc, self.state.position):
+            opaque = self.scene.opaque if self.scene else self.grid.blocked
+            reason = ('Não há linha de visão entre vocês.'
+                      if not line_of_sight(npc.position, self.state.position, opaque)
+                      else 'Não há contato visual suficiente para receber o sinal.')
+            raise GestureVisibilityError(f'Não é possível comunicar-se por gestos com {npc.name} daqui. {reason}')
+        return npc
+
+    def _execute_gesture(self, intent):
+        self.gesture_recipient(intent.target_id)
+        seen = []
+        for observer in self.perception.observers():
+            if self.perception.sees(observer, self.state.position) and (
+                    not intent.subtle or self.adjudication.sees_gesture(observer, intent)):
+                seen.append(observer.id)
+        communication = self.knowledge.gesture(intent, seen)
+        self.last_communication = {**communication, 'target_id': intent.target_id, 'volume': None}
+        self.perceive()  # Gesto visível pode expor quem estava escondido; nenhum som é emitido.
+        received = intent.target_id in seen
+        npc = self.perception.observer(intent.target_id)
+        return RuleResult(dict(operation='gesture', target_id=intent.target_id, text=intent.text,
+            intended_message=intent.message, subtle=intent.subtle, received=received, changed=True,
+            understood=None, **communication,
+            summary=(f'O gesto foi visto por {npc.name}; compreensão e resposta dependem do NPC.' if received
+                     else 'Você fez o gesto, mas o destinatário não o percebeu.')))
+
     def _explain_stop(self, result: MovementResult, dash_unavailable: bool) -> MovementResult:
         reason = result.stop_reason
         if result.blocked_position is not None and self.scene is not None:
@@ -666,6 +745,10 @@ class GameSession:
         origin, target = self.state.position, passage.position
         adjacent = max(abs(origin.x - target.x), abs(origin.y - target.y)) <= 1
         reachable = adjacent and line_of_sight(origin, target, self.scene.opaque)
+        if reachable and passage.is_open != (intent.operation == 'open'):
+            if self.mode == GameMode.TURN_BASED:
+                self.budget.spend_interaction()
+            self.remember_lock(passage)
         result = operate_door(
             intent.operation, is_open=passage.is_open, locked=passage.locked,
             in_reach=reachable,
@@ -683,6 +766,28 @@ class GameSession:
                             'quiet' if self.perception.hidden_total is not None else 'normal',
                             'Uma passagem foi aberta ou fechada.')
         return result
+
+    def _inspect_passage(self, intent: InspectionIntent) -> RuleResult:
+        self.validate_preparation(intent)
+        passage = next(p for p in self.scene.passages if p.id == intent.target_id)
+        locked = self.known_lock_state(passage)
+        if intent.method == 'mechanism':
+            if self.reach_requirement(passage.id, passage.position):
+                raise ActionError('Aproxime-se da passagem para conferir o mecanismo.')
+            if self.mode == GameMode.TURN_BASED:
+                self.budget = self.budget.spend_interaction()
+            if passage.is_open or passage.lock_checkable:
+                self.remember_lock(passage)
+                locked = passage.locked
+            self.emit_noise(self.encounter.player_id, passage.position, intent.volume,
+                            'Conferência cuidadosa do mecanismo, sem abrir a passagem.')
+        state = 'aberta' if passage.is_open else 'fechada'
+        lock = ('Não foi possível determinar se está trancada com esta inspeção.' if locked is None
+                else 'Está trancada.' if locked else 'Está destrancada.')
+        return RuleResult(dict(operation=intent.operation, target_id=passage.id, target=passage.name,
+            method=intent.method, volume=intent.volume if intent.method == 'mechanism' else None,
+            is_open=passage.is_open, locked=locked, changed=intent.method == 'mechanism',
+            physical_change=False, summary=f'{passage.name}: {state}. {lock} A passagem não foi operada.'))
 
     def next_turn(self) -> RuleResult | None:
         if self.encounter.combat is None:
@@ -715,6 +820,7 @@ class GameSession:
         self.knowledge = KnowledgeSystem(self, self.initial_memories)
         self.social = DispositionSystem(self, self._initial_social_profiles)
         self.last_communication = None
+        self._examined_locks = {}
         self.adjudication = AdjudicationSystem(self)
         self.agency = AgencySystem(self)
         if self.scene is not None:

@@ -15,7 +15,7 @@ from typing import Callable
 from trama.application.authorization import validate_player_plan
 from trama.application.conversation import Conversation, ExecutionReport
 from trama.application.dialogue import DialogueMessage, Narrator, Speech
-from trama.application.intents import ActionPlan, IntentInterpreter
+from trama.application.intents import ActionPlan, IntentInterpreter, MovementIntent
 from trama.application.session import GameSession
 from trama.application.travel import TravelExecutor
 from trama.application.world import WorldDirector, WorldPlan
@@ -228,7 +228,7 @@ class GameFlow:
     def _accept_plan(self, plan: ActionPlan):
         validate_player_plan(self.speech.on, plan, self.conversation.interpretation_context(), stage='pre_world')
         self._player_plan = plan
-        if not plan.steps:
+        if not plan.steps or all(isinstance(s, MovementIntent) and s.clarification for s in plan.steps):
             self.report = self.report.merge(self.conversation.execute(plan, player_prompt=self.speech.on))
             self._request_narration()
         elif self.world_director is None:

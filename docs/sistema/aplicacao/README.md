@@ -78,6 +78,8 @@ desfaz nem repete operações anteriores.
 | Conversa antes do combate | [abordagem e Influence](conversa-antes-do-combate.md) |
 | Fluxo do jogo e modos | [fluxo-do-jogo](fluxo-do-jogo.md) |
 | Movimento contextual e preparação espacial | [movimento-contextual](movimento-contextual.md) |
+| Comunicação visual dirigida | [comunicacao-gestual](comunicacao-gestual.md) |
+| Inspeção sem abertura de portas e grades | [inspecao-de-passagens](inspecao-de-passagens.md) |
 | Execução das respostas do Mundo | [execucao-do-mundo](execucao-do-mundo.md) |
 | Resultados, impedimentos e memória mecânica | [resultados-e-impedimentos](resultados-e-impedimentos.md) |
 | Composição e ciclo de vida da partida | [composicao](composicao.md) |

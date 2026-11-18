@@ -167,13 +167,14 @@ class WorldExecutor:
                     'movement_occurred': False}
         if session.parley_pending and action.operation in {'move', 'open', 'close', 'attack'}:
             raise WorldError('O NPC deve aguardar a resposta à abordagem antes de se aproximar ou atacar.')
-        if npc.id not in encounter.sheets and action.operation != 'say':
+        if npc.id not in encounter.sheets and action.operation not in {'say', 'wait'}:
             raise WorldError('Um NPC sem ficha de combate pode perceber, buscar e falar; não recebe ações de Guerreiro.')
         if action.operation == "say":
             communication = session.knowledge.communicate(npc.id, action.text, npc.position,
                                                            action.volume, memory_ids=action.memory_ids)
             if (self.agency_actor is None and session.last_communication
-                    and npc.id in session.last_communication['heard_by']):
+                    and npc.id in (session.last_communication['seen_by'] if session.last_communication.get('medium') == 'gesture'
+                                   else session.last_communication['heard_by'])):
                 session.agency.answered(npc.id, action.text)
             session.emit_noise(npc.id, npc.position, action.volume, 'Fala de um NPC.', speech=True)
             # A fala é um acontecimento audível decidido pelo Mundo, não visão através de paredes.
@@ -202,6 +203,10 @@ class WorldExecutor:
                 session.parley = replace(session.parley, status="combat")
             session.state = replace(session.state, spent_meters=0, dash_used=False, additional_dash_uses=0, free_meters=0)
             return {**event, **result.event, "operation": "start_conflict", "perceptible": True}
+        if action.operation == 'wait' and npc.id not in encounter.sheets:
+            if encounter.combat:
+                raise WorldError('Esse observador não participa dos turnos de combate.')
+            return event
         encounter.require_turn(npc.id)
         if action.operation == "wait":
             return {**event, "changed": False}
