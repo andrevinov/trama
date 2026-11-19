@@ -12,6 +12,7 @@ from trama.application.dialogue import DialogueMessage
 from trama.application.intents import (ActionPlan, DoorIntent, MovementIntent,
                                        MovementSegment, NarrativeIntent, RuleIntent, ScenarioIntent, InspectionIntent, GestureIntent)
 from trama.knowledge import Claim
+from trama.conversation_state import conversation_update_from_data
 from trama.observability import current_context, log_context, new_id
 
 logger = logging.getLogger(__name__)
@@ -96,6 +97,8 @@ def declared_intent(data):
         return MovementIntent(**values)
     if kind == 'narrative' and 'claims' in values:
         values['claims'] = tuple(Claim(**c) for c in values['claims'])
+    if kind == 'narrative' and 'conversation' in values:
+        values['conversation'] = conversation_update_from_data(values['conversation'])
     constructors = {'door': DoorIntent, 'inspection': InspectionIntent, 'gesture': GestureIntent, 'scenario': ScenarioIntent, 'rule': RuleIntent, 'narrative': NarrativeIntent}
     if kind not in constructors:
         raise SituationError(f'Tipo de intenção desconhecido: {kind}.')
@@ -107,7 +110,7 @@ class Situation:
 
     fields = {'id', 'scenario', 'setup', 'rolls', 'optional_world_rolls', 'preparation_rolls',
               'preconditions', 'passage_variations', 'history', 'start_variation', 'sense_variations', 'lighting_variations',
-              'knowledge_variations', 'object_variations', 'social_variations'}
+              'knowledge_variations', 'object_variations', 'social_variations', 'relationship_variations'}
 
     def __init__(self, data, preparations):
         if not isinstance(data, dict) or not isinstance(preparations, dict):
@@ -170,6 +173,11 @@ class Situation:
             if actor is None or not isinstance(profile, dict):
                 raise SituationError(f'Variação social inválida: {id}.')
             actor['social'] = deepcopy(profile)
+        for id, rows in self.data.get('relationship_variations', {}).items():
+            actor = next((a for a in [*data.get('creatures', []), *data.get('observers', [])] if a['id'] == id), None)
+            if actor is None or not isinstance(rows, list):
+                raise SituationError(f'Variação de relações inválida: {id}.')
+            actor['relationships'] = deepcopy(rows)
         for id, variation in self.data.get('object_variations', {}).items():
             obj = next((o for o in data.get('objects', []) if o['id'] == id), None)
             if obj is None or not isinstance(variation, dict) or set(variation) != {'position'}:
@@ -223,6 +231,7 @@ class Situation:
                 'situation_id': self.data['id'], 'state': situation_state(conversation.session)}})
             try:
                 self.prepare(conversation, roller)
+                conversation.session.agency.acknowledge_preparation()
             except Exception:
                 logger.exception('situation.preparation_failed', extra={'data': {'situation_id': self.data['id']}})
                 raise

@@ -1,0 +1,216 @@
+{
+  "title": "Conversa com uma amiga",
+  "width": 10,
+  "height": 8,
+  "start": [
+    3,
+    3
+  ],
+  "areas": [
+    {
+      "id": "garden",
+      "name": "Jardim da vizinhança",
+      "x": 1,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "description": "Um jardim iluminado e tranquilo, com um banco à sombra. Lia, sua amiga de outros encontros, está por perto. Há espaço para conversar, escutar ou simplesmente ficar em companhia; nenhum assunto foi combinado."
+    }
+  ],
+  "passages": [],
+  "objects": [
+    {
+      "id": "garden_bench",
+      "name": "Banco do jardim",
+      "kind": "bench",
+      "position": [
+        5,
+        4
+      ],
+      "blocks_movement": true,
+      "blocks_vision": false,
+      "description": "Um banco de madeira sob uma árvore."
+    }
+  ],
+  "player": {
+    "level": 3,
+    "armor": "none",
+    "weapons": [],
+    "adult": true
+  },
+  "observers": [
+    {
+      "id": "lia",
+      "name": "Lia",
+      "position": [
+        5,
+        3
+      ],
+      "senses": {
+        "response": "observe"
+      },
+      "social": {
+        "alignment": "neutral_good",
+        "persona": {
+          "name": "Lia",
+          "role": "Amiga do jogador",
+          "objective": "Cuidar da amizade respeitando a autonomia de cada um.",
+          "background": "Lia conhece o interlocutor de encontros anteriores e aprecia sua companhia. É calorosa, paciente e também tem seus próprios limites e assuntos. Pode ouvir, aconselhar se houver abertura, fazer uma pergunta ou encerrar com gentileza quando a conversa se esgotar. Amizade não lhe dá acesso ao que o outro sente ou pretende; não há atração declarada.",
+          "interests": [
+            {
+              "id": "care",
+              "description": "Oferecer companhia sem diagnosticar ou resolver tudo pelo outro.",
+              "weight": 3,
+              "evidence_topics": [
+                "conversa",
+                "cuidado"
+              ],
+              "evidence_predicates": [
+                "day_report"
+              ]
+            },
+            {
+              "id": "autonomy",
+              "description": "Respeitar se o interlocutor quer falar, ouvir uma sugestão ou ficar em silêncio.",
+              "weight": 3,
+              "evidence_predicates": [
+                "preference"
+              ]
+            },
+            {
+              "id": "own_time",
+              "description": "Ter espaço para seus próprios assuntos e limites.",
+              "weight": 1,
+              "evidence_topics": [
+                "planos"
+              ]
+            }
+          ]
+        }
+      },
+      "relationships": [
+        {
+          "target_id": "player",
+          "trust": {
+            "value": 2,
+            "reason": "Confiança inicial declarada pela história de amizade, sem obrigação de concordar."
+          },
+          "affection": {
+            "value": 3,
+            "reason": "Carinho de amizade declarado no cenário, sem atração ou reciprocidade impostas."
+          },
+          "bonds": [
+            {
+              "kind": "friendship",
+              "state": "active",
+              "reason": "Lia reconhece a amizade pela história de cuidado nas duas direções, sem presumir atração.",
+              "memory_ids": [
+                "lia:lia_care",
+                "lia:player_care"
+              ]
+            }
+          ]
+        }
+      ],
+      "knowledge": [
+        {
+          "id": "shared_history",
+          "claim": {
+            "subject_id": "player",
+            "predicate": "shared_history",
+            "value": "friends_from_previous_meetings"
+          },
+          "text": "Lia e o interlocutor já conversaram e passearam juntos em outras ocasiões.",
+          "source": {
+            "kind": "observation",
+            "event_id": "lia-prior-meetings"
+          },
+          "when": "Em encontros anteriores.",
+          "context": "História de amizade declarada pelo autor, anterior à abertura.",
+          "entities": [
+            "player",
+            "garden"
+          ],
+          "topics": [
+            "amizade"
+          ],
+          "shareable": true
+        },
+        {
+          "id": "private_plan",
+          "claim": {
+            "subject_id": "lia",
+            "predicate": "plans",
+            "value": "considering_a_market_visit"
+          },
+          "text": "Lia está pensando em visitar a feira mais tarde, mas ainda não decidiu.",
+          "source": {
+            "kind": "inference",
+            "event_id": "lia-own-plan",
+            "actor_id": "lia"
+          },
+          "when": "Antes deste encontro.",
+          "context": "Pensamento próprio, ainda não comunicado.",
+          "entities": [
+            "lia"
+          ],
+          "topics": [
+            "planos"
+          ],
+          "shareable": false
+        },
+        {
+          "id": "lia_care",
+          "claim": {
+            "subject_id": "lia_care",
+            "predicate": "care_history",
+            "value": "care_observed"
+          },
+          "text": "lia ajudou player a encontrar um caminho seguro em um encontro anterior.",
+          "source": {
+            "kind": "observation",
+            "event_id": "lia_care-observed",
+            "actor_id": "lia"
+          },
+          "when": "Em uma ocasião anterior à abertura.",
+          "context": "Antecedente autoral de cuidado concreto; não declara sentimento do destinatário.",
+          "entities": [
+            "lia",
+            "player"
+          ],
+          "topics": [
+            "care",
+            "personal_encounter"
+          ],
+          "shareable": true
+        },
+        {
+          "id": "player_care",
+          "claim": {
+            "subject_id": "player_care",
+            "predicate": "care_history",
+            "value": "care_observed"
+          },
+          "text": "player ajudou lia a encontrar um caminho seguro em um encontro anterior.",
+          "source": {
+            "kind": "observation",
+            "event_id": "player_care-observed",
+            "actor_id": "player"
+          },
+          "when": "Em uma ocasião anterior à abertura.",
+          "context": "Antecedente autoral de cuidado concreto; não declara sentimento do destinatário.",
+          "entities": [
+            "player",
+            "lia"
+          ],
+          "topics": [
+            "care",
+            "personal_encounter"
+          ],
+          "shareable": true
+        }
+      ],
+      "adult": true
+    }
+  ]
+}

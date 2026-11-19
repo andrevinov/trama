@@ -76,6 +76,11 @@ class GameRunner:
         self._validate(max_requests)
         return self._run(self.flow.choose_opportunity(accept), max_requests)
 
+    def react_to_events(self, *, max_requests: int | None = None) -> RunResult:
+        """Continua a partir de notificações reais, sem fabricar mensagem do jogador."""
+        self._validate(max_requests)
+        return self._run(self.flow.react_to_events(), max_requests)
+
     def reset(self, *, max_requests: int | None = None) -> RunResult:
         self._validate(max_requests)
         self.flow.reset()

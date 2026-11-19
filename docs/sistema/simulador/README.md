@@ -28,7 +28,10 @@ disfarces, rotina de NPCs ou magia.
 | Carregamento de cenários | Ler dados, selecionar o tipo de sessão e delegar aos construtores e validadores reais. | [scenarios.py](../../../src/trama/application/scenarios.py) |
 | Situações reproduzíveis | Preparar estados intermediários por operações reais, rolagens e pré-condições; reutilizar ao reiniciar. | [situations.py](../../../src/trama/application/situations.py), [catálogo](../../../src/trama/scenarios/situations.json) |
 | Adjudicação da dungeon | Manter estado e resolver interações e respostas específicas da fuga. | [dungeon.py](../../../src/trama/application/dungeon.py) |
-| Cenário atual | Definir arquitetura, participantes, objetos e condições iniciais da aventura. | [dungeon_escape.json](../../../src/trama/scenarios/dungeon_escape.json) |
+| Dungeon padrão | Definir arquitetura, participantes, objetos e condições iniciais da fuga. | [dungeon_escape.json](../../../src/trama/scenarios/dungeon_escape.json) |
+| Conselho dos generais | Abrir uma audiência pacífica para avaliação manual da conversa com perfil e memórias próprios. | [generals_council.json](../../../src/trama/scenarios/generals_council.json) |
+| Conversas casuais | Exercitar escuta, gratidão e orientação com a mesma agência e preparação compartilhada. | [friendly_conversation.json](../../../src/trama/scenarios/friendly_conversation.json), [street_boy_conversation.json](../../../src/trama/scenarios/street_boy_conversation.json) |
+| Amizade e romance | Comparar vínculos próprios, confiança e limites declarados em quatro situações. | [bonds_encounter.json](../../../src/trama/scenarios/bonds_encounter.json), [situações de vínculos](vinculos-afetivos.md) |
 | Cenários de regressão | Preservar os mapas anteriores como dados para os mesmos construtores. | [Fixtures de cenários](../../../tests/fixtures/scenarios/README.md) |
 | Análises parciais | Comparar aspectos da interpretação, com escopo parcial identificado. | [Análise de interpretação](../qualidade/analise-de-interpretacao.md) |
 
@@ -48,6 +51,10 @@ dungeon. O diretor do Mundo recebe orientação para respeitar esse comportament
 No combate, a IA propõe ações do guarda, e o executor valida e resolve seus efeitos.
 O roteiro completo, seus segredos e as decisões de mestre ficam na referência
 do cenário.
+
+O [conselho dos generais](conselho-dos-generais.md) é um cenário alternativo,
+selecionado por `--scenario`. Usa uma sessão comum, com o general Konrad Voss,
+persona, alinhamento e memórias, sem a adjudicação específica da dungeon.
 
 ## Relações com outras áreas
 
@@ -77,6 +84,9 @@ referências. Abertura, mensagens e reinício podem chamar a API real.
 | Assunto | Referência de tier 3 |
 | --- | --- |
 | Fuga da dungeon: cenário e adjudicação | [fuga-da-dungeon](fuga-da-dungeon.md) |
+| Conselho dos generais: conversa e avaliação manual | [conselho-dos-generais](conselho-dos-generais.md) |
+| Amiga e garoto: conversa casual e critérios de avaliação | [conversas-casuais](conversas-casuais.md) |
+| Amizade, afeto sem confiança e interesse não correspondido | [vinculos-afetivos](vinculos-afetivos.md) |
 | Executar e diagnosticar o simulador | [execucao](execucao.md) |
 | Carregamento e formato de cenários | [carregamento-de-cenarios](carregamento-de-cenarios.md) |
 

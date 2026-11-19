@@ -35,6 +35,10 @@ from trama.application.disposition import DispositionSystem
 from trama.application.adjudication import AdjudicationSystem
 from trama.application.agency import AgencySystem
 from trama.knowledge import Claim
+from trama.conversation_state import ConversationState
+from trama.relationships import RelationshipState
+from trama.application.relationship_history import RelationshipHistory
+from trama.application.bonds import BondSystem
 from trama.perception import Noise, Observer
 from trama.observability import log_context, new_id
 
@@ -51,7 +55,11 @@ class GameSession:
         creatures: tuple[Creature, ...] = (),
         *, player_sheet: FighterSheet | None = None, enemy_sheets: tuple[FighterSheet, ...] | None = None,
         roller: Roller | None = None, observers: tuple[Observer, ...] = (), memories=(), social_profiles=None,
+        title: str = 'Cela e Guardas', relationships=(), adult_ids=(),
     ) -> None:
+        if not isinstance(title, str) or not title.strip() or len(title) > 80:
+            raise ValueError('O título do cenário deve ter entre 1 e 80 caracteres.')
+        self.title = title
         if not grid.contains(initial_state.position) or initial_state.position in grid.blocked:
             raise ValueError("O personagem deve começar em uma casa livre do mapa.")
         self.grid = grid
@@ -100,9 +108,16 @@ class GameSession:
         self._events = []
         self.perception = PerceptionSystem(self)
         self.initial_memories = tuple(memories)
+        self.conversations = ConversationState()
         self.knowledge = KnowledgeSystem(self, self.initial_memories)
         self._initial_social_profiles = dict(social_profiles or {})
         self.social = DispositionSystem(self, self._initial_social_profiles)
+        self._initial_relationships = tuple(relationships)
+        self._adult_ids = tuple(adult_ids)
+        self.relationships = RelationshipState(self._initial_relationships, self.social.profiles,
+                                               player.id, self.initial_memories, self._adult_ids)
+        self.relationship_history = RelationshipHistory(self)
+        self.bonds = BondSystem(self)
         self.last_communication = None
         self._examined_locks: dict[str, bool] = {}
         self.adjudication = AdjudicationSystem(self)
@@ -132,11 +147,11 @@ class GameSession:
                     "attachment": {"surface": o.attachment.surface, "side": o.attachment.side},
                     "blocks_movement": o.blocks_movement, "blocks_vision": o.blocks_vision}
                    for o in self.scene.objects if o.position in self.visibility.visible] if self.scene else []
-        return {"title": "Cela e Guardas", "compact": False, "markers": markers,
+        return {"title": self.title, "compact": False, "markers": markers,
                 "passage_lock_labels": {p.id: ('fechadura não examinada' if self.known_lock_state(p) is None
                     else 'trancada' if self.known_lock_state(p) else 'destrancada')
                     for p in self.scene.passages} if self.scene else {}, "equipment": "",
-                "legend": "Humano · visão normal · áreas claras: visão atual"}
+                "legend": "Visão humana · iluminação do mapa"}
 
     def drain_world_events(self) -> tuple[dict, ...]:
         """Fatos comuns e adicionais do cenário, consumidos pelo fluxo real."""
@@ -353,6 +368,9 @@ class GameSession:
                            "Portas fechadas bloqueiam visão e passagem; som pode atravessá-las com atenuação."],
         }
         context['knowledge'], context['world']['knowledge'] = self.knowledge.context(knowledge_query)
+        context['conversations'] = self.conversations.view(self.encounter.player_id)
+        context['world']['conversations'] = {a['actor_id']: self.conversations.view(a['actor_id'])
+                                            for a in context['world']['knowledge']['actors']}
         context['world']['social'] = self.social.context([a['actor_id'] for a in context['world']['knowledge']['actors']])
         for passage in context['map'].get('scene', {}).get('passages', []):
             passage['locked'] = self.known_lock_state(next(p for p in self.scene.passages if p.id == passage['id']))
@@ -478,8 +496,16 @@ class GameSession:
         logger.debug("game.operation_requested", extra={"data": {"intent": intent}})
         try:
             result = self._execute(intent, **options)
+            if (isinstance(result, RuleResult) and result.event.get('operation') == 'attack'
+                    and result.event.get('damage', 0) > 0):
+                victim = result.event['target_id']
+                position = next(c.position for c in self.creatures if c.id == victim)
+                self.knowledge.observe_action(self.encounter.player_id,
+                    Claim(victim, 'observed_injury', str(result.event['target_hp'])),
+                    result.event['summary'], position, topics=('actions', 'harm'))
             if self.mode != mode_before:
                 if self.mode == GameMode.TURN_BASED:
+                    self.conversations.interrupt_combat((e.id for e in self.encounter.combat.order), new_id())
                     self.agency.intents.clear()
                 logger.info("game.mode_changed", extra={"data": {"before": mode_before, "after": self.mode,
                             "operation": operation, "actor_id": self.encounter.player_id}})
@@ -524,7 +550,7 @@ class GameSession:
             self.encounter.require_turn(self.encounter.player_id)
             if intent.operation in {'speak', 'challenge'}:
                 communication = self.knowledge.communicate(self.encounter.player_id, intent.text, self.state.position,
-                                                     intent.volume, claims=intent.claims)
+                                                     intent.volume, claims=intent.claims, conversation=intent.conversation)
                 self.emit_noise(self.encounter.player_id, self.state.position, intent.volume, 'Fala do jogador.', speech=True)
                 self.last_communication = {**communication, 'volume': intent.volume}
             elif intent.operation == 'look':
@@ -758,6 +784,10 @@ class GameSession:
         if result.changed:
             self.scene = self.scene.with_passage(intent.target_id, result.is_open)
             self.grid = self.scene.movement_grid
+            self.knowledge.observe_action(self.encounter.player_id,
+                Claim(passage.id, 'open', 'true' if result.is_open else 'false'),
+                f"{self.encounter.player_id} {'abriu' if result.is_open else 'fechou'} {passage.name}.",
+                passage.position, topics=('actions', 'door'))
             if self.mode == GameMode.TURN_BASED:
                 self.budget = result.budget
             else:
@@ -817,8 +847,13 @@ class GameSession:
         self.creatures = self.initial_creatures
         self.observers = self.initial_observers
         self.perception = PerceptionSystem(self)
+        self.conversations = ConversationState()
         self.knowledge = KnowledgeSystem(self, self.initial_memories)
         self.social = DispositionSystem(self, self._initial_social_profiles)
+        self.relationships = RelationshipState(self._initial_relationships, self.social.profiles,
+                                               self.encounter.player_id, self.initial_memories, self._adult_ids)
+        self.relationship_history = RelationshipHistory(self)
+        self.bonds = BondSystem(self)
         self.last_communication = None
         self._examined_locks = {}
         self.adjudication = AdjudicationSystem(self)

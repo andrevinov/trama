@@ -211,6 +211,15 @@ class Conversation:
         executor = WorldExecutor(self.session)
         if any(r.step_index >= len(plan.steps) for r in world.reactions):
             raise WorldError("Resposta do Mundo aponta para uma etapa inexistente.")
+        evaluating = ({o.actor_id for r in world.reactions for o in r.opinions}
+                      | {e.owner_id for r in world.reactions for e in r.episodes}
+                      | {b.owner_id for r in world.reactions for b in r.bonds})
+        if any(a.actor_id in evaluating for r in world.reactions for a in r.actions):
+            raise WorldError('O NPC avalia opções antes de escolher suas ações na etapa de acompanhamento.')
+        if any(a.conversation and a.conversation.proposal
+               and a.conversation.proposal.action in {'accept', 'reject', 'offer', 'revise'}
+               for r in world.reactions for a in r.actions):
+            raise WorldError('Respostas estruturadas a propostas exigem a etapa de acompanhamento após os cálculos.')
         self.session.adjudication.begin(world.adjudications, strict=require_adjudications)
         def record(chunk, preparation_for=None):
             nonlocal progress, narrative_interaction, reason
@@ -242,6 +251,10 @@ class Conversation:
                     for reaction in reactions:
                         if reaction.after_squares != checkpoint:
                             continue
+                        if reaction.opinions and (checkpoint is not None
+                                or not isinstance(intent, NarrativeIntent)
+                                or intent.operation not in {'speak', 'challenge'}):
+                            raise WorldError('Opiniões exigem fala do jogador executada antes da avaliação.')
                         if isinstance(intent, GestureIntent) and checkpoint is None and (
                                 not self.session.last_communication or
                                 intent.target_id not in self.session.last_communication.get('seen_by', [])):
@@ -459,38 +472,75 @@ class Conversation:
             events.append(event)
         return finish(stop_reason)
 
-    def agency_context(self, actor_id):
+    def agency_context(self, actor_id, *, review=False):
         session = self.session
         npc = session.perception.observer(actor_id)
         observations = session.agency.context(actor_id)
-        adjudication = session.adjudication.prepare(())
+        area = session.scene.area_at(npc.position) if session.scene else None
+        heard = ' '.join(e['text'] for e in observations['communications'][-3:]
+                         if e.get('understood') and e.get('text'))
+        adjudication = dict(requests=[], cached=[]) if review else session.adjudication.prepare(())
         adjudication['cached'] = [{k: v for k, v in entry.items() if k not in {'reason','fact_ids'}}
                                   for entry in adjudication['cached']]
-        return AIContext(ContextKind.NPC_AGENCY, dict(mode=session.mode.value, phase='npc_agency',
+        kind = ContextKind.NPC_REVIEW if review else ContextKind.NPC_AGENCY
+        return AIContext(kind, dict(mode=session.mode.value, phase=kind.value,
             actor=dict(id=npc.id, name=npc.name, column=npc.position.x + 1, row=npc.position.y + 1,
                        senses=npc.senses.context(session.perception.bonus(npc))),
             profile=session.social.profiles[actor_id].context(),
-            knowledge=[m.data() for m in session.knowledge.store.select(actor_id,
-                query=observations['intent']['goal'], max_chars=3500)], observations=observations,
+            opinions=session.social.opinion_context(actor_id),
+            relationships=session.bonds.context(actor_id),
+            conversations=session.conversations.view(actor_id),
+            knowledge=[m.data() for m in session.knowledge.select(actor_id,
+                query=observations['intent']['goal'] + ' ' + heard,
+                entities=(area.id,) if area else (), max_chars=3500)], observations=observations,
             parley=(session.parley.context() if session.parley and session.parley.actor_id == actor_id else None),
             world=dict(adjudication=adjudication)))
+
+    def execute_review(self, actor_id, world):
+        """Reabre apenas avaliações propostas, usando o registro próprio do evento."""
+        session = self.session
+        if (session.encounter.combat or actor_id not in session.agency._review_events
+                or world.intent is not None or world.adjudications):
+            raise WorldError('Reconsideração exige incidente percebido no modo narrado, sem ações ou intenção antecipada.')
+        if session.perception.sleeping(session.perception.observer(actor_id)):
+            raise WorldError('Um NPC dormindo não pode reconsiderar um acontecimento.')
+        for reaction in world.reactions:
+            if (reaction.actions or reaction.step_index != 0 or reaction.after_squares is not None
+                    or reaction.check or reaction.interrupt
+                    or any(o.actor_id != actor_id for o in reaction.opinions)
+                    or any(e.owner_id != actor_id for e in reaction.episodes)
+                    or any(b.owner_id != actor_id for b in reaction.bonds)):
+                raise WorldError('A revisão só interpreta episódios e opiniões do NPC solicitado.')
+        for reaction in world.reactions:
+            session.relationship_history.apply(reaction.episodes)
+            session.bonds.apply(reaction.bonds)
+            session.social.assess_options(reaction.opinions)
+        logger.info('agency.review_applied', extra={'data': dict(actor_id=actor_id,
+            opportunity_id=session.agency.intents[actor_id]['opportunity_id'])})
 
     def execute_agency(self, actor_id, world, *, require_adjudications=False):
         if self.session.encounter.combat:
             raise WorldError('Não há acompanhamento de exploração durante combate.')
         actions = self.session.agency.validate(actor_id, world)
         self.session.adjudication.begin(world.adjudications, strict=require_adjudications)
+        decision_event_id = self.session.agency.begin(actor_id, world.intent)
+        conversation_id = self.session.agency.intents[actor_id].get('conversation_id')
         events = []
         failure = None
         executor = WorldExecutor(self.session, agency_actor=actor_id)
         try:
             for action in actions:
-                events.append(executor.execute(action))
+                event = executor.execute(action)
+                events.append(event)
                 events.extend(self.session.drain_world_events())
+                if event.get('stop_reason'):
+                    failure = executor.failure
+                    return self._remember(ExecutionReport(world_events=tuple(events), stop_reason=event['stop_reason'],
+                        failures=(failure,) if failure else ()), actor_id)
                 if self.session.encounter.combat:
                     self.session.agency.close(actor_id)
                     break
-            self.session.agency.apply(world.intent, actions)
+            self.session.agency.apply(world.intent, actions, conversation_id=conversation_id, event_id=decision_event_id)
         except (WorldError, ActionError, CharacterError, MovementError) as error:
             events.extend(self.session.drain_world_events())
             failure = executor.failure
@@ -509,6 +559,7 @@ class Conversation:
         # memórias do jogador e as referências efetivamente compartilhadas.
         context['world'].pop('knowledge', None)
         context['world'].pop('social', None)
+        context['world'].pop('conversations', None)
         context['world'].pop('adjudication', None)
         self._sync_reset()
         # O narrador descreve a percepção atual, não o mapa arquitetônico inteiro.
@@ -553,6 +604,7 @@ class Conversation:
             "player_sheet": context["player_sheet"], "combat": context["combat"],
             "mode": context["mode"], "world": context["world"], "parley": context["parley"], "sensing": context["sensing"],
             'knowledge': context['knowledge'],
+            'conversations': context['conversations'],
             "history": [{"role": m.role, "on": m.speech.on, "off": m.speech.off}
                         for m in self.messages[-12:]],
             "verified_rules": [

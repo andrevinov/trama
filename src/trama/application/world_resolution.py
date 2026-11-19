@@ -17,6 +17,8 @@ from trama.distances import CELL_METERS
 from trama.spatial import Position
 from trama.vision import line_of_sight
 from trama.observability import log_context, new_id
+from trama.conversation_state import ConversationUpdate
+from trama.knowledge import Claim
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,28 @@ class WorldExecutor:
 
     def reaction(self, reaction: WorldReaction) -> tuple[list[dict], str | None]:
         events = []
+        if reaction.episodes:
+            if self.session.encounter.combat or self.agency_actor is not None:
+                raise WorldError('Episódios são interpretados depois da ação no modo narrado.')
+            for episode in reaction.episodes:
+                self._npc(episode.owner_id)
+            self.session.relationship_history.apply(reaction.episodes)
+        if reaction.bonds:
+            if self.session.encounter.combat or self.agency_actor is not None:
+                raise WorldError('Vínculos são interpretados por fatos percebidos no modo narrado.')
+            for update in reaction.bonds:
+                self._npc(update.owner_id)
+            self.session.bonds.apply(reaction.bonds)
+        if reaction.opinions:
+            if self.session.encounter.combat or self.agency_actor is not None:
+                raise WorldError('Este recorte avalia opções após fala no modo narrado.')
+            for opinion in reaction.opinions:
+                self._npc(opinion.actor_id)
+                speech = self.session.last_communication or {}
+                if opinion.actor_id not in speech.get('heard_by', []):
+                    raise WorldError('O NPC precisa ter ouvido a fala atual para avaliar suas opções.')
+            # Raciocínio privado: sem evento público, comunicação ou rolagem.
+            self.session.social.assess_options(reaction.opinions)
         if reaction.check:
             check = reaction.check
             self._npc(check.actor_id)
@@ -116,6 +140,8 @@ class WorldExecutor:
             logger.info("world.action_completed", extra={"data": event})
             if self.session.mode != mode_before:
                 if self.session.mode == GameMode.TURN_BASED:
+                    self.session.conversations.interrupt_combat(
+                        (e.id for e in self.session.encounter.combat.order), new_id())
                     self.session.agency.intents.clear()
                 logger.info("game.mode_changed", extra={"data": {"before": mode_before, "after": self.session.mode,
                             "reason": action.text, "actor_id": action.actor_id}})
@@ -170,8 +196,16 @@ class WorldExecutor:
         if npc.id not in encounter.sheets and action.operation not in {'say', 'wait'}:
             raise WorldError('Um NPC sem ficha de combate pode perceber, buscar e falar; não recebe ações de Guerreiro.')
         if action.operation == "say":
+            conversation = action.conversation
+            if self.agency_actor == npc.id:
+                cid = session.agency.intents[npc.id].get('conversation_id')
+                if cid:
+                    if conversation and conversation.conversation_id not in {None, cid}:
+                        raise WorldError('A fala deve pertencer à conversa acompanhada.')
+                    conversation = replace(conversation or ConversationUpdate(), conversation_id=cid)
             communication = session.knowledge.communicate(npc.id, action.text, npc.position,
-                                                           action.volume, memory_ids=action.memory_ids)
+                                                           action.volume, memory_ids=action.memory_ids,
+                                                           conversation=conversation)
             if (self.agency_actor is None and session.last_communication
                     and npc.id in (session.last_communication['seen_by'] if session.last_communication.get('medium') == 'gesture'
                                    else session.last_communication['heard_by'])):
@@ -258,6 +292,9 @@ class WorldExecutor:
             if result.changed:
                 session.scene = session.scene.with_passage(passage.id, result.is_open)
                 session.grid = session.scene.movement_grid
+                session.knowledge.observe_action(npc.id, Claim(passage.id, 'open', 'true' if result.is_open else 'false'),
+                    f"{npc.id} {'abriu' if result.is_open else 'fechou'} {passage.name}.",
+                    passage.position, topics=('actions', 'door'))
                 session.knowledge.observe_scene()
                 if encounter.combat:
                     encounter.budgets[npc.id] = result.budget
@@ -280,6 +317,10 @@ class WorldExecutor:
             if encounter.combat is None:
                 raise WorldError("Inicie o conflito e respeite a iniciativa antes de atacar.")
             result = encounter.attack(npc.id, encounter.player_id, action.weapon)
+            if result.event.get('damage', 0) > 0:
+                session.knowledge.observe_action(npc.id,
+                    Claim(encounter.player_id, 'observed_injury', str(result.event['target_hp'])),
+                    result.event['summary'], session.state.position, topics=('actions', 'harm'))
             session.state = replace(session.state, speed_reduction_meters=encounter.player_sheet.speed_meters - encounter.speed(encounter.player_id))
             return {**event, **result.event, "perceptible": True}
         raise WorldError("Operação do Mundo não implementada.")

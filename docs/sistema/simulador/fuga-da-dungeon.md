@@ -71,7 +71,7 @@ no cômodo. Pedidos com várias etapas executam na ordem e param no impedimento;
 portas não se abrem automaticamente. Para atravessar a saída, abra-a e caminhe
 até a área Saída, ou peça para escapar. A chegada conclui o simulador.
 
-Jogo/Ficha/Inimigos permanecem disponíveis. A ficha registra roupa e inventário
+Jogo/Ficha/NPCs permanecem disponíveis. A ficha registra roupa e inventário
 em **Dados → Equipamento e treinamento**. O mapa mostra tochas, itens conhecidos
 e visíveis e o prisioneiro (`P`). O estado da fechadura não é revelado só por
 olhar a grade. O guarda caído tem marcador diferente; pode ser atravessado como

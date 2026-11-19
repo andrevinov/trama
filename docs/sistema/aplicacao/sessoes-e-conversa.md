@@ -30,6 +30,11 @@ nesses caminhos e na reprodução de mensagens registradas.
 
 ## Histórico e memória mecânica
 
+O [estado próprio da conversa](estado-da-conversa.md) é separado do histórico
+textual: acompanha foco, participantes, objetivos privados de NPCs, pendências
+e versões de propostas em `GameSession.conversations`. Só falas executadas o
+atualizam; cada personagem recebe sua perspectiva conforme a audição real.
+
 O histórico textual não é a fonte de posição, inventário ou recursos. Acrescentar
 mensagens de uma sessão real não executa as ações descritas nem restaura estado.
 O lote é validado antes da inclusão, preservando papéis e canais; campos extras,

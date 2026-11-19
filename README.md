@@ -164,10 +164,58 @@ ficam APIs, campos, configurações e procedimentos detalhados.
 
 ## Estado atual e alcance
 
-O cenário jogável atual é uma **fuga de dungeon**, com quatro celas, corredor
+O cenário padrão é uma **fuga de dungeon**, com quatro celas, corredor
 iluminado por tochas, um guarda, banheiro, saída e outro prisioneiro. O jogador
 é um Guerreiro Humano de nível 3, Campeão, com estilo Defesa, inicialmente em
 trapos e sem itens. A abertura mágica de sua cela dá início à história.
+
+O [conselho dos generais](docs/sistema/simulador/conselho-dos-generais.md) é um
+cenário alternativo de conversa pacífica, com persona, alinhamento e memórias
+do general Konrad Voss. Para abri-lo na raiz do projeto:
+
+```bash
+poetry run trama-simulator --scenario src/trama/scenarios/generals_council.json
+```
+
+Reiniciar restaura o cenário selecionado. Para voltar à dungeon no início,
+feche a janela e execute `poetry run trama-simulator` sem `--scenario`.
+O [estado da conversa](docs/sistema/aplicacao/estado-da-conversa.md) acompanha foco,
+pendências e versões de propostas percebidas. As
+[opiniões por opção e por termo](docs/sistema/aplicacao/opinioes-por-opcao.md)
+calculam avaliações privadas com motivos e memórias. O
+[acompanhamento dos NPCs](docs/sistema/aplicacao/intencoes-dos-npcs.md) usa essas
+notas depois do cálculo para escolher a iniciativa em conversas comuns.
+As [relações iniciais](docs/sistema/aplicacao/relacoes-iniciais.md) acrescentam
+confiança e afeto direcionais às opções pertinentes, com níveis declarados no
+cenário. [Episódios percebidos](docs/sistema/aplicacao/evolucao-das-relacoes.md)
+podem atualizar esses níveis com evidência e história; compromissos e pendências
+ficam na memória ao encerrar o encontro.
+[Acontecimentos percebidos](docs/sistema/aplicacao/acontecimentos-e-prioridades.md)
+podem reabrir avaliações e mudar a prioridade do NPC, com pausa e retomada da
+conversa. [Amizade, atração, paixão e amor](docs/sistema/aplicacao/vinculos-afetivos.md)
+têm critérios próprios de formação e ruptura, sem conversão por pontos ou
+sentimentos impostos ao jogador. Limites amorosos declarados e ouvidos orientam
+as respostas, mesmo quando o afeto permanece.
+
+As [conversas casuais](docs/sistema/simulador/conversas-casuais.md) usam o mesmo
+motor para companhia, gratidão e orientação espontânea, sem exigir negociação:
+
+```bash
+poetry run trama-simulator --situation conversa-com-amiga
+poetry run trama-simulator --situation encontro-com-garoto
+```
+
+As situações preparam um cumprimento neutro. A amiga pode escutar sem aconselhar;
+o garoto pode oferecer um caminho ou despedir-se e caminhar para a alameda.
+A moeda recebida pelo garoto é um acontecimento anterior declarado no cenário.
+
+As [situações de vínculos](docs/sistema/simulador/vinculos-afetivos.md) permitem
+comparar amizade sem atração, afeto sem confiança e interesse não correspondido:
+
+```bash
+poetry run trama-simulator --situation vinculo-amizade-sem-atracao
+poetry run trama-simulator --situation vinculo-interesse-nao-correspondido
+```
 
 O simulador exercita exploração, descoberta e coleta de itens, portas e chaves,
 disfarce, furtividade, interação com o prisioneiro e combate básico. A
@@ -232,7 +280,7 @@ Sem chave, a janela permite visualizar o cenário e informa a configuração
 necessária. O uso interativo do Pygame requer um ambiente gráfico.
 
 **Enter** envia a mensagem; **Shift+Enter** insere uma nova linha. As guias
-**Jogo**, **Ficha** e **Inimigos** permitem consultar o estado durante a partida.
+**Jogo**, **Ficha** e **NPCs** permitem consultar o estado durante a partida.
 Consulte os [controles](docs/sistema/interfaces/pygame.md#controles) e os
 [exemplos da dungeon](docs/sistema/simulador/fuga-da-dungeon.md#interações) para continuar.
 

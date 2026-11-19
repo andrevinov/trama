@@ -20,6 +20,8 @@ from trama.infrastructure.openai_config import DEFAULT_CONFIG, ResponseOptions
 from trama.infrastructure.call_budget import CallBudget
 from trama.distances import CELL_METERS, to_meters
 from trama.observability import log_context, new_id
+from trama.conversation_state import conversation_update_from_data
+from trama.infrastructure.conversation_schema import OPTIONAL_CONVERSATION_SCHEMA, CONVERSATION_INSTRUCTIONS
 
 logger = logging.getLogger(__name__)
 
@@ -95,8 +97,9 @@ NARRATIVE_SCHEMA = {"type": "object", "properties": {
     "operation": {"type": "string", "enum": list(NARRATIVE_OPERATIONS)},
     "text": {"type": "string", "minLength": 1, "maxLength": 2000},
     "volume": {"type": "string", "enum": ["quiet", "normal", "loud"]},
-    "claims": {"type": "array", "maxItems": 3, "items": CLAIM_SCHEMA}},
-    "required": ["operation", "text", "volume", "claims"], "additionalProperties": False}
+    "claims": {"type": "array", "maxItems": 3, "items": CLAIM_SCHEMA},
+    "conversation": OPTIONAL_CONVERSATION_SCHEMA},
+    "required": ["operation", "text", "volume", "claims", "conversation"], "additionalProperties": False}
 
 SCENARIO_SCHEMA = {"type": "object", "properties": {
     "operation": {"type": "string", "enum": list(SCENARIO_OPERATIONS)},
@@ -321,6 +324,9 @@ corrija usando o MESMO pedido original, sem omitir ações solicitadas válidas.
 
 
 
+INSTRUCTIONS += CONVERSATION_INSTRUCTIONS
+
+
 def parse_intent(text: str) -> PlayerIntent:
     """Valida novamente a saída externa, inclusive tipos e campos inesperados."""
     try:
@@ -340,13 +346,14 @@ def parse_intent(text: str) -> PlayerIntent:
                 raise ValueError("Campos de interação inválidos")
             return ScenarioIntent(value["operation"], value["target_id"], value.get("allow_approach", True))
         if isinstance(value, dict) and value.get("operation") in NARRATIVE_OPERATIONS:
-            if not {'operation', 'text'} <= set(value) or set(value) - {'operation', 'text', 'volume', 'claims'}:
+            if not {'operation', 'text'} <= set(value) or set(value) - {'operation', 'text', 'volume', 'claims', 'conversation'}:
                 raise ValueError("Campos de intenção narrativa inválidos")
             claims = value.get('claims', [])
             if not isinstance(claims, list):
                 raise ValueError('claims deve ser uma lista de afirmações.')
             return NarrativeIntent(value["text"], value["operation"], volume=value.get("volume", "normal"),
-                                   claims=tuple(Claim(**c) for c in claims))
+                                   claims=tuple(Claim(**c) for c in claims),
+                                   conversation=conversation_update_from_data(value.get('conversation')))
         if isinstance(value, dict) and value.get("operation") in {"end_turn", "attack", "second_wind", "action_surge", "hide"}:
             if set(value) not in ({"operation", "target_id", "weapon", "use_inspiration"},
                                    {"operation", "target_id", "weapon", "use_inspiration", "allow_approach"}):

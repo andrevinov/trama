@@ -141,3 +141,32 @@ avaliações distintas. Som percebido não basta para aprender Claims. Referênc
 privadas redundantes de Influence em gravações antigas são validadas sem
 compartilhamento; a saída atual só permite `memory_ids` públicos em `say`.
 Veja [avaliação contextual](avaliacao-de-dificuldade.md).
+
+O passo 6 registra autoria de operações de porta e ataques diretos com dano
+somente para quem vê autor e resultado. Também consolida compromissos e pendências
+no fechamento percebido e conserva inferências privadas sobre episódios. A
+substituição de um resumo ativo preserva sua história; ele não vira observação
+nem é compartilhado por `memory_ids`. A seleção dá pertinência a esses tópicos,
+mantendo os limites existentes. Política, deduplicação entre M/R e alcance das
+observações estão em [evolução das relações](evolucao-das-relacoes.md).
+
+Aquisições pertinentes também podem notificar a
+[reconsideração por acontecimentos](acontecimentos-e-prioridades.md). Relato
+permanece relato. Ver apenas um ferido produz observação da condição sem
+identificar o agressor; só ver autor e resultado sustenta atribuição de autoria.
+Notificação privada não transmite a memória aos outros participantes.
+
+Para a decisão individual, a seleção também considera a área atual do NPC e
+as comunicações recentes que ele compreendeu, além do objetivo. Isso permite
+recuperar uma ajuda anterior ou um caminho conhecido numa conversa casual,
+sem importar o histórico onisciente. Continuam os mesmos limites por dono;
+uma orientação falada chega ao ouvinte como relato e não o desloca até o destino.
+
+## Vínculos e disponibilidade declarada
+
+Os [vínculos qualitativos](vinculos-afetivos.md) geram resumos próprios
+`relationship_bond`, não compartilháveis e excluídos de M ou de novas provas.
+Uma declaração própria de abertura/recusa registra `romance_boundary:<alvo>`
+somente a partir de fala validada: observação de dizer para o falante e relato
+para quem compreendeu. Isso registra disponibilidade declarada, sem provar
+sentimento ou reciprocidade. Repetição conhecida não gera nova aquisição.

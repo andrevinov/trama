@@ -7,6 +7,7 @@ from trama.actions import ActionError
 from trama.knowledge import Claim, KnowledgeError, KnowledgeStore, MemorySource
 from trama.observability import current_context, new_id
 from trama.perception import Noise, Observer, Senses
+from trama.conversation_state import ConversationStateError
 
 logger = logging.getLogger(__name__)
 
@@ -22,13 +23,61 @@ class KnowledgeSystem:
         owners = {session.encounter.player_id, *(c.id for c in session.creatures), *(o.id for o in session.observers)}
         if any(m.owner_id not in owners for m in memories):
             raise KnowledgeError('Memória inicial pertence a personagem inexistente.')
+        self._consolidated = {}
 
-    def _learn(self, owner, claim, text, source, **context):
+    def observe_action(self, actor_id, claim, text, position, *, topics=()):
+        """Atribuição só para quem vê a ação e seu autor consciente, no instante real."""
+        s = self.session
+        origin = s.state.position if actor_id == s.encounter.player_id else s.perception.observer(actor_id).position
+        source = MemorySource('observation', current_context().get('operation_id') or new_id(), actor_id)
+        listeners = [o.id for o in s.perception.observers() if not s.perception.sleeping(o)
+                     and (o.id not in s.encounter.states or s.encounter.states[o.id].hp > 0)
+                     and s.perception.sees(o, origin) and s.perception.sees(o, position)]
+        if origin in s.visibility.visible and position in s.visibility.visible:
+            listeners.append(s.encounter.player_id)
+        learned = [self._learn(owner, claim, text, source, when='Ação efetivamente observada durante a partida.',
+            context='Autor e resultado vistos; não é uma promessa ou cumprimento de termos fora do motor.',
+            entities=(actor_id, claim.subject_id), topics=tuple(topics), replace_existing=True, _position=position)
+            for owner in dict.fromkeys(listeners)]
+        if claim.predicate == 'observed_injury':
+            # Ver o ferido não identifica quem o atingiu.
+            for observer in s.perception.observers():
+                if observer.id in listeners or not s.perception.sees(observer, position):
+                    continue
+                learned.append(self._learn(observer.id, claim, f'{claim.subject_id} apresenta ferimento visível.',
+                    MemorySource('observation', source.event_id), when='Ferimento observado durante a partida.',
+                    context='Viu a condição do ferido; não viu o autor da agressão.',
+                    entities=(claim.subject_id,), topics=('harm',), replace_existing=True, _position=position))
+        return tuple(learned)
+
+    def consolidate(self, event_id):
+        for row in self.session.conversations.closure_memories(event_id):
+            key = row['owner_id'], row['subject_id'], row['predicate']
+            if self._consolidated.get(key) == row['value']:
+                continue
+            owner = row['owner_id']
+            position = self.session.state.position if owner == self.session.encounter.player_id else self.session.perception.observer(owner).position
+            area = self.session.scene.area_at(position) if self.session.scene else None
+            entities = tuple(dict.fromkeys((*row['entities'], *((area.id,) if area else ()))))[:16]
+            self._learn(owner, Claim(row['subject_id'], row['predicate'], row['value']), row['text'][:700],
+                MemorySource('inference', event_id, row['owner_id']),
+                when=f'Ao encerrar uma conversa percebida; comunicação {self.communication_sequence}.',
+                context='Registro selecionado do encontro; compromisso verbal não comprova cumprimento.',
+                entities=entities, topics=('conversation', row['predicate']), shareable=False, replace_existing=True)
+            self._consolidated[key] = row['value']
+
+    def select(self, owner_id, *, query='', entities=(), max_chars=3500):
+        return self.store.select(owner_id, query=query, entities=entities,
+            topics=('conversation_commitment', 'conversation_pending', 'relationships'), max_chars=max_chars)
+
+    def _learn(self, owner, claim, text, source, *, _position=None, **context):
         previous = self.store.revision
         memory = self.store.learn(owner, claim, text, source, **context)
         if self.store.revision != previous:
             logger.debug('knowledge.acquired', extra={'data': memory.data()})
             self.session.on_knowledge(memory)
+            if hasattr(self.session, 'agency'):
+                self.session.agency.notice_memory(memory, _position)
         return memory
 
     def observe(self, claim, text, position, *, context, entities=(), topics=(), excluded=()):
@@ -64,11 +113,16 @@ class KnowledgeSystem:
             raise ActionError(str(error)) from error
         if any(not m.shareable for m in memories):
             raise ActionError('Essa memória não está autorizada para divulgação.')
+        if any(m.claim.predicate.startswith('romance_boundary:') for m in memories):
+            raise ActionError('Disponibilidade afetiva exige declaração própria literal; não use memory_ids.')
         return memories
 
-    def communicate(self, actor_id, text, position, volume='normal', *, memory_ids=(), claims=()):
+    def communicate(self, actor_id, text, position, volume='normal', *, memory_ids=(), claims=(), conversation=None):
         # Validação vem antes do ruído e de qualquer efeito de comunicação.
         memories = self.references(actor_id, memory_ids)
+        self.session.bonds.validate_declaration(actor_id, conversation)
+        if any(c.predicate.startswith('romance_boundary:') for c in claims):
+            raise ActionError('Limite afetivo exige declaração própria em conversation, com trecho literal; não use claims.')
         if claims and actor_id != self.session.encounter.player_id:
             raise ActionError('NPCs compartilham memórias próprias; não criam fatos por fala.')
         noise = Noise(actor_id, position, volume, 'Fala com informação.', speech=True)
@@ -83,8 +137,13 @@ class KnowledgeSystem:
                                 Senses(perception_bonus=self.session.encounter.player_sheet.skill_bonus('perception')))
             if self.session.perception.hears(listener, noise):
                 hearers.append(player)
-                self.known_actor_ids.add(actor_id)
         event_id = new_id()
+        try:
+            state, conversation_id = self.session.conversations.prepare(actor_id, text, hearers, conversation,
+                event_id=event_id, player_id=player,
+                actor_ids={player, *(o.id for o in self.session.perception.observers())}, memory_revision=self.store.revision)
+        except ConversationStateError as error:
+            raise ActionError(str(error)) from error
         self.communication_sequence += 1
         self.communications.append(dict(sequence=self.communication_sequence, actor_id=actor_id,
             text=text, volume=volume, heard_by=list(hearers),
@@ -103,7 +162,17 @@ class KnowledgeSystem:
             for claim in claims:
                 learned.append(self._learn(recipient, claim, text[:700], MemorySource('report', event_id, actor_id),
                     when='Relato ouvido durante a partida.', context='Afirmação do jogador; veracidade não confirmada.'))
-        return {'memory_ids': list(memory_ids), 'claims': [vars(c) for c in claims],
+        self.session.conversations = state
+        learned.extend(self.session.bonds.record_declaration(actor_id, conversation, hearers, event_id))
+        self.session.agency.register_contribution(event_id, actor_id)
+        self.consolidate(event_id)
+        if actor_id != player and player in hearers:
+            self.known_actor_ids.add(actor_id)
+        if conversation_id is not None:
+            logger.info('conversation.state_updated', extra={'data': dict(conversation_id=conversation_id,
+                actor_id=actor_id, event_id=event_id, heard_by=hearers)})
+        return {'sequence': self.communication_sequence, 'event_id': event_id,
+                'memory_ids': list(memory_ids), 'claims': [vars(c) for c in claims],
                 'shared_memories': [{k: v for k, v in m.data().items()
                                     if k in {'id', 'owner_id', 'claim', 'text', 'source', 'when'}} for m in memories],
                 'heard_by': hearers, 'learned_memory_ids': [m.id for m in learned]}
@@ -143,7 +212,7 @@ class KnowledgeSystem:
         s = self.session
         area = s.scene.area_at(s.state.position) if s.scene else None
         entities = (area.id,) if area else ()
-        player = [m.data() for m in self.store.select(s.encounter.player_id, query=query, entities=entities)]
+        player = [m.data() for m in self.select(s.encounter.player_id, query=query, entities=entities)]
         combat = s.encounter.combat
         observers = [o for o in s.perception.observers() if o.position in s.visibility.visible
                      or s.perception.hears(o, Noise(s.encounter.player_id, s.state.position))
@@ -154,7 +223,7 @@ class KnowledgeSystem:
         for observer in observers[:8]:
             place = s.scene.area_at(observer.position) if s.scene else None
             anchors = (*entities, *((place.id,) if place else ()))
-            memories = self.store.select(observer.id, query=query, entities=anchors, max_chars=min(3500, remaining))
+            memories = self.select(observer.id, query=query, entities=anchors, max_chars=min(3500, remaining))
             payload = [m.data() for m in memories]
             remaining -= sum(len(json.dumps(m, ensure_ascii=False)) for m in payload)
             actors.append({'actor_id': observer.id, 'memories': payload})

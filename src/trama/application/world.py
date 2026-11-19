@@ -7,6 +7,10 @@ from trama.spatial import Position
 from trama.application.parley import InfluenceRequest
 from trama.difficulty import Adjudication
 from trama.agency import IntentDecision
+from trama.conversation_state import ConversationUpdate
+from trama.opinions import OptionAssessment
+from trama.relationships import RelationshipEpisode
+from trama.bonds import BondUpdate
 
 
 class WorldError(ValueError):
@@ -36,9 +40,12 @@ class WorldAction:
     influence: InfluenceRequest | None = None
     volume: str = "normal"
     memory_ids: tuple[str, ...] = ()
+    conversation: ConversationUpdate | None = None
 
     def __post_init__(self):
-        if (not isinstance(self.memory_ids, tuple) or len(self.memory_ids) > 6
+        if (self.conversation is not None and (not isinstance(self.conversation, ConversationUpdate)
+                or self.operation != 'say')
+                or not isinstance(self.memory_ids, tuple) or len(self.memory_ids) > 6
                 or any(not isinstance(id, str) or not id or len(id) > 160 for id in self.memory_ids)
                 or len(set(self.memory_ids)) != len(self.memory_ids)
                 or self.memory_ids and self.operation not in {'say', 'influence'}
@@ -64,11 +71,22 @@ class WorldReaction:
     interrupt: bool = False
     reason: str = ""
     check: PerceptionCheck | None = None
+    opinions: tuple[OptionAssessment, ...] = ()
+    episodes: tuple[RelationshipEpisode, ...] = ()
+    bonds: tuple[BondUpdate, ...] = ()
 
     def __post_init__(self):
         if (type(self.step_index) is not int or not 0 <= self.step_index < 10
                 or (self.after_squares is not None and (type(self.after_squares) is not int or self.after_squares < 0))
-                or not 1 <= len(self.actions) <= 10 or type(self.interrupt) is not bool
+                or not 0 <= len(self.actions) <= 10 or not (self.actions or self.opinions or self.episodes or self.bonds)
+                or not isinstance(self.bonds, tuple) or len(self.bonds) > 8
+                or any(not isinstance(b, BondUpdate) for b in self.bonds)
+                or not isinstance(self.episodes, tuple) or len(self.episodes) > 8
+                or any(not isinstance(e, RelationshipEpisode) for e in self.episodes)
+                or not isinstance(self.opinions, tuple) or len(self.opinions) > 4
+                or any(not isinstance(o, OptionAssessment) for o in self.opinions)
+                or (self.opinions or self.episodes or self.bonds) and (self.after_squares is not None or self.check is not None)
+                or type(self.interrupt) is not bool
                 or not all(isinstance(action, WorldAction) for action in self.actions)
                 or not isinstance(self.reason, str) or (self.interrupt and not self.reason.strip())
                 or (self.check is not None and not isinstance(self.check, PerceptionCheck))):

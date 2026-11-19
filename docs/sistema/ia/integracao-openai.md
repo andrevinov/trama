@@ -21,7 +21,7 @@ Os padrões permanecem:
 | Correções do interpretador | Até 1 |
 | Ordem do esquema | `operation-first` |
 | Interpretação / narração | Até 1000 tokens, raciocínio `low` |
-| Mundo / NPC | Até 2000 tokens, raciocínio `low` |
+| Mundo / NPC | Até 6000 tokens, raciocínio `low`; inclui avaliações por opção e termo. |
 
 `ResponseOptions` declara limite de tokens e esforço por fase. Esquemas estritos,
 `store=False`, instruções e projeções continuam vindo dos adaptadores reais.

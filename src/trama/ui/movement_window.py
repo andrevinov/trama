@@ -109,7 +109,7 @@ class MovementWindow:
         self.character_panel = CharacterPanel()
         self.turn_panel = TurnPanel()
         self.tabs = {name: pygame.Rect(550 + i * 156, 60, 146, 34)
-                     for i, name in enumerate(("Jogo", "Ficha", "Inimigos"))}
+                     for i, name in enumerate(("Jogo", "Ficha", "NPCs"))}
         self._chat_key = None
         self._chat_lines = []
         self.model = model
@@ -425,7 +425,8 @@ class MovementWindow:
                 cx, cy = center(creature.position)
                 radius = max(5, cell_size // 2 - 3)
                 at_zero_hp = self.session.encounter.states[creature.id].hp == 0
-                pygame.draw.circle(screen, (76, 65, 69) if at_zero_hp else RED, (cx, cy), radius)
+                color = RED if creature.hostile else GOLD
+                pygame.draw.circle(screen, (76, 65, 69) if at_zero_hp else color, (cx, cy), radius)
                 if at_zero_hp:
                     pygame.draw.circle(screen, MUTED, (cx, cy), radius, 1)
                     # Selo no canto mantém o número legível, mesmo na grade pequena.
@@ -465,8 +466,8 @@ class MovementWindow:
                 paragraph(f"{passage.name}: {state_label}, {lock_label}.",
                           52, details_y, 460, 2, ACCENT if passage.is_open else GOLD)
                 details_y += 48
-            visible_guards = [c for c in self.session.creatures if c.position in visibility.visible]
-            label(f"Guardas visíveis: {len(visible_guards)}", 52, details_y, RED, small)
+            visible_npcs = [c for c in self.session.creatures if c.position in visibility.visible]
+            label(f"NPCs visíveis: {len(visible_npcs)}", 52, details_y, RED, small)
             label(map_view['legend'], 52, details_y + 24, MUTED, small)
         if map_view['compact']:
             paragraph(map_view['equipment'], 52, 590, 460, 1)
@@ -475,9 +476,9 @@ class MovementWindow:
         if self.active_tab == "Ficha":
             self.sheet_scroll = self.character_panel.draw(screen, self.session.character_context(),
                                                           self.session.character_options(), self.sheet_scroll)
-        elif self.active_tab == "Inimigos":
+        elif self.active_tab == "NPCs":
             self.sheet_scroll = draw_panel(screen, enemy_paragraphs(self.session.visible_enemy_summaries()),
-                                           self.active_tab, self.sheet_scroll)
+                                           'NPCs', self.sheet_scroll)
         pygame.draw.rect(screen, PANEL, (550, 104, 458, 138), border_radius=10)
         state = self.session.state
         combat = self.session.combat_context()
@@ -504,7 +505,7 @@ class MovementWindow:
             pygame.draw.rect(screen, (53, 67, 80) if self.pending else (46, 90, 87), rect, border_radius=6)
             label(text, rect.x + 10, rect.y + 12, MUTED if self.pending else TEXT, small)
         label("On: ações e narrativa · [Off: regras e dúvidas]", 52, 620, MUTED, small)
-        paragraph("Ex.: Caminho até a porta. · Abra a porta. Em conflito: ataque o Guarda 1. · Encerro meu turno.", 52, 646, 460, 2)
+        paragraph("Ex.: Olho ao redor. · Pergunto ao interlocutor o que deseja. · Caminho até a porta.", 52, 646, 460, 2)
         tracker = combat_tracker_view(self.flow)
         if tracker:
             self.turn_panel.draw(screen, tracker)

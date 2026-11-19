@@ -471,7 +471,7 @@ def test_simulator_map_markers_and_sheet_render_headless(monkeypatch):
         assert GRID_ORIGIN[1] + window.cell_size * s.grid.height < 500
         assert s.map_view()['compact']
         assert s.map_view()['markers']
-        for tab in ('Ficha', 'Inimigos'):
+        for tab in ('Ficha', 'NPCs'):
             window.active_tab = tab
             window.draw(screen)
         assert s.character_context()['inventory'] == []

@@ -9,6 +9,18 @@ from trama.social import (ALIGNMENTS, DispositionAssessment, Interest, MemoryEff
                           SocialError, SocialProfile, evaluate_disposition, profile_from_data)
 
 
+@pytest.mark.parametrize('predicate', ['relationship_bond', 'relationship_episode'])
+def test_relational_summary_is_history_and_cannot_be_an_extra_memory_bonus(predicate):
+    p = SocialProfile('neutral', Persona('Guarda', 'Guarda', 'História própria.',
+        (Interest('understanding', 'Conhecer a história.', 2, evidence_topics=('relationships',)),)))
+    m = Memory('npc:summary', 'npc', Claim('bond:player', predicate, 'active'), 'Resumo privado de relação.',
+        MemorySource('inference', 'summary'), 'Agora.', 'História derivada.', topics=('relationships',))
+    result = evaluate_disposition(p, assessment(memory_effects=(
+        MemoryEffect(m.claim, 'understanding', 1, 'Uma lembrança relacional.'),)), (m,))
+    assert result['components']['memories'] == 0
+    assert result['memory_effects'][0]['impacts'][0]['counted'] is False
+
+
 def profile(alignment='neutral', weight=2):
     return SocialProfile(alignment, Persona('Guarda', 'Guarda', 'Quer compreender a situação.',
         (Interest('understanding', 'Ouvir uma explicação.', weight, evidence_predicates=('identity',)),)))

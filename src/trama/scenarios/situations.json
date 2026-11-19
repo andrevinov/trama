@@ -398,6 +398,57 @@
         ],
         "expected_status": "completed"
       }
+    ],
+    "greeting_lia": [
+      {
+        "steps": [
+          {
+            "intent": "narrative",
+            "operation": "speak",
+            "text": "Oi, Lia.",
+            "conversation": {
+              "target_ids": [
+                "lia"
+              ]
+            }
+          }
+        ],
+        "expected_status": "completed"
+      }
+    ],
+    "greeting_street_boy": [
+      {
+        "steps": [
+          {
+            "intent": "narrative",
+            "operation": "speak",
+            "text": "Olá, Davi.",
+            "conversation": {
+              "target_ids": [
+                "street_boy"
+              ]
+            }
+          }
+        ],
+        "expected_status": "completed"
+      }
+    ],
+    "greeting_marina": [
+      {
+        "steps": [
+          {
+            "intent": "narrative",
+            "operation": "speak",
+            "text": "Olá, Marina.",
+            "conversation": {
+              "target_ids": [
+                "marina"
+              ]
+            }
+          }
+        ],
+        "expected_status": "completed"
+      }
     ]
   },
   "situations": [
@@ -3093,6 +3144,407 @@
           "can_see": false,
           "can_hear": false
         }
+      }
+    },
+    {
+      "id": "conversa-com-amiga",
+      "scenario": "friendly_conversation.json",
+      "setup": [
+        "greeting_lia"
+      ],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          4,
+          4
+        ],
+        "area": "garden",
+        "mode": "narrated",
+        "combat": null,
+        "parley": null
+      }
+    },
+    {
+      "id": "encontro-com-garoto",
+      "scenario": "street_boy_conversation.json",
+      "setup": [
+        "greeting_street_boy"
+      ],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          3,
+          4
+        ],
+        "area": "small_square",
+        "mode": "narrated",
+        "combat": null,
+        "parley": null
+      }
+    },
+    {
+      "scenario": "bonds_encounter.json",
+      "setup": [
+        "greeting_marina"
+      ],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          5,
+          6
+        ],
+        "area": "courtyard",
+        "mode": "narrated",
+        "combat": null,
+        "parley": null
+      },
+      "id": "vinculo-amizade-sem-atracao"
+    },
+    {
+      "scenario": "bonds_encounter.json",
+      "setup": [
+        "greeting_marina"
+      ],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          5,
+          6
+        ],
+        "area": "courtyard",
+        "mode": "narrated",
+        "combat": null,
+        "parley": null
+      },
+      "id": "vinculo-em-formacao",
+      "relationship_variations": {
+        "marina": [
+          {
+            "target_id": "player",
+            "trust": {
+              "value": 2,
+              "reason": "Conhece atitudes confiáveis anteriores, sem obrigação de aceitar."
+            },
+            "affection": {
+              "value": 3,
+              "reason": "Carinho pela convivência e cuidado anteriores, independente de atração."
+            },
+            "bonds": []
+          }
+        ]
+      },
+      "knowledge_variations": {
+        "marina": [
+          {
+            "id": "marina_care",
+            "claim": {
+              "subject_id": "marina_care",
+              "predicate": "care_history",
+              "value": "care_observed"
+            },
+            "text": "marina ajudou player a encontrar um caminho seguro em um encontro anterior.",
+            "source": {
+              "kind": "observation",
+              "event_id": "marina_care-observed",
+              "actor_id": "marina"
+            },
+            "when": "Em uma ocasião anterior à abertura.",
+            "context": "Antecedente autoral de cuidado concreto; não declara sentimento do destinatário.",
+            "entities": [
+              "marina",
+              "player"
+            ],
+            "topics": [
+              "care",
+              "personal_encounter"
+            ],
+            "shareable": true
+          },
+          {
+            "id": "player_care",
+            "claim": {
+              "subject_id": "player_care",
+              "predicate": "care_history",
+              "value": "care_observed"
+            },
+            "text": "player ajudou marina a encontrar um caminho seguro em um encontro anterior.",
+            "source": {
+              "kind": "observation",
+              "event_id": "player_care-observed",
+              "actor_id": "player"
+            },
+            "when": "Em uma ocasião anterior à abertura.",
+            "context": "Antecedente autoral de cuidado concreto; não declara sentimento do destinatário.",
+            "entities": [
+              "player",
+              "marina"
+            ],
+            "topics": [
+              "care",
+              "personal_encounter"
+            ],
+            "shareable": true
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "bonds_encounter.json",
+      "setup": [
+        "greeting_marina"
+      ],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          5,
+          6
+        ],
+        "area": "courtyard",
+        "mode": "narrated",
+        "combat": null,
+        "parley": null
+      },
+      "id": "vinculo-afeto-sem-confianca",
+      "relationship_variations": {
+        "marina": [
+          {
+            "target_id": "player",
+            "trust": {
+              "value": -2,
+              "reason": "Uma promessa anterior quebrada sustenta cautela atual, apesar do carinho."
+            },
+            "affection": {
+              "value": 4,
+              "reason": "Afeto persiste apesar da confiança reduzida; não obriga aceitar."
+            },
+            "bonds": [
+              {
+                "kind": "friendship",
+                "state": "active",
+                "reason": "Marina reconhece uma história de cuidado nas duas direções.",
+                "memory_ids": [
+                  "marina:marina_care",
+                  "marina:player_care"
+                ]
+              },
+              {
+                "kind": "attraction",
+                "state": "active",
+                "reason": "Atração própria declarada no antecedente autoral.",
+                "memory_ids": [
+                  "marina:player_care"
+                ]
+              },
+              {
+                "kind": "infatuation",
+                "state": "ended",
+                "reason": "Paixão anterior assentada; isso não apaga amor atual.",
+                "memory_ids": [
+                  "marina:player_care"
+                ]
+              },
+              {
+                "kind": "love",
+                "state": "active",
+                "reason": "Marina reconhece amor próprio pela história anterior, sem presumir reciprocidade.",
+                "memory_ids": [
+                  "marina:marina_care",
+                  "marina:player_care"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "knowledge_variations": {
+        "marina": [
+          {
+            "id": "marina_care",
+            "claim": {
+              "subject_id": "marina_care",
+              "predicate": "care_history",
+              "value": "care_observed"
+            },
+            "text": "marina ajudou player a encontrar um caminho seguro em um encontro anterior.",
+            "source": {
+              "kind": "observation",
+              "event_id": "marina_care-observed",
+              "actor_id": "marina"
+            },
+            "when": "Em uma ocasião anterior à abertura.",
+            "context": "Antecedente autoral de cuidado concreto; não declara sentimento do destinatário.",
+            "entities": [
+              "marina",
+              "player"
+            ],
+            "topics": [
+              "care",
+              "personal_encounter"
+            ],
+            "shareable": true
+          },
+          {
+            "id": "player_care",
+            "claim": {
+              "subject_id": "player_care",
+              "predicate": "care_history",
+              "value": "care_observed"
+            },
+            "text": "player ajudou marina a encontrar um caminho seguro em um encontro anterior.",
+            "source": {
+              "kind": "observation",
+              "event_id": "player_care-observed",
+              "actor_id": "player"
+            },
+            "when": "Em uma ocasião anterior à abertura.",
+            "context": "Antecedente autoral de cuidado concreto; não declara sentimento do destinatário.",
+            "entities": [
+              "player",
+              "marina"
+            ],
+            "topics": [
+              "care",
+              "personal_encounter"
+            ],
+            "shareable": true
+          },
+          {
+            "id": "broken_promise",
+            "claim": {
+              "subject_id": "old_arrangement",
+              "predicate": "aftermath",
+              "value": "promise_failed"
+            },
+            "text": "Uma promessa anterior do interlocutor não foi cumprida; Marina observou a falha.",
+            "source": {
+              "kind": "observation",
+              "event_id": "old-promise-failure",
+              "actor_id": "player"
+            },
+            "when": "Antes desta conversa.",
+            "context": "Antecedente autoral; não define a intenção atual do jogador.",
+            "entities": [
+              "marina",
+              "player"
+            ],
+            "topics": [
+              "betrayal"
+            ],
+            "shareable": true
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "bonds_encounter.json",
+      "setup": [
+        "greeting_marina"
+      ],
+      "rolls": [],
+      "preparation_rolls": 0,
+      "preconditions": {
+        "position": [
+          5,
+          6
+        ],
+        "area": "courtyard",
+        "mode": "narrated",
+        "combat": null,
+        "parley": null
+      },
+      "id": "vinculo-interesse-nao-correspondido",
+      "relationship_variations": {
+        "marina": [
+          {
+            "target_id": "player",
+            "trust": {
+              "value": 2,
+              "reason": "Conhece atitudes confiáveis anteriores, sem obrigação de aceitar."
+            },
+            "affection": {
+              "value": 3,
+              "reason": "Carinho pela convivência e cuidado anteriores, independente de atração."
+            },
+            "bonds": [
+              {
+                "kind": "friendship",
+                "state": "active",
+                "reason": "Marina reconhece uma história de cuidado nas duas direções.",
+                "memory_ids": [
+                  "marina:marina_care",
+                  "marina:player_care"
+                ]
+              },
+              {
+                "kind": "attraction",
+                "state": "active",
+                "reason": "Marina sente atração, mas respeita o limite comunicado pelo interlocutor.",
+                "memory_ids": [
+                  "marina:player_care"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "knowledge_variations": {
+        "marina": [
+          {
+            "id": "marina_care",
+            "claim": {
+              "subject_id": "marina_care",
+              "predicate": "care_history",
+              "value": "care_observed"
+            },
+            "text": "marina ajudou player a encontrar um caminho seguro em um encontro anterior.",
+            "source": {
+              "kind": "observation",
+              "event_id": "marina_care-observed",
+              "actor_id": "marina"
+            },
+            "when": "Em uma ocasião anterior à abertura.",
+            "context": "Antecedente autoral de cuidado concreto; não declara sentimento do destinatário.",
+            "entities": [
+              "marina",
+              "player"
+            ],
+            "topics": [
+              "care",
+              "personal_encounter"
+            ],
+            "shareable": true
+          },
+          {
+            "id": "player_care",
+            "claim": {
+              "subject_id": "player_care",
+              "predicate": "care_history",
+              "value": "care_observed"
+            },
+            "text": "player ajudou marina a encontrar um caminho seguro em um encontro anterior.",
+            "source": {
+              "kind": "observation",
+              "event_id": "player_care-observed",
+              "actor_id": "player"
+            },
+            "when": "Em uma ocasião anterior à abertura.",
+            "context": "Antecedente autoral de cuidado concreto; não declara sentimento do destinatário.",
+            "entities": [
+              "player",
+              "marina"
+            ],
+            "topics": [
+              "care",
+              "personal_encounter"
+            ],
+            "shareable": true
+          }
+        ]
       }
     }
   ]

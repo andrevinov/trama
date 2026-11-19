@@ -14,6 +14,8 @@ from trama.perception import observers_from_data
 from trama.spatial import Grid, Position
 from trama.knowledge import initial_memories
 from trama.social import profiles_from_data
+from trama.relationships import relationships_from_data
+from trama.bonds import adult_ids_from_data
 
 
 def build_session(data: dict, *, roller: Roller | None = None) -> GameSession:
@@ -30,12 +32,15 @@ def build_session(data: dict, *, roller: Roller | None = None) -> GameSession:
         frozenset(Position(*p) for p in data.get('blocked', [])),
         frozenset(Position(*p) for p in data.get('difficult', [])))
     player = sheet_from_data(data.get('player', {}), id='player', name='Jogador', default_level=3)
+    memories = initial_memories(data)
     return GameSession(
         grid, MovementState(Position(*data['start']), data.get('speed_meters', player.speed_meters)),
         scene, creatures_from_data(data.get('creatures', [])), player_sheet=player,
         enemy_sheets=tuple(sheet_from_data(c.get('sheet', {}), id=c['id'], name=c['name'])
                            for c in data.get('creatures', [])), roller=roller, observers=observers_from_data(data.get("observers", [])),
-        memories=initial_memories(data), social_profiles=profiles_from_data(data))
+        memories=memories, social_profiles=profiles_from_data(data), relationships=relationships_from_data(data, memories),
+        adult_ids=adult_ids_from_data(data),
+        title=data.get('title', 'Cela e Guardas'))
 
 
 def load_session(path: str | Path, *, roller: Roller | None = None) -> GameSession:

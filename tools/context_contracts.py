@@ -23,10 +23,16 @@ from trama.spatial import Position
 from trama.knowledge import Claim
 from trama.difficulty import Adjudication
 from trama.agency import IntentDecision
+from trama.conversation_state import ConversationUpdate, ConversationPoint, ProposalUpdate, ProposalTerm
+from trama.opinions import OptionAssessment, TermAssessment
+from trama.relationships import RelationshipEffect, RelationshipEpisode
+from trama.bonds import BondUpdate
+from trama.application.situations import load_situation
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / 'docs/contracts/ai-contexts.json'
-VOLATILE_FIELDS = frozenset({'execution_id', 'session_id', 'interaction_id', 'operation_id', 'ai_call_id', 'timestamp', 'event_id'})
+VOLATILE_FIELDS = frozenset({'execution_id', 'session_id', 'interaction_id', 'operation_id', 'ai_call_id',
+                             'opportunity_id', 'timestamp', 'event_id'})
 
 
 class ReviewRoller:
@@ -52,7 +58,7 @@ def action(conversation, prompt, intent):
 
 
 def sample_contexts():
-    """Observa projeções reais nos seis tipos de contexto; não simula respostas de IA."""
+    """Observa projeções reais por fase; não simula respostas de IA."""
     samples = []
     gestures = Conversation(build_session(dict(width=9, height=5, start=[2, 2],
         observers=[dict(id='friend', name='Companheiro', position=[3, 2])]), roller=ReviewRoller()))
@@ -206,6 +212,223 @@ def sample_contexts():
             WorldAction('watcher', 'search', 'O vigia busca o fugitivo oculto.', 'player'),)),)))
         samples.extend((c.narration_context(speech, report), c.world_context(plan), c.interpretation_context(),
                         c.narration_context(c.prepare('[O que foi percebido?]'))))
+    # Acrescenta a nova cena sem substituir as amostras iniciais de cada fase.
+    council = Conversation(load_session(ROOT / 'src/trama/scenarios/generals_council.json'))
+    samples.append(council.narration_context(initial=True))
+    speech, plan = action(council, 'General, o que aconteceu na última trégua?',
+        NarrativeIntent('General, o que aconteceu na última trégua?', 'speak', conversation=ConversationUpdate(
+            target_ids=('general_voss',), focus='trégua',
+            points=(ConversationPoint('question', 'o que aconteceu na última trégua?'),))))
+    samples.extend((council.interpretation_context(), council.world_context(plan)))
+    report = council.execute(plan, WorldPlan((WorldReaction(0, None, (
+        WorldAction('general_voss', 'say', 'Vi os postos atacados depois da retirada; não sei quem ordenou os ataques.',
+            memory_ids=('general_voss:broken-truce',), conversation=ConversationUpdate(target_ids=('player',),
+                points=(ConversationPoint('statement', 'não sei quem ordenou os ataques.'),),
+                resolves=('latest',), goal='Obter garantias para a retirada.', waiting_for='Uma garantia concreta.')),)),)))
+    samples.append(council.narration_context(speech, report))
+    speech, plan = action(council, 'Retire suas tropas primeiro; depois retiro as minhas.',
+        NarrativeIntent('Retire suas tropas primeiro; depois retiro as minhas.', 'speak',
+            conversation=ConversationUpdate(target_ids=('general_voss',), focus='tropas', proposal=ProposalUpdate(
+                'offer', terms=(ProposalTerm(None, 'request', 'Retire suas tropas primeiro', 'general_voss', 1),
+                                ProposalTerm(None, 'counterpart', 'depois retiro as minhas', 'player', 2))))))
+    samples.append(council.world_context(plan))
+    profile = council.session.social.profiles['general_voss']
+    truce = council.session.knowledge.store.get('general_voss', 'general_voss:broken-truce')
+    def opinion_term(id, description, impacts, memory_effect=None, relationship_effects=()):
+        return TermAssessment(id, description, 0, 0, 'Sem efeito adicional nos eixos neste recorte.',
+            tuple(PersonaEffect(i.id, impacts.get(i.id, 0),
+                f'{i.description}: efeito deste termo = {impacts.get(i.id, 0)}.') for i in profile.persona.interests),
+            () if memory_effect is None else (MemoryEffect(truce.claim, 'guarantees', memory_effect,
+                'Os postos atacados depois da retirada sustentam a cautela quanto à ordem da retirada.'),),
+            relationship_effects=relationship_effects)
+    report = council.execute(plan, WorldPlan((WorldReaction(0, None, (), opinions=(
+        OptionAssessment('general_voss', 'latest', 'proposal', 'Retirada unilateral seguida da promessa de retirada.', (
+            opinion_term('at:1', 'Retire suas tropas primeiro', {'population': 1, 'guarantees': -1}, -1),
+            opinion_term('at:2', 'depois retiro as minhas', {}, relationship_effects=(
+                RelationshipEffect('player', 'trust', 1, 'A retirada posterior depende da promessa do interlocutor.'),
+                RelationshipEffect('player', 'affection', 0, 'Não há benefício afetivo específico nesta promessa.'),
+            ))), proposal_id='latest'),
+        OptionAssessment('general_voss', 'latest', 'alternative', 'Cogitar retirada simultânea.', (
+            TermAssessment('simultaneous', 'Retirada simultânea de ambos os lados.', 0, 0, 'Sem efeito adicional nos eixos.',
+                tuple(PersonaEffect(i.id, 1 if i.id in {'population', 'guarantees'} else 0,
+                    'A simultaneidade reduz o risco da retirada isolada sem criar cumprimento.') for i in profile.persona.interests),
+                (MemoryEffect(truce.claim, 'guarantees', 0, 'A retirada simultânea evita o intervalo unilateral lembrado.'),),
+                kind='condition'),
+            ), proposal_id='latest', option_id='simultaneous'),
+        OptionAssessment('general_voss', 'latest', 'no_agreement', 'Expectativa privada de guerra prolongada.', (
+            opinion_term('war', 'A guerra pode continuar, com perdas para a população.', {'population': -1}),
+            ), option_id='continue_war'),
+    )),)))
+    samples.extend((council.interpretation_context(), council.world_context(plan), council.world_context(),
+                    council.narration_context(speech, report)))
+    # Acompanhamento comum após a fala e os cálculos, sem parley ou gesto.
+    assert council.session.agency.pending(report, {}) == ['general_voss']
+    samples.append(council.agency_context('general_voss'))
+    report = council.execute_agency('general_voss', WorldPlan((WorldReaction(0, None, (
+        WorldAction('general_voss', 'say', 'Retirada simultânea de ambos os lados.', conversation=ConversationUpdate(
+            target_ids=('player',), proposal=ProposalUpdate('offer', in_reply_to='proposal_1',
+                terms=(ProposalTerm(None, 'condition', 'Retirada simultânea de ambos os lados.'),)))),)),),
+        intent=IntentDecision('general_voss', 'Obter garantias executáveis para a paz.', 'Propor retirada simultânea.',
+            'Resposta aos termos de retirada.', 'counteroffer',
+            'A alternativa atende à população e evita a exposição unilateral lembrada na trégua.', ('opinion_2',))))
+    samples.extend((council.agency_context('general_voss'), council.narration_context(speech, report)))
+    # Relação inicial baseada em um aspecto de memória: esse aspecto não pontua duas vezes.
+    linked_data = json.loads((ROOT / 'src/trama/scenarios/generals_council.json').read_text())
+    trust = linked_data['creatures'][0]['relationships'][0]['trust']
+    trust.update(reason='Cautela do cenário baseada na trégua, sem provar culpa do interlocutor.',
+                 sources=[dict(memory_id='general_voss:broken-truce', interest_id='guarantees')])
+    linked = Conversation(build_session(linked_data))
+    speech, plan = action(linked, 'Retire antes da minha promessa.', NarrativeIntent('Retire antes da minha promessa.',
+        'speak', conversation=ConversationUpdate(target_ids=('general_voss',), proposal=ProposalUpdate('offer',
+            terms=(ProposalTerm(None, 'request', 'Retire antes da minha promessa.'),)))))
+    term = TermAssessment('at:1', 'Retire antes da minha promessa.', 0, 0, 'Sem efeito de alinhamento.',
+        tuple(PersonaEffect(i.id, 0, 'Sem outra consequência neste controle.') for i in profile.persona.interests),
+        (MemoryEffect(truce.claim, 'guarantees', -1, 'Cautela já resumida na confiança inicial.'),),
+        relationship_effects=(RelationshipEffect('player', 'trust', 1, 'Este termo depende da promessa recebida.'),))
+    report = linked.execute(plan, WorldPlan((WorldReaction(0, None, (), opinions=(
+        OptionAssessment('general_voss', 'latest', 'proposal', 'Controle de origem compartilhada.',
+                         (term,), proposal_id='latest'),)),)))
+    scored = linked.session.social.opinions[-1]
+    assert scored['components']['memories'] == 0 and scored['components']['relationships'] == -2
+    assert scored['memory_effects'][0]['impacts'][0]['counted'] is False
+    samples.extend((linked.world_context(plan), linked.narration_context(speech, report)))
+    # Compromisso aceito, ação realmente observada e nova conversa com memória do encontro.
+    evolving_data = json.loads((ROOT / 'src/trama/scenarios/generals_council.json').read_text())
+    evolving_data['start'] = [5, 6]
+    evolving_data['creatures'][0]['relationships'][0]['trust']['value'] = 0
+    evolving = Conversation(build_session(evolving_data, roller=ReviewRoller()))
+    promise = 'Fecharei a porta do Conselho.'
+    speech, plan = action(evolving, promise, NarrativeIntent(promise, 'speak', conversation=ConversationUpdate(
+        target_ids=('general_voss',), proposal=ProposalUpdate('offer',
+            terms=(ProposalTerm(None, 'counterpart', promise, 'player'),)))))
+    term = TermAssessment('at:1', promise, 0, 0, 'Sem efeito adicional.',
+        tuple(PersonaEffect(i.id, 0, 'Sem outro efeito neste controle.') for i in profile.persona.interests))
+    report = evolving.execute(plan, WorldPlan((WorldReaction(0, None, (), opinions=(
+        OptionAssessment('general_voss', 'latest', 'proposal', 'Compromisso local verificável.', (term,), proposal_id='latest'),)),)))
+    assert evolving.session.agency.pending(report, {}) == ['general_voss']
+    evolving.execute_agency('general_voss', WorldPlan((WorldReaction(0, None, (
+        WorldAction('general_voss', 'say', 'Aceito. Quem garante a retirada?', conversation=ConversationUpdate(
+            proposal=ProposalUpdate('accept', 'proposal_1', 1),
+            points=(ConversationPoint('question', 'Quem garante a retirada?'),))),)),), intent=IntentDecision(
+                'general_voss', 'Conferir compromissos locais.', 'Aceitar o compromisso.', 'Cumprimento verificável.',
+                'accept', 'Um termo concreto que pode ser conferido.', ('opinion_1',))))
+    speech, plan = action(evolving, 'Fecho a porta do Conselho.', DoorIntent('close', 'council_door'))
+    report = evolving.execute(plan, WorldPlan((WorldReaction(0, None, (), episodes=(
+        RelationshipEpisode('general_voss', 'player', 'promise_kept', 'latest_observation',
+            'Observou o responsável fechar a porta após o compromisso aceito.', conversation_id='conversation_1',
+            proposal_id='proposal_1', version=1, term_id='at:1'),)),)))
+    assert evolving.session.relationships.get('general_voss', 'player').trust.value == 1
+    samples.extend((evolving.agency_context('general_voss'), evolving.narration_context(speech, report)))
+    speech, plan = action(evolving, 'Lembra do combinado?', NarrativeIntent('Lembra do combinado?', 'speak'))
+    term = TermAssessment('at:1', promise, 0, 0, 'Sem efeito adicional.',
+        tuple(PersonaEffect(i.id, 0, 'Sem outro efeito neste controle.') for i in profile.persona.interests),
+        relationship_effects=(RelationshipEffect('player', 'trust', 1, 'A promessa depende da confiabilidade conhecida.'),))
+    evolving.execute(plan, WorldPlan((WorldReaction(0, None, (), opinions=(
+        OptionAssessment('general_voss', 'latest', 'proposal', 'Reavaliar com a relação atual.', (term,), proposal_id='latest'),)),)))
+    samples.append(evolving.world_context(plan))
+    revelation = 'Recebi notícia de que o comboio de alimentos está bloqueado.'
+    speech, plan = action(evolving, revelation, NarrativeIntent(revelation, 'speak',
+        claims=(Claim('supply_train', 'supply_outlook', 'blocked'),)))
+    evolving.execute(plan)
+    assert evolving.session.agency.next_review(set()) == 'general_voss'
+    samples.append(evolving.agency_context('general_voss', review=True))
+    evolving.execute_review('general_voss', WorldPlan((WorldReaction(0, None, (), opinions=(
+        OptionAssessment('general_voss', 'latest', 'proposal',
+            'O relato exige reconsiderar a prioridade, sem comprovar o bloqueio.', (term,), proposal_id='latest'),)),)))
+    samples.append(evolving.agency_context('general_voss'))
+    evolving.execute_agency('general_voss', WorldPlan((WorldReaction(0, None, (
+        WorldAction('general_voss', 'say', 'Suspendamos para conferir a notícia.',
+            conversation=ConversationUpdate(status='suspended', reason='Suspendamos para conferir a notícia.')),)),),
+        intent=IntentDecision('general_voss', 'Conferir o abastecimento.', 'Suspender o encontro.', None,
+            'suspend', 'O relato pertinente ainda precisa ser conferido.')))
+    samples.append(evolving.interpretation_context())
+    evolving.session.emit_noise('player', evolving.session.state.position, 'loud')
+    assert evolving.session.agency.next_review(set()) == 'general_voss'
+    samples.append(evolving.agency_context('general_voss', review=True))
+    evolving.execute_review('general_voss', WorldPlan())
+    evolving.execute_agency('general_voss', WorldPlan((WorldReaction(0, None, (
+        WorldAction('general_voss', 'say', 'Retomemos a audiência.', conversation=ConversationUpdate(
+            status='active', reason='Retomemos a audiência.')),)),), intent=IntentDecision(
+                'general_voss', 'Retomar a pergunta anterior.', 'Retomar o encontro.', 'Garantias.',
+                'resume', 'O ruído não comprova uma agressão.')))
+    speech, plan = action(evolving, 'Encerramos.', NarrativeIntent('Encerramos.', 'speak'))
+    report = evolving.execute(plan, WorldPlan((WorldReaction(0, None, (
+        WorldAction('general_voss', 'say', 'Até a próxima.', conversation=ConversationUpdate(
+            status='closed', reason='Até a próxima.')),)),)))
+    assert any(m.claim.predicate == 'conversation_commitment' for m in evolving.session.knowledge.store.active('general_voss'))
+    samples.extend((evolving.interpretation_context(), evolving.world_context(), evolving.narration_context(speech, report)))
+    interrupted = Conversation(build_session(dict(width=6, height=6, start=[2, 2], creatures=[dict(
+        id='sentinel', name='Sentinela', position=[3, 2], senses=dict(response='observe'))]),
+        roller=ReviewRoller(20, 20, 1)))
+    speech, plan = action(interrupted, 'Quem guarda a passagem?', NarrativeIntent('Quem guarda a passagem?',
+        'speak', conversation=ConversationUpdate(target_ids=('sentinel',), points=(
+            ConversationPoint('question', 'Quem guarda a passagem?'),))))
+    interrupted.execute(plan)
+    interrupted.session.execute(RuleIntent('start_combat'))
+    assert interrupted.session.conversations.view('player')[0]['status'] == 'suspended'
+    samples.extend((interrupted.interpretation_context(), interrupted.world_context()))
+    # As situações casuais usam a mesma preparação e os mesmos produtores de contexto.
+    cases = json.loads((ROOT / 'tests/fixtures/casual_conversations.json').read_text())
+    situation = load_situation('conversa-com-amiga')
+    friend = Conversation(build_session(situation.scenario_data(), roller=situation.new_roller()))
+    situation.initialize(friend, friend.session.encounter.roller)
+    for row in cases['friend'][:2]:
+        checkpoint = friend.session.agency.checkpoint()
+        speech, plan = action(friend, row['prompt'], NarrativeIntent(row['prompt'], 'speak',
+            conversation=ConversationUpdate(focus=row['focus'])))
+        report = friend.execute(plan)
+        assert friend.session.agency.pending(report, checkpoint) == ['lia']
+        samples.extend((friend.interpretation_context(), friend.world_context(plan), friend.agency_context('lia')))
+        actions = ([WorldAction('lia', 'say', row['reply'])] if row['reply'] else [])
+        actions.append(WorldAction('lia', 'wait', 'Ouve sem exigir uma pergunta formal.'))
+        report = friend.execute_agency('lia', WorldPlan((WorldReaction(0, None, tuple(actions)),),
+            intent=IntentDecision('lia', row['goal'], 'Escutar.', row['waiting_for'], 'listen',
+                'Acolher sem impor conselho ou sentimentos ao interlocutor.')))
+        assert friend.session.agency.intents['lia']['waits_used'] == 1
+        samples.append(friend.narration_context(speech, report))
+    situation = load_situation('encontro-com-garoto')
+    boy = Conversation(build_session(situation.scenario_data(), roller=situation.new_roller()))
+    situation.initialize(boy, boy.session.encounter.roller)
+    speech, plan = action(boy, cases['boy']['wait_prompt'], NarrativeIntent(cases['boy']['wait_prompt'], 'wait'))
+    checkpoint = boy.session.agency.checkpoint()
+    report = boy.execute(plan)
+    assert boy.session.agency.pending(report, checkpoint) == ['street_boy']
+    context = boy.agency_context('street_boy')
+    samples.extend((boy.interpretation_context(), boy.world_context(plan), context))
+    target = context['observations']['departure_targets'][0]['position']
+    report = boy.execute_agency('street_boy', WorldPlan((WorldReaction(0, None, (
+        WorldAction('street_boy', 'say', cases['boy']['thanks'], memory_ids=('street_boy:prior_coin',),
+            conversation=ConversationUpdate(status='closed', reason=cases['boy']['close_reason'])),
+        WorldAction('street_boy', 'move', 'Segue pela alameda.', destination=Position(target[0]-1, target[1]-1)))),),
+        intent=IntentDecision('street_boy', 'Seguir seus próprios afazeres.', 'Agradecer e sair.', None,
+            'leave', 'O gesto anterior não cria dívida ou obrigação de acompanhar o jogador.')))
+    assert boy.session.scene.area_at(boy.session.creatures[0].position).id == 'north_lane'
+    samples.extend((boy.interpretation_context(), boy.narration_context(speech, report)))
+    # Vínculos qualitativos: dados autorais, formação e limites realmente ouvidos.
+    bonds = json.loads((ROOT / 'tests/fixtures/bond_conversations.json').read_text())
+    for sid in ('vinculo-em-formacao', 'vinculo-amizade-sem-atracao',
+                'vinculo-afeto-sem-confianca', 'vinculo-interesse-nao-correspondido'):
+        situation = load_situation(sid)
+        encounter = Conversation(build_session(situation.scenario_data(), roller=situation.new_roller()))
+        situation.initialize(encounter, encounter.session.encounter.roller)
+        samples.extend((encounter.interpretation_context(), encounter.world_context(),
+                        encounter.agency_context('marina')))
+        row = bonds['decline']
+        speech, plan = action(encounter, row['prompt'], NarrativeIntent(row['prompt'], 'speak',
+            conversation=ConversationUpdate(target_ids=('marina',), romance_boundary='declined',
+                boundary_text=row['literal'])))
+        changes = (BondUpdate('marina', 'player', 'friendship', 'active',
+            'História de cuidado percebido nas duas direções.',
+            ('marina:marina_care', 'marina:player_care')), ) if sid == 'vinculo-em-formacao' else ()
+        response = WorldPlan((WorldReaction(0, None, (), bonds=changes),)) if changes else WorldPlan()
+        report = encounter.execute(plan, response)
+        assert not report.failures
+        assert not encounter.session.bonds.availability('marina', 'player')['can_express']
+        samples.extend((encounter.agency_context('marina'), encounter.world_context(plan),
+                        encounter.narration_context(speech, report)))
+        encounter.session.emit_noise('player', encounter.session.state.position, 'loud')
+        assert encounter.session.agency.next_review(set()) == 'marina'
+        samples.append(encounter.agency_context('marina', review=True))
     return samples
 
 

@@ -55,12 +55,14 @@ class Persona:
     role: str
     background: str
     interests: tuple[Interest, ...] = ()
+    objective: str | None = None
 
     def __post_init__(self):
         if (not text(self.name, 120) or not text(self.role, 120) or not text(self.background, 800)
                 or not isinstance(self.interests, tuple) or len(self.interests) > 8
                 or any(not isinstance(i, Interest) for i in self.interests)
-                or len({i.id for i in self.interests}) != len(self.interests)):
+                or len({i.id for i in self.interests}) != len(self.interests)
+                or self.objective is not None and not text(self.objective, 300)):
             raise SocialError('Persona inválida.')
 
 
@@ -179,6 +181,13 @@ def bounded(value, maximum):
 
 def evaluate_disposition(profile, assessment, memories):
     """IA descreve impactos; pesos, referências e classe final são do código."""
+    result = evaluate_basis(profile, assessment, memories)
+    return dict(result, goal=assessment.goal, target_id=assessment.target_id,
+                description=assessment.description, conditions=list(assessment.conditions))
+
+
+def evaluate_basis(profile, assessment, memories, *, excluded_memory_effects=None):
+    """Base comum a pedidos e termos; não rola dados nem decide uma ação."""
     interests = {i.id: i for i in profile.persona.interests}
     if {e.interest_id for e in assessment.persona_effects} != set(interests):
         raise SocialError('Avalie cada interesse da persona exatamente uma vez.')
@@ -198,11 +207,18 @@ def evaluate_disposition(profile, assessment, memories):
         weight = 2 if memory.source.kind in {'observation', 'habit'} else 1
         contribution = evidence.setdefault(effect.claim, dict(memory_id=memory.id, claim=asdict(memory.claim),
             source=asdict(memory.source), weight=weight, impacts=[]))
-        contribution['impacts'].append(dict(interest_id=interest.id, effect=effect.effect, reason=effect.reason))
+        impact = dict(interest_id=interest.id, effect=effect.effect, reason=effect.reason)
+        excluded = ((excluded_memory_effects or {}).get((effect.claim, interest.id))
+                    or (excluded_memory_effects or {}).get((effect.claim, None)))
+        if memory.claim.predicate in {'relationship_episode', 'relationship_bond'}:
+            excluded = [memory.claim.predicate + '_summary']  # História relacional não é outro bônus de memória.
+        if excluded:
+            impact.update(counted=False, relationship_sources=list(excluded))
+        contribution['impacts'].append(impact)
     for contribution in evidence.values():
         # Um fato pode afetar vários interesses. Consequências no mesmo sentido
         # não multiplicam sua força; consequências opostas se compensam.
-        contribution['effect'] = bounded(sum(e['effect'] for e in contribution['impacts']), 1)
+        contribution['effect'] = bounded(sum(e['effect'] for e in contribution['impacts'] if e.get('counted', True)), 1)
         contribution['score'] = contribution['weight'] * contribution['effect']
     contributions = list(evidence.values())
     persona_score = bounded(sum(e['score'] for e in persona), 6)
@@ -210,6 +226,4 @@ def evaluate_disposition(profile, assessment, memories):
     total = alignment + persona_score + memory_score
     return dict(willingness='willing' if total >= 3 else 'unwilling' if total <= -3 else 'hesitant', total=total,
                 components=dict(alignment=alignment, persona=persona_score, memories=memory_score),
-                alignment_reason=assessment.alignment_reason, persona_effects=persona, memory_effects=contributions,
-                goal=assessment.goal, target_id=assessment.target_id, description=assessment.description,
-                conditions=list(assessment.conditions))
+                alignment_reason=assessment.alignment_reason, persona_effects=persona, memory_effects=contributions)

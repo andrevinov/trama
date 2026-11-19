@@ -2,4 +2,4 @@
 
 [Índice dos roadmaps](../README.md)
 
-Propostas ainda não iniciadas. Nenhum roadmap foi classificado neste estado nesta organização.
+Propostas ainda não iniciadas. Não há iniciativas neste estado.

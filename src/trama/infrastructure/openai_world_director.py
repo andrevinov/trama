@@ -13,8 +13,13 @@ from trama.infrastructure.openai_json import DEFAULT_MODEL, request_json
 from trama.observability import log_context, new_id
 from trama.spatial import Position
 from trama.social import GOALS, assessment_from_data
+from trama.opinions import option_from_data
+from trama.relationships import DIMENSIONS, EPISODE_DELTAS, episode_from_data
+from trama.bonds import BOND_KINDS, bond_update_from_data
 from trama.difficulty import Adjudication, DIFFICULTY_CLASSES
-from trama.agency import IntentDecision
+from trama.agency import INITIATIVES, IntentDecision
+from trama.conversation_state import conversation_update_from_data
+from trama.infrastructure.conversation_schema import OPTIONAL_CONVERSATION_SCHEMA, CONVERSATION_INSTRUCTIONS
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +66,7 @@ ACTION_FIELDS = {
     "influence": {"anyOf": [INFLUENCE_SCHEMA, {"type": "null"}]},
     "volume": {"type": "string", "enum": ["quiet", "normal", "loud"]},
     "memory_ids": {"type": "array", "maxItems": 6, "items": {"type": "string", "minLength": 1, "maxLength": 160}},
+    "conversation": OPTIONAL_CONVERSATION_SCHEMA,
 }
 # A API não pode produzir referências de fala em operações não verbais.
 # O parser ainda lê referências privadas de Influence em gravações anteriores.
@@ -69,11 +75,13 @@ ACTION_SCHEMA = {'anyOf': [
                    'influence': {'type': 'null'}, 'target_id': {'type': 'null'},
                    'destination': {'type': 'null'}}),
     object_schema({**ACTION_FIELDS, 'operation': {'type': 'string', 'enum': ['influence']},
+                   'conversation': {'type': 'null'},
                    'target_id': {'type': 'null'}, 'destination': {'type': 'null'},
                    'influence': INFLUENCE_SCHEMA,
                    'volume': {'type': 'string', 'enum': ['normal']},
                    'memory_ids': {'type': 'array', 'maxItems': 0, 'items': {'type': 'string'}}}),
     object_schema({**ACTION_FIELDS,
+                   'conversation': {'type': 'null'},
                    'operation': {'type': 'string', 'enum': [op for op in ACTION_FIELDS['operation']['enum'] if op not in {'say','influence'}]},
                    'influence': {'type': 'null'},
                    'memory_ids': {'type': 'array', 'maxItems': 0, 'items': {'type': 'string'}}}),
@@ -88,10 +96,55 @@ ADJUDICATION_SCHEMA = object_schema({
 })
 CHECK_SCHEMA = object_schema({"actor_id": {"type": "string"}, "dc": {"type": "integer", "minimum": 1, "maximum": 30},
                               "reason": {"type": "string", "minLength": 1}})
+TERM_ASSESSMENT_SCHEMA = object_schema({
+    'term_id': {'type': 'string', 'minLength': 1, 'maxLength': 120},
+    'description': {'type': 'string', 'minLength': 1, 'maxLength': 400},
+    'kind': {'type': ['string', 'null'], 'enum': [None, 'request', 'counterpart', 'condition']},
+    'actor_id': {'type': ['string', 'null'], 'minLength': 1, 'maxLength': 120},
+    'execution_order': {'type': ['integer', 'null'], 'minimum': 1, 'maximum': 8},
+    'relationship_effects': {'type': 'array', 'maxItems': 8, 'items': object_schema({
+        'target_id': {'type': 'string', 'minLength': 1, 'maxLength': 120},
+        'dimension': {'type': 'string', 'enum': list(DIMENSIONS)},
+        'effect': {'type': 'integer', 'enum': [-1, 0, 1]},
+        'reason': {'type': 'string', 'minLength': 1, 'maxLength': 500},
+    })},
+    **{k: ASSESSMENT_SCHEMA['properties'][k] for k in
+       ('order', 'morality', 'alignment_reason', 'persona_effects', 'memory_effects')},
+})
+OPTION_SCHEMA = object_schema({
+    'actor_id': {'type': 'string', 'minLength': 1, 'maxLength': 120},
+    'conversation_id': {'type': 'string', 'minLength': 1, 'maxLength': 120},
+    'kind': {'type': 'string', 'enum': ['proposal', 'alternative', 'no_agreement']},
+    'description': {'type': 'string', 'minLength': 1, 'maxLength': 500},
+    'proposal_id': {'type': ['string', 'null'], 'minLength': 1, 'maxLength': 120},
+    'version': {'type': ['integer', 'null'], 'minimum': 1},
+    'option_id': {'type': ['string', 'null'], 'minLength': 1, 'maxLength': 120},
+    'terms': {'type': 'array', 'minItems': 1, 'maxItems': 8, 'items': TERM_ASSESSMENT_SCHEMA},
+})
 REACTION_SCHEMA = object_schema({
     "step_index": {"type": "integer", "minimum": 0, "maximum": 9},
     "after_squares": {"type": ["integer", "null"], "minimum": 0},
-    "actions": {"type": "array", "minItems": 1, "maxItems": 10, "items": ACTION_SCHEMA},
+    "actions": {"type": "array", "minItems": 0, "maxItems": 10, "items": ACTION_SCHEMA},
+    'opinions': {'type': 'array', 'maxItems': 4, 'items': OPTION_SCHEMA},
+    'episodes': {'type': 'array', 'maxItems': 8, 'items': object_schema({
+        **{k: {'type': 'string', 'minLength': 1, 'maxLength': 120} for k in ('owner_id', 'target_id')},
+        'kind': {'type': 'string', 'enum': list(EPISODE_DELTAS)},
+        'evidence_id': {'type': 'string', 'minLength': 1, 'maxLength': 160},
+        'reason': {'type': 'string', 'minLength': 1, 'maxLength': 500},
+        'interest_ids': {'type': 'array', 'maxItems': 8,
+                         'items': {'type': 'string', 'minLength': 1, 'maxLength': 80}},
+        **{k: {'type': ['string', 'null'], 'minLength': 1, 'maxLength': 120}
+           for k in ('conversation_id', 'proposal_id', 'term_id')},
+        'version': {'type': ['integer', 'null'], 'minimum': 1},
+    })},
+    'bonds': {'type': 'array', 'maxItems': 8, 'items': object_schema({
+        **{k: {'type': 'string', 'minLength': 1, 'maxLength': 120} for k in ('owner_id', 'target_id')},
+        'kind': {'type': 'string', 'enum': list(BOND_KINDS)},
+        'state': {'type': 'string', 'enum': ['active', 'ended']},
+        'reason': {'type': 'string', 'minLength': 1, 'maxLength': 500},
+        'evidence_ids': {'type': 'array', 'minItems': 1, 'maxItems': 8,
+                         'items': {'type': 'string', 'minLength': 1, 'maxLength': 160}},
+    })},
     "interrupt": {"type": "boolean"}, "reason": {"type": "string"},
     "check": {"anyOf": [CHECK_SCHEMA, {"type": "null"}]},
 })
@@ -101,6 +154,10 @@ WORLD_SCHEMA = object_schema({
         'goal': {'type':'string','minLength':1,'maxLength':300},
         'activity': {'type':'string','minLength':1,'maxLength':300},
         'waiting_for': {'type':['string','null'],'maxLength':300},
+        'initiative': {'type': ['string', 'null'], 'enum': [None, *INITIATIVES]},
+        'reason': {'type': ['string', 'null'], 'minLength': 1, 'maxLength': 500},
+        'opinion_ids': {'type': 'array', 'maxItems': 4,
+                        'items': {'type': 'string', 'minLength': 1, 'maxLength': 120}},
     }), {'type':'null'}]},
     'adjudications': {'type': 'array', 'maxItems': 32, 'items': ADJUDICATION_SCHEMA},
     "reactions": {"type": "array", "maxItems": 10, "items": REACTION_SCHEMA}})
@@ -240,6 +297,12 @@ também use []. Memória shareable=false não pode ser divulgada. Saber algo nã
 obriga o NPC a revelá-lo: considere situação, interesses e disposição.
 Quando o jogador pergunta algo a um NPC, proponha say após speak (after_squares=null)
 se uma resposta for apropriada; o narrador não inventa falas para substituir isso.
+Falas dirigidas a um interlocutor consciente também podem receber say sem uma
+pergunta literal, inclusive saudações, argumentos e ofertas numa reunião pacífica.
+Use a persona e as memórias próprias do NPC para formular sua resposta, após a
+fala percebida. Ausência de parley não significa ausência de conversa: não crie
+custódia ou abordagem para responder. Fora de parley, não proponha influence;
+uma resposta verbal não assina acordos, transfere terras ou movimenta exércitos.
 Uma observação passada vale para aquela ocasião: diga quando viu, sem garantir
 que o objeto ainda esteja lá. Um report é relato de actor_id, não confirmação;
 atribua a fonte, inclusive quando o relato recente contradiz uma observação
@@ -362,9 +425,349 @@ como ordem do Jogador nesta etapa. Gere no máximo 10 respostas concisas.
 """
 
 
+INSTRUCTIONS += CONVERSATION_INSTRUCTIONS + """
+world.conversations contém projeções por NPC, com seus objetivos próprios.
+conversations na raiz é a projeção do JOGADOR. Ao decidir um NPC, use a projeção
+dele, sem copiar pendências, versões ou conhecimentos que ele não percebeu.
+Metadados em player_plan ainda são propostas: só a execução da fala os registra.
+Uma resposta ao jogador pode usar 'latest' depois dessa execução, sem inventar ids.
+Não acrescente Influence ou agência extra para atualizar
+o estado. O estado não decide o que fazer, apenas preserva a conversa executada.
+"""
+
+INSTRUCTIONS += """
+Opiniões privadas: em player_action narrado, após speak/challenge REAL
+(after_squares=null, check=null), use reactions[].opinions para avaliar a proposta
+que o NPC ouviu, alternativas plausíveis e a expectativa de não chegar a acordo.
+actions pode ser [] quando a reação apenas avalia opções; uma reação deve conter
+ações ou opiniões. Em npc_turn/npc_agency, opinions=[]. Não exige Influence/parley,
+não rola dados, não altera atitude, não comunica raciocínio, não cria memória e
+não obriga aceitar/recusar. A resposta já proposta não recebe um número inventado:
+o código calcula a base e a disponibiliza em world.social.opinions para decisões
+posteriores, já na etapa npc_agency da MESMA interação. Não escolha pela maior
+nota automaticamente: os motivos e o objetivo podem justificar outra iniciativa.
+
+Cada opção identifica actor_id, conversation_id conhecido ou 'latest', kind,
+description e terms. proposal avalia proposta/version conhecida: proposal_id real
+ou 'latest', version=null para a última percebida, option_id=null. Enumere TODOS
+os termos exatamente uma vez com texto literal em description. term_id é o id
+conhecido ou 'at:1' até 'at:8' pela posição na lista, resolvido após a fala real.
+alternative é uma contraproposta apenas cogitada: vincule proposal_id/version de
+base conhecida, use option_id privado estável e termos hipotéticos com ids locais.
+Ela só vira oferta pública se aparecer literalmente em say.conversation.proposal.
+no_agreement usa proposal_id/version=null, option_id privado estável e termos que
+descrevem as consequências ESPERADAS pelo NPC; não são previsões verdadeiras.
+
+Em cada termo, classifique order/morality em -1/0/+1 com alignment_reason; avalie
+cada interesse uma vez em persona_effects (neutro também precisa de motivo).
+memory_effects referencia Claim EXATA das memórias próprias e interesse com âncora
+relevante, efeito -1/0/+1 e motivo que liga esse fato a esse termo. Preserve efeitos
+favoráveis e contrários mesmo que se anulem. Não invente memória ou vincule um
+fato só porque pertence à cena. A trégua rompida pode pesar contra retirar primeiro;
+retirada simultânea muda esse risco, sem apagar o custo territorial ou a incerteza.
+
+Python limita cada eixo da opção a +/-1 antes do alinhamento (A até +/-2), soma
+efeitos dos termos por interesse e limita a +/-1 antes do peso (P total até +/-6).
+Agrupa memórias por Claim entre TODOS os termos/interesses, compensa sinais e
+limita a +/-1 antes do peso da fonte (M total até +/-3). Essa é a base A+P+M;
+as relações contextuais acrescentam R, conforme o contrato abaixo. Favorável >=3,
+desfavorável <=-3, misto entre eles, sem determinar aceitação. Notas isoladas dos
+termos não se somam: os limites pertencem à opção. Repetir termos e promessas não
+multiplica evidência nem abre nova rolagem. Cache de opiniões só reconhece os mesmos
+termos/estrutura e base própria; paráfrases não têm equivalência automática. Não
+altere o cache de pedidos Influence nem finja que a proposta foi cumprida.
+"""
+
+INSTRUCTIONS += """
+Agência em conversas comuns (passo 4): uma fala estruturada realmente ouvida
+envolve seus interlocutores mesmo sem parley ou gesto. O fluxo oferece no máximo
+uma npc_agency por NPC após a execução comum; uma reconsideração por novo evento
+percebido segue o passo 7. Não exija abordagem de custódia para isso.
+Em player_action, ao propor opinions de um ator, não proponha NENHUMA ação dele
+nesse plano. Deixe ações e resposta definitiva para npc_agency, com notas calculadas.
+offer/revise/accept/reject de NPCs são decisões dessa etapa, não respostas escolhidas
+antes da execução da fala. Respostas factuais simples sem avaliar propostas podem
+continuar em say normal; quem já respondeu não recebe uma segunda decisão.
+
+Em npc_agency, diferencie profile.persona.objective (objetivo central, ou consulte
+o background quando null), intent.goal (o que deseja obter nesta conversa) e
+intent.initiative (a escolha imediata). Preencha initiative e reason privado;
+opinion_ids lista somente ids das avaliações próprias atuais recebidas, current=true.
+Não invente notas nem repita as avaliações: reactions[].opinions=[] nesta fase.
+Use observações, pendências, motivo por termo e memórias próprias. Avaliações
+desatualizadas ficam como histórico e não fundamentam uma nova decisão.
+
+Escolha respond, listen, clarify, contest, insist, counteroffer, accept, reject,
+close ou start_conflict. reason explica por que essa iniciativa atende ao objetivo,
+incluindo ressalvas que uma boa nota não elimina. Argumento irrelevante não resolve
+uma pergunta; mudar assunto não apaga pendências. Se abandonar uma própria, explique
+o motivo na fala e use resolves com o id explícito dela. Não use latest para retirar
+a própria pergunta: latest responde à última pendência de outro participante.
+
+listen usa wait, com acolhimento verbal opcional antes dele conforme o passo 8;
+waiting_for precisa ser concreto e can_wait=true, sem fala obrigatória. Resposta
+real ou continuação dirigida da conversa renova a escuta. Conversa paralela ou
+simples troca do objetivo não.
+close em conversa comum usa say com conversation.status=closed e reason literal
+da despedida; parley também permite resume_activity. Nenhum dos dois move tropas,
+transfere território ou executa o acordo. Suspensão/encerramento conserva pendências.
+
+accept/reject exige say.conversation.proposal correspondente e opinion_ids com
+avaliação current=true dessa proposta/versão. Uma nota não obriga aceitar, e uma
+recusa pode explicar limites. counteroffer exige avaliação de alternative, offer
+com in_reply_to da proposta de base e textos EXATOS dos termos hipotéticos
+avaliados, na mesma ordem. Cada termo de alternative informa kind (request,
+counterpart ou condition), actor_id responsável (ou null) e execution_order
+(1–8 ou null); não confunda com order, que é o impacto no alinhamento. A oferta
+deve conservar também esses campos estruturais, não só o texto. Em proposal,
+esses três campos podem vir null: Python usa a estrutura real da versão conhecida.
+counteroffer também pode usar revise da PRÓPRIA proposta: cite sua versão de base
+e uma alternative avaliada com os termos finais completos. A revisão só envia
+termos alterados/novos e remoções; o código confere o resultado, incluindo herdados.
+Não publique termos novos usando nota de outra opção.
+Se faltam avaliação ou garantias, esclareça/conteste/pergunte, sem simular um
+resultado já calculado. A interpretação semântica dos motivos continua sua tarefa.
+start_conflict precisa de causa independente, sem opinion_ids: nota negativa ou
+recusa não cria violência automaticamente. Iniciativa precede movimento e ataque.
+Não altere níveis diretamente nem pontue relações por quantidade de falas.
+"""
+
+INSTRUCTIONS += """
+Relações iniciais (passo 5): confiança e afeto são independentes e direcionais.
+world.social.relationships contém somente registros dos respectivos donos;
+em npc_agency, relationships contém apenas os vínculos do próprio actor.id.
+Ausência de vínculo declarado é neutralidade, não conhecimento de reciprocidade.
+Não atribua ao jogador o que sente nem invente níveis ou fontes.
+Os valores são dados iniciais do cenário e persistem entre conversas da sessão;
+prometer, aceitar ou encerrar não altera automaticamente confiança ou afeto.
+
+Em opinions[].terms[].relationship_effects, proponha target_id, dimension
+(trust/affection), effect=-1/0/+1 e reason específico para aquele termo. Não
+forneça níveis ou pesos; Python usa a relação do NPC para esse destinatário.
+Trust +1 significa depender da confiabilidade/promessa do destinatário; -1 é
+um benefício explícito de evitar essa dependência, e 0 é independência desse
+vínculo. Affection +1 beneficia o destinatário, -1 o prejudica, 0 não o afeta
+nesse aspecto. Assim, confiar não é gostar e gostar não prova confiabilidade.
+Use [] quando não houver relação pertinente; uma dimensão neutra pode ser
+anotada com motivo, mas vale zero. Não acrescente afeto porque houve um elogio.
+
+Escala escolhida: -5..+5 por dimensão, peso fixo 2. Python soma impactos por
+destinatário/dimensão entre todos os termos, compensa sinais e limita o impacto
+a +/-1 antes de multiplicar pelo nível e peso. Soma essas contribuições e limita
+R a +/-12 UMA vez por opção. S=A+P+M+R; limiares +/-3 permanecem, e vínculo neutro
+preserva a base. Vínculos extremos podem ser a maior parcela, mas não obrigam
+aceitação ou violência: a iniciativa ainda usa objetivo, riscos e motivos.
+
+Cada dimensão tem motivo de origem e fontes opcionais (memória/Claim e interesse
+resumido). Quando R realmente usa uma dimensão com valor/impacto não zero, o
+código NÃO conta novamente em M o mesmo par Claim/interesse das suas fontes.
+O motivo e a origem da memória permanecem no relatório, marcados counted=false
+e relationship_sources. Id alternativo da mesma Claim não evita a deduplicação.
+Uma consequência independente pode afetar outro interesse pertinente, com motivo
+próprio; não recategorize o mesmo efeito só para ganhar pontos. Não fabrique
+fonte, memória ou consequência nova. A adequação semântica continua sua tarefa.
+
+Use as relações também para a forma de responder: inimigo confiável pode receber
+uma explicação franca da recusa, e amigo pouco confiável pode precisar de garantia.
+R pontua opiniões sobre opções; não altera DC, atitude, dados ou o cache de
+Influence dos pedidos anteriores. Nunca narre níveis, fontes ou motivos privados.
+"""
+
+
+INSTRUCTIONS += """
+Evolução por episódios (passo 6): em player_action narrado, reactions[].episodes
+propõe interpretar evidências PRÓPRIAS já percebidas, após a ação real,
+after_squares=null/check=null. Em npc_turn/npc_agency use episodes=[]. Não há
+polling; a revisão por acontecimentos tem fase própria no passo 7. Para o mesmo dono, não antecipe ações nesse
+plano: código atualiza relações antes de avaliar opiniões e escolher em npc_agency.
+
+Informe owner_id NPC, target_id, kind, evidence_id, reason e interest_ids. O dono
+precisa conhecer uma memória ativa ligada ao destinatário. Pode usar id real ou
+latest_observation/latest_report, resolvidos após a execução, somente entre
+memórias próprias pertinentes. interest_ids identifica os aspectos resumidos;
+[] representa o episódio inteiro e impede reutilizá-lo como bônus em M.
+Não use memórias de resumo de conversa/relação como prova de acontecimentos.
+
+Política nominal fixa, sem delta fornecido pela IA:
+promise_kept: confiança +1; care_shown: afeto +1; costly_help: confiança +1,
+afeto +2; betrayal_discovered: confiança -2, afeto -1; suspicion: confiança -1;
+correction: substitui a parcela anterior daquele episódio por zero. Os níveis
+continuam -5..5; código recalcula a partir da base e episódios ativos, sem
+exagerar a recuperação nas bordas da escala. before/after, motivo e origem ficam
+no histórico privado. A mesma Claim/assunto/relação não rende pontos repetidos
+por recontagem ou mudança de rótulo. Uma confirmação pode substituir suspeita;
+correção exige observação contraditória do mesmo episódio, conservando a história.
+
+Promessa, elogio, cumprimento e aceitação não provam realização e não dão pontos.
+Confirmações exigem observation com autor identificado. promise_kept exige
+conversation_id/proposal_id/version/term_id de compromisso aceito, conhecido,
+responsável explícito e evidência posterior à promessa/aceitação. term_id pode
+usar at:1..at:8. Não marque retirada de exércitos ou transferência de terras como
+cumprida: não há operação correspondente. Abrir/fechar passagem efetivamente
+observado registra autor e estado; ataques com dano observado registram dano.
+Interpretar se esse fato cumpre/quebra aquele termo é sua tarefa semântica.
+Sem compromisso, betrayal_discovered exige memória com harm/betrayal explícito;
+costly_help exige tópico costly_help em observação autoral que documente custo.
+Não trate tempo gasto, dez cumprimentos ou só uma fala como sacrifício.
+
+suspicion usa report/inference, sem comprovar traição ou alterar afeto como se
+fosse fato. Traição oculta não altera a relação de quem não a percebeu. Falta de
+prova ou suspeita não inicia violência automaticamente. Não use correção para
+apagar um acontecimento real só porque o estado físico mudou depois.
+
+Ao fechar a conversa, o código arquiva pendências e termos/compromissos percebidos
+nas memórias dos respectivos participantes, com ocasião e referência estrutural;
+não transcreve todo o diálogo, objetivos privados ou sentimentos para todos.
+Episódios interpretados também têm memória privada, mesmo antes do fechamento.
+Ao retomar, use conhecimento próprio e referências arquivadas de compromisso,
+não apenas recent_messages. Resumos privados não devem ser enviados em memory_ids
+para divulgação; lembrar uma promessa não equivale a executá-la. Nenhum resumo
+ou relato passa a ser observação de cumprimento. Reiniciar restaura valores e
+memórias iniciais. A resposta do modelo e relevância semântica ainda requerem
+avaliação; nunca invente fontes para produzir uma mudança de relação.
+"""
+
+
 def _fields(value, expected):
     if not isinstance(value, dict) or set(value) != set(expected):
         raise WorldError("Campos inválidos na decisão do Mundo.")
+
+
+INSTRUCTIONS += """
+Passo 7 — acontecimentos percebidos e mudança de prioridade:
+Fase npc_review é uma reconsideração PRIVADA disparada por observations.events,
+sem aguardar nova fala do jogador. Recebe somente actor.id, seus conhecimentos,
+relações, opiniões e conversas percebidas. Não contém o mundo onisciente.
+Nesta fase intent=null, adjudications=[], actions=[], step_index=0,
+after_squares=null, check=null, interrupt=false. Pode retornar reactions=[] se
+nada muda. Pode propor opinions somente desse NPC, sobre opções/versões que ele
+conhece; não precisa de fala atual do jogador. Reavalie apenas as opções afetadas,
+conservando objeções independentes. Pode interpretar episodes próprios com a
+mesma política de evidência; nunca escolha ações antes dos novos cálculos.
+
+Logo depois haverá npc_agency com a base atual para decidir como reagir. Uma
+informação relevante pode mudar a prioridade, mesmo se o NPC já agiu nesta
+interação. Há no máximo uma reconsideração por NPC por interação, agrupando os
+últimos quatro eventos; novas ocorrências excedentes ficam para a próxima ação
+em jogo. Não provoque troca infinita de revelações nem repita um mesmo relato.
+Avaliação já calculada sobre a informação atual não dispara revisão redundante.
+
+knowledge em um evento continua tendo dono/origem: report não prova autenticidade,
+autoria ou traição. Observação de observed_injury sem source.actor_id mostra
+apenas o ferido. Ruído percebido não prova tiro, ferimento, agressor ou intenção;
+position=null não fornece coordenadas. Não invente documento autenticado, socorro,
+moeda transferida, projétil ou ataque à distância. As evidências podem ser
+históricas; confira as memórias ativas antes de propor um episódio confirmado.
+
+Em npc_agency com observations.intent.event_opportunity=true, pode escolher
+suspend, resume, investigate ou protect além das iniciativas anteriores.
+suspend exige say com conversation.status=suspended e reason literal da fala.
+resume exige conversa suspensa e say com status=active. Pontos e propostas
+anteriores continuam no registro, sem resolução automática. Ao retomar, responda
+à pendência ou registre por fala pertinente por que deixou de importar.
+Investigar/proteger permite no máximo uma operação física: move para o local
+percebido do incidente ou uma casa adjacente, ou search pela percepção existente.
+Sem localização percebida, pode perguntar ou buscar do lugar onde está. Não há
+cura, escudo automático, dano ou movimento pelo texto. Observadores sem ficha
+não ganham movimento de Guerreiro. Sem evento, não se liberam essas operações.
+Ataques continuam proibidos na agência; start_conflict rola iniciativa antes de
+qualquer ataque ou deslocamento de combate. O conflito implementado é jogador
+contra os NPCs hostis/instigador, não combate entre quaisquer terceiros ou aliados.
+Não inicie violência por uma nota ou acusação sem causa própria.
+Combate interrompe as conversas dos participantes sem inventar fala; pendências
+permanecem. Durante iniciativa, decisões físicas continuam exclusivamente no
+turno correto. Off não consome notificações nem avança prioridade. Reiniciar
+limpa notificações e restaura a situação inicial.
+"""
+
+
+INSTRUCTIONS += """
+Passo 8 — conversas casuais no mesmo motor:
+Nem toda conversa é negociação, pedido Influence, problema para resolver ou
+proposta com contrapartida. Uma amizade declarada no cenário pode orientar
+escuta e franqueza sem gerar romance, obrigação ou sentimentos do jogador.
+O objetivo privado pode surgir, mudar ou se esgotar conforme a conversa real.
+Não atribua ao jogador tristeza, vontade de conselho ou desejo de companhia
+que ele não declarou; use o que ouviu e deixe espaço para escolha.
+
+Se o interlocutor só quer contar algo, listen pode usar somente wait OU say
+de acolhimento seguido de wait; waiting_for descreve uma nova fala se ele quiser
+continuar, sem exigir pergunta/garantia. can_wait continua sendo validado. Uma
+nova fala dirigida ao NPC ou continuação percebida da conversa a dois renova
+a escuta, mesmo sem haver pergunta formal. Falas a terceiros, off e só
+aguardar não a renovam. Não transforme silêncio em aconselhamento obrigatório.
+Se há pergunta, pedido ou objeção explícita do NPC ainda pendente, uma fala
+alheia a essa pendência não renova a espera; registre a resposta real em resolves.
+Para sugerir algo quando houver abertura, use respond/clarify com fala normal;
+nunca exija offer/accept/reject, nota de opção ou dado para gentileza comum.
+
+Ajudar espontaneamente pode ser oferecer um caminho conhecido após ouvir uma
+necessidade, sem que o jogador peça cada iniciativa. Use knowledge próprio e
+memory_ids compartilháveis para transmitir orientação. Não mova o jogador,
+não o obrigue a aceitar companhia e não crie fatos conhecidos por outro NPC.
+Uma moeda recebida antes da cena é episódio inicial autoral, já incorporado na
+relação quando declarado; agradecer não transfere de novo, não cria dívida,
+saldo ou outro bônus. Não há nova operação de dar moedas neste incremento.
+
+Quando o assunto terminar, close pode encerrar com despedida e waiting_for=null.
+Se o NPC decidir também sair fisicamente, initiative=leave exige exatamente
+say com conversation.status=closed/reason literal, depois move, waiting_for=null.
+Escolha apenas position de observations.departure_targets, locais livres vistos
+em outra área. A geometria executa o percurso e pode impedi-lo; despedida não
+equivale a deslocamento. Sem destino ofertado ou sem ficha, use close e não
+invente saída, teleporte ou desaparecimento. O NPC continua no mapa ao chegar
+na outra área. Não há saída de custódia/parley por essa iniciativa.
+"""
+
+
+INSTRUCTIONS += """
+Passo 9 — vínculos qualitativos, sem pontos novos ou decaimento por tempo:
+relationships[].bonds distingue friendship, attraction, infatuation e love,
+cada um absent/active/ended, com dono, motivo, fontes e história. Não é estado
+do jogador nem vínculo mútuo automático. Confiança e afeto continuam independentes.
+Não transforme confiança alta em amizade, amizade em romance ou nota em aceitação.
+
+Em player_action narrado ou npc_review, reactions[].bonds pode propor atualização
+SOMENTE do NPC dono, com state=active/ended, reason e evidence_ids próprios reais.
+Sem after_squares/check; em npc_agency/npc_turn use bonds=[]. Para o mesmo dono,
+não antecipe ações no plano de cálculo. Python valida antes de opiniões/decisão.
+Não altere perfil/alinhamento para justificar resultado e não atribua escolhas
+ou sentimentos ao jogador. Adultos precisam ser explicitamente declarados pelo
+autor; romance.eligible=false não pode ser contornado por suposição sobre idade.
+
+Formação de friendship exige cuidado observado nas duas direções, por episódios
+distintos, não reciprocidade emocional presumida. Fontes de cuidado têm tópicos
+care/costly_help autorais ou episódio care_shown/costly_help já validado; promessa
+e cumprimento protocolar não equivalem a cuidado. Attraction é interpretação
+própria apoiada em observação do destinatário, sem exigir amizade ou confiança.
+Infatuation exige atração própria ativa e outro encontro significativo observado
+após essa atração; use personal_encounter autoral ou cuidado validado. Love exige
+amizade e paixão próprias, história de cuidado recíproco e novo cuidado observado
+após a paixão. Nunca forme etapas sucessivas pela mesma fonte numa única rodada.
+Esses são critérios de implementação do Trama, não leis psicológicas ou D&D.
+
+Manutenção usa acontecimento novo, sem precisar revalidar sentimento a cada fala.
+Ruptura exige vínculo ativo, motivo e evidência própria posterior; reaproximação
+também precisa de fato novo. Repetir atualização/fonte não reaplica história.
+Initial bonds são antecedentes autorais. Manter amor quando a confiança diminui
+ou não sentir atração por um amigo são possibilidades; nada muda automaticamente.
+Recusa ou mudança de conversa não apaga sentimentos nem baixa níveis por si só.
+
+romance.own_choice e known_target_choice são declarações percebidas, com unknown
+quando não há informação. can_express=false impede expressão/investida amorosa;
+sentimentos privados podem permanecer sem perseguição ou reciprocidade forçada.
+Para expressar, o NPC deve ter sentimento próprio validado e usar
+conversation.romantic_expression=true e um único target_id. Se só há attraction,
+não invente love. Recusa franca pode usar romance_boundary=declined com trecho
+literal; preserve amizade/carinho se essa for a escolha. Respeite limite conhecido
+até declaração nova e efetivamente percebida de quem o estabeleceu.
+
+Um vínculo pode mudar a prioridade e a forma de recusar sem conceder bônus novo
+a S ou repetir suas fontes em M. Resumos relationship_bond são privados e não
+pontuam. Só falas/efeitos executados chegam ao narrador, não estados afetivos
+secretos. Não descreva romance infantil, contato íntimo, namoro ou reciprocidade
+como efeito de uma atualização unilateral. Nenhuma nova operação física é criada.
+"""
 
 
 def parse_world_plan(text: str) -> WorldPlan:
@@ -377,6 +780,9 @@ def parse_world_plan(text: str) -> WorldPlan:
             raise WorldError("Respostas do Mundo devem ser uma lista.")
         reactions = []
         for item in value["reactions"]:
+            item.setdefault('opinions', [])  # Gravações anteriores ao passo 3.
+            item.setdefault('episodes', [])
+            item.setdefault('bonds', [])
             _fields(item, REACTION_SCHEMA["properties"])
             if not isinstance(item["actions"], list):
                 raise WorldError("Ações do Mundo devem ser uma lista.")
@@ -386,6 +792,7 @@ def parse_world_plan(text: str) -> WorldPlan:
                 action.setdefault('influence', None)
                 action.setdefault('volume', 'normal')
                 action.setdefault('memory_ids', [])
+                action.setdefault('conversation', None)
                 _fields(action, ACTION_FIELDS)
                 destination = action["destination"]
                 if destination is not None:
@@ -405,20 +812,32 @@ def parse_world_plan(text: str) -> WorldPlan:
                     raise WorldError('memory_ids deve ser uma lista.')
                 actions.append(WorldAction(action["actor_id"], action["operation"], action["text"],
                                            action["target_id"], destination, action["weapon"], influence, action["volume"],
-                                           tuple(action['memory_ids'])))
+                                           tuple(action['memory_ids']),
+                                           conversation_update_from_data(action['conversation'])))
             check = item["check"]
             if check is not None:
                 _fields(check, CHECK_SCHEMA["properties"])
                 check = PerceptionCheck(**check)
+            if any(not isinstance(item[k], list) for k in ('opinions', 'episodes', 'bonds')):
+                raise WorldError('Opiniões, episódios e vínculos devem ser listas.')
             reactions.append(WorldReaction(item["step_index"], item["after_squares"], tuple(actions),
-                                           item["interrupt"], item["reason"], check))
+                                           item["interrupt"], item["reason"], check,
+                                           tuple(option_from_data(o) for o in item['opinions']),
+                                           tuple(episode_from_data(e) for e in item['episodes']),
+                                           tuple(bond_update_from_data(b) for b in item['bonds'])))
         decisions = []
         for decision in value['adjudications']:
             _fields(decision, ADJUDICATION_SCHEMA['properties'])
             decisions.append(Adjudication(**{**decision, 'fact_ids': tuple(decision['fact_ids'])}))
         intent = value['intent']
         if intent is not None:
+            intent.setdefault('initiative', None)
+            intent.setdefault('reason', None)
+            intent.setdefault('opinion_ids', [])
             _fields(intent, WORLD_SCHEMA['properties']['intent']['anyOf'][0]['properties'])
+            if not isinstance(intent['opinion_ids'], (list, tuple)):
+                raise WorldError('Referências de opiniões devem ser uma lista.')
+            intent['opinion_ids'] = tuple(intent['opinion_ids'])
             intent = IntentDecision(**intent)
         return WorldPlan(tuple(reactions), tuple(decisions), intent)
     except (ValueError, TypeError, KeyError, AttributeError) as error:
@@ -435,7 +854,7 @@ class OpenAIWorldDirector:
 
     def decide(self, context: dict) -> WorldPlan:
         if isinstance(context, AIContext):
-            context.require(ContextKind.WORLD_ACTION, ContextKind.NPC_TURN, ContextKind.NPC_AGENCY)
+            context.require(ContextKind.WORLD_ACTION, ContextKind.NPC_TURN, ContextKind.NPC_AGENCY, ContextKind.NPC_REVIEW)
         with log_context(ai_call_id=new_id()):
             text = request_json(self.client, model=self.model, instructions=INSTRUCTIONS,
                                 payload=context, schema=WORLD_SCHEMA, name="world_response",

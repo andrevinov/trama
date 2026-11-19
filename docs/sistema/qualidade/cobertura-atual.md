@@ -68,6 +68,67 @@ nova avaliação do modelo ou certificação do código atual.
 
 ## Cobertura local e lacunas
 
+O estado próprio da conversa tem verificação offline pelo fluxo oficial com
+transporte fixo: pendências, propostas, versões, privacidade, audição, ciclo de
+vida e reinício. A auditoria de contextos usa contribuições reais pelo motor.
+Essas verificações não medem interpretação ou negociação de um modelo real;
+não há aprovação live atribuída ao passo 2 por sua implementação.
+
+O passo 3 tem conferência offline pelo mesmo fluxo e transporte fixo para notas
+por opção/termo, revisão, repetição, limites, referências e privacidade. A
+auditoria inclui opiniões calculadas para proposta, alternativa e expectativa
+sem acordo. Isso verifica os impactos fornecidos, sem medir a qualidade do
+julgamento semântico de um modelo real ou ampliar o escopo das medições live
+acima. Veja [opiniões por opção](../aplicacao/opinioes-por-opcao.md).
+
+O passo 4 tem conferência pelo runner e adaptadores com transporte fixo para
+conversa comum, notas antes da escolha, pendência ignorada, contraproposta
+estruturada, recusa sem violência, escuta limitada, off, fechamento, privacidade,
+duplicatas e falhas. Controles incluem avaliação desatualizada durante uma
+resposta pendente e retirada de outro participante da fila após fechamento
+percebido. Não há nova medição live ou aprovação da semântica de um modelo real.
+Veja [intenções dos NPCs](../aplicacao/intencoes-dos-npcs.md).
+
+O passo 5 tem conferência offline de relações iniciais direcionais: confiança
+e afeto independentes, extremos e compensação, base neutra preservada, ausência
+de reciprocidade, referências, fontes sem pontuação duplicada, consequências
+independentes, novas conversas, off e reset. O fluxo oficial com transporte fixo
+compara inimigo confiável e amigo pouco confiável e permite recusa franca mesmo
+com nota favorável. A auditoria de contexto executa o caso de memória resumida
+na relação. Não há medição nova de um modelo real.
+
+O passo 6 tem conferência offline pelo runner oficial para promessa, aceitação,
+ação de porta observada após o compromisso, atualização única com antes/depois,
+arquivamento e retomada em outra conversa, privacidade, off e reinício. Controles
+fixos também verificam dez cumprimentos sem pontos e evidência não percebida.
+Regressões locais preservam suspeita, confirmação e correção com história,
+recomposição nos limites, rejeição de prova de outro dono ou relato como fato
+confirmado e lote inválido sem alteração parcial. As amostras dos contratos
+cobrem os novos contextos. Isso não mede a pertinência semântica do diretor real;
+a política e o recorte estão em [evolução das relações](../aplicacao/evolucao-das-relacoes.md).
+
+O passo 7 acrescenta regressões pelo runner para revelação pertinente feita por
+outro NPC, informação irrelevante, fala não ouvida, revisão de quem já agiu,
+recontagem sem nova rodada, suspensão/retomada com pergunta preservada e reação
+sem mensagem do jogador. O deslocamento de investigação é executado e conferido.
+Controles parciais com ataque real distinguem ferido visto de agressor identificado;
+ruído percebido não recebe autoria oculta. Também se verifica interrupção por
+combate sem fala fabricada, iniciativa/turno, off, reinício e estímulos da preparação
+sem reapresentação. Contratos incluem a fase privada de revisão e sua posse de
+evidências. A adequação da prioridade escolhida pelo modelo real não foi medida;
+os limites estão em [acontecimentos e prioridades](../aplicacao/acontecimentos-e-prioridades.md).
+
+O passo 8 tem situações jogáveis de amiga e garoto pelo catálogo comum.
+Regressões pela composição/runner com escolhas fixas conferem escuta consecutiva,
+acolhimento seguido de espera, ausência de renovação por silêncio/off ou pergunta
+ignorada, conselho com abertura, mudança de foco/objetivo, fechamento e nova
+conversa. Conferem também orientação oferecida após uma necessidade declarada,
+despedida com deslocamento real e rejeição de destino inválido antes da fala.
+Níveis não crescem por agradecimento; a moeda é memória inicial, sem transferência
+de saldo. A CLI e o reinício usam os mesmos dados e preparação. As amostras dos
+contratos alcançam os novos contextos; não houve nova medição semântica com IA
+real. Recortes e critérios estão em [conversas casuais](../simulador/conversas-casuais.md).
+
 Os [testes locais](testes-locais.md) verificam regras, carregadores, contratos,
 UI, fluxo, reações e falhas sem pagar chamadas. Os
 [controles de regressão](deteccao-de-regressoes.md) demonstram critérios que
@@ -91,3 +152,20 @@ suíte. Acrescente novas medições como evidências datadas, preservando result
 desfavoráveis. A
 [auditoria histórica](../../roadmaps/implementados/2026-11-16-live-tests-compartilhados/auditoria-historica.md)
 registra a migração; não é a fonte principal da cobertura corrente.
+
+## Vínculos qualitativos — passo 9
+
+`tests/integration/test_relationship_bonds.py` usa situações oficiais e runner
+com decisões fixas para amizade sem atração, afeto com confiança reduzida, recusa
+escolhida pelo jogador, manutenção de sentimento não correspondido, privacidade,
+off, reinício e recusa mesmo com opção favorável. Controles parciais verificam
+formação, manutenção/ruptura, sequência de evidências novas, lotes inválidos,
+fontes próprias, cuidado observado nas duas direções, idade adulta explícita,
+limite não ouvido, declaração literal e repetição sem aquisição artificial.
+
+A CLI compartilha a preparação e as quatro variações do catálogo. As amostras
+dos contratos observam vínculos, história e declarações realmente executadas.
+Classificações de cuidado e escolhas de resposta são fixas nos testes: não
+comprovam julgamento semântico, reciprocidade ou qualidade de um modelo real.
+Não houve nova medição paga. Veja [política](../aplicacao/vinculos-afetivos.md)
+e [avaliação manual](../simulador/vinculos-afetivos.md).

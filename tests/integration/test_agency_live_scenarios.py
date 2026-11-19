@@ -21,10 +21,13 @@ def test_new_live_preparations_and_oracles_offline(case,monkeypatch):
     monkeypatch.delenv('OPENAI_API_KEY',raising=False)
     situation=load_situation(case['id']);roller=situation.new_roller()
     with open_situation(situation,roller=roller,allow_unconfigured=True) as game:
+        assert not game.flow.session.agency._pending_events  # Preparação não reapresenta incidentes antigos.
         actor=case['actor'];speaker='prisoner' if actor=='guard_1' else 'companion'
         game.flow.interpreter=SimpleNamespace(interpret=lambda prompt,context:sourced_plan(ActionPlan((
             NarrativeIntent(prompt,'speak',volume='quiet' if case['marker'] in prompt else 'normal'),)),prompt))
         def decide(context):
+            if context['phase']=='npc_review':
+                return WorldPlan()  # A nova fase só calcula; este controle não muda avaliações.
             if context['phase']=='npc_agency':
                 return judged_world(WorldPlan((WorldReaction(0,None,(WorldAction(actor,'say','Preciso da sua resposta. Quanto oferece?'),)),),
                     intent=IntentDecision(actor,'Concluir a negociação.','Cobrar a resposta.','Sua proposta.')),context)

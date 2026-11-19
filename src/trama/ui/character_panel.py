@@ -209,7 +209,7 @@ class CharacterPanel:
 
 def enemy_paragraphs(enemies: list[dict]) -> list[str]:
     if not enemies:
-        return ["Nenhum inimigo visível.", "Abra a porta e observe a Sala dos Guardas."]
+        return ["Nenhum NPC com ficha visível.", "Somente personagens no campo de visão aparecem aqui."]
     lines = []
     for enemy in enemies:
         lines += [f"{enemy['name']} · Humano · Guerreiro {enemy['level']}",
@@ -237,6 +237,6 @@ def draw_panel(screen, paragraphs: list[str], title: str, scroll: int) -> int:
         if viewport.y - 22 < y < viewport.bottom:
             screen.blit(font.render(line, True, (233, 239, 244)), (viewport.x, y))
     screen.set_clip(old_clip)
-    hint = "Role sobre a ficha para ler mais" if maximum else "Informações dos inimigos atualmente visíveis"
+    hint = "Role sobre a ficha para ler mais" if maximum else "Informações dos NPCs atualmente visíveis"
     screen.blit(font.render(hint, True, (163, 180, 196)), (48, 518))
     return scroll

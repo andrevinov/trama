@@ -19,6 +19,12 @@ from trama.infrastructure import openai_services
 
 
 INITIAL_STATES = [
+    ('vinculo-amizade-sem-atracao', [5, 6], 'narrated', 0),
+    ('vinculo-em-formacao', [5, 6], 'narrated', 0),
+    ('vinculo-afeto-sem-confianca', [5, 6], 'narrated', 0),
+    ('vinculo-interesse-nao-correspondido', [5, 6], 'narrated', 0),
+    ('conversa-com-amiga', [4, 4], 'narrated', 0),
+    ('encontro-com-garoto', [3, 4], 'narrated', 0),
     ('investigar-cela-do-log', [8, 10], 'narrated', 0),
     ('pegar-espada-distante', [8, 10], 'narrated', 0),
     ('atacar-com-aproximacao', [9, 8], 'narrated', 0),
@@ -49,6 +55,7 @@ def test_cli_and_headless_open_same_validated_situation(id, position, mode, spen
     monkeypatch.setattr(simulator, 'run_window', window)
     simulator.main()
     with open_situation(load_situation(id), allow_unconfigured=True) as game:
+        assert not game.flow.session.agency._pending_events
         assert without_correlation_ids(situation_state(game.flow.session)) == without_correlation_ids(observed[0])
     constructor.assert_not_called()
 
@@ -68,6 +75,7 @@ def test_reset_replays_preparation_dice_history_and_execution_memory(monkeypatch
             assert report.status == 'completed'
             assert set(game.flow.session.dungeon.discovered) == {'longsword', 'cleaner_uniform'}
             assert game.runner.reset().status == 'completed'
+            assert not game.flow.session.agency._pending_events
             assert without_correlation_ids(situation_state(game.flow.session)) == without_correlation_ids(initial)
             assert roller.used == [[20, 20]]
             assert len(roller.pending) == 1

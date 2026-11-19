@@ -11,6 +11,7 @@ class ContextKind(StrEnum):
     WORLD_ACTION = 'world_action'
     NPC_TURN = 'npc_turn'
     NPC_AGENCY = 'npc_agency'
+    NPC_REVIEW = 'npc_review'
     NARRATION_INITIAL = 'narration_initial'
     NARRATION_RESULT = 'narration_result'
     NARRATION_OFF = 'narration_off'
@@ -45,6 +46,7 @@ STATE = {
     'combat': F('object|null', 'GameSession.combat_context', 'Iniciativa/vez atual, ou null fora de combate.'),
 }
 KNOWN = {
+    'conversations': F('array', 'ConversationState.view(player)', 'Foco, pendências e versões percebidos pelo jogador; sem objetivos privados de NPCs.'),
     'communication_targets': F('array', 'KnowledgeSystem / GameSession', 'Identidades conhecidas para comunicação; não revela posição de NPC fora de visão.'),
     'map': F('object', 'build_context / compact_context', 'Grade em metros e arquitetura nomeada; não é somente a área vista.'),
     'visible_creatures': F('array', 'GameSession.visibility / DungeonSession', 'Criaturas vistas, com identidade e posição.'),
@@ -66,6 +68,7 @@ WORLD = {
     'turn_resources': F('object', 'Orçamento da sessão', 'Extensão opcional de disponibilidade.', optional=True),
 }
 NARRATION = {
+    'conversations': F('array', 'ConversationState.view(player)', 'Conversa percebida pelo jogador, sem cumprir compromissos ou expor avaliações privadas.'),
     **STATE,
     'phase': F('string', 'Conversation.narration_context', 'initial para abertura, reply para resultado ou off.'),
     'allow_on': F('boolean', 'Conversation.narration_context', 'Autoriza descrição em jogo a partir dos efeitos/percepções.'),
@@ -84,31 +87,54 @@ CONTRACTS = {
         'available_actions': F('array', 'compact_context', 'Operações disponíveis e uso; não gasta recursos.'),
         'turn_resources': F('object', 'Ficha/orçamento via compact_context', 'Disponibilidade da ação, bônus, reação e extras.'),
     }, 'Conhecimento para interpretar o jogador, sem world/ficha completa/off.',
-        ('world', 'player_sheet', 'recent_messages[].off', 'map.blocked', 'map.difficult')),
+        ('relationships', 'opinions', 'world', 'player_sheet', 'recent_messages[].off', 'map.blocked', 'map.difficult')),
     ContextKind.WORLD_ACTION: ContextContract(WORLD, 'Mestre completo avaliando a proposta do jogador.'),
     ContextKind.NPC_TURN: ContextContract(WORLD, 'Mestre completo para o NPC ativo; proposta do jogador vazia.'),
     ContextKind.NPC_AGENCY: ContextContract({
+        'relationships': F('array', 'BondSystem.context(actor)', 'Confiança, afeto, vínculos e limites percebidos do próprio NPC; sem sentimentos do jogador ou reciprocidade inferida.'),
+        'opinions': F('array', 'DispositionSystem.opinion_context(actor)', 'Opções e notas privadas somente do NPC solicitado, sem executar decisões.'),
+        'conversations': F('array', 'ConversationState.view(actor)', 'Somente contribuições percebidas e objetivo privado do próprio NPC.'),
         'mode': F('string', 'GameSession.mode', 'Acompanhamento somente em modo narrado.'),
         'phase': F('string', 'Conversation.agency_context', 'npc_agency, após efeitos reais do jogador.'),
         'actor': F('object', 'PerceptionSystem.observer', 'Identidade, posição e sentidos do próprio NPC.'),
         'profile': F('object', 'DispositionSystem.profiles', 'Alinhamento e persona deste NPC.'),
         'knowledge': F('array', 'KnowledgeStore.select', 'Somente memórias próprias do NPC solicitado.'),
-        'observations': F('object', 'AgencySystem / KnowledgeSystem', 'Intenção, espera e falas percebidas; texto inaudível é nulo.'),
+        'observations': F('object', 'AgencySystem / KnowledgeSystem / Scene', 'Intenção, espera, eventos e falas percebidas, com destinos vistos de despedida; texto inaudível é nulo.'),
         'parley': F('object|null', 'GameSession.parley', 'Abordagem de que este NPC participa.'),
         'world': F('object', 'AdjudicationSystem.prepare', 'Pedidos de dificuldade física necessários à execução.'),
     }, 'Decisão de um interlocutor com percepção resolvida; sem histórico onisciente.',
-        ('recent_messages','player_plan','player_request_parts','player_sheet','world.knowledge','world.social','world.scenario')),
+        ('recent_messages','player_plan','player_request_parts','player_sheet','world.knowledge','world.social','world.scenario','world.conversations')),
     ContextKind.NARRATION_INITIAL: ContextContract(NARRATION, 'Descrição inicial limitada à percepção; world só para coerência.',
-        ('world.social', 'world.knowledge', 'world.adjudication', 'execution.reactions[].disposition', 'execution.reactions[].private_memory_ids', 'previous_execution.execution.reactions[].disposition', 'execution.reactions[].adjudication', 'previous_execution.execution.reactions[].adjudication', 'previous_execution.execution.reactions[].private_memory_ids')),
+        ('relationships', 'opinions', 'world.social', 'world.knowledge', 'world.adjudication', 'world.conversations', 'execution.reactions[].disposition', 'execution.reactions[].private_memory_ids', 'previous_execution.execution.reactions[].disposition', 'execution.reactions[].adjudication', 'previous_execution.execution.reactions[].adjudication', 'previous_execution.execution.reactions[].private_memory_ids')),
     ContextKind.NARRATION_RESULT: ContextContract(NARRATION, 'Narra efeitos validados e responde off; não executa intenções.',
-        ('world.social', 'world.knowledge', 'world.adjudication', 'execution.reactions[].disposition', 'execution.reactions[].private_memory_ids', 'previous_execution.execution.reactions[].disposition', 'execution.reactions[].adjudication', 'previous_execution.execution.reactions[].adjudication', 'previous_execution.execution.reactions[].private_memory_ids')),
+        ('relationships', 'opinions', 'world.social', 'world.knowledge', 'world.adjudication', 'world.conversations', 'execution.reactions[].disposition', 'execution.reactions[].private_memory_ids', 'previous_execution.execution.reactions[].disposition', 'execution.reactions[].adjudication', 'previous_execution.execution.reactions[].adjudication', 'previous_execution.execution.reactions[].private_memory_ids')),
     ContextKind.NARRATION_OFF: ContextContract(NARRATION, 'Explica regras/memória sem ação nova nem fala on.',
-        ('world.social', 'world.knowledge', 'world.adjudication', 'execution.reactions[].disposition', 'execution.reactions[].private_memory_ids', 'previous_execution.execution.reactions[].disposition', 'execution.reactions[].adjudication', 'previous_execution.execution.reactions[].adjudication', 'previous_execution.execution.reactions[].private_memory_ids')),
+        ('relationships', 'opinions', 'world.social', 'world.knowledge', 'world.adjudication', 'world.conversations', 'execution.reactions[].disposition', 'execution.reactions[].private_memory_ids', 'previous_execution.execution.reactions[].disposition', 'execution.reactions[].adjudication', 'previous_execution.execution.reactions[].adjudication', 'previous_execution.execution.reactions[].private_memory_ids')),
 }
+
+# A reconsideração tem a mesma perspectiva privada, mas só calcula interpretações.
+CONTRACTS[ContextKind.NPC_REVIEW] = ContextContract({
+    **CONTRACTS[ContextKind.NPC_AGENCY].fields,
+    'phase': F('string', 'Conversation.agency_context(review=True)', 'npc_review, por acontecimento próprio percebido.'),
+    'world': F('object', 'Conversation.agency_context(review=True)', 'Adjudicações vazias; a revisão não decide ações físicas.'),
+}, 'Reconsideração privada por evento; sem fala, movimento ou escolha antecipada.',
+    CONTRACTS[ContextKind.NPC_AGENCY].forbidden)
 
 # Tipos críticos internos. Demais extensões internas também entram na revisão
 # estrutural offline, sem transformar eventos e cenários em um esquema fechado.
 INTERNAL = {
+    'world.social.relationships': 'array', 'world.social.relationships[].owner_id': 'string',
+    'world.social.relationships[].trust.value': 'integer', 'world.social.relationships[].affection.value': 'integer',
+    'relationships[]': 'object', 'relationships[].owner_id': 'string', 'relationships[].target_id': 'string',
+    'relationships[].trust.value': 'integer', 'relationships[].affection.value': 'integer',
+    'relationships[].bonds': 'object', 'relationships[].romance': 'object',
+    'relationships[].romance.eligible': 'boolean', 'relationships[].romance.can_express': 'boolean',
+    'world.social.relationships[].bonds': 'object',
+    'world.social.opinions': 'array', 'world.social.opinions[].actor_id': 'string',
+    'world.social.opinions[].total': 'integer', 'world.social.opinions[].terms': 'array',
+    'world.social.opinions[].id': 'string', 'world.social.opinions[].current': 'boolean',
+    'opinions[]': 'object', 'opinions[].actor_id': 'string', 'opinions[].total': 'integer',
+    'opinions[].id': 'string', 'opinions[].current': 'boolean',
     'knowledge[]': 'object', 'knowledge[].owner_id': 'string', 'knowledge[].id': 'string',
     'knowledge[].claim': 'object', 'knowledge[].claim.subject_id': 'string',
     'knowledge[].claim.predicate': 'string', 'knowledge[].claim.value': 'string',
@@ -194,8 +220,10 @@ def validate_context(kind: ContextKind, context: dict) -> None:
         if value is _MISSING or not _matches(value, spec.types):
             raise ContextError(f'{kind}.{path}: esperado {spec.types}' + (' (campo ausente).' if value is _MISSING else '.'))
     for path, kinds in INTERNAL.items():
-        if kind == ContextKind.NPC_AGENCY and path.startswith('world.'):
+        if kind in {ContextKind.NPC_AGENCY, ContextKind.NPC_REVIEW} and path.startswith('world.'):
             continue  # Nesta fase, world contém apenas adjudicações físicas.
+        if path.startswith('world.social.') and kind not in {ContextKind.WORLD_ACTION, ContextKind.NPC_TURN}:
+            continue
         if path.split('.')[0].removesuffix('[]') not in context:
             continue
         for location, value in _values(context, path):
@@ -208,20 +236,53 @@ def validate_context(kind: ContextKind, context: dict) -> None:
             raise ContextError(f'{kind}.{path}: informação proibida nesta projeção.')
     if context['mode'] not in {'narrated', 'turn_based'}:
         raise ContextError(f'{kind}.mode: modo desconhecido.')
+    for conversation in context['conversations']:
+        if not isinstance(conversation, dict) or (kind not in {ContextKind.NPC_AGENCY, ContextKind.NPC_REVIEW}
+                and conversation.get('objective') is not None):
+            raise ContextError(f'{kind}: objetivo privado não pertence à projeção do jogador.')
     if kind in {ContextKind.WORLD_ACTION, ContextKind.NPC_TURN}:
         expected = 'player_action' if kind == ContextKind.WORLD_ACTION else 'npc_turn'
         if context['phase'] != expected or (kind == ContextKind.NPC_TURN and (context['player_plan'] or context['player_request_parts'])):
             raise ContextError(f'{kind}: fase ou proposta do jogador incompatível.')
-    if kind == ContextKind.NPC_AGENCY and (context['phase'] != 'npc_agency' or context['mode'] != 'narrated'):
+    if kind in {ContextKind.NPC_AGENCY, ContextKind.NPC_REVIEW} and (context['phase'] != kind.value or context['mode'] != 'narrated'):
         raise ContextError(f'{kind}: o acompanhamento exige modo narrado e fase própria.')
-    if kind == ContextKind.NPC_AGENCY:
+    if kind in {ContextKind.NPC_AGENCY, ContextKind.NPC_REVIEW}:
         if not isinstance(context['world'].get('adjudication'), dict):
             raise ContextError(f'{kind}: faltam as adjudicações físicas.')
         actor = context['actor'].get('id')
+        if any(r.get('owner_id') != actor for r in context['relationships']):
+            raise ContextError(f'{kind}: relação privada pertence a outro personagem.')
+        if any(o.get('actor_id') != actor for o in context['opinions']):
+            raise ContextError(f'{kind}: opinião privada pertence a outro personagem.')
+        if any(c.get('objective') is not None and c['objective'].get('actor_id') != actor
+               for c in context['conversations']):
+            raise ContextError(f'{kind}: objetivo de conversa pertence a outro personagem.')
         if (not isinstance(actor, str) or context['observations'].get('actor_id') != actor
                 or context['observations'].get('intent', {}).get('actor_id') != actor
                 or any(m.get('owner_id') != actor for m in context['knowledge'])):
             raise ContextError(f'{kind}: identidade ou memória de outro personagem.')
+        events = context['observations'].get('events')
+        targets = context['observations'].get('departure_targets')
+        if (not isinstance(targets, list) or len(targets) > 8 or any(
+                not isinstance(t, dict) or not isinstance(t.get('area_id'), str) or not isinstance(t.get('name'), str)
+                or not isinstance(t.get('position'), list) or len(t['position']) != 2
+                or any(type(v) is not int or v < 1 for v in t['position']) for t in targets)):
+            raise ContextError(f'{kind}: destinos percebidos de despedida inválidos.')
+        if not isinstance(events, list) or len(events) > 4 or kind == ContextKind.NPC_REVIEW and not events:
+            raise ContextError(f'{kind}: revisão exige acontecimentos próprios e limitados.')
+        for event in events:
+            if (not isinstance(event, dict) or event.get('kind') not in {'knowledge', 'noise'}
+                    or not isinstance(event.get('event_id'), str)
+                    or event['kind'] == 'knowledge' and (
+                        not isinstance(event.get('memory'), dict)
+                        or event.get('memory', {}).get('owner_id') != actor
+                        or event.get('memory', {}).get('id') != event.get('memory_id'))
+                    or event['kind'] == 'noise' and ('memory' in event or 'actor_id' in event)):
+                raise ContextError(f'{kind}: acontecimento sem origem própria ou com autoria indevida.')
+            position = event.get('position')
+            if position is not None and (not isinstance(position, list) or len(position) != 2
+                    or any(type(v) is not int or v < 1 for v in position)):
+                raise ContextError(f'{kind}: posição percebida inválida.')
         for communication in context['observations'].get('communications', []):
             gesture = communication.get('medium') == 'gesture'
             if (gesture and (communication.get('understood') is not None or not isinstance(communication.get('text'), str))

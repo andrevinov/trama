@@ -44,7 +44,7 @@ def test_phase_contracts_validate_real_current_projections_without_wire_metadata
     assert 'kind' not in wire
     assert deepcopy(context).kind == kind
     assert wire['mode'] in {'narrated', 'turn_based'}
-    mandatory = 'actor' if kind == ContextKind.NPC_AGENCY else 'character'
+    mandatory = 'actor' if kind in {ContextKind.NPC_AGENCY, ContextKind.NPC_REVIEW} else 'character'
     del context[mandatory]
     with pytest.raises(ContextError, match=mandatory):
         validate_context(kind, context)
@@ -107,6 +107,13 @@ def test_world_and_npc_contexts_have_distinct_phase_and_plan_contracts(contexts)
         context.require(ContextKind.NPC_TURN)
     with pytest.raises(ContextError):
         one(contexts, ContextKind.WORLD_ACTION).require(ContextKind.NPC_TURN)
+
+
+def test_event_review_rejects_evidence_of_another_owner(contexts):
+    context = one(contexts, ContextKind.NPC_REVIEW)
+    context['observations']['events'][0]['memory']['owner_id'] = 'player'
+    with pytest.raises(ContextError, match='origem própria'):
+        context.require(ContextKind.NPC_REVIEW)
 
 
 @pytest.mark.parametrize('value', [object(), float('nan')])
@@ -179,6 +186,7 @@ def test_manifest_matches_real_adapter_requests_and_wrong_phase_is_rejected(cont
          {'request_parts': [{'text': prompt, 'kind': 'execute', 'operations': ['look'], 'step_indices': [0]}],
           'steps': [{'operation': 'look', 'text': prompt}]}),
         ('world', ContextKind.WORLD_ACTION, world_module.OpenAIWorldDirector, {'reactions': []}),
+        ('world', ContextKind.NPC_REVIEW, world_module.OpenAIWorldDirector, {'reactions': []}),
         ('narration', ContextKind.NARRATION_INITIAL, narrator_module.OpenAINarrator, {'on': 'A cela abre.', 'off': ''}),
     ]
     for name, kind, factory, output in cases:

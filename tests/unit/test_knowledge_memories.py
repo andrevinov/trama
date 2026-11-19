@@ -68,6 +68,19 @@ def test_repeated_observation_is_deduplicated_but_new_report_has_a_new_moment():
     assert reports[0].acquired_at < reports[1].acquired_at
 
 
+def test_an_observed_action_can_refresh_attribution_without_repeating_passive_observations():
+    store = KnowledgeStore((memory(),))
+    action = store.learn('npc', memory().claim, 'Vi o jogador colocar a chave.',
+        MemorySource('observation', 'action', 'player'), when='Agora.',
+        context='Ação observada com autoria.', replace_existing=True)
+    assert action.id != memory().id and action.acquired_at > memory().acquired_at
+    assert store.active('npc') == (action,)
+    again = store.learn('npc', memory().claim, 'A chave continua ali.',
+        MemorySource('observation', 'look-again'), when='Depois.', context='Estado ainda visível.')
+    assert again == action
+    assert len(store.export()['memories']) == 2
+
+
 def test_indexes_select_only_relevant_owner_and_respect_count_and_content_budget():
     store = KnowledgeStore((memory(), memory(id='other:secret', owner='other')))
     for n in range(40):

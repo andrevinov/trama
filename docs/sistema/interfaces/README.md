@@ -65,7 +65,7 @@ situações diferentes e devem ser apresentadas como tal.
 
 ## Alcance e detalhamento existente
 
-A janela atual contém conversa, mapa e guias Jogo/Ficha/Inimigos. Ações são
+A janela atual contém conversa, mapa e guias Jogo/Ficha/NPCs. Ações são
 solicitadas por mensagem, com controles específicos para oportunidade e reinício.
 Não há botões de iniciar combate ou renovar turno. A existência de uma API de
 regra no motor não implica que ela tenha um comando ou controle na interface.

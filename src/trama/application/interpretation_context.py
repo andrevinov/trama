@@ -43,6 +43,7 @@ def compact_context(context: dict) -> dict:
         "parley": deepcopy(context.get("parley")),
         "sensing": deepcopy(context.get("sensing", {"hidden": False, "can_hide": False})),
         'knowledge': deepcopy(context.get('knowledge', [])),
+        'conversations': deepcopy(context.get('conversations', [])),
         "character": {key: character[key] for key in ("column", "row", "current_area", "speed_meters", "remaining_meters") if key in character},
         "visible_creatures": deepcopy(context.get("visible_creatures", [])),
         "communication_targets": deepcopy(context.get('communication_targets', context.get('visible_creatures', []))),

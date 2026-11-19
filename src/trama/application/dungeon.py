@@ -29,6 +29,8 @@ from trama.vision import line_of_sight
 from trama.perception import Noise, Observer, Senses, observers_from_data
 from trama.knowledge import Claim, initial_memories
 from trama.social import profiles_from_data
+from trama.relationships import relationships_from_data
+from trama.bonds import adult_ids_from_data
 
 logger = logging.getLogger(__name__)
 
@@ -75,14 +77,16 @@ class DungeonSession(GameSession):
         scene = Scene.from_data(data)
         player = sheet_from_data(data['player'], id='player', name='Jogador', default_level=3)
         creatures = creatures_from_data(data['creatures'])
+        memories = initial_memories(data)
         session = cls(scene.movement_grid, MovementState(Position(*data['start']), player.speed_meters), scene,
                       creatures, player_sheet=player,
                       enemy_sheets=tuple(sheet_from_data(c['sheet'], id=c['id'], name=c['name'])
                                          for c in data['creatures']), roller=roller,
                       observers=observers_from_data(data.get('observers', [])) or (Observer(
                           'prisoner', 'Prisioneiro', Position(*data['dungeon']['prisoner_position']),
-                          Senses(perception_bonus=0, sleeping=True)),), memories=initial_memories(data),
-                      social_profiles=profiles_from_data(data))
+                          Senses(perception_bonus=0, sleeping=True)),), memories=memories,
+                      social_profiles=profiles_from_data(data), relationships=relationships_from_data(data, memories),
+                      adult_ids=adult_ids_from_data(data))
         session.definition = deepcopy(data['dungeon'])
         session.items = {i['id']: deepcopy(i) for i in session.definition['items']}
         session.title = data.get('title', cls.title)
@@ -612,7 +616,7 @@ class DungeonSession(GameSession):
             if self._near(self.prisoner_position):
                 self._wake_prisoner()  # Contato físico ao alcance não depende de audição.
             else:
-                self.emit_noise('player', self.state.position, 'loud', 'Você chama o prisioneiro para acordá-lo.')
+                self.emit_noise('player', self.state.position, 'loud', 'Você chama o prisioneiro para acordá-lo.', speech=True)
             changed = state.prisoner_awake
         elif operation == 'deceive':
             if target != 'guard_1' or not self._guard_sees_player():
@@ -639,7 +643,7 @@ class DungeonSession(GameSession):
         self.perception.awakened.add('prisoner')
         if self._passage('gate_2').is_open:
             self._event('say', 'Obrigado! O prisioneiro desperta e fala baixo ao ver sua grade aberta.', actor_id='prisoner')
-            self.emit_noise('prisoner', self.prisoner_position, 'quiet', 'Agradecimento em voz baixa.')
+            self.emit_noise('prisoner', self.prisoner_position, 'quiet', 'Agradecimento em voz baixa.', speech=True)
             return
         memories = tuple(m for m in self.knowledge.store.select('prisoner', topics=('escape',), limit=6) if m.shareable)[:1]
         text = 'Ei! Por favor, me solte!' + (' ' + memories[0].text if memories else '')
@@ -647,7 +651,7 @@ class DungeonSession(GameSession):
                                                    memory_ids=tuple(m.id for m in memories))
         self._event('say', text, actor_id='prisoner', **communication)
         self.emit_noise('prisoner', self.prisoner_position, 'loud',
-                        'O pedido de socorro do prisioneiro ecoa nas celas.')
+                        'O pedido de socorro do prisioneiro ecoa nas celas.', speech=True)
 
     def on_perception(self, event):
         # O motor detecta; este cenário decide o que os personagens fazem depois.

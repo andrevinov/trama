@@ -20,7 +20,8 @@ class ResponseOptions:
 
 
 DEFAULT_RESPONSE = ResponseOptions()
-DEFAULT_WORLD_RESPONSE = ResponseOptions(max_output_tokens=2000)
+# Propostas com várias opções exigem impactos e motivos por termo no mesmo JSON.
+DEFAULT_WORLD_RESPONSE = ResponseOptions(max_output_tokens=6000)
 
 
 @dataclass(frozen=True)

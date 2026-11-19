@@ -43,6 +43,10 @@ não são mais injetados na fila da janela para contornar a entrada do jogador.
 
 ## Mostrador de combate
 
+A guia NPCs inclui participantes com ficha, mesmo quando não são hostis.
+No mapa, criaturas não hostis usam dourado e hostis usam vermelho; os marcadores
+com 0 PV conservam sua apresentação própria. O título vem do cenário selecionado.
+
 Durante o modo por turnos, o painel **Iniciativa** aparece entre o resumo do
 personagem e a conversa, nas três abas. Mostra rodada, ordem e valor da
 iniciativa; destaca a vez atual e distingue quem ainda aguarda, quem encerrou
@@ -77,7 +81,7 @@ Não são necessárias chamadas de IA para validar esta apresentação.
 - **Enter** ou **Enviar**: enviar a mensagem; **Shift+Enter**: nova linha.
 - **Roda do mouse / PgUp / PgDn**: percorrer a conversa, sem truncar mensagens.
   Sobre a ficha, a roda percorre o conteúdo da ficha; sobre a iniciativa, percorre os participantes.
-- **Jogo / Ficha / Inimigos**: alternar o painel esquerdo. A conversa permanece
+- **Jogo / Ficha / NPCs**: alternar o painel esquerdo. A conversa permanece
   visível; é possível consultar as guias enquanto uma resposta está pendente.
 - Na **Ficha**, **Agora / Recursos / Dados** selecionam a seção; clique no
   cabeçalho de um cartão para abrir ou fechar os detalhes. Esses cliques só consultam.

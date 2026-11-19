@@ -1,0 +1,24 @@
+{
+  "friendship": {
+    "prompt": "Obrigado pela companhia de outros dias.",
+    "reply": "Nossa amizade importa para mim. Posso ouvir, mas não quero romance.",
+    "boundary": "não quero romance"
+  },
+  "care_without_trust": {
+    "prompt": "Você pode confiar nesta promessa?",
+    "reply": "Eu me importo com você, mas prefiro uma garantia concreta antes de concordar."
+  },
+  "unrequited": {
+    "prompt": "Eu não quero romance com você.",
+    "reply": "Podemos falar da praça. Vou respeitar sua escolha."
+  },
+  "decline": {
+    "prompt": "Eu não quero romance com você.",
+    "literal": "não quero romance"
+  },
+  "reopen": {
+    "prompt": "Mudei de ideia: estou aberto a falar de romance com você.",
+    "literal": "estou aberto a falar de romance"
+  },
+  "expression": "Sinto atração por você, sem presumir o que você sente."
+}

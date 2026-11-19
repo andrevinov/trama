@@ -37,6 +37,8 @@ usado para montar à mão contextos dos testes de fluxo completo.
 | `interpretation` | `Conversation.interpretation_context()` | Projeção mínima da intenção: capacidades, posição, alvos vistos, itens conhecidos e histórico on. Não inclui `world`, ficha completa ou histórico off. |
 | `world_action` | `Conversation.world_context(plan)` | Mestre recebe o estado completo e a proposta do jogador, incluindo requisitos espaciais, preparação prevista e fontes declaradas. Proposta não é efeito executado. |
 | `npc_turn` | `Conversation.world_context()` | Estado completo para decidir o NPC ativo; `player_plan` e `player_request_parts` ficam vazios. O `GameFlow` só agenda essa decisão quando há NPC ativo e jogador com PV. A projeção também pode ser consultada sem disparar execução. |
+| `npc_review` | `Conversation.agency_context(actor, review=True)` | Perspectiva privada do NPC e eventos próprios percebidos; só calcula opiniões/episódios, sem ações. |
+| `npc_agency` | `Conversation.agency_context(actor)` | Perspectiva privada e base calculada para escolher uma iniciativa. Eventos podem justificar suspensão, retomada ou uma operação física suportada. |
 | `narration_initial` | `Conversation.narration_context(initial=True)` | Descrição do lugar/estado inicial usando percepção. O Mundo completo serve à coerência, sem autorizar revelar seus segredos. |
 | `narration_result` | `Conversation.narration_context(speech, report)` | Estado atual, fatos executados, impedimentos, reações, percepção e memória anterior. Atende também mensagens mistas on/off. |
 | `narration_off` | `Conversation.narration_context(Speech(off=...))` | Pergunta exclusivamente off: não contém ação/reação nova em `execution`, não autoriza fala on e pode consultar `previous_execution`. |
@@ -59,15 +61,23 @@ critérios de avaliação da narração.
 
 ## Campos obrigatórios e opcionais
 
+`conversations` contém a perspectiva do jogador em interpretação, Mundo e
+narração. `world.conversations` contém as projeções por NPC e é removido da
+narração. Em `npc_agency`, `conversations` é a perspectiva do NPC solicitado,
+incluindo somente seu próprio objetivo privado. O registro é atualizado a partir
+de `conversation` em falas executadas, não por história ou texto narrado. Veja
+[estado da conversa](../aplicacao/estado-da-conversa.md).
+
 Os nomes abaixo são campos de raiz. O registro executável detalha a origem e o
 significado de cada um; a referência revisada inclui os caminhos internos
 observados por fase.
 
 | Fase | Obrigatórios | Opcionais |
 | --- | --- | --- |
-| Interpretação | `mode`, `sensing`, `knowledge`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `communication_targets`, `equipped_weapons`, `last_attack`, `recent_messages`, `available_actions`, `turn_resources` | `scenario`, `visible_objects` |
-| Mundo e NPC | `mode`, `sensing`, `knowledge`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `communication_targets`, `equipped_weapons`, `last_attack`, `recent_messages`, `player_sheet`, `visible_enemies`, `world`, `player_plan`, `player_request_parts`, `phase` | `scenario`, `visible_objects`, extensões já reconhecidas `available_actions` e `turn_resources` |
-| Três tipos de narração | `mode`, `sensing`, `knowledge`, `parley`, `character`, `combat`, `phase`, `allow_on`, `player`, `execution`, `previous_execution`, `perception`, `player_sheet`, `world`, `history`, `verified_rules` | Nenhum campo de raiz |
+| Interpretação | `mode`, `sensing`, `knowledge`, `conversations`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `communication_targets`, `equipped_weapons`, `last_attack`, `recent_messages`, `available_actions`, `turn_resources` | `scenario`, `visible_objects` |
+| Mundo e NPC | `mode`, `sensing`, `knowledge`, `conversations`, `parley`, `map`, `character`, `combat`, `visible_creatures`, `communication_targets`, `equipped_weapons`, `last_attack`, `recent_messages`, `player_sheet`, `visible_enemies`, `world`, `player_plan`, `player_request_parts`, `phase` | `scenario`, `visible_objects`, extensões já reconhecidas `available_actions` e `turn_resources` |
+| Revisão e agência individual | `relationships`, `opinions`, `conversations`, `mode`, `phase`, `actor`, `profile`, `knowledge`, `observations`, `parley`, `world` | Nenhum campo de raiz; `world` contém adjudicações, sem conhecimento global. |
+| Três tipos de narração | `mode`, `sensing`, `knowledge`, `conversations`, `parley`, `character`, `combat`, `phase`, `allow_on`, `player`, `execution`, `previous_execution`, `perception`, `player_sheet`, `world`, `history`, `verified_rules` | Nenhum campo de raiz |
 
 `knowledge` contém somente a seleção de memórias do jogador, com afirmação,
 fonte, ocasião, contexto e sequência de aquisição. `world.knowledge.actors`
@@ -94,6 +104,12 @@ O registro preserva o
 ponto de detecção; posições atuais continuam no mapa. O Mundo propõe `parley`
 ou `influence` e o narrador recebe o resultado validado, sem escolher dados.
 Veja [conversa antes do combate](../aplicacao/conversa-antes-do-combate.md).
+
+Sem abordagem, falas dirigidas a um NPC consciente também podem receber `say`
+após `speak`, incluindo argumentos e ofertas, conforme persona e memórias próprias.
+Esse é o recorte do [conselho dos generais](../simulador/conselho-dos-generais.md):
+não cria `parley` ou Influence para simular negociação. Nenhuma resposta verbal
+executa transferência territorial ou ordens militares.
 
 Obrigatório não significa não nulo: `combat` é `null` fora de combate;
 `last_attack` e `previous_execution` podem ser `null`. Em modo narrado,
@@ -214,7 +230,8 @@ a comparação passar. O campo `review` não é enviado aos adaptadores.
 
 `npc_agency` é uma fase adicional de decisão do Mundo após a execução do jogador.
 Seu contrato é deliberadamente menor: `mode`, `phase`, `actor`, `profile`,
-`knowledge` do próprio NPC, `observations`, `parley` e `world.adjudication`. Não
+`knowledge`, `conversations` e `opinions` do próprio NPC, `observations`,
+`parley` e `world.adjudication`. Não
 recebe histórico global ou prompt privado; comunicações não compreendidas têm
 texto nulo. O plano do Mundo inclui `intent` somente nessa fase; nas outras,
 o campo é nulo. A execução valida ator, espera limitada e operações permitidas.
@@ -233,3 +250,127 @@ contexto individual do NPC recebe somente o movimento visto, com `medium=gesture
 `understood=null` e sem a intenção privada. `seen_by` substitui audição nessa
 comunicação. Destinatário sem abordagem pode receber uma decisão pontual
 `one_shot`, encerrada após responder. Veja [comunicação gestual](../aplicacao/comunicacao-gestual.md).
+
+## Opiniões por opção
+
+O esquema de resposta do Mundo inclui `reactions[].opinions`, com impactos por
+termo para proposta conhecida, alternativa hipotética e expectativa sem acordo.
+As notas calculadas aparecem em `world.social.opinions`; em `npc_agency`, a raiz
+`opinions` tem somente o dono solicitado. Interpretação e narração proíbem essa
+chave privada. Não há evento público de pontuação ou chamada adicional de IA.
+As amostras do conselho em `tools/context_contracts.py` incluem as três opções,
+origens de memória e a projeção individual. O
+[contrato de opiniões](../aplicacao/opinioes-por-opcao.md) descreve o cálculo, a
+compensação, o cache e seus limites.
+
+## Decisão após o cálculo
+
+O esquema de `intent` inclui `initiative`, `reason` e `opinion_ids`. Conversas
+comuns exigem esses metadados, com referências às notas próprias atuais recebidas.
+`profile.persona.objective` é o objetivo central opcional, distinto de `intent.goal`.
+O contexto das opiniões inclui `id`, `current`, `basis_key` e autor/versão da
+proposta. Termos hipotéticos incluem `kind`, `actor_id` e `execution_order`;
+`order` continua sendo o impacto sobre alinhamento. O motor compara a proposta
+materializada, incluindo termos herdados de revisão, com a alternativa avaliada.
+
+`sequence` e `event_id` nos resultados de comunicação ligam falas reais ao
+engajamento; não transportam motivo privado. `opportunity_id` é volátil na
+auditoria, enquanto ids de opinião e conversa são referências de domínio.
+A amostra do conselho executa cálculo, acompanhamento e contraproposta sem
+parley, preservando a separação entre avaliação privada e efeitos públicos.
+O [contrato de agência](../aplicacao/intencoes-dos-npcs.md) descreve validação,
+espera limitada, fechamento e ausência de decisões duplicadas.
+
+## Relações iniciais nas opções
+
+O Mundo recebe `world.social.relationships`; `npc_agency` recebe `relationships`
+somente do dono solicitado. Interpretação e narração proíbem a chave privada.
+`opinions[].terms[].relationship_effects` propõe destinatário, dimensão, impacto
+e motivo; níveis, pesos e fontes são dados validados da sessão. `components`
+e `raw` das opiniões incluem `relationships`, e contribuições relacionais têm
+origem e impactos por termo. A base participa do cache e de `current`.
+
+Quando uma dimensão aplicada resume uma Claim/interesse, os impactos de memória
+correspondentes recebem `counted=false` e `relationship_sources`, preservando
+razões/origens sem repetir a pontuação. As amostras do conselho verificam a
+parcela de confiança e um cenário com fontes sobrepostas, sem propagar esses
+dados à narração. Veja [relações iniciais](../aplicacao/relacoes-iniciais.md).
+
+## Episódios e continuidade entre encontros
+
+`reactions[].episodes` propõe dono, alvo, categoria, evidência, motivo, aspectos
+resumidos e, quando necessário, referência de compromisso. A política fixa vive
+no código; não aceita deltas escolhidos pelo modelo. Somente a reação narrada à
+ação do jogador pode interpretar episódios, antes das opiniões e da agência.
+`npc_turn` e `npc_agency` devem enviar a lista vazia.
+
+O passo 7 também admite episódios na revisão privada por evento, em `npc_review`.
+
+Relações privadas projetam contagem e últimas fontes por dimensão, últimos
+episódios com antes/depois, origem e referência de compromisso. A base completa
+permanece no estado e invalida opiniões anteriores. Ids aleatórios de execução
+não participam do hash da base; as fontes originais continuam no registro.
+Interpretação e narração permanecem sem essas relações privadas.
+
+Conhecimento selecionado pode incluir compromissos e pendências consolidados
+no fechamento percebido ou inferências privadas de episódios do próprio dono.
+Resumos são identificados como tais, não comprovam cumprimento e não são
+compartilhados automaticamente. A evidência deve ser memória própria ativa;
+rumor não substitui observação de autoria. As amostras exercitam aceitação,
+ação observada, mudança de relação e encerramento com memória, mantendo os
+limites de privacidade. Veja [episódios e memória](../aplicacao/evolucao-das-relacoes.md).
+
+## Reconsideração por acontecimentos
+
+`npc_review` compartilha os campos privados de `npc_agency`, com fase própria e
+sem histórico ou estado completo de mestre. `observations.events` contém até
+quatro eventos próprios, com origem, eventual memória e posição percebida.
+Memória de evento deve pertencer ao dono; `current` distingue história de
+evidência ainda ativa. Ruído não recebe identidade do causador ou posição oculta.
+A validação rejeita evidência de outro personagem.
+
+A resposta calcula somente opiniões/episódios do dono, sem `intent`, ações ou
+adjudicações físicas; `world.adjudication` fica vazio nessa revisão. Depois,
+`npc_agency` recebe a base atual e pode escolher
+suspender, retomar, investigar ou proteger conforme o evento. A lista de iniciativas
+foi ampliada no esquema; o código continua limitando efeitos às operações reais.
+As amostras cobrem relato, ruído, suspensão/retomada e interrupção por combate.
+O [contrato de acontecimentos](../aplicacao/acontecimentos-e-prioridades.md)
+define seleção, orçamento, continuidade e limites de percepção.
+
+## Conversas casuais
+
+O passo 8 usa as mesmas fases e o mesmo esquema de conversa para escuta,
+agradecimento e orientação, sem proposta ou Influence obrigatórios. `listen`
+admite acolhimento seguido de espera. `leave` acrescenta despedida seguida de
+movimento validado, com `waiting_for=null`; a declaração está no enum de
+iniciativas do Mundo.
+
+`observations.departure_targets` é privado de revisão/agência: até oito destinos
+livres vistos, um por outra área, com identificação, nome e posição. Não leva
+coordenadas ocultas à interpretação ou narração. O estado recalcula os destinos
+antes de executar a escolha; sem ficha, sob abordagem pendente ou sem destino percebido,
+não há movimento concedido por texto.
+
+A seleção de conhecimento do NPC considera objetivo, área própria e até três
+comunicações recentes compreendidas. Mantém os limites de seleção anteriores,
+sem usar mensagem off, intenção privada de gesto ou palavras inaudíveis. As
+amostras de amiga e garoto exercitam escuta continuada e saída real; amizade
+é história inicial declarada, não progressão por pontos. Veja os
+[critérios das conversas casuais](../simulador/conversas-casuais.md).
+
+## Vínculos e limites afetivos
+
+O passo 9 acrescenta `bonds` e `romance` às relações privadas do Mundo e do NPC
+solicitado. Fontes, motivos e história não chegam à interpretação ou narração.
+O esquema de reação aceita interpretações em `bonds` somente nas fases de
+cálculo; não há novos bônus numéricos. A definição e os critérios estão no
+[contrato dos vínculos](../aplicacao/vinculos-afetivos.md).
+
+O esquema compartilhado de fala acrescenta `romance_boundary`, `boundary_text`
+e `romantic_expression`. Declarações são próprias, literais e aprendidas por
+quem compreendeu a fala real. Memória pública da declaração pode chegar à narração;
+sentimento privado não. Disponibilidade é distinta de reciprocidade/aceitação.
+As amostras oficiais incluem os quatro estados do cenário, formação com fontes,
+recusa ouvida e revisão privada por evento. A referência confere estrutura e
+instruções sem garantir a classificação semântica de uma fala pelo modelo real.

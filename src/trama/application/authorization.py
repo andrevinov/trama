@@ -7,7 +7,7 @@ de consentimento. Regras de estado continuam validadas pela sessão a cada etapa
 import logging
 
 from trama.application.dialogue import split_speech
-from trama.application.intents import ActionPlan, DoorIntent, InspectionIntent, GestureIntent, InterpretationError, MovementIntent, RuleIntent, ScenarioIntent
+from trama.application.intents import ActionPlan, DoorIntent, InspectionIntent, GestureIntent, InterpretationError, MovementIntent, RuleIntent, ScenarioIntent, NarrativeIntent
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +62,11 @@ def validate_player_plan(prompt: str, plan: ActionPlan, context: dict | None = N
         visible = {c["id"] for c in context.get("visible_creatures", [])}
         communication_targets = {c['id'] for c in context.get('communication_targets', [])} | visible
         for index, step in enumerate(plan.steps):
+            if isinstance(step, NarrativeIntent) and step.conversation is not None:
+                step.conversation.validate_source(step.text, actor_id='player', player_id='player')
+                step.conversation.validate_source(on, actor_id='player', player_id='player')
+                if not set(step.conversation.target_ids) <= communication_targets:
+                    raise PlanAuthorizationError('O destinatário da conversa não é conhecido pelo Jogador.')
             if isinstance(step, MovementIntent):
                 if step.clarification and index != len(plan.steps) - 1:
                     raise PlanAuthorizationError("O esclarecimento deve encerrar o plano.")

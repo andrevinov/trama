@@ -1,0 +1,231 @@
+{
+  "title": "Vínculos e limites",
+  "width": 12,
+  "height": 10,
+  "start": [
+    4,
+    5
+  ],
+  "areas": [
+    {
+      "id": "courtyard",
+      "name": "Pátio do largo",
+      "x": 1,
+      "y": 1,
+      "width": 9,
+      "height": 5,
+      "description": "Um pátio iluminado junto ao largo. Marina, que você conhece de encontros anteriores, está perto. Houve pequenos gestos de ajuda nas duas direções, antes deste encontro. Há espaço para conversar sem assunto ou compromisso combinado."
+    },
+    {
+      "id": "veranda",
+      "name": "Varanda",
+      "x": 3,
+      "y": 7,
+      "width": 5,
+      "height": 2,
+      "description": "Uma varanda iluminada, ligada ao pátio por uma porta."
+    }
+  ],
+  "passages": [
+    {
+      "id": "courtyard_door",
+      "name": "Porta da varanda",
+      "kind": "door",
+      "position": [
+        5,
+        6
+      ],
+      "is_open": true,
+      "locked": false,
+      "connects": [
+        "courtyard",
+        "veranda"
+      ]
+    },
+    {
+      "id": "side_door",
+      "name": "Porta lateral da varanda",
+      "kind": "door",
+      "position": [
+        6,
+        6
+      ],
+      "is_open": true,
+      "locked": false,
+      "connects": [
+        "courtyard",
+        "veranda"
+      ]
+    }
+  ],
+  "objects": [],
+  "player": {
+    "level": 3,
+    "armor": "none",
+    "weapons": [],
+    "adult": true
+  },
+  "creatures": [
+    {
+      "id": "marina",
+      "name": "Marina",
+      "adult": true,
+      "hostile": false,
+      "position": [
+        6,
+        5
+      ],
+      "senses": {
+        "response": "observe"
+      },
+      "sheet": {
+        "level": 1,
+        "armor": "none",
+        "weapons": []
+      },
+      "social": {
+        "alignment": "neutral_good",
+        "persona": {
+          "name": "Marina",
+          "role": "Conhecida de encontros anteriores",
+          "objective": "Cuidar dos vínculos sem abrir mão da autonomia ou dos próprios limites.",
+          "background": "Marina é uma adulta franca e cuidadosa. Conhece o interlocutor de ocasiões anteriores e já houve ajuda nas duas direções. Tem seus próprios limites; amizade, atração e amor não obrigam confiança ou aceitação. Considera o que percebeu e pode recusar sem hostilidade. Os sentimentos do jogador pertencem ao jogador.",
+          "interests": [
+            {
+              "id": "care",
+              "description": "Valorizar cuidado concreto e companhia sem dívida emocional.",
+              "weight": 3,
+              "evidence_topics": [
+                "care"
+              ],
+              "evidence_predicates": [
+                "care_history"
+              ]
+            },
+            {
+              "id": "autonomy",
+              "description": "Respeitar limites próprios e do interlocutor, inclusive uma recusa.",
+              "weight": 4,
+              "evidence_topics": [
+                "boundaries"
+              ]
+            },
+            {
+              "id": "reliability",
+              "description": "Distinguir carinho de confiabilidade e pedir garantias quando necessário.",
+              "weight": 3,
+              "evidence_topics": [
+                "harm",
+                "betrayal"
+              ],
+              "evidence_predicates": [
+                "aftermath"
+              ]
+            }
+          ]
+        }
+      },
+      "relationships": [
+        {
+          "target_id": "player",
+          "trust": {
+            "value": 2,
+            "reason": "Conhece atitudes confiáveis anteriores, sem obrigação de aceitar."
+          },
+          "affection": {
+            "value": 3,
+            "reason": "Carinho pela convivência e cuidado anteriores, independente de atração."
+          },
+          "bonds": [
+            {
+              "kind": "friendship",
+              "state": "active",
+              "reason": "Marina reconhece uma história de cuidado nas duas direções.",
+              "memory_ids": [
+                "marina:marina_care",
+                "marina:player_care"
+              ]
+            }
+          ]
+        }
+      ],
+      "knowledge": [
+        {
+          "id": "marina_care",
+          "claim": {
+            "subject_id": "marina_care",
+            "predicate": "care_history",
+            "value": "care_observed"
+          },
+          "text": "marina ajudou player a encontrar um caminho seguro em um encontro anterior.",
+          "source": {
+            "kind": "observation",
+            "event_id": "marina_care-observed",
+            "actor_id": "marina"
+          },
+          "when": "Em uma ocasião anterior à abertura.",
+          "context": "Antecedente autoral de cuidado concreto; não declara sentimento do destinatário.",
+          "entities": [
+            "marina",
+            "player"
+          ],
+          "topics": [
+            "care",
+            "personal_encounter"
+          ],
+          "shareable": true
+        },
+        {
+          "id": "player_care",
+          "claim": {
+            "subject_id": "player_care",
+            "predicate": "care_history",
+            "value": "care_observed"
+          },
+          "text": "player ajudou marina a encontrar um caminho seguro em um encontro anterior.",
+          "source": {
+            "kind": "observation",
+            "event_id": "player_care-observed",
+            "actor_id": "player"
+          },
+          "when": "Em uma ocasião anterior à abertura.",
+          "context": "Antecedente autoral de cuidado concreto; não declara sentimento do destinatário.",
+          "entities": [
+            "player",
+            "marina"
+          ],
+          "topics": [
+            "care",
+            "personal_encounter"
+          ],
+          "shareable": true
+        },
+        {
+          "id": "own_limit",
+          "claim": {
+            "subject_id": "marina",
+            "predicate": "romance_boundary:player",
+            "value": "declined"
+          },
+          "text": "Marina declarou que prefere conservar a amizade sem romance neste momento.",
+          "source": {
+            "kind": "observation",
+            "event_id": "marina-declared-limit",
+            "actor_id": "marina"
+          },
+          "when": "Antes desta conversa.",
+          "context": "Declaração própria anterior; não atribui sentimentos ao interlocutor.",
+          "entities": [
+            "marina",
+            "player"
+          ],
+          "topics": [
+            "relationships",
+            "boundaries"
+          ],
+          "shareable": true
+        }
+      ]
+    }
+  ]
+}

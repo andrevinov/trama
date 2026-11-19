@@ -1,0 +1,184 @@
+{
+  "title": "Encontro com um garoto da rua",
+  "width": 12,
+  "height": 7,
+  "start": [
+    2,
+    3
+  ],
+  "areas": [
+    {
+      "id": "small_square",
+      "name": "Praça pequena",
+      "x": 1,
+      "y": 1,
+      "width": 6,
+      "height": 5,
+      "description": "Uma praça iluminada junto à alameda. Davi, um garoto da vizinhança que vive nas ruas, está ali. Você lhe entregou uma moeda de cobre antes deste encontro, sem pedir nada em troca. Há uma placa de ruas e caminho livre para a alameda."
+    },
+    {
+      "id": "north_lane",
+      "name": "Alameda norte",
+      "x": 7,
+      "y": 1,
+      "width": 3,
+      "height": 5,
+      "description": "Trecho visível da alameda que segue para outro bairro. O poço público fica adiante, fora deste trecho."
+    }
+  ],
+  "passages": [],
+  "objects": [
+    {
+      "id": "street_sign",
+      "name": "Placa de ruas",
+      "kind": "sign",
+      "position": [
+        3,
+        4
+      ],
+      "blocks_movement": false,
+      "blocks_vision": false,
+      "description": "Uma placa indicando a alameda norte e o caminho do poço público."
+    }
+  ],
+  "player": {
+    "level": 3,
+    "armor": "none",
+    "weapons": []
+  },
+  "creatures": [
+    {
+      "id": "street_boy",
+      "name": "Davi",
+      "position": [
+        4,
+        3
+      ],
+      "hostile": false,
+      "senses": {
+        "response": "observe"
+      },
+      "sheet": {
+        "level": 1,
+        "armor": "none",
+        "weapons": []
+      },
+      "social": {
+        "alignment": "chaotic_good",
+        "persona": {
+          "name": "Davi",
+          "role": "Garoto que conhece as ruas da vizinhança",
+          "objective": "Cuidar de si e tratar com gentileza quem o ajuda.",
+          "background": "Davi é atento às ruas e valoriza pequenos gestos. Recebeu uma moeda antes da cena, sem dívida ou serviço combinado. Pode agradecer, seguir seu caminho ou oferecer uma orientação que conhece se perceber uma necessidade. Tem seus próprios afazeres; ajuda recebida não o obriga a acompanhar o jogador ou aceitar pedidos.",
+          "interests": [
+            {
+              "id": "kindness",
+              "description": "Reconhecer gentileza sem transformar ajuda em dívida.",
+              "weight": 2,
+              "evidence_topics": [
+                "ajuda"
+              ],
+              "evidence_predicates": [
+                "small_help"
+              ]
+            },
+            {
+              "id": "orientation",
+              "description": "Compartilhar caminhos conhecidos quando isso for útil, sem impor companhia.",
+              "weight": 2,
+              "evidence_topics": [
+                "caminhos"
+              ],
+              "evidence_predicates": [
+                "looking_for",
+                "route_to"
+              ]
+            },
+            {
+              "id": "autonomy",
+              "description": "Poder voltar aos próprios afazeres e recusar encargos.",
+              "weight": 3,
+              "evidence_topics": [
+                "autonomia"
+              ]
+            }
+          ]
+        }
+      },
+      "relationships": [
+        {
+          "target_id": "player",
+          "trust": {
+            "value": 1,
+            "reason": "A pequena ajuda anterior favorece confiança inicial, sem lealdade automática.",
+            "sources": [
+              {
+                "memory_id": "street_boy:prior_coin",
+                "interest_id": "kindness"
+              }
+            ]
+          },
+          "affection": {
+            "value": 1,
+            "reason": "Simpatia inicial pelo gesto anterior, sem vínculo adquirido por pontuação.",
+            "sources": [
+              {
+                "memory_id": "street_boy:prior_coin",
+                "interest_id": "kindness"
+              }
+            ]
+          }
+        }
+      ],
+      "knowledge": [
+        {
+          "id": "prior_coin",
+          "claim": {
+            "subject_id": "previous_coin_gift",
+            "predicate": "small_help",
+            "value": "one_copper_given_before_scene"
+          },
+          "text": "O interlocutor entregou a Davi uma moeda de cobre antes desta conversa, sem cobrar nada.",
+          "source": {
+            "kind": "observation",
+            "event_id": "prior-coin-gift",
+            "actor_id": "player"
+          },
+          "when": "Antes da abertura desta situação.",
+          "context": "Episódio inicial autoral. Não registra transferência durante o jogo nem altera um saldo atual.",
+          "entities": [
+            "player",
+            "small_square"
+          ],
+          "topics": [
+            "ajuda"
+          ],
+          "shareable": true
+        },
+        {
+          "id": "well_route",
+          "claim": {
+            "subject_id": "public_well",
+            "predicate": "route_to",
+            "value": "north_lane_then_next_square"
+          },
+          "text": "Para chegar ao poço público, siga pela alameda norte até a próxima praça.",
+          "source": {
+            "kind": "observation",
+            "event_id": "boy-known-well-route"
+          },
+          "when": "Em suas caminhadas pela vizinhança.",
+          "context": "Caminho que Davi já percorreu. O poço fica além do trecho visível do mapa.",
+          "entities": [
+            "north_lane",
+            "public_well"
+          ],
+          "topics": [
+            "caminhos"
+          ],
+          "shareable": true
+        }
+      ]
+    }
+  ]
+}

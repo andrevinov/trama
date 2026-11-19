@@ -53,7 +53,7 @@ def test_tracker_only_exists_during_combat_and_shows_real_initiative(dice,screen
         ('player',21,'current'),('g1',11,'upcoming')]
     assert view['round']==1 and 'Sua vez' in view['pending']
     before=deepcopy((flow.session.encounter.states,flow.session.encounter.budgets,flow.session.state))
-    for tab in ('Jogo','Ficha','Inimigos'):
+    for tab in ('Jogo','Ficha','NPCs'):
         window.active_tab=tab
         window.draw(screen)
         rect=window.turn_panel.rect(view)

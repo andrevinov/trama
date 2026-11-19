@@ -1,0 +1,45 @@
+{
+  "friend": [
+    {
+      "prompt": "Só precisava contar isso a alguém.",
+      "focus": "contar isso a alguém",
+      "initiative": "listen",
+      "reply": "Estou aqui. Pode falar.",
+      "goal": "Fazer companhia sem impor conselho.",
+      "waiting_for": "Uma nova fala, se o interlocutor quiser continuar."
+    },
+    {
+      "prompt": "Hoje discuti com meu irmão.",
+      "focus": "meu irmão",
+      "initiative": "listen",
+      "reply": null,
+      "goal": "Dar espaço para falar do encontro com o irmão.",
+      "waiting_for": "O que o interlocutor quiser contar."
+    },
+    {
+      "prompt": "Pode me dar uma ideia?",
+      "focus": "uma ideia",
+      "initiative": "respond",
+      "reply": "Se quiser, pode conversar com ele quando ambos tiverem mais calma.",
+      "goal": "Oferecer uma sugestão sem decidir pelo interlocutor.",
+      "waiting_for": null,
+      "question": true
+    },
+    {
+      "prompt": "Obrigado. Por hoje era só isso.",
+      "focus": "Por hoje era só isso",
+      "initiative": "close",
+      "reply": "Até depois. Foi bom te ouvir.",
+      "goal": "Encerrar o encontro respeitando o limite do interlocutor.",
+      "waiting_for": null,
+      "close_reason": "Até depois."
+    }
+  ],
+  "boy": {
+    "wait_prompt": "Aguardo um instante.",
+    "thanks": "Obrigado pela moeda de antes. Vou seguir meu caminho.",
+    "close_reason": "Vou seguir meu caminho.",
+    "need_prompt": "Estou procurando o poço público.",
+    "directions": "Se você quiser, a alameda norte leva ao poço na próxima praça."
+  }
+}

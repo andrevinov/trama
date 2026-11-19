@@ -1,0 +1,174 @@
+{
+  "title": "Conselho dos generais",
+  "width": 13,
+  "height": 11,
+  "start": [4, 3],
+  "areas": [
+    {
+      "id": "council_hall",
+      "name": "Sala do Conselho",
+      "x": 1,
+      "y": 1,
+      "width": 11,
+      "height": 6,
+      "description": "Sala iluminada de um posto fronteiriço neutro, preparada para uma audiência sob salvo-conduto. Você representa o general de Auren; à sua frente está o general Konrad Voss, de Valdren. Os reinos estão em guerra há três anos e Valdren ocupa a Bavária, território disputado. Ambos vieram conversar antes de retomar a campanha. Não há acordo prévio, custódia ou obrigação de aceitar termos. Uma mesa de mapas separa os interlocutores; a porta leva ao vestíbulo."
+    },
+    {
+      "id": "vestibule",
+      "name": "Vestíbulo",
+      "x": 4,
+      "y": 8,
+      "width": 5,
+      "height": 2,
+      "description": "Vestíbulo iluminado do posto neutro, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; sair da sala não executa uma retirada militar."
+    }
+  ],
+  "passages": [
+    {
+      "id": "council_door",
+      "name": "Porta do Conselho",
+      "kind": "door",
+      "position": [6, 7],
+      "is_open": true,
+      "locked": false,
+      "connects": ["council_hall", "vestibule"]
+    }
+  ],
+  "objects": [
+    {
+      "id": "map_table",
+      "name": "Mesa de mapas",
+      "kind": "table",
+      "position": [6, 3],
+      "blocks_movement": true,
+      "blocks_vision": false,
+      "description": "Mesa com mapas da fronteira e da Bavária. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. Os mapas são decoração estática, sem provas secretas ou operação de coleta."
+    }
+  ],
+  "player": {
+    "level": 3,
+    "armor": "none",
+    "weapons": []
+  },
+  "creatures": [
+    {
+      "id": "general_voss",
+      "name": "General Konrad Voss",
+      "position": [8, 3],
+      "hostile": false,
+      "senses": {"response": "observe"},
+      "sheet": {"level": 3, "armor": "none", "weapons": []},
+      "social": {
+        "alignment": "lawful_neutral",
+        "persona": {
+          "name": "Konrad Voss",
+          "role": "General de Valdren e representante de seu conselho de guerra",
+          "objective": "Preservar a população e a autonomia de Valdren.",
+          "background": "Veterano contido e direto; respeita o salvo-conduto, evita bravatas e pede explicações concretas. Seu objetivo central é preservar a população e a autonomia de Valdren. Nesta audiência quer descobrir se Auren oferece garantias executáveis para encerrar a guerra sem expor seu reino a uma nova quebra de palavra. Deve prestar contas ao conselho, mas não é obrigado a preferir guerra ou paz por princípio. Pode ouvir, discordar, perguntar ou sugerir termos; não existe oferta certa que imponha sua resposta.",
+          "interests": [
+            {
+              "id": "population",
+              "description": "Proteger a população e evitar outra campanha que agrave a escassez de alimentos.",
+              "weight": 4,
+              "evidence_topics": ["guerra", "inverno", "abastecimento"],
+              "evidence_predicates": ["supply_outlook", "duration"]
+            },
+            {
+              "id": "territory",
+              "description": "Preservar a segurança territorial de Valdren; a Bavária é uma vantagem estratégica, mas pode ser discutida.",
+              "weight": 3,
+              "evidence_topics": ["Bavária", "fronteira", "campanha"],
+              "evidence_predicates": ["occupied_by", "campaign_outcome"]
+            },
+            {
+              "id": "guarantees",
+              "description": "Evitar que uma retirada unilateral exponha Valdren a outro acordo rompido; valoriza garantias verificáveis.",
+              "weight": 3,
+              "evidence_topics": ["trégua", "garantias"],
+              "evidence_predicates": ["aftermath"]
+            },
+            {
+              "id": "duty",
+              "description": "Honrar o salvo-conduto e poder justificar os termos ao conselho, sem sacrificar seu povo apenas por orgulho.",
+              "weight": 2,
+              "evidence_topics": ["conselho", "salvo-conduto"],
+              "evidence_predicates": ["meeting_terms"]
+            }
+          ]
+        }
+      },
+      "relationships": [
+        {
+          "target_id": "player",
+          "trust": {
+            "value": -1,
+            "reason": "Cautela inicial perante o representante adversário, sem histórico pessoal verificável; não atribui ao jogador a autoria dos ataques da última trégua.",
+            "sources": []
+          },
+          "affection": {
+            "value": 0,
+            "reason": "Não há vínculo afetivo pessoal estabelecido com este interlocutor.",
+            "sources": []
+          }
+        }
+      ],
+      "knowledge": [
+        {
+          "id": "war-duration",
+          "claim": {"subject_id": "border_war", "predicate": "duration", "value": "three_years"},
+          "text": "A guerra entre Auren e Valdren dura três anos.",
+          "source": {"kind": "observation", "event_id": "voss-three-campaigns"},
+          "when": "Ao longo das três campanhas anuais.",
+          "context": "Participou das campanhas; a duração é conhecida pelos dois lados.",
+          "entities": ["council_hall", "border_war"],
+          "topics": ["guerra"],
+          "shareable": true
+        },
+        {
+          "id": "bavaria-occupation",
+          "claim": {"subject_id": "bavaria", "predicate": "occupied_by", "value": "valdren"},
+          "text": "Valdren mantém tropas na Bavária; sua devolução ainda não foi acordada.",
+          "source": {"kind": "observation", "event_id": "voss-bavaria-inspection"},
+          "when": "Na inspeção anterior à audiência.",
+          "context": "Conhece a ocupação; nenhuma fala na sala executa ordens militares.",
+          "entities": ["council_hall", "bavaria"],
+          "topics": ["Bavária", "fronteira"],
+          "shareable": true
+        },
+        {
+          "id": "broken-truce",
+          "claim": {"subject_id": "last_truce", "predicate": "aftermath", "value": "border_posts_attacked_after_valdren_withdrew"},
+          "text": "Após a retirada de Valdren na última trégua, postos de fronteira foram atacados. Não sabe quem ordenou os ataques.",
+          "source": {"kind": "observation", "event_id": "voss-border-aftermath"},
+          "when": "Depois da última trégua, há um ano.",
+          "context": "Viu os postos destruídos; isso não identifica mandante nem prova traição do interlocutor.",
+          "entities": ["council_hall", "last_truce"],
+          "topics": ["trégua", "garantias"],
+          "shareable": true
+        },
+        {
+          "id": "recent-campaign",
+          "claim": {"subject_id": "last_campaign", "predicate": "campaign_outcome", "value": "valdren_held_bavaria_with_losses"},
+          "text": "Na última campanha, Valdren conservou a Bavária, mas perdeu soldados. Não foi uma vitória sem custo.",
+          "source": {"kind": "observation", "event_id": "voss-last-campaign"},
+          "when": "Na campanha recém-encerrada.",
+          "context": "Comandou essa campanha; não conhece os planos atuais do exército de Auren.",
+          "entities": ["council_hall", "bavaria"],
+          "topics": ["campanha", "guerra"],
+          "shareable": true
+        },
+        {
+          "id": "private-supply-report",
+          "claim": {"subject_id": "valdren", "predicate": "supply_outlook", "value": "grain_reserves_may_not_last_winter"},
+          "text": "O intendente relatou que as reservas de grãos podem não durar até o fim do inverno.",
+          "source": {"kind": "report", "event_id": "quartermaster-sealed-report", "actor_id": "quartermaster"},
+          "when": "Na véspera da audiência.",
+          "context": "Relatório reservado ainda não confirmado por inspeção própria. Não é informação pública.",
+          "entities": ["council_hall", "valdren"],
+          "topics": ["inverno", "abastecimento", "conselho"],
+          "shareable": false
+        }
+      ]
+    }
+  ]
+}

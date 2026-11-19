@@ -13,6 +13,7 @@ from trama.movement import MovementError
 from trama.perception import CONVERSATION_HEARING_MULTIPLIER, Noise, Observer, Senses
 from trama.spatial import Position
 from trama.vision import line_of_sight
+from trama.observability import new_id
 
 logger = logging.getLogger(__name__)
 
@@ -157,6 +158,7 @@ class PerceptionSystem:
 
     def evaluate(self, noise=None):
         s, events = self.session, []
+        incident_id = new_id() if noise is not None and not noise.speech and noise.volume == 'loud' else None
         if noise is not None and noise.speech:
             # Notar a voz não implica compreender as palavras. A comunicação
             # avalia o conteúdo separadamente, antes de publicar este estímulo.
@@ -187,6 +189,13 @@ class PerceptionSystem:
                 if event:
                     events.append(event)
             if noise is not None and self.hears(observer, noise):
+                if incident_id is not None and hasattr(s, 'agency'):
+                    source = (s.state.position if noise.actor_id == player else
+                              next((o.position for o in observers if o.id == noise.actor_id), None))
+                    located = (source == noise.position and self.sees(observer, source)
+                               and (noise.actor_id != player or self.hidden_total is None))
+                    s.agency.notice_noise(observer.id, incident_id,
+                        noise.position if located else None)
                 if noise.actor_id == player and visible:
                     continue
                 hidden = initial_hidden if noise.actor_id == player else None

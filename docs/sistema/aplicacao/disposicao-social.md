@@ -119,3 +119,16 @@ inclui sete perfis/situações e critérios independentes.
 
 A [bateria de vínculos de memória](../qualidade/vinculos-memoria-live.md) acrescenta
 três regressões da negociação com o guarda, incluindo a frase real rejeitada.
+
+## Avaliação de opções
+
+O cálculo dos fatores é compartilhado com as
+[opiniões por opção e por termo](opinioes-por-opcao.md). Elas avaliam propostas
+percebidas, alternativas privadas e expectativas sem acordo, com compensação
+entre termos e sem resolver Influence. O cache e as concessões por pedido
+continuam seguindo o contrato acima.
+
+As [relações iniciais](relacoes-iniciais.md) acrescentam R somente às avaliações
+de opções e ao contexto individual de decisão. Não alteram a fórmula, CDs ou
+reutilização de pedidos Influence descritos acima. Memórias resumidas por uma
+relação aplicada não pontuam outra vez no mesmo aspecto da opção.

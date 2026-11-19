@@ -154,14 +154,15 @@ class KnowledgeStore:
     def active(self, owner_id):
         return tuple(self._memories[id] for id in sorted(self._active.get(owner_id, ())))
 
-    def learn(self, owner_id, claim, text, source, *, when, context, entities=(), topics=(), shareable=True):
+    def learn(self, owner_id, claim, text, source, *, when, context, entities=(), topics=(), shareable=True,
+              replace_existing=False):
         if not isinstance(claim, Claim) or not isinstance(source, MemorySource):
             raise KnowledgeError('Aquisição exige uma afirmação e uma origem válidas.')
         slot = (owner_id, claim.subject_id, claim.predicate)
         active = [self._memories[id] for id in self._slots.get(slot, ()) if id not in self._superseded]
         for old in active:
             # Perceber repetidamente a mesma coisa não produz lembranças por frame.
-            if (source.kind == 'observation' and old.claim == claim and old.source.kind == source.kind
+            if (not replace_existing and source.kind == 'observation' and old.claim == claim and old.source.kind == source.kind
                     and all(m.claim == claim for m in active)):
                 return old
         self._sequence += 1
@@ -170,7 +171,7 @@ class KnowledgeStore:
         memory = Memory(f'{owner_id}:memory:{self._sequence}', owner_id, claim, text, source,
                         when, context, tuple(entities), tuple(topics), shareable, self._sequence)
         self._insert(memory)
-        if source.kind == 'observation':
+        if source.kind == 'observation' or replace_existing:
             for old in active:
                 self._superseded[old.id] = memory.id
                 self._active[owner_id].discard(old.id)

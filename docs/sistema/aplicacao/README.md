@@ -26,14 +26,18 @@ recusar entregas antigas ou duplicadas.
 | Fluxo | Escolher a próxima etapa e controlar conclusão, falha ou espera por entrada. | [game_flow.py](../../../src/trama/application/game_flow.py) |
 | Sessão e encontro | Manter estado, participantes e recursos; executar operações determinísticas. | [session.py](../../../src/trama/application/session.py), [encounter.py](../../../src/trama/application/encounter.py) |
 | Conversa e modos | Separar canais, manter histórico, executar planos ordenados e registrar seus resultados. | [conversation.py](../../../src/trama/application/conversation.py), [dialogue.py](../../../src/trama/application/dialogue.py), [modes.py](../../../src/trama/application/modes.py) |
+| Estado da conversa | Preservar foco, pendências e versões de propostas segundo as comunicações percebidas. | [Estado e contratos](estado-da-conversa.md), [conversation_state.py](../../../src/trama/conversation_state.py) |
 | Planos e validação | Representar intenções e conferir estrutura, referências e origens declaradas. | [intents.py](../../../src/trama/application/intents.py), [authorization.py](../../../src/trama/application/authorization.py) |
 | Preparação espacial | Consultar requisitos de uma ação e planejar a aproximação necessária. | [preparation.py](../../../src/trama/application/preparation.py), [routing.py](../../../src/trama/application/routing.py) |
 | Deslocamento e reações | Executar percursos com verificações por passo, oportunidades e retomadas. | [travel.py](../../../src/trama/application/travel.py) |
 | Percepção por NPC | Avaliar sentidos, ruídos, ocultação, sono e busca; publicar acontecimentos antes das respostas. | [perception.py](../../../src/trama/application/perception.py), [contratos de sentidos](../../../src/trama/perception.py) |
 | Memórias dos personagens | Registrar crenças com origem, adquirir por sentidos/fala e selecionar contexto relevante. | [Conhecimento dos NPCs](conhecimento-dos-npcs.md), [knowledge.py](../../../src/trama/knowledge.py) |
 | Disposição social | Avaliar alinhamento, persona e memórias por pedido; resolver Influence e limitar a concessão. | [Disposição social](disposicao-social.md), [social.py](../../../src/trama/social.py) |
+| Relações iniciais | Manter confiança e afeto direcionais por sessão e pontuar sua pertinência sem duplicar memória. | [Relações iniciais](relacoes-iniciais.md), [relationships.py](../../../src/trama/relationships.py) |
+| Vínculos qualitativos | Validar amizade, atração, paixão e amor com fontes próprias e limites declarados, sem reciprocidade imposta. | [Vínculos afetivos](vinculos-afetivos.md), [bonds.py](../../../src/trama/application/bonds.py) |
+| Opiniões privadas | Avaliar propostas e alternativas por termo, preservar motivos e reutilizar bases equivalentes sem dado. | [Opiniões por opção](opinioes-por-opcao.md), [opinions.py](../../../src/trama/opinions.py) |
 | Dificuldade contextual | Separar CDs fixas de julgamento de tarefas incertas, validar fatos e resolver dados. | [Avaliação de dificuldade](avaliacao-de-dificuldade.md), [difficulty.py](../../../src/trama/difficulty.py) |
-| Intenções em exploração | Retomar objetivos de interlocutores após ações significativas, com percepção resolvida. | [Intenções dos NPCs](intencoes-dos-npcs.md), [agency.py](../../../src/trama/application/agency.py) |
+| Intenções em exploração | Decidir após os cálculos em conversas comuns, com objetivos, percepção e espera limitada. | [Intenções dos NPCs](intencoes-dos-npcs.md), [agency.py](../../../src/trama/application/agency.py) |
 | Execução do Mundo | Validar e aplicar propostas de respostas e ações de NPCs. | [world.py](../../../src/trama/application/world.py), [world_resolution.py](../../../src/trama/application/world_resolution.py) |
 | Contextos e projeções | Preparar informação para IA, mapa e fichas, incluindo disponibilidade de ações. | [context.py](../../../src/trama/application/context.py), [context_contracts.py](../../../src/trama/application/context_contracts.py), [sheets.py](../../../src/trama/application/sheets.py), [sheet_options.py](../../../src/trama/application/sheet_options.py) |
 | Impedimentos | Registrar causa, progresso e partes que não foram executadas. | [failures.py](../../../src/trama/application/failures.py) |
@@ -84,6 +88,12 @@ desfaz nem repete operações anteriores.
 | Resultados, impedimentos e memória mecânica | [resultados-e-impedimentos](resultados-e-impedimentos.md) |
 | Composição e ciclo de vida da partida | [composicao](composicao.md) |
 | Sessão, conversa e histórico | [sessoes-e-conversa](sessoes-e-conversa.md) |
+| Foco, pendências e propostas versionadas | [estado-da-conversa](estado-da-conversa.md) |
+| Opiniões privadas e contribuições por termo | [opinioes-por-opcao](opinioes-por-opcao.md) |
+| Confiança, afeto e fontes das relações iniciais | [relacoes-iniciais](relacoes-iniciais.md) |
+| Evolução por episódios percebidos e memória dos encontros | [evolucao-das-relacoes](evolucao-das-relacoes.md) |
+| Formação, manutenção e ruptura de amizade e romance | [vinculos-afetivos](vinculos-afetivos.md) |
+| Reconsideração por acontecimentos, interrupção e retomada | [acontecimentos-e-prioridades](acontecimentos-e-prioridades.md) |
 
 A memória da sessão e da conversa é mantida em processo. A entrada validada de
 histórico não é um mecanismo geral de salvar e carregar partidas. APIs e limites detalhados estão nas referências de tier 3.

@@ -150,6 +150,17 @@ breve em off. Mantenha cada resposta concisa, com poucos parágrafos.
 """
 
 
+INSTRUCTIONS += """
+conversations contém somente a perspectiva do jogador: foco, pendências, termos,
+versões e respostas percebidas. Não afirme que houve acordo, aceitação ou revisão
+sem registro correspondente. Oferta, aceitação verbal e cumprimento são distintos;
+este estado não executa tratados, transferências, movimento nem recursos.
+Uma pendência pode continuar aberta após mudar o assunto. closed encerra a
+conversa, não a partida. Suspensão conserva pendências. Não invente objetivos
+privados do NPC para explicar uma recusa; narre apenas o que ele comunicou.
+"""
+
+
 class OpenAINarrator:
     def __init__(self, client: OpenAI, model: str = DEFAULT_MODEL, *, response_options: ResponseOptions = DEFAULT_CONFIG.narration,
                  budget: CallBudget | None = None) -> None:

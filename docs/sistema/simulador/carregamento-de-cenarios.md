@@ -25,11 +25,13 @@ construção precisa satisfazer os mesmos validadores.
 | Dados | Uso |
 | --- | --- |
 | `width`, `height`, `start` | Dimensões e posição inicial em base zero. |
+| `title` | Título da cena na interface; em cenários genéricos, texto não vazio de até 80 caracteres. |
 | `speed_meters` | Velocidade em metros; o padrão pode vir da ficha. |
 | `blocked`, `difficult` | Casas da grade simples; mapas nomeados derivam piso e paredes das áreas. |
 | `areas`, `passages` | Arquitetura nomeada e estados de portas/grades. |
 | `objects`, `dim`, `dark` | Objetos estáticos e iluminação opcional da cena. |
 | `player`, `creatures[].sheet` | Escolhas de ficha dos participantes. |
+| `player.adult`, `creatures[].adult`, `observers[].adult` | Booleano explícito de elegibilidade para romance; padrão `false`. Ambos os participantes precisam de `true`. |
 | `creatures` | Identidade, posição e hostilidade de criaturas cadastradas. |
 | `dungeon` | Dados específicos da aventura, interpretados por `DungeonSession`. |
 
@@ -52,7 +54,19 @@ anteriores são [fixtures de regressão](../../../tests/fixtures/scenarios/READM
 mantidos fora do pacote e carregáveis pelo mesmo `--scenario`. Seus dados foram
 preservados sem criar um construtor exclusivo dos testes.
 
+O [conselho dos generais](conselho-dos-generais.md), em
+`src/trama/scenarios/generals_council.json`, é uma alternativa jogável com sessão
+genérica. `title` também é aplicado aos cenários genéricos; sem esse campo,
+preserva-se o título legado. O título é apresentação, sem novo campo de IA.
+
 ## Estado inicial e preparação
+
+Relações de NPCs podem declarar `bonds` além de confiança/afeto. Cada item informa
+`kind` (`friendship`, `attraction`, `infatuation`, `love`), `state` (`absent`,
+`active`, `ended`), `reason` e `memory_ids` próprios completos. Tipos não se
+repetem; estados não ausentes exigem história e tipos amorosos exigem ambos
+adultos explícitos. Veja [fontes, exemplos e limites](../aplicacao/vinculos-afetivos.md).
+Não há `player.relationships` ou sentimentos inferidos do jogador.
 
 O carregador constrói a sessão, mas não prepara inventário, turnos ou histórico
 intermediário. Rolagens são injetadas na construção pelo contrato `Roller`.
@@ -69,7 +83,13 @@ verificam os três formatos, variações, erro de posição e independência das
 O [catálogo](../../../src/trama/scenarios/situations.json) acompanha o pacote da
 aplicação. Ele contém `schema_version: 1`, grupos de `preparations` e uma lista de
 `situations`. É uma declaração de como chegar a um estado, sem copiar o mapa ou
-substituir os executores. O recorte atual contempla a dungeon de fuga.
+substituir os executores. Há situações da dungeon, cenários gerais de regressão
+e [conversas casuais](conversas-casuais.md).
+
+Ao concluir a preparação, os estímulos produzidos nela integram a base inicial:
+suas notificações não voltam como incidentes novos no primeiro envio ou reinício.
+Percepções, memórias e registros originais permanecem. Durante o jogo, novos
+acontecimentos usam a [reconsideração compartilhada](../aplicacao/acontecimentos-e-prioridades.md).
 
 ```bash
 poetry run trama-simulator --situation investigar-cela-do-log --debug
@@ -78,6 +98,12 @@ poetry run trama-simulator --situation ataque-com-movimento-insuficiente --debug
 
 | Identificador | Situação preparada |
 | --- | --- |
+| `vinculo-amizade-sem-atracao` | Marina com amizade e limite próprio de amizade, sem atração. |
+| `vinculo-em-formacao` | História de cuidado recíproco percebido, sem vínculo inicial. |
+| `vinculo-afeto-sem-confianca` | Amor e amizade com confiança reduzida e paixão encerrada. |
+| `vinculo-interesse-nao-correspondido` | Atração própria de Marina; a eventual recusa cabe ao jogador durante a cena. |
+| `conversa-com-amiga` | Jardim com Lia; cumprimento percebido, sem problema ou resposta predefinidos. |
+| `encontro-com-garoto` | Praça com Davi; cumprimento percebido e memória autoral de uma moeda recebida antes da cena. |
 | `investigar-cela-do-log` | Corredor diante da Cela 4 aberta, com histórico da sessão que motivou a regressão. |
 | `pegar-espada-distante` | Espada descoberta na cela; personagem de volta ao corredor. |
 | `atacar-com-aproximacao` | Personagem disfarçado junto à sala, com espada escondida; sem iniciativa ainda. |
@@ -116,6 +142,8 @@ Cada situação declara:
 - `passage_variations`: mudanças explícitas de `is_open`/`locked` antes da construção.
 - `knowledge_variations`: substitui a lista de memórias de NPCs existentes;
   `object_variations` varia somente a posição de objetos estáticos declarados.
+- `relationship_variations`: substitui a lista de relações de NPCs existentes,
+  passando pelos mesmos validadores de níveis, fontes e vínculos iniciais.
 - `social_variations`: substitui o perfil social de NPCs existentes; alinhamento,
   persona e interesses passam pelo mesmo validador do cenário. As sete situações
   `disposicao-*` do corredor genérico demonstram os perfis e a relevância de novas
@@ -158,3 +186,12 @@ trancada, observação distante e dúvida de alvo. Veja os
 [casos de inspeção](../qualidade/inspecao-live.md). Passagens também aceitam
 `lock_checkable` na definição e em `passage_variations`; a preparação aceita
 `intent=inspection`, pelo mesmo contrato geral da aplicação.
+
+## Relações iniciais
+
+NPCs de `creatures` e `observers` podem declarar `relationships`, com destinatário,
+confiança e afeto independentes, motivos e fontes opcionais. O carregador geral
+e a dungeon validam personagens, escala, referências próprias e interesses
+resumidos. Dados ausentes são neutros; não há reciprocidade automática ou
+atribuição de sentimentos em `player.relationships`. Veja o
+[formato e os limites](../aplicacao/relacoes-iniciais.md).

@@ -661,13 +661,13 @@ def test_enemy_tab_and_combat_controls_respect_visibility_and_turns(screen, dice
     session = GameSession(Grid(10, 10), MovementState(Position(4, 4)),
                           creatures=(Creature("g1", "Guarda 1", Position(5, 4)),), roller=dice(15, 16, 10))
     window = MovementWindow(session, None, "simulado")
-    window.handle_event(pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=window.tabs["Inimigos"].center, button=1))
+    window.handle_event(pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=window.tabs["NPCs"].center, button=1))
     window.draw(screen)
     lines = enemy_paragraphs(session.visible_enemy_summaries())
     assert any("Guarda 1" in text for text in lines) and any("PV 12/12" in text for text in lines)
     zero_hp_enemy = {**session.visible_enemy_summaries()[0], "hp": 0, "at_zero_hp": True}
     assert "PV zerados (0 PV)" in enemy_paragraphs([zero_hp_enemy])
-    assert enemy_paragraphs([])[0] == "Nenhum inimigo visível."
+    assert enemy_paragraphs([])[0] == "Nenhum NPC com ficha visível."
     session.execute(RuleIntent("start_combat"))
     assert session.encounter.combat.active_id == "player"
     window.draw(screen)

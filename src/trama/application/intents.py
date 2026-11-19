@@ -3,6 +3,7 @@
 from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Protocol
+from trama.conversation_state import ConversationUpdate
 from trama.distances import CELL_METERS, meters
 from trama.knowledge import Claim
 
@@ -108,9 +109,12 @@ class NarrativeIntent:
     target_id: str | None = None
     volume: str = "normal"
     claims: tuple[Claim, ...] = ()
+    conversation: ConversationUpdate | None = None
 
     def __post_init__(self):
-        if (not isinstance(self.claims, tuple) or len(self.claims) > 3
+        if (self.conversation is not None and (not isinstance(self.conversation, ConversationUpdate)
+                or self.operation not in {'speak', 'challenge'})
+                or not isinstance(self.claims, tuple) or len(self.claims) > 3
                 or any(not isinstance(c, Claim) for c in self.claims)
                 or self.claims and self.operation not in {'speak', 'challenge'}
                 or self.volume not in {"quiet", "normal", "loud"}

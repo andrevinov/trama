@@ -44,6 +44,12 @@ real, sem trocar silenciosamente um alvo indisponível.
 
 ## Limites e avaliação
 
+Em `speak`/`challenge`, `conversation` pode anotar o
+[estado da conversa](../aplicacao/estado-da-conversa.md): destinatários, foco,
+assuntos, respostas a pendências e uma operação de proposta. Trechos literais
+são conferidos contra a fala e o on atual. Isso não atribui objetivos ao jogador
+nem torna a contribuição executada antes de passar pelo motor.
+
 Trechos literais e classificações coerentes não provam que o modelo entendeu
 a frase. A qualidade da interpretação é avaliada por expectativas independentes
 e pelos efeitos executados. Consulte a

@@ -22,9 +22,10 @@ Veja [campos, limites de informação e revisão dos contratos](../ia/contextos-
 | `receive(id, result)` | Valida tipo/etapa e aplica o resultado na thread dona; escolhe a próxima etapa. Resultados antigos ou duplicados são ignorados. |
 | `check_owner()` | Confere a thread dona antes de uma agenda síncrona despachar pedidos. |
 | `choose_opportunity(accept)` | Resolve aceitar/recusar e retoma somente as ações restantes do NPC. |
+| `react_to_events()` | Depois de acontecimento já executado, conduz notificações elegíveis sem mensagem do jogador. Sem evento, não despacha. |
 | `reset()` | Restaura sessão e conversa, invalida pedidos antigos e solicita nova abertura. Não cancela a chamada de rede já iniciada; sua resposta deixa de ser aplicável. |
 
-`start`, `submit`, `receive`, `choose_opportunity` e `reset` devem rodar na thread
+`start`, `submit`, `receive`, `choose_opportunity`, `react_to_events` e `reset` devem rodar na thread
 que construiu o fluxo; outra thread recebe `GameFlowError` antes de alterar o
 estado. O consumidor só agenda o pedido já escolhido, sem selecionar etapas:
 
@@ -38,11 +39,12 @@ if request is not None:
 Esse trecho agenda **uma chamada**. Cada pedido deve ser despachado uma vez;
 repetir `run()` faria outra chamada ao provedor. A proteção de `receive` impede
 aplicar duas vezes o resultado, sem prometer eliminar custo de chamadas que um
-consumidor repetiu. O coordenador não cria threads, filas nem um loop de eventos.
+consumidor repetiu. O coordenador não cria threads nem um loop de eventos.
 Os logs `game_flow.*` e os adaptadores mantêm os identificadores de correlação
 mesmo quando a chamada é executada em outra thread.
 
-As etapas externas são `interpret`, `world`, `npc_turn` e `narrate`. `FlowStatus`
+As etapas externas são `interpret`, `world`, `npc_turn`, `npc_review`, `npc_agency`
+e `narrate`. `FlowStatus`
 informa a situação da interação:
 
 | Status | Significado |
@@ -202,3 +204,11 @@ decisão é posterior à percepção, com contexto próprio e texto inaudível o
 Perguntas off não agendam essa etapa. Ela termina antes da narração ou dá lugar
 à iniciativa e aos turnos normais quando houver confronto. Veja
 [intenções dos NPCs](intencoes-dos-npcs.md).
+
+Um acontecimento pertinente efetivamente percebido também pode agendar
+`npc_review`, seguido de `npc_agency`, inclusive para quem já decidiu. A revisão
+é privada, calcula opiniões/episódios antes da escolha e tem orçamento de uma
+por NPC por interação. O mesmo runner expõe `react_to_events()` para um produtor
+de incidente executado fora de interação pendente; não cria entrada falsa do
+jogador nem faz polling. Seleção, notificações, interrupção por combate e limites
+estão em [acontecimentos e prioridades](acontecimentos-e-prioridades.md).

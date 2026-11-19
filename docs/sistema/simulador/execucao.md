@@ -48,6 +48,7 @@ O carregamento continua usando `open_game` e os validadores compartilhados.
 poetry run trama-simulator --help
 poetry run trama-simulator --debug --log-file logs/fuga.jsonl
 poetry run trama-simulator --scenario tests/fixtures/scenarios/legacy_cell_and_guards.json
+poetry run trama-simulator --scenario src/trama/scenarios/generals_council.json --debug
 poetry run trama-simulator --situation investigar-cela-do-log --debug
 ```
 
@@ -71,9 +72,11 @@ ChatGPT ou MCP para essa integração.
 
 ## Uso e critérios observáveis
 
-A partida começa com a [abertura da dungeon](fuga-da-dungeon.md). Envie uma
+A partida padrão começa com a [abertura da dungeon](fuga-da-dungeon.md).
+O [conselho dos generais](conselho-dos-generais.md) abre uma audiência pacífica
+quando selecionado por `--scenario`. Envie uma
 mensagem on para agir ou escreva dúvidas entre colchetes. O mapa acompanha os
-efeitos executados. Ficha e Inimigos permitem consultar estado; Reiniciar restaura
+efeitos executados. Ficha e NPCs permitem consultar estado; Reiniciar restaura
 a partida e solicita uma nova abertura. Veja [controles](../interfaces/pygame.md#controles).
 
 Abertura, mensagens, turnos de NPCs e reinício podem fazer chamadas pagas.
