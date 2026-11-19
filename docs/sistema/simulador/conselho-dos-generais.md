@@ -50,20 +50,31 @@ alegando defender o trânsito previsto no tratado. Auren combate a ocupação.
 Não foi esclarecido quem ordenou os ataques aos comboios.
 
 Há um ano, uma trégua levou Valdren a recuar para postos de fronteira. Esses
-postos foram atacados depois da retirada; a trégua fracassou e Valdren reocupou
-o vale. Os mandantes também não foram identificados com segurança. Essa história
-explica a exigência de garantias sem determinar culpa ou a resposta à negociação.
+postos foram atacados depois da retirada por **tropas regulares de Auren**, usando
+seus uniformes, bandeiras e estandartes. **A Coroa de Auren reconheceu publicamente
+a autoria de suas forças. O ataque violou a trégua**, que fracassou; Valdren
+reocupou o vale.
+
+A responsabilidade militar de Auren é fato conhecido por ambos, sem depender
+de identificar quem deu a ordem. Voss tem fundamento para exigir garantias de
+que seu reino não sofrerá outra quebra após recuar. Isso não determina qual
+proposta ele aceitará. Os ataques aos comboios anteriores à guerra são um
+episódio distinto, cuja autoria continua sem esclarecimento.
 
 ### Quem você é e o que sabe
 
 Você comanda a frente oriental de Auren há oito meses. Na última trégua,
-comandava a defesa de outra passagem: não negociou aquela retirada e conhece
-somente os relatórios inconclusivos sobre os ataques. Seu nome e suas opiniões
+comandava a defesa de outra passagem: não negociou aquela retirada nem participou
+do ataque aos postos. Sabe que Auren rompeu a trégua e reconheceu a autoria.
+Seu nome e suas opiniões
 continuam à sua escolha; não existe sentimento ou decisão inicial impostos.
 
 Você e Voss já se encontraram em duas trocas de prisioneiros sob salvo-conduto.
 Não são amigos e não firmaram acordo pessoal anterior. Ele sabe que você assumiu
-depois do fracasso da trégua; a cautela inicial não é uma acusação de autoria.
+depois do fracasso da trégua e não participou do ataque. A responsabilidade do
+reino é diferente da sua responsabilidade pessoal: você negocia em nome de
+Auren. Dizer que não deu a ordem não basta para garantir o cumprimento de um
+novo acordo pelo seu governo e suas tropas.
 
 Na campanha recente, Auren conteve o avanço além do vale, mas Valdren manteve a
 Bavária e sofreu baixas. Atacar a ponte exige enfrentar posições fortificadas e
@@ -133,9 +144,11 @@ dos acordos (3) e dever diante do conselho e do salvo-conduto (2). São dados da
 nova de negociação. Não há oferta ou frase que determine a resposta.
 
 Seis memórias registram origem/duração da guerra, situação da Bavária, consequências
-da última trégua, campanha recente, credenciais públicas e um relato reservado. Voss viu postos destruídos
-após a retirada, mas não sabe quem ordenou os ataques; isso não comprova traição
-do jogador. Cada lembrança preserva fonte, ocasião e contexto.
+da última trégua, campanha recente, credenciais públicas e um relato reservado.
+Voss viu tropas identificadas de Auren e leu o reconhecimento público do ataque.
+Sua memória `broken-truce` registra a quebra por Auren, com origem de observação,
+sem atribuir participação ao jogador. Cada lembrança preserva fonte, ocasião e
+contexto; a identidade do mandante não é requisito para reconhecer a violação.
 
 Memórias públicas podem ser citadas em `say`; quem ouve aprende um relato com
 origem. A memória reservada tem `shareable=false` e sua referência não pode ser
@@ -184,7 +197,9 @@ e origens nos logs. O [acompanhamento](../aplicacao/intencoes-dos-npcs.md) decid
 a iniciativa após essas notas na mesma interação, sem exigir abordagem.
 As [relações iniciais](../aplicacao/relacoes-iniciais.md) definem confiança -1 e
 afeto 0 do general para o jogador: cautela perante o representante adversário
-sem atribuir-lhe os ataques da trégua. A pertinência de uma promessa pode alterar
+após a quebra reconhecida por Auren, sem responsabilizá-lo pessoalmente pelo
+ataque. Os níveis numéricos foram preservados nesta revisão do contexto.
+A pertinência de uma promessa pode alterar
 a avaliação; isso não obriga aceitar ou recusar. A
 [evolução por episódios percebidos](../aplicacao/evolucao-das-relacoes.md)
 usa evidências próprias, sem pontos por quantidade de falas.
@@ -197,8 +212,11 @@ A qualidade da argumentação e da resposta continua dependente da IA.
 ## Critérios de avaliação manual
 
 Abrir a sala, cumprimentar e perguntar sobre a trégua sem iniciar custódia ou combate.
-Conferir conhecimento próprio, incerteza sobre os ataques e preservação do relato
-reservado. Apresentar proposta nova sem narrar termos como cumpridos ou criar
+Conferir que Voss e o briefing reconhecem tropas regulares de Auren, identificação
+militar, admissão pública e violação da trégua. Distinguir essa responsabilidade
+da ausência de participação pessoal do jogador e preservar o relato reservado.
+Não tratar a violação como mero rumor ou reabrir a dúvida sobre sua autoria ao
+discutir o mandante. Apresentar proposta nova sem narrar termos como cumpridos ou criar
 efeitos físicos. Consultar off sem avançar o Mundo, contornar a mesa, reiniciar e
 reabrir a dungeon pelo comando padrão.
 

@@ -1,0 +1,270 @@
+[
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 881,
+    "source_line_sha256": "936cfa60dab9386592c33e648c38a97eb3a7b7591327d83f9527c3144669256b",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:10:34.206+00:00",
+      "level": "DEBUG",
+      "component": "trama.application.conversation",
+      "event": "conversation.player_message",
+      "session_id": "b112a56bb510474d90e5a6dd9aa104fb",
+      "interaction_id": "5c7563f6134f4d45bfb5eb229c9d5e8b",
+      "operation_id": null,
+      "ai_call_id": null,
+      "data": {
+        "text": "\"A quanto tempo, General Voss. Não sei se lembra de mim... mas meu nome é Tristan. Tristan Knot\", falo isso estendendo a mão e esperando um aperto de mão do general."
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 891,
+    "source_line_sha256": "f48a74cb1618c6ec6aa3720483228003f5058a342bfe0670ac2277fb231469d8",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:10:40.073+00:00",
+      "level": "DEBUG",
+      "component": "trama.infrastructure.openai_json",
+      "event": "ai.response_payload",
+      "session_id": "b112a56bb510474d90e5a6dd9aa104fb",
+      "interaction_id": "5c7563f6134f4d45bfb5eb229c9d5e8b",
+      "operation_id": null,
+      "ai_call_id": "c2713224934647b3a4e12ad33ed97791",
+      "data": {
+        "output_text": "{\"request_parts\":[{\"text\":\"\\\"A quanto tempo, General Voss. Não sei se lembra de mim... mas meu nome é Tristan. Tristan Knot\\\"\",\"kind\":\"execute\",\"operations\":[\"speak\"],\"step_indices\":[0]},{\"text\":\"falo isso estendendo a mão\",\"kind\":\"execute\",\"operations\":[\"gesture\"],\"step_indices\":[1]},{\"text\":\"esperando um aperto de mão do general\",\"kind\":\"narrative_detail\",\"operations\":[],\"step_indices\":[]}],\"steps\":[{\"operation\":\"speak\",\"text\":\"A quanto tempo, General Voss. Não sei se lembra de mim... mas meu nome é Tristan. Tristan Knot\",\"volume\":\"normal\",\"claims\":[{\"subject_id\":\"player\",\"predicate\":\"name\",\"value\":\"Tristan Knot\"}],\"conversation\":{\"conversation_id\":null,\"target_ids\":[\"general_voss\"],\"focus\":null,\"points\":[{\"kind\":\"statement\",\"text\":\"A quanto tempo, General Voss. Não sei se lembra de mim... mas meu nome é Tristan. Tristan Knot\"}],\"resolves\":[],\"proposal\":null,\"goal\":null,\"waiting_for\":null,\"status\":null,\"reason\":null,\"romance_boundary\":null,\"boundary_text\":null,\"romantic_expression\":false}},{\"operation\":\"gesture\",\"target_id\":\"general_voss\",\"text\":\"Estendo a mão em direção ao general.\",\"message\":\"Quero cumprimentá-lo com um aperto de mão.\",\"subtle\":false}]}"
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 906,
+    "source_line_sha256": "add659ccca413235cf680b01b62a6af82a62d661efd977dcfac78b00e9921357",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:10:47.730+00:00",
+      "level": "DEBUG",
+      "component": "trama.infrastructure.openai_json",
+      "event": "ai.response_payload",
+      "session_id": "b112a56bb510474d90e5a6dd9aa104fb",
+      "interaction_id": "5c7563f6134f4d45bfb5eb229c9d5e8b",
+      "operation_id": null,
+      "ai_call_id": "4959fd94773a440cb2f76c10fc38c65a",
+      "data": {
+        "output_text": "{\"intent\":null,\"adjudications\":[],\"reactions\":[{\"step_index\":1,\"after_squares\":null,\"actions\":[{\"actor_id\":\"general_voss\",\"operation\":\"say\",\"text\":\"Lembro das trocas de prisioneiros, general Knot. É bom vê-lo sob termos mais pacíficos.\",\"target_id\":null,\"destination\":null,\"weapon\":\"unarmed\",\"influence\":null,\"volume\":\"normal\",\"memory_ids\":[],\"conversation\":{\"conversation_id\":null,\"target_ids\":[\"player\"],\"focus\":\"reencontro sob salvo-conduto\",\"points\":[{\"kind\":\"statement\",\"text\":\"Lembro das trocas de prisioneiros, general Knot. É bom vê-lo sob termos mais pacíficos.\"}],\"resolves\":[],\"proposal\":null,\"goal\":\"Reconhecer o interlocutor e manter a audiência cordial.\",\"waiting_for\":null,\"status\":null,\"reason\":null,\"romance_boundary\":null,\"boundary_text\":null,\"romantic_expression\":false}}],\"opinions\":[],\"episodes\":[],\"bonds\":[],\"interrupt\":false,\"reason\":\"Voss vê claramente o cumprimento e responde à apresentação.\",\"check\":null}]}"
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 926,
+    "source_line_sha256": "b88efccbde5ad86a7e179725cd26f1e55acb4de011cad69ebdde7874a649733f",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:10:47.773+00:00",
+      "level": "ERROR",
+      "component": "trama.application.world_resolution",
+      "event": "world.action_rejected",
+      "session_id": "b112a56bb510474d90e5a6dd9aa104fb",
+      "interaction_id": "5c7563f6134f4d45bfb5eb229c9d5e8b",
+      "operation_id": "69272c58d7874f5f9cc1d86590ac80a4",
+      "ai_call_id": null,
+      "data": {
+        "action": {
+          "actor_id": "general_voss",
+          "operation": "say",
+          "text": "Lembro das trocas de prisioneiros, general Knot. É bom vê-lo sob termos mais pacíficos.",
+          "target_id": null,
+          "destination": null,
+          "weapon": "unarmed",
+          "influence": null,
+          "volume": "normal",
+          "memory_ids": [],
+          "conversation": {
+            "conversation_id": null,
+            "target_ids": [
+              "player"
+            ],
+            "focus": "reencontro sob salvo-conduto",
+            "points": [
+              {
+                "kind": "statement",
+                "text": "Lembro das trocas de prisioneiros, general Knot. É bom vê-lo sob termos mais pacíficos."
+              }
+            ],
+            "resolves": [],
+            "proposal": null,
+            "goal": "Reconhecer o interlocutor e manter a audiência cordial.",
+            "waiting_for": null,
+            "status": null,
+            "reason": null,
+            "romance_boundary": null,
+            "boundary_text": null,
+            "romantic_expression": false
+          }
+        },
+        "failure": {
+          "actor_id": "general_voss",
+          "actor_name": "General Konrad Voss",
+          "operation": "say",
+          "code": "invalid_action",
+          "message": "Assunto, foco ou termo não pertence à fala executada.",
+          "cause": "Assunto, foco ou termo não pertence à fala executada.",
+          "origin": [
+            9,
+            4
+          ],
+          "destination": null,
+          "position_after": [
+            9,
+            4
+          ],
+          "target_id": null,
+          "obstacle": null,
+          "skipped_actions": []
+        }
+      },
+      "error": {
+        "type": "ActionError",
+        "message": "Assunto, foco ou termo não pertence à fala executada.",
+        "causes": [
+          {
+            "type": "ConversationStateError",
+            "message": "Assunto, foco ou termo não pertence à fala executada."
+          }
+        ],
+        "traceback": "Traceback (most recent call last):\n  File \"/home/andre/Projects/Trama/src/trama/application/knowledge.py\", line 142, in communicate\n    state, conversation_id = self.session.conversations.prepare(actor_id, text, hearers, conversation,\n                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        event_id=event_id, player_id=player,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        actor_ids={player, *(o.id for o in self.session.perception.observers())}, memory_revision=self.store.revision)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/andre/Projects/Trama/src/trama/conversation_state.py\", line 234, in prepare\n    update.validate_source(text, actor_id=actor, player_id=player_id)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/andre/Projects/Trama/src/trama/conversation_state.py\", line 132, in validate_source\n    raise ConversationStateError('Assunto, foco ou termo não pertence à fala executada.')\ntrama.conversation_state.ConversationStateError: Assunto, foco ou termo não pertence à fala executada.\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/andre/Projects/Trama/src/trama/application/world_resolution.py\", line 123, in execute\n    event = self._execute(action)\n  File \"/home/andre/Projects/Trama/src/trama/application/world_resolution.py\", line 206, in _execute\n    communication = session.knowledge.communicate(npc.id, action.text, npc.position,\n                                                   action.volume, memory_ids=action.memory_ids,\n                                                   conversation=conversation)\n  File \"/home/andre/Projects/Trama/src/trama/application/knowledge.py\", line 146, in communicate\n    raise ActionError(str(error)) from error\ntrama.actions.ActionError: Assunto, foco ou termo não pertence à fala executada."
+      }
+    }
+  },
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 933,
+    "source_line_sha256": "50fb8cc81fbfdde0bacda5e576d1d4e89dd78730924b3085f34ce153336a83ac",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:10:56.152+00:00",
+      "level": "DEBUG",
+      "component": "trama.infrastructure.openai_json",
+      "event": "ai.response_payload",
+      "session_id": "b112a56bb510474d90e5a6dd9aa104fb",
+      "interaction_id": "5c7563f6134f4d45bfb5eb229c9d5e8b",
+      "operation_id": null,
+      "ai_call_id": "f275017642264c0d9bcb1599564bf1ed",
+      "data": {
+        "output_text": "{\"intent\":{\"actor_id\":\"general_voss\",\"goal\":\"Esclarecer o propósito de Tristan nesta audiência antes de discutir termos.\",\"activity\":\"Reconhece o interlocutor das trocas de prisioneiros e pede que declare sua intenção.\",\"waiting_for\":\"A razão de Tristan para procurá-lo nesta audiência.\",\"initiative\":\"clarify\",\"reason\":\"Voss honra o salvo-conduto, mas precisa saber se a saudação antecede uma proposta ou outro assunto.\",\"opinion_ids\":[]},\"adjudications\":[],\"reactions\":[{\"step_index\":0,\"after_squares\":null,\"actions\":[{\"actor_id\":\"general_voss\",\"operation\":\"say\",\"text\":\"Lembro das trocas de prisioneiros, Tristan Knot. O que o traz até mim hoje?\",\"target_id\":null,\"destination\":null,\"weapon\":\"longsword\",\"influence\":null,\"volume\":\"normal\",\"memory_ids\":[],\"conversation\":{\"conversation_id\":\"conversation_1\",\"target_ids\":[\"player\"],\"focus\":\"propósito da audiência\",\"points\":[{\"kind\":\"statement\",\"text\":\"Lembro das trocas de prisioneiros, Tristan Knot.\"},{\"kind\":\"question\",\"text\":\"O que o traz até mim hoje?\"}],\"resolves\":[],\"proposal\":null,\"goal\":\"Esclarecer o propósito de Tristan nesta audiência antes de discutir termos.\",\"waiting_for\":\"A razão de Tristan para procurá-lo nesta audiência.\",\"status\":null,\"reason\":null,\"romance_boundary\":null,\"boundary_text\":null,\"romantic_expression\":false}}],\"opinions\":[],\"episodes\":[],\"bonds\":[],\"interrupt\":false,\"reason\":\"Voss responde à apresentação e pede uma finalidade concreta para a conversa.\",\"check\":null}]}"
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 938,
+    "source_line_sha256": "16427a49dfb315299b1a2551e992cb0ff118e157f66f55e8b4491c8b7495bcd3",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:10:56.157+00:00",
+      "level": "ERROR",
+      "component": "trama.application.world_resolution",
+      "event": "world.action_rejected",
+      "session_id": "b112a56bb510474d90e5a6dd9aa104fb",
+      "interaction_id": "5c7563f6134f4d45bfb5eb229c9d5e8b",
+      "operation_id": "d4af042a288247478fc250f8ca2a8439",
+      "ai_call_id": null,
+      "data": {
+        "action": {
+          "actor_id": "general_voss",
+          "operation": "say",
+          "text": "Lembro das trocas de prisioneiros, Tristan Knot. O que o traz até mim hoje?",
+          "target_id": null,
+          "destination": null,
+          "weapon": "longsword",
+          "influence": null,
+          "volume": "normal",
+          "memory_ids": [],
+          "conversation": {
+            "conversation_id": "conversation_1",
+            "target_ids": [
+              "player"
+            ],
+            "focus": "propósito da audiência",
+            "points": [
+              {
+                "kind": "statement",
+                "text": "Lembro das trocas de prisioneiros, Tristan Knot."
+              },
+              {
+                "kind": "question",
+                "text": "O que o traz até mim hoje?"
+              }
+            ],
+            "resolves": [],
+            "proposal": null,
+            "goal": "Esclarecer o propósito de Tristan nesta audiência antes de discutir termos.",
+            "waiting_for": "A razão de Tristan para procurá-lo nesta audiência.",
+            "status": null,
+            "reason": null,
+            "romance_boundary": null,
+            "boundary_text": null,
+            "romantic_expression": false
+          }
+        },
+        "failure": {
+          "actor_id": "general_voss",
+          "actor_name": "General Konrad Voss",
+          "operation": "say",
+          "code": "invalid_action",
+          "message": "Assunto, foco ou termo não pertence à fala executada.",
+          "cause": "Assunto, foco ou termo não pertence à fala executada.",
+          "origin": [
+            9,
+            4
+          ],
+          "destination": null,
+          "position_after": [
+            9,
+            4
+          ],
+          "target_id": null,
+          "obstacle": null,
+          "skipped_actions": []
+        }
+      },
+      "error": {
+        "type": "ActionError",
+        "message": "Assunto, foco ou termo não pertence à fala executada.",
+        "causes": [
+          {
+            "type": "ConversationStateError",
+            "message": "Assunto, foco ou termo não pertence à fala executada."
+          }
+        ],
+        "traceback": "Traceback (most recent call last):\n  File \"/home/andre/Projects/Trama/src/trama/application/knowledge.py\", line 142, in communicate\n    state, conversation_id = self.session.conversations.prepare(actor_id, text, hearers, conversation,\n                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        event_id=event_id, player_id=player,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        actor_ids={player, *(o.id for o in self.session.perception.observers())}, memory_revision=self.store.revision)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/andre/Projects/Trama/src/trama/conversation_state.py\", line 234, in prepare\n    update.validate_source(text, actor_id=actor, player_id=player_id)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/andre/Projects/Trama/src/trama/conversation_state.py\", line 132, in validate_source\n    raise ConversationStateError('Assunto, foco ou termo não pertence à fala executada.')\ntrama.conversation_state.ConversationStateError: Assunto, foco ou termo não pertence à fala executada.\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/andre/Projects/Trama/src/trama/application/world_resolution.py\", line 123, in execute\n    event = self._execute(action)\n  File \"/home/andre/Projects/Trama/src/trama/application/world_resolution.py\", line 206, in _execute\n    communication = session.knowledge.communicate(npc.id, action.text, npc.position,\n                                                   action.volume, memory_ids=action.memory_ids,\n                                                   conversation=conversation)\n  File \"/home/andre/Projects/Trama/src/trama/application/knowledge.py\", line 146, in communicate\n    raise ActionError(str(error)) from error\ntrama.actions.ActionError: Assunto, foco ou termo não pertence à fala executada."
+      }
+    }
+  },
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 944,
+    "source_line_sha256": "b52c6759ab4b62798c0d61f0dd23242d0047231dbdbce11d2ec888e8b020ccfb",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:10:59.060+00:00",
+      "level": "DEBUG",
+      "component": "trama.infrastructure.openai_json",
+      "event": "ai.response_payload",
+      "session_id": "b112a56bb510474d90e5a6dd9aa104fb",
+      "interaction_id": "5c7563f6134f4d45bfb5eb229c9d5e8b",
+      "operation_id": null,
+      "ai_call_id": "832bdce93f7f4f1a87d25725ee6deb92",
+      "data": {
+        "output_text": "{\"on\":\"Sua saudação atravessa a mesa de mapas, e Voss vê sua mão estendida do outro lado. Ele ainda não respondeu nem retribuiu o gesto.\",\"off\":\"Você não se deslocou; continua a 6 m de Voss, separado dele pela mesa. Sua fala foi ouvida e o gesto foi visto, mas não há resposta registrada do general nesta execução.\"}"
+      },
+      "error": null
+    }
+  }
+]

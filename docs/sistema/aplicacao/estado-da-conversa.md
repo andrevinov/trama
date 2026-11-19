@@ -44,15 +44,20 @@ visual existente; este recorte estrutura as falas, sem presumir compreensão ges
 | Campo | Significado |
 | --- | --- |
 | `id`, `participants`, `last_speaker` | Identificação e participantes conhecidos na projeção, com último falante percebido. |
-| `focus` | Trecho literal da fala que identifica o foco atual. Alterar foco não resolve pendências. |
+| `focus` | Rótulo semântico curto do assunto, sustentado pela fala e pelo contexto percebido; não exige citação literal. Alterar foco não resolve pendências. |
 | `points` | Afirmações, perguntas, pedidos, ofertas, condições, objeções e assuntos laterais. |
 | `resolves` na contribuição | Referências às pendências respondidas ou retiradas pela fala atual. |
 | `proposals` | Ofertas e contrapropostas com autor, termos, versões e respostas. |
 | `objective` | Objetivo e resposta aguardada privados do próprio NPC. |
 | `status`, `reason` | `active`, `suspended` ou `closed`, com motivo da transição. |
 
-Foco, pontos, termos novos/alterados e motivo de transição precisam ser trechos
-literais da fala executada. No jogador, também devem pertencer ao on atual.
+Pontos, termos novos/alterados, motivo de transição e declarações de limites
+precisam ser trechos literais da fala executada. No jogador, também devem
+pertencer ao on atual. Foco pode resumir o assunto: “propósito da audiência” é
+válido para “O que o traz até mim hoje?”. Tem limite de 160 caracteres e não
+cria afirmação, compromisso, resolução de pendência ou objetivo privado. Sua
+pertinência é semântica e depende da interpretação; o código não prova essa
+correspondência, nem transforma o rótulo em fato conhecido.
 A classificação semântica e a interpretação de ordem continuam sendo propostas
 da IA; o código não prova que uma pergunta foi realmente respondida pelo seu sentido.
 
@@ -103,7 +108,10 @@ que não foi ouvida não atualiza a perspectiva de outro personagem.
 
 ## Ciclo de vida e limites
 
-Uma contribuição com `status` exige motivo literal em `reason`. Fechar ou suspender
+Uma transição com `status` exige motivo literal em `reason`. Repetir `active`
+sem motivo em conversa já ativa ou nova é continuação: o código normaliza para
+`status=null` e não registra transição. Isso não permite retomar uma conversa
+suspensa ou encerrada sem motivo literal. Fechar ou suspender
 preserva assuntos e propostas. A retomada usa `conversation_id` conhecido e
 `status=active`. Uma nova conversa pode começar com os mesmos participantes depois
 de uma encerrada, com outro id. O estado não encerra a partida nem força saída

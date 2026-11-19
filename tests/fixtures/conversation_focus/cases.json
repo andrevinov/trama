@@ -1,0 +1,23 @@
+[
+  {
+    "id": "apresentacao-com-gesto",
+    "max_sdk_calls": 10,
+    "prompt": "\"A quanto tempo, General Voss. Não sei se lembra de mim... mas meu nome é Tristan. Tristan Knot\", falo isso estendendo a mão e esperando um aperto de mão do general.",
+    "off": "[O que o general efetivamente respondeu à minha apresentação? Houve aproximação ou contato físico?]",
+    "proposal": false
+  },
+  {
+    "id": "reencontro-e-proposito",
+    "max_sdk_calls": 10,
+    "prompt": "Bom dia, general Voss. Lembra das nossas trocas de prisioneiros? Vim conversar antes de outra campanha.",
+    "off": "[O que o general disse e qual assunto estamos discutindo?]",
+    "proposal": false
+  },
+  {
+    "id": "proposta-de-tregua",
+    "max_sdk_calls": 10,
+    "prompt": "General Voss, proponho uma trégua de trinta dias, com recuo simultâneo das nossas tropas. Como vê essa proposta?",
+    "off": "[Quais termos eu propus e o que o general respondeu? Existe algum acordo aceito?]",
+    "proposal": true
+  }
+]

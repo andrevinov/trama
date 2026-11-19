@@ -5,7 +5,7 @@ ouvintes reais; a interpretação do significado continua sendo uma proposta da 
 """
 
 from copy import deepcopy
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, fields, replace
 import json
 
 
@@ -113,7 +113,8 @@ class ConversationUpdate:
                 or not _optional(self.goal, 300) or not _optional(self.waiting_for, 300)
                 or self.status is not None and self.status not in STATUSES
                 or not _optional(self.reason, 300)
-                or (self.status is None) != (self.reason is None)
+                or self.reason is not None and self.status is None
+                or self.status in {'suspended', 'closed'} and self.reason is None
                 or self.romance_boundary is not None and self.romance_boundary not in {'open', 'declined'}
                 or not _optional(self.boundary_text, 400)
                 or (self.romance_boundary is None) != (self.boundary_text is None)
@@ -122,14 +123,16 @@ class ConversationUpdate:
             raise ConversationStateError('Contribuição de conversa inválida.')
 
     def validate_source(self, text, *, actor_id, player_id):
+        # Foco é um rótulo do assunto, não uma citação ou compromisso falado.
         fragments = [p.text for p in self.points]
-        fragments += [v for v in (self.focus, self.reason) if v is not None]
+        if self.reason is not None:
+            fragments.append(self.reason)
         if self.boundary_text:
             fragments.append(self.boundary_text)
         if self.proposal:
             fragments += [t.text for t in self.proposal.terms]
         if any(fragment not in text for fragment in fragments):
-            raise ConversationStateError('Assunto, foco ou termo não pertence à fala executada.')
+            raise ConversationStateError('Ponto, motivo, limite ou termo não pertence à fala executada.')
         if actor_id == player_id and (self.goal is not None or self.waiting_for is not None):
             raise ConversationStateError('A interpretação não atribui objetivos privados ao jogador.')
 
@@ -253,6 +256,11 @@ class ConversationState:
 
     def _append(self, record, actor, text, heard, update, event_id, player_id, memory_revision):
         previous = self._visible(record, actor)
+        if update.status == 'active' and update.reason is None:
+            if previous and self._status(previous)[0] != 'active':
+                raise ConversationStateError('Retomar uma conversa exige motivo literal na fala.')
+            # Marcar como ativa uma conversa já ativa não é transição de ciclo.
+            update = replace(update, status=None)
         if previous and self._status(previous)[0] != 'active' and update.status != 'active':
             status = self._status(previous)[0]
             if (update.status not in {None, status, *({'closed'} if status == 'suspended' else ())}

@@ -1,5 +1,11 @@
 # Testes live
 
+A [regressão de foco semântico](../../docs/sistema/qualidade/foco-conversa-live.md)
+tem três casos no conselho dos generais, com abertura, resposta executada de Voss
+e consulta off pelo runner oficial. Uma tentativa por caso, teto separado de
+30 chamadas, sujeito a autorização explícita. A frase original e os dois focos
+rejeitados também têm reprodução offline.
+
 A [bateria de vínculos de memória](../../docs/sistema/qualidade/vinculos-memoria-live.md)
 contém três casos focados na rejeição de uma alegação ligada a vários interesses.
 Usa a dungeon, a abordagem preparada e o runner real, sem resposta congelada no live.

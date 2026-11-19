@@ -1,5 +1,7 @@
 # Evidências e experimentos datados
 
+- [19/11/2026 — Foco da conversa no conselho](2026-11-19-foco-conversa/relatorio.md): reprodução do cumprimento de Tristan, medição real e falhas preservadas, incluindo estado ativo redundante.
+
 [Visão geral](../../README.md) · [Cobertura atual](../sistema/qualidade/cobertura-atual.md)
 
 Cada registro descreve o que foi observado numa data, com configuração,

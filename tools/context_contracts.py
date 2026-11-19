@@ -217,13 +217,14 @@ def sample_contexts():
     samples.append(council.narration_context(initial=True))
     speech, plan = action(council, 'General, o que aconteceu na última trégua?',
         NarrativeIntent('General, o que aconteceu na última trégua?', 'speak', conversation=ConversationUpdate(
-            target_ids=('general_voss',), focus='trégua',
+            target_ids=('general_voss',), focus='histórico da última trégua',
             points=(ConversationPoint('question', 'o que aconteceu na última trégua?'),))))
     samples.extend((council.interpretation_context(), council.world_context(plan)))
     report = council.execute(plan, WorldPlan((WorldReaction(0, None, (
-        WorldAction('general_voss', 'say', 'Vi os postos atacados depois da retirada; não sei quem ordenou os ataques.',
+        WorldAction('general_voss', 'say', 'Tropas de Auren atacaram nossos postos após a retirada. Auren reconheceu a autoria e rompeu a trégua.',
             memory_ids=('general_voss:broken-truce',), conversation=ConversationUpdate(target_ids=('player',),
-                points=(ConversationPoint('statement', 'não sei quem ordenou os ataques.'),),
+                focus='garantias para outro acordo', status='active',
+                points=(ConversationPoint('statement', 'Auren reconheceu a autoria e rompeu a trégua.'),),
                 resolves=('latest',), goal='Obter garantias para a retirada.', waiting_for='Uma garantia concreta.')),)),)))
     samples.append(council.narration_context(speech, report))
     speech, plan = action(council, 'Retire suas tropas primeiro; depois retiro as minhas.',
@@ -275,7 +276,7 @@ def sample_contexts():
     # Relação inicial baseada em um aspecto de memória: esse aspecto não pontua duas vezes.
     linked_data = json.loads((ROOT / 'src/trama/scenarios/generals_council.json').read_text())
     trust = linked_data['creatures'][0]['relationships'][0]['trust']
-    trust.update(reason='Cautela do cenário baseada na trégua, sem provar culpa do interlocutor.',
+    trust.update(reason='Cautela pela quebra de trégua de Auren, sem responsabilidade pessoal do interlocutor.',
                  sources=[dict(memory_id='general_voss:broken-truce', interest_id='guarantees')])
     linked = Conversation(build_session(linked_data))
     speech, plan = action(linked, 'Retire antes da minha promessa.', NarrativeIntent('Retire antes da minha promessa.',

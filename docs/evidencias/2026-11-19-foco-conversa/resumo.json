@@ -1,0 +1,501 @@
+{
+  "scope": "full_game_flow",
+  "authorized_max_sdk_calls": 30,
+  "repetitions": "one behavioural attempt per case; earlier DNS failures preserved separately",
+  "rounds": [
+    {
+      "id": "20261119T172501-cac7620c",
+      "cases": [
+        {
+          "id": "apresentacao-com-gesto",
+          "outcome": "failed",
+          "sdk_calls": 1,
+          "response_count": 0,
+          "configuration": {
+            "model": "gpt-5.6-terra",
+            "timeout_seconds": 30,
+            "max_retries": 0,
+            "context_mode": "minimal",
+            "max_corrections": 1,
+            "schema_order": "operation-first",
+            "interpretation": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "narration": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "world": {
+              "max_output_tokens": 6000,
+              "reasoning_effort": "low"
+            },
+            "experiment": null,
+            "profile": "application_default",
+            "differences_from_default": {},
+            "enabled": true,
+            "sdk_version": "3.49.0",
+            "provider_host": "api.openai.com",
+            "client_source": "owned",
+            "call_budget": {
+              "max_calls": 10,
+              "transport_attempt_upper_bound": 10
+            }
+          },
+          "scenario_sha256": "ec3474ea98b262e9b81f696f04065d7458cda2bb597d7cc7367bafcaaa9f8bcd",
+          "usage": {},
+          "error": {
+            "type": "AssertionError",
+            "message": "Fluxo incompleto ou com erro: Não foi possível conectar à OpenAI no prazo. Tente novamente.\nassert not ['Fluxo incompleto ou com erro: Não foi possível conectar à OpenAI no prazo. Tente novamente.']"
+          },
+          "runs": [
+            {
+              "phase": "initial",
+              "status": "failed",
+              "errors": [
+                "Fluxo incompleto ou com erro: Não foi possível conectar à OpenAI no prazo. Tente novamente."
+              ],
+              "reply": {
+                "on": "",
+                "off": "Não foi possível conectar à OpenAI no prazo. Tente novamente."
+              }
+            }
+          ]
+        },
+        {
+          "id": "proposta-de-tregua",
+          "outcome": "failed",
+          "sdk_calls": 1,
+          "response_count": 0,
+          "configuration": {
+            "model": "gpt-5.6-terra",
+            "timeout_seconds": 30,
+            "max_retries": 0,
+            "context_mode": "minimal",
+            "max_corrections": 1,
+            "schema_order": "operation-first",
+            "interpretation": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "narration": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "world": {
+              "max_output_tokens": 6000,
+              "reasoning_effort": "low"
+            },
+            "experiment": null,
+            "profile": "application_default",
+            "differences_from_default": {},
+            "enabled": true,
+            "sdk_version": "3.49.0",
+            "provider_host": "api.openai.com",
+            "client_source": "owned",
+            "call_budget": {
+              "max_calls": 10,
+              "transport_attempt_upper_bound": 10
+            }
+          },
+          "scenario_sha256": "ec3474ea98b262e9b81f696f04065d7458cda2bb597d7cc7367bafcaaa9f8bcd",
+          "usage": {},
+          "error": {
+            "type": "AssertionError",
+            "message": "Fluxo incompleto ou com erro: Não foi possível conectar à OpenAI no prazo. Tente novamente.\nassert not ['Fluxo incompleto ou com erro: Não foi possível conectar à OpenAI no prazo. Tente novamente.']"
+          },
+          "runs": [
+            {
+              "phase": "initial",
+              "status": "failed",
+              "errors": [
+                "Fluxo incompleto ou com erro: Não foi possível conectar à OpenAI no prazo. Tente novamente."
+              ],
+              "reply": {
+                "on": "",
+                "off": "Não foi possível conectar à OpenAI no prazo. Tente novamente."
+              }
+            }
+          ]
+        },
+        {
+          "id": "reencontro-e-proposito",
+          "outcome": "failed",
+          "sdk_calls": 1,
+          "response_count": 0,
+          "configuration": {
+            "model": "gpt-5.6-terra",
+            "timeout_seconds": 30,
+            "max_retries": 0,
+            "context_mode": "minimal",
+            "max_corrections": 1,
+            "schema_order": "operation-first",
+            "interpretation": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "narration": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "world": {
+              "max_output_tokens": 6000,
+              "reasoning_effort": "low"
+            },
+            "experiment": null,
+            "profile": "application_default",
+            "differences_from_default": {},
+            "enabled": true,
+            "sdk_version": "3.49.0",
+            "provider_host": "api.openai.com",
+            "client_source": "owned",
+            "call_budget": {
+              "max_calls": 10,
+              "transport_attempt_upper_bound": 10
+            }
+          },
+          "scenario_sha256": "ec3474ea98b262e9b81f696f04065d7458cda2bb597d7cc7367bafcaaa9f8bcd",
+          "usage": {},
+          "error": {
+            "type": "AssertionError",
+            "message": "Fluxo incompleto ou com erro: Não foi possível conectar à OpenAI no prazo. Tente novamente.\nassert not ['Fluxo incompleto ou com erro: Não foi possível conectar à OpenAI no prazo. Tente novamente.']"
+          },
+          "runs": [
+            {
+              "phase": "initial",
+              "status": "failed",
+              "errors": [
+                "Fluxo incompleto ou com erro: Não foi possível conectar à OpenAI no prazo. Tente novamente."
+              ],
+              "reply": {
+                "on": "",
+                "off": "Não foi possível conectar à OpenAI no prazo. Tente novamente."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "20261119T172546-f6eb7fc2",
+      "cases": [
+        {
+          "id": "apresentacao-com-gesto",
+          "outcome": "passed",
+          "sdk_calls": 5,
+          "response_count": 5,
+          "configuration": {
+            "model": "gpt-5.6-terra",
+            "timeout_seconds": 30,
+            "max_retries": 0,
+            "context_mode": "minimal",
+            "max_corrections": 1,
+            "schema_order": "operation-first",
+            "interpretation": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "narration": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "world": {
+              "max_output_tokens": 6000,
+              "reasoning_effort": "low"
+            },
+            "experiment": null,
+            "profile": "application_default",
+            "differences_from_default": {},
+            "enabled": true,
+            "sdk_version": "3.49.0",
+            "provider_host": "api.openai.com",
+            "client_source": "owned",
+            "call_budget": {
+              "max_calls": 9,
+              "transport_attempt_upper_bound": 9
+            }
+          },
+          "scenario_sha256": "ec3474ea98b262e9b81f696f04065d7458cda2bb597d7cc7367bafcaaa9f8bcd",
+          "usage": {
+            "input_tokens": 66236,
+            "output_tokens": 1156,
+            "total_tokens": 67392,
+            "cached_input_tokens": 17362,
+            "cache_write_tokens": 48859,
+            "reasoning_tokens": 314
+          },
+          "error": null,
+          "runs": [
+            {
+              "phase": "initial",
+              "status": "completed",
+              "errors": [],
+              "reply": {
+                "on": "A Sala do Conselho está iluminada e silenciosa, salvo o rumor distante do vestíbulo além da porta aberta. A mesa de mapas entre vocês mostra a Bavária, o rio Linde, a Ponte de Pedra e o Passo Cinzento.\n\nDo outro lado da mesa, o general Konrad Voss aguarda, desarmado, sem ter feito ainda qualquer proposta. O salvo-conduto de Meridia permanece em vigor; a audiência começa antes da primeira palavra.",
+                "off": ""
+              }
+            },
+            {
+              "phase": "on",
+              "status": "completed",
+              "errors": [],
+              "reply": {
+                "on": "Voss responde do outro lado da mesa de mapas, em tom cordial e comedido: “Lembro-me das trocas de prisioneiros, general Knot. É bom vê-lo sob termos mais pacíficos. Aceito o cumprimento.”\n\nEle viu sua mão estendida; a mesa ainda separa vocês.",
+                "off": ""
+              }
+            },
+            {
+              "phase": "off",
+              "status": "completed",
+              "errors": [],
+              "reply": {
+                "on": "",
+                "off": "Voss respondeu: “Lembro-me das trocas de prisioneiros, general Knot. É bom vê-lo sob termos mais pacíficos. Aceito o cumprimento.”\n\nNão houve aproximação nem contato físico registrados. Ele permaneceu do outro lado da mesa de mapas, que continuava separando vocês; sua mão estendida foi vista por ele."
+              }
+            }
+          ]
+        },
+        {
+          "id": "proposta-de-tregua",
+          "outcome": "passed",
+          "sdk_calls": 6,
+          "response_count": 6,
+          "configuration": {
+            "model": "gpt-5.6-terra",
+            "timeout_seconds": 30,
+            "max_retries": 0,
+            "context_mode": "minimal",
+            "max_corrections": 1,
+            "schema_order": "operation-first",
+            "interpretation": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "narration": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "world": {
+              "max_output_tokens": 6000,
+              "reasoning_effort": "low"
+            },
+            "experiment": null,
+            "profile": "application_default",
+            "differences_from_default": {},
+            "enabled": true,
+            "sdk_version": "3.49.0",
+            "provider_host": "api.openai.com",
+            "client_source": "owned",
+            "call_budget": {
+              "max_calls": 9,
+              "transport_attempt_upper_bound": 9
+            }
+          },
+          "scenario_sha256": "ec3474ea98b262e9b81f696f04065d7458cda2bb597d7cc7367bafcaaa9f8bcd",
+          "usage": {
+            "input_tokens": 86550,
+            "output_tokens": 2633,
+            "total_tokens": 89183,
+            "cached_input_tokens": 49607,
+            "cache_write_tokens": 36925,
+            "reasoning_tokens": 468
+          },
+          "error": null,
+          "runs": [
+            {
+              "phase": "initial",
+              "status": "completed",
+              "errors": [],
+              "reply": {
+                "on": "A Sala do Conselho está iluminada e silenciosa. A mesa de mapas entre você e o general Konrad Voss exibe a Bavária, o Linde, a Ponte de Pedra e o Passo Cinzento. Voss, desarmado, aguarda do outro lado da mesa; a porta para o vestíbulo permanece aberta sob o salvo-conduto de Meridia.\n\nA audiência começa antes de qualquer proposta.",
+                "off": ""
+              }
+            },
+            {
+              "phase": "on",
+              "status": "completed",
+              "errors": [],
+              "reply": {
+                "on": "Voss ouve sua proposta sem interromper. Do outro lado da mesa, responde:\n\n“Vejo valor numa pausa de trinta dias; nosso povo precisa dela. Mas Valdren já recuou uma vez e Auren atacou os postos depois. Não retirarei tropas apenas com uma promessa: que fiscalização, etapas verificáveis ou consequência para o descumprimento você propõe?”",
+                "off": ""
+              }
+            },
+            {
+              "phase": "off",
+              "status": "completed",
+              "errors": [],
+              "reply": {
+                "on": "",
+                "off": "Você propôs dois termos: uma trégua de trinta dias e o recuo simultâneo das tropas de Auren e Valdren.\n\nVoss disse que vê valor na pausa de trinta dias, pois ambos os povos precisam dela, mas recusou retirar tropas apenas com uma promessa. Ele citou a trégua anterior, após a qual forças de Auren atacaram postos de Valdren, e pediu garantias concretas: fiscalização, etapas verificáveis ou uma consequência para eventual descumprimento.\n\nNão há acordo aceito. Sua proposta continua pendente, e Voss aguarda uma resposta sobre essas garantias."
+              }
+            }
+          ]
+        },
+        {
+          "id": "reencontro-e-proposito",
+          "outcome": "failed",
+          "sdk_calls": 3,
+          "response_count": 3,
+          "configuration": {
+            "model": "gpt-5.6-terra",
+            "timeout_seconds": 30,
+            "max_retries": 0,
+            "context_mode": "minimal",
+            "max_corrections": 1,
+            "schema_order": "operation-first",
+            "interpretation": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "narration": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "world": {
+              "max_output_tokens": 6000,
+              "reasoning_effort": "low"
+            },
+            "experiment": null,
+            "profile": "application_default",
+            "differences_from_default": {},
+            "enabled": true,
+            "sdk_version": "3.49.0",
+            "provider_host": "api.openai.com",
+            "client_source": "owned",
+            "call_budget": {
+              "max_calls": 9,
+              "transport_attempt_upper_bound": 9
+            }
+          },
+          "scenario_sha256": "ec3474ea98b262e9b81f696f04065d7458cda2bb597d7cc7367bafcaaa9f8bcd",
+          "usage": {
+            "input_tokens": 40400,
+            "output_tokens": 786,
+            "total_tokens": 41186,
+            "cached_input_tokens": 30394,
+            "cache_write_tokens": 9997,
+            "reasoning_tokens": 107
+          },
+          "error": {
+            "type": "AssertionError",
+            "message": "Fluxo incompleto ou com erro: A IA retornou uma resposta do Mundo inválida: Contribuição de conversa inválida.\nassert not ['Fluxo incompleto ou com erro: A IA retornou uma resposta do Mundo inválida: Contribuição de conversa inválida.']"
+          },
+          "runs": [
+            {
+              "phase": "initial",
+              "status": "completed",
+              "errors": [],
+              "reply": {
+                "on": "A Sala do Conselho está iluminada e silenciosa. Você permanece diante da mesa de mapas, com o vale da Bavária, o rio Linde, a Ponte de Pedra e o Passo Cinzento traçados entre Auren e Valdren.\n\nDo outro lado da mesa está o general Konrad Voss, desarmado, à espera da primeira proposta. A porta para o vestíbulo permanece aberta; não há mais ninguém na sala, e o salvo-conduto de Meridia vigora para ambos.",
+                "off": ""
+              }
+            },
+            {
+              "phase": "on",
+              "status": "failed",
+              "errors": [
+                "Fluxo incompleto ou com erro: A IA retornou uma resposta do Mundo inválida: Contribuição de conversa inválida."
+              ],
+              "reply": {
+                "on": "",
+                "off": "A IA retornou uma resposta do Mundo inválida: Contribuição de conversa inválida."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "20261119T173401-22892613",
+      "authorization": "one additional attempt of the corrected case, up to nine SDK calls",
+      "cases": [
+        {
+          "id": "reencontro-e-proposito",
+          "outcome": "passed",
+          "sdk_calls": 5,
+          "response_count": 5,
+          "configuration": {
+            "model": "gpt-5.6-terra",
+            "timeout_seconds": 30,
+            "max_retries": 0,
+            "context_mode": "minimal",
+            "max_corrections": 1,
+            "schema_order": "operation-first",
+            "interpretation": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "narration": {
+              "max_output_tokens": 1000,
+              "reasoning_effort": "low"
+            },
+            "world": {
+              "max_output_tokens": 6000,
+              "reasoning_effort": "low"
+            },
+            "experiment": null,
+            "profile": "application_default",
+            "differences_from_default": {},
+            "enabled": true,
+            "sdk_version": "3.49.0",
+            "provider_host": "api.openai.com",
+            "client_source": "owned",
+            "call_budget": {
+              "max_calls": 9,
+              "transport_attempt_upper_bound": 9
+            }
+          },
+          "scenario_sha256": "ec3474ea98b262e9b81f696f04065d7458cda2bb597d7cc7367bafcaaa9f8bcd",
+          "usage": {
+            "input_tokens": 67225,
+            "output_tokens": 1099,
+            "total_tokens": 68324,
+            "cached_input_tokens": 17362,
+            "cache_write_tokens": 49848,
+            "reasoning_tokens": 129
+          },
+          "error": null,
+          "runs": [
+            {
+              "phase": "initial",
+              "status": "completed",
+              "errors": [],
+              "reply": {
+                "on": "A Sala do Conselho está iluminada e silenciosa, salvo os sons distantes do posto. Você ocupa o lado oeste da mesa de mapas; do outro lado, o general Konrad Voss, de Valdren, está desarmado e à vista. Entre vocês, os mapas mostram a Bavária, o Linde, a Ponte de Pedra e o Passo Cinzento. A porta ao sul permanece aberta para o vestíbulo.\n\nAs credenciais foram conferidas e o salvo-conduto de Meridia está em vigor. A audiência começa antes de qualquer proposta.",
+                "off": ""
+              }
+            },
+            {
+              "phase": "on",
+              "status": "completed",
+              "errors": [],
+              "reply": {
+                "on": "Voss escuta do outro lado da mesa de mapas e responde em tom controlado: “Bom dia. Lembro, sim; nas duas ocasiões, os prisioneiros voltaram conforme combinado. Também prefiro falar agora a mandar mais homens para o vale. Diga o que Auren propõe.”\n\nEle reconhece que Valdren manteve a Bavária na campanha recente, mas sofreu perdas; Auren conteve o avanço além do vale, e outra ofensiva contra a ponte enfrentaria posições fortificadas. Com a colheita próxima, nenhum dos lados tem uma vitória rápida assegurada.",
+                "off": ""
+              }
+            },
+            {
+              "phase": "off",
+              "status": "completed",
+              "errors": [],
+              "reply": {
+                "on": "",
+                "off": "Voss disse que se lembra das duas trocas de prisioneiros e que, em ambas, os prisioneiros retornaram conforme combinado. Acrescentou que também prefere conversar agora a enviar mais homens ao vale, e pediu: “Diga o que Auren propõe.”\n\nO assunto é uma possível negociação para evitar outra campanha na Bavária: uma trégua verificável, proteção de civis e deslocados, reabertura do trânsito comercial e eventual recuperação da administração civil de Auren. Nenhuma proposta concreta foi feita ou aceita ainda."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk_calls": 22,
+  "responses": 19,
+  "usage": {
+    "input_tokens": 260411,
+    "output_tokens": 5674,
+    "total_tokens": 266085,
+    "cached_input_tokens": 114725,
+    "cache_write_tokens": 145629,
+    "reasoning_tokens": 1018
+  }
+}

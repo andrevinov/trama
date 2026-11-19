@@ -68,6 +68,12 @@ incluindo somente seu próprio objetivo privado. O registro é atualizado a part
 de `conversation` em falas executadas, não por história ou texto narrado. Veja
 [estado da conversa](../aplicacao/estado-da-conversa.md).
 
+`conversation.focus` é rótulo semântico, podendo resumir a fala e seu contexto
+percebido sem ser uma citação literal. Pontos, termos, motivos de transição e
+declarações de limites conservam validação literal. As amostras do conselho
+exercitam foco resumido do jogador e de Voss nas mesmas projeções reais; isso
+não permite criar compromissos ou resolver pendências apenas por mudar o foco.
+
 Os nomes abaixo são campos de raiz. O registro executável detalha a origem e o
 significado de cada um; a referência revisada inclui os caminhos internos
 observados por fase.

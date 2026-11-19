@@ -1,0 +1,118 @@
+[
+  {
+    "source": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/reencontro-e-proposito/trace.jsonl",
+    "source_line": 14,
+    "source_line_sha256": "95dc072050c42f379c277260844d362dde4e85a1026403f938dd7c2aa1754bdb",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:26:08.889+00:00",
+      "level": "DEBUG",
+      "component": "trama.infrastructure.openai_json",
+      "event": "ai.response_payload",
+      "session_id": "620130305405440fb7df40b753f79a80",
+      "interaction_id": "055f9679d6d2440f962973f4fe5f8f27",
+      "operation_id": null,
+      "ai_call_id": "7f8c41de74fd4bc3a29a87e8f3b1349f",
+      "data": {
+        "output_text": "{\"on\":\"A Sala do Conselho está iluminada e silenciosa. Você permanece diante da mesa de mapas, com o vale da Bavária, o rio Linde, a Ponte de Pedra e o Passo Cinzento traçados entre Auren e Valdren.\\n\\nDo outro lado da mesa está o general Konrad Voss, desarmado, à espera da primeira proposta. A porta para o vestíbulo permanece aberta; não há mais ninguém na sala, e o salvo-conduto de Meridia vigora para ambos.\",\"off\":\"\"}"
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/reencontro-e-proposito/trace.jsonl",
+    "source_line": 34,
+    "source_line_sha256": "c4412061c4a50bc8c6f9866a9b2b1eabb240e966dcc3d69b151ceee5d2de54c3",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:26:13.177+00:00",
+      "level": "DEBUG",
+      "component": "trama.infrastructure.openai_json",
+      "event": "ai.response_payload",
+      "session_id": "620130305405440fb7df40b753f79a80",
+      "interaction_id": "9ec612db70e045719db7925f214c53dd",
+      "operation_id": null,
+      "ai_call_id": "d0f59b25779e45d6bbee4c0300444e02",
+      "data": {
+        "output_text": "{\"request_parts\":[{\"text\":\"Bom dia, general Voss. Lembra das nossas trocas de prisioneiros? Vim conversar antes de outra campanha.\",\"kind\":\"execute\",\"operations\":[\"speak\"],\"step_indices\":[0]}],\"steps\":[{\"operation\":\"speak\",\"text\":\"Bom dia, general Voss. Lembra das nossas trocas de prisioneiros? Vim conversar antes de outra campanha.\",\"volume\":\"normal\",\"claims\":[],\"conversation\":{\"conversation_id\":null,\"target_ids\":[\"general_voss\"],\"focus\":\"trocas de prisioneiros e campanha\",\"points\":[{\"kind\":\"statement\",\"text\":\"Bom dia, general Voss.\"},{\"kind\":\"question\",\"text\":\"Lembra das nossas trocas de prisioneiros?\"},{\"kind\":\"topic\",\"text\":\"Vim conversar antes de outra campanha.\"}],\"resolves\":[],\"proposal\":null,\"goal\":null,\"waiting_for\":null,\"status\":null,\"reason\":null,\"romance_boundary\":null,\"boundary_text\":null,\"romantic_expression\":false}}]}"
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/reencontro-e-proposito/trace.jsonl",
+    "source_line": 51,
+    "source_line_sha256": "2c27770a0f8392f4eafd9609c86046dc316ce47a1976716b5ee9dce701c37746",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:26:17.643+00:00",
+      "level": "DEBUG",
+      "component": "trama.infrastructure.openai_json",
+      "event": "ai.response_payload",
+      "session_id": "620130305405440fb7df40b753f79a80",
+      "interaction_id": "9ec612db70e045719db7925f214c53dd",
+      "operation_id": null,
+      "ai_call_id": "1bb66ddccc2241129531d663e66acecd",
+      "data": {
+        "output_text": "{\"intent\":null,\"adjudications\":[],\"reactions\":[{\"step_index\":0,\"after_squares\":null,\"actions\":[{\"actor_id\":\"general_voss\",\"operation\":\"say\",\"text\":\"Bom dia. Lembro, sim — as duas trocas correram conforme o salvo-conduto. Também prefiro falar agora a contar baixas depois. Diga o que Auren pretende pôr sobre a mesa.\",\"target_id\":null,\"destination\":null,\"weapon\":\"unarmed\",\"influence\":null,\"volume\":\"normal\",\"memory_ids\":[\"general_voss:read-credentials\"],\"conversation\":{\"conversation_id\":null,\"target_ids\":[\"player\"],\"focus\":\"trocas de prisioneiros e proposta de trégua\",\"points\":[{\"kind\":\"statement\",\"text\":\"Lembro, sim — as duas trocas correram conforme o salvo-conduto.\"},{\"kind\":\"statement\",\"text\":\"Também prefiro falar agora a contar baixas depois.\"},{\"kind\":\"request\",\"text\":\"Diga o que Auren pretende pôr sobre a mesa.\"}],\"resolves\":[\"latest\"],\"proposal\":null,\"goal\":\"Ouvir a primeira proposta de Auren.\",\"waiting_for\":\"Uma proposta concreta de Auren para evitar nova campanha.\",\"status\":\"active\",\"reason\":null,\"romance_boundary\":null,\"boundary_text\":null,\"romantic_expression\":false}}],\"opinions\":[],\"episodes\":[],\"bonds\":[],\"interrupt\":false,\"reason\":\"Voss responde à saudação e à pergunta, reconhecendo as trocas anteriores e pedindo uma proposta concreta.\",\"check\":null}]}"
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/reencontro-e-proposito/trace.jsonl",
+    "source_line": 52,
+    "source_line_sha256": "36c8add276a8c4d768247a86c21dc00901b9fb45e919f42eb6504ccae487dd31",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:26:17.643+00:00",
+      "level": "ERROR",
+      "component": "trama.infrastructure.openai_world_director",
+      "event": "ai.world_rejected",
+      "session_id": "620130305405440fb7df40b753f79a80",
+      "interaction_id": "9ec612db70e045719db7925f214c53dd",
+      "operation_id": null,
+      "ai_call_id": "1bb66ddccc2241129531d663e66acecd",
+      "data": {
+        "reason": "Contribuição de conversa inválida."
+      },
+      "error": {
+        "type": "ConversationStateError",
+        "message": "Contribuição de conversa inválida.",
+        "causes": [],
+        "traceback": "Traceback (most recent call last):\n  File \"/home/andre/Projects/Trama/src/trama/infrastructure/openai_world_director.py\", line 816, in parse_world_plan\n    conversation_update_from_data(action['conversation'])))\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/andre/Projects/Trama/src/trama/conversation_state.py\", line 166, in conversation_update_from_data\n    return ConversationUpdate(**data)\n  File \"<string>\", line 16, in __init__\n  File \"/home/andre/Projects/Trama/src/trama/conversation_state.py\", line 122, in __post_init__\n    raise ConversationStateError('Contribuição de conversa inválida.')\ntrama.conversation_state.ConversationStateError: Contribuição de conversa inválida."
+      }
+    }
+  },
+  {
+    "source": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/reencontro-e-proposito/trace.jsonl",
+    "source_line": 53,
+    "source_line_sha256": "3b05030855eecd338d4c23202a70da719f5ab0b65b6be9145a2e8292693674c1",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:26:17.645+00:00",
+      "level": "ERROR",
+      "component": "trama.application.game_flow",
+      "event": "game_flow.provider_failed",
+      "session_id": "620130305405440fb7df40b753f79a80",
+      "interaction_id": "9ec612db70e045719db7925f214c53dd",
+      "operation_id": null,
+      "ai_call_id": null,
+      "data": {
+        "stage": "world",
+        "request_id": "8a1f311bccf24906a5b4af59d8080480"
+      },
+      "error": {
+        "type": "WorldError",
+        "message": "A IA retornou uma resposta do Mundo inválida: Contribuição de conversa inválida.",
+        "causes": [
+          {
+            "type": "ConversationStateError",
+            "message": "Contribuição de conversa inválida."
+          }
+        ],
+        "traceback": "Traceback (most recent call last):\n  File \"/home/andre/Projects/Trama/src/trama/infrastructure/openai_world_director.py\", line 816, in parse_world_plan\n    conversation_update_from_data(action['conversation'])))\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/andre/Projects/Trama/src/trama/conversation_state.py\", line 166, in conversation_update_from_data\n    return ConversationUpdate(**data)\n  File \"<string>\", line 16, in __init__\n  File \"/home/andre/Projects/Trama/src/trama/conversation_state.py\", line 122, in __post_init__\n    raise ConversationStateError('Contribuição de conversa inválida.')\ntrama.conversation_state.ConversationStateError: Contribuição de conversa inválida.\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/andre/Projects/Trama/src/trama/application/game_flow.py\", line 69, in run\n    return self._operation(deepcopy(self.context))\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/andre/Projects/Trama/src/trama/infrastructure/openai_world_director.py\", line 863, in decide\n    plan = parse_world_plan(text)\n  File \"/home/andre/Projects/Trama/src/trama/infrastructure/openai_world_director.py\", line 845, in parse_world_plan\n    raise WorldError(f\"A IA retornou uma resposta do Mundo inválida: {error}\") from error\ntrama.application.world.WorldError: A IA retornou uma resposta do Mundo inválida: Contribuição de conversa inválida."
+      }
+    }
+  }
+]

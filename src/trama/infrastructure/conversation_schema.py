@@ -38,7 +38,10 @@ Use objeto quando houver interlocutor ou conversa em andamento; null em fala
 sem destinatário/contexto identificável e nas operações que não sejam fala.
 target_ids identifica destinatários conhecidos; conversation_id referencia um
 registro conhecido em conversations ou é null para selecionar/iniciar a conversa.
-Foco e points.text são trechos LITERAIS da fala em text. points distingue statement,
+focus é um rótulo semântico curto do assunto, sustentado pela fala atual e pelo
+contexto percebido da conversa; pode resumir sem copiar palavras literalmente.
+Não é citação, novo fato, compromisso ou objetivo privado do interlocutor.
+points.text contém trechos LITERAIS da fala em text. points distingue statement,
 question, request, offer, condition, objection e topic. Registre assuntos laterais
 como topic; uma pergunta não respondida continua pendente ao mudar o foco.
 resolves lista ids de pendências realmente respondidas/retiradas nesta fala.
@@ -61,14 +64,16 @@ são null. Não invente o objetivo do jogador, nem use perfil/memória alheia.
 Uma alternativa apenas cogitada não aparece em proposal nem points.
 status/reason são null para continuar; active retoma, suspended suspende e closed
 encerra, com reason LITERAL da fala. Encerrar não exige pedido ou acordo formal.
+active sem reason só pode repetir o estado de conversa já ativa ou nova; é
+normalizado como continuação, nunca retoma conversa suspensa ou encerrada.
 Uma despedida pode reconhecer uma conversa closed sem reabri-la: use seu id,
 sem novo foco, pendência, proposta ou objetivo. Novos assuntos exigem retomada.
 Os metadados só entram no estado quando a fala é executada; ouvintes dependem
 da audição real. Ver a boca mover não ensina os termos. Não antecipe recepção.
 Conversa casual não exige proposal: acolhimento, agradecimento, conselho e oferta
 de orientação podem ser falas comuns. Só registre proposta quando houver termos
-ou compromissos efetivamente apresentados. focus pode surgir ou mudar por trechos
-da fala; encerrar esgota o encontro sem apagar seu foco histórico. Não invente
+ou compromissos efetivamente apresentados. focus pode resumir o assunto da fala;
+encerrar esgota o encontro sem apagar seu foco histórico. Não invente
 emoção, atração, necessidade ou objetivo do jogador. Uma moeda anterior declarada
 na memória do cenário não é transferência nesta interação; não crie moedas ou
 saldo por fala, gesto narrado ou anotação de conversa.

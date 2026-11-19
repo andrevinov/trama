@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "experiments": [
+    {
+      "id": "20261119T172501-cac7620c",
+      "versioned_artifacts": [
+        {
+          "path": "docs/evidencias/2026-11-19-foco-conversa/relatorio.md",
+          "bytes": 6606,
+          "sha256": "98f2de58cebc1c0e0e0f2a1c2585363c4ece3ce14c371fb2b17525686486f019"
+        },
+        {
+          "path": "docs/evidencias/2026-11-19-foco-conversa/resumo.json",
+          "bytes": 20358,
+          "sha256": "880ab8c2af8f546c238f6ab04a246d3c4a68e938aa7d17f1ad4826e504c43ae7"
+        }
+      ],
+      "local_artifacts": [
+        {
+          "path": "logs/live/conversation_focus/20261119T172501-cac7620c/apresentacao-com-gesto/result.json",
+          "bytes": 101443,
+          "sha256": "46fda022d6a423081b9aab58528b2e6e5da332dc2f5e64e9287ec1dc6da9174f"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172501-cac7620c/apresentacao-com-gesto/trace.jsonl",
+          "bytes": 90249,
+          "sha256": "a33d8925b71c98c0747b75bb8066c7125157af8074f057b53da2f1885073a5bd"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172501-cac7620c/proposta-de-tregua/result.json",
+          "bytes": 101358,
+          "sha256": "e5f32eae18366bb6523a0c032372fa8e86015aef651f4dcb1bea13caa4fbff1f"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172501-cac7620c/proposta-de-tregua/trace.jsonl",
+          "bytes": 90248,
+          "sha256": "1b0422030f3341a66cab77f7f38f441ef3db3e0dd3dcf4d2d9b2120c650399b1"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172501-cac7620c/reencontro-e-proposito/result.json",
+          "bytes": 101328,
+          "sha256": "3ed968686c1ae15e65a1db15476b3ca516d454877ea66c33fa81f02faf201d19"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172501-cac7620c/reencontro-e-proposito/trace.jsonl",
+          "bytes": 90248,
+          "sha256": "cede312270e12e01c65cc54b7a0a8dc93b3e7b9b788f273e8be198b359f6f7c3"
+        }
+      ]
+    },
+    {
+      "id": "20261119T172546-f6eb7fc2",
+      "versioned_artifacts": [],
+      "local_artifacts": [
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/apresentacao-com-gesto/result.json",
+          "bytes": 391481,
+          "sha256": "8761cf1f2991a106d0cf139ee08d5a73eaba6d96af1b72669d5562989f5059c7"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/apresentacao-com-gesto/trace.jsonl",
+          "bytes": 353008,
+          "sha256": "f429f378621fcbd6a2d4be94a970931509a861c53e308112fe0a7899459c357c"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/proposta-de-tregua/result.json",
+          "bytes": 511916,
+          "sha256": "a2a3e593ae4f793b6d730b8807d5b9b28641032197c03719dd5f8ea0eb8157f8"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/proposta-de-tregua/trace.jsonl",
+          "bytes": 475588,
+          "sha256": "72b0178eb9e8847ace1c01cc50813baa9559e8f16fad6be7d4d1285fad9be0bf"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/reencontro-e-proposito/result.json",
+          "bytes": 205739,
+          "sha256": "26a557e08d0d40a7c17402f5d3c68b38a672817a16b9d853d9162a6eac5e1c32"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/reencontro-e-proposito/trace.jsonl",
+          "bytes": 218582,
+          "sha256": "77425e773677c06410b97379853fd96ec4f5af31ab22bc59ac171405af386126"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/source_snapshot/docs/contracts/ai-contexts.json",
+          "bytes": 1048123,
+          "sha256": "82335f71831a2094413366ccf634ddbf49857aef0d3b095486d1bc86ff210be0"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/source_snapshot/src/trama/conversation_state.py",
+          "bytes": 30858,
+          "sha256": "219267e94250cc1850194a7d63d0f2ecd675a0eb046e94ff5f0141fb3b5b1d1a"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/source_snapshot/src/trama/infrastructure/conversation_schema.py",
+          "bytes": 6230,
+          "sha256": "e31eaaac059d04485d16e839a4d2491ee83801adef2d50f2f8fd4d5d01f619be"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/source_snapshot/src/trama/scenarios/generals_council.json",
+          "bytes": 15017,
+          "sha256": "ec3474ea98b262e9b81f696f04065d7458cda2bb597d7cc7367bafcaaa9f8bcd"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/source_snapshot/tests/fixtures/conversation_focus/cases.json",
+          "bytes": 1006,
+          "sha256": "61ae016c737ae31ca41ee7040e4d898faa1a01d36e64a156a4a3310a0b7cda47"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/source_snapshot/tests/live/test_conversation_focus_live.py",
+          "bytes": 7721,
+          "sha256": "9ec99590b5cc3527b2088d5bcfc0ba235de807930d75807e59039c1e00351627"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T172546-f6eb7fc2/source_snapshot/tools/context_contracts.py",
+          "bytes": 38704,
+          "sha256": "8136917bca3eac15d41e0b2e1a3c3b78e7aa43bd2179152ef9bc87b8308bfc1d"
+        }
+      ]
+    },
+    {
+      "id": "20261119T173401-22892613",
+      "versioned_artifacts": [],
+      "local_artifacts": [
+        {
+          "path": "logs/live/conversation_focus/20261119T173401-22892613/reencontro-e-proposito/result.json",
+          "bytes": 405475,
+          "sha256": "a9a67006f432cbee84ddc93a531184b2432ef3e38ce186c402ba366dc458f833"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T173401-22892613/reencontro-e-proposito/trace.jsonl",
+          "bytes": 356875,
+          "sha256": "77a0afa4a711703e7afcf72f621866c4451cf887995f1463b1da984fbeb67f46"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T173401-22892613/source_snapshot/docs/contracts/ai-contexts.json",
+          "bytes": 1048345,
+          "sha256": "43c3e7e92bd240ff1439f0eb9421066ac562f238e6de4f3f5aae7706d64d0e68"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T173401-22892613/source_snapshot/src/trama/conversation_state.py",
+          "bytes": 31315,
+          "sha256": "3d62af0d10e3ac5785ccfdbc3ded7f841fc48287d4799f9ccfb0758b683acacd"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T173401-22892613/source_snapshot/src/trama/infrastructure/conversation_schema.py",
+          "bytes": 6385,
+          "sha256": "084315d688c8c157d08ea0fcab3fe58060750ceb6f3df8931de6c59cf10f1fe4"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T173401-22892613/source_snapshot/src/trama/scenarios/generals_council.json",
+          "bytes": 15017,
+          "sha256": "ec3474ea98b262e9b81f696f04065d7458cda2bb597d7cc7367bafcaaa9f8bcd"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T173401-22892613/source_snapshot/tests/fixtures/conversation_focus/cases.json",
+          "bytes": 1006,
+          "sha256": "61ae016c737ae31ca41ee7040e4d898faa1a01d36e64a156a4a3310a0b7cda47"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T173401-22892613/source_snapshot/tests/live/test_conversation_focus_live.py",
+          "bytes": 7721,
+          "sha256": "9ec99590b5cc3527b2088d5bcfc0ba235de807930d75807e59039c1e00351627"
+        },
+        {
+          "path": "logs/live/conversation_focus/20261119T173401-22892613/source_snapshot/tools/context_contracts.py",
+          "bytes": 38721,
+          "sha256": "c59c1e91b7d4c068fda94e8f074b975718e2e4688a68b6208c05e77856e4fdf0"
+        }
+      ]
+    }
+  ]
+}

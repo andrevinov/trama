@@ -50,10 +50,11 @@ na sessão em `GameSession.relationships`, com registros individuais imutáveis 
 projeções próprias por dono. O passo 6 substitui registros ao validar episódios;
 a base inicial continua disponível para reinício e recomposição dos níveis.
 
-No conselho, o general começa com confiança -1 e afeto 0 para o jogador. É uma
-cautela inicial diante do representante adversário, não prova de traição ou
-atribuição dos ataques da trégua ao interlocutor. Não há vínculo afetivo pessoal
-declarado. Esses valores iniciais não transformam alinhamento ou atitude de
+No conselho, o general começa com confiança -1 e afeto 0 para o jogador. Auren
+reconheceu que suas tropas violaram a trégua; o jogador assumiu depois e não
+participou do ataque. A cautela diante do representante desse reino distingue
+responsabilidade institucional de participação pessoal. Não há vínculo afetivo
+pessoal declarado. Esses valores iniciais não transformam alinhamento ou atitude de
 Influence e não atribuem sentimentos ao personagem do jogador.
 
 ## Pertinência por termo e cálculo
