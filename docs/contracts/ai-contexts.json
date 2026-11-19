@@ -3044,7 +3044,7 @@
             "wall"
           ],
           "$.map.scene.objects[].description": [
-            "Mesa com mapas da fronteira e da Bavária. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. Os mapas são decoração estática, sem provas secretas ou operação de coleta.",
+            "Mesa com mapas da fronteira, do vale da Bavária, do rio Linde, da Ponte de Pedra e do Passo Cinzento. Auren fica a oeste e Valdren a leste. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. São referências geográficas já conhecidas, sem provas secretas ou operação de coleta.",
             "Tocha acesa, fixada à parede leste do corredor.",
             "Um banco de madeira sob uma árvore.",
             "Uma placa indicando a alameda norte e o caminho do poço público."
@@ -3823,7 +3823,7 @@
           ],
           "$.perception.current_description": [
             "",
-            "Sala iluminada de um posto fronteiriço neutro, preparada para uma audiência sob salvo-conduto. Você representa o general de Auren; à sua frente está o general Konrad Voss, de Valdren. Os reinos estão em guerra há três anos e Valdren ocupa a Bavária, território disputado. Ambos vieram conversar antes de retomar a campanha. Não há acordo prévio, custódia ou obrigação de aceitar termos. Uma mesa de mapas separa os interlocutores; a porta leva ao vestíbulo.",
+            "Sala iluminada do Posto da Ponte, território neutro da cidade livre de Meridia, onde as credenciais foram conferidas antes da audiência. Você é o general que comanda a frente oriental de Auren, reino a oeste; diante de você está Konrad Voss, general de Valdren, reino montanhoso a leste. A mesa de mapas separa vocês; a porta aberta leva ao vestíbulo. A cidade garante o salvo-conduto e não há guardas ou outros participantes dentro da sala. Ambos estão desarmados. Seu nome, suas opiniões e suas decisões são seus.\n\nA Bavária é um vale fronteiriço fictício do rio Linde, com aldeias agrícolas, moinhos e a Ponte de Pedra, passagem de carroças para o Passo Cinzento. Sua colheita abastece as cidades orientais de Auren; sua estrada liga Valdren aos mercados da planície. Pelo Tratado da Ponte, firmado há quarenta anos, a administração civil e os impostos cabem a Auren, que deve garantir trânsito comercial desarmado a Valdren. Valdren reivindica segurança nessa rota, não possui soberania reconhecida sobre o vale. Hoje suas tropas ocupam a Bavária, controlam a ponte e os acessos; as aldeias continuam habitadas, com deslocados dos dois lados.\n\nHá três anos, ataques a comboios de Valdren foram seguidos pelo fechamento da rota por Auren, que alegou combater contrabando e banditismo. Valdren exigiu a reabertura e invadiu o vale, alegando proteger o trânsito previsto no tratado. Auren combate a ocupação. A autoria dos ataques aos comboios nunca foi esclarecida. Há um ano, uma trégua levou Valdren a recuar para postos de fronteira; esses postos foram atacados depois da retirada, a trégua fracassou e Valdren reocupou o vale. Nenhuma investigação identificou com segurança os mandantes.\n\nVocê assumiu este comando há oito meses, depois da trégua fracassada; na época comandava a defesa de outra passagem, não negociou aquela retirada e não recebeu prova de quem ordenou os ataques. Conhece os relatórios inconclusivos. Você e Voss já se encontraram em duas trocas de prisioneiros sob salvo-conduto, sem amizade ou acordo pessoal anterior. Ele conhece sua nomeação recente. A última campanha terminou com Valdren mantendo o vale e ambos sofrendo perdas. Seu exército conteve o avanço para o interior de Auren, mas retomar a ponte exige atravessar posições fortificadas e arriscar outro cerco. Ninguém dispõe de vitória rápida assegurada; a colheita se aproxima e outra campanha ameaça civis e comércio.\n\nSeu mandato da Coroa de Auren é buscar uma trégua verificável, proteger moradores e deslocados, reabrir a rota e negociar a recuperação da administração civil do vale. Você pode assinar uma trégua de até noventa dias, combinar recuos locais por etapas, troca simultânea de prisioneiros, retorno voluntário de deslocados e trânsito comercial desarmado sem pedágio extraordinário durante a trégua. Pode convidar observadores de Meridia, cuja participação ainda depende de aceite. Não pode reconhecer anexação, ceder soberania, prometer tributo permanente ou reparações do tesouro. Um tratado definitivo exige ratificação da Coroa. Buscar ao menos trinta dias de pausa e proteção civil é uma orientação recebida, não uma escolha ou emoção imposta a você.\n\nAs credenciais de ambos e esses limites de negociação foram lidos antes da reunião. Voss pode negociar cessar-fogo, recuos e acesso civil temporários; uma fronteira definitiva exige ratificação do conselho de Valdren. Ele ainda não ofereceu retirada ou aceitou fiscalização. Meridia sediou a audiência, mas não garantiu observadores, tropas ou suprimentos para um acordo futuro. Nenhuma condição isolada obriga Voss a aceitar. Você pode propor algo diferente, exigir garantias, pedir consulta ao seu governo ou sair sem acordo.\n\nSe a audiência terminar sem acordo, o salvo-conduto permite a saída segura dos dois e a ocupação permanece; os comandos voltarão aos preparativos de campanha, com risco de novas perdas e atraso na colheita. Isso é uma consequência ficcional possível, sem ataque, prazo ou passagem de dias automáticos no simulador. A cena começa antes da primeira proposta. Exércitos, cidades e o vale ficam fora do mapa: uma fala ou aceitação registra termos, mas não desloca tropas, transfere terras ou executa um tratado. As informações acima já são conhecidas pelo seu personagem e podem ser consultadas em off; relatórios reservados de Valdren não integram este briefing.",
             "Sua cela: cama de pedra e trapos. É a mais distante da sala dos guardas."
           ],
           "$.perception.current_place": [
@@ -3915,9 +3915,9 @@
           ],
           "$.perception.visible_places[].description": [
             "Corredor com duas casas (3 m) de largura, iluminado por tochas. Quatro celas ficam a oeste.",
-            "Sala iluminada de um posto fronteiriço neutro, preparada para uma audiência sob salvo-conduto. Você representa o general de Auren; à sua frente está o general Konrad Voss, de Valdren. Os reinos estão em guerra há três anos e Valdren ocupa a Bavária, território disputado. Ambos vieram conversar antes de retomar a campanha. Não há acordo prévio, custódia ou obrigação de aceitar termos. Uma mesa de mapas separa os interlocutores; a porta leva ao vestíbulo.",
+            "Sala iluminada do Posto da Ponte, território neutro da cidade livre de Meridia, onde as credenciais foram conferidas antes da audiência. Você é o general que comanda a frente oriental de Auren, reino a oeste; diante de você está Konrad Voss, general de Valdren, reino montanhoso a leste. A mesa de mapas separa vocês; a porta aberta leva ao vestíbulo. A cidade garante o salvo-conduto e não há guardas ou outros participantes dentro da sala. Ambos estão desarmados. Seu nome, suas opiniões e suas decisões são seus.\n\nA Bavária é um vale fronteiriço fictício do rio Linde, com aldeias agrícolas, moinhos e a Ponte de Pedra, passagem de carroças para o Passo Cinzento. Sua colheita abastece as cidades orientais de Auren; sua estrada liga Valdren aos mercados da planície. Pelo Tratado da Ponte, firmado há quarenta anos, a administração civil e os impostos cabem a Auren, que deve garantir trânsito comercial desarmado a Valdren. Valdren reivindica segurança nessa rota, não possui soberania reconhecida sobre o vale. Hoje suas tropas ocupam a Bavária, controlam a ponte e os acessos; as aldeias continuam habitadas, com deslocados dos dois lados.\n\nHá três anos, ataques a comboios de Valdren foram seguidos pelo fechamento da rota por Auren, que alegou combater contrabando e banditismo. Valdren exigiu a reabertura e invadiu o vale, alegando proteger o trânsito previsto no tratado. Auren combate a ocupação. A autoria dos ataques aos comboios nunca foi esclarecida. Há um ano, uma trégua levou Valdren a recuar para postos de fronteira; esses postos foram atacados depois da retirada, a trégua fracassou e Valdren reocupou o vale. Nenhuma investigação identificou com segurança os mandantes.\n\nVocê assumiu este comando há oito meses, depois da trégua fracassada; na época comandava a defesa de outra passagem, não negociou aquela retirada e não recebeu prova de quem ordenou os ataques. Conhece os relatórios inconclusivos. Você e Voss já se encontraram em duas trocas de prisioneiros sob salvo-conduto, sem amizade ou acordo pessoal anterior. Ele conhece sua nomeação recente. A última campanha terminou com Valdren mantendo o vale e ambos sofrendo perdas. Seu exército conteve o avanço para o interior de Auren, mas retomar a ponte exige atravessar posições fortificadas e arriscar outro cerco. Ninguém dispõe de vitória rápida assegurada; a colheita se aproxima e outra campanha ameaça civis e comércio.\n\nSeu mandato da Coroa de Auren é buscar uma trégua verificável, proteger moradores e deslocados, reabrir a rota e negociar a recuperação da administração civil do vale. Você pode assinar uma trégua de até noventa dias, combinar recuos locais por etapas, troca simultânea de prisioneiros, retorno voluntário de deslocados e trânsito comercial desarmado sem pedágio extraordinário durante a trégua. Pode convidar observadores de Meridia, cuja participação ainda depende de aceite. Não pode reconhecer anexação, ceder soberania, prometer tributo permanente ou reparações do tesouro. Um tratado definitivo exige ratificação da Coroa. Buscar ao menos trinta dias de pausa e proteção civil é uma orientação recebida, não uma escolha ou emoção imposta a você.\n\nAs credenciais de ambos e esses limites de negociação foram lidos antes da reunião. Voss pode negociar cessar-fogo, recuos e acesso civil temporários; uma fronteira definitiva exige ratificação do conselho de Valdren. Ele ainda não ofereceu retirada ou aceitou fiscalização. Meridia sediou a audiência, mas não garantiu observadores, tropas ou suprimentos para um acordo futuro. Nenhuma condição isolada obriga Voss a aceitar. Você pode propor algo diferente, exigir garantias, pedir consulta ao seu governo ou sair sem acordo.\n\nSe a audiência terminar sem acordo, o salvo-conduto permite a saída segura dos dois e a ocupação permanece; os comandos voltarão aos preparativos de campanha, com risco de novas perdas e atraso na colheita. Isso é uma consequência ficcional possível, sem ataque, prazo ou passagem de dias automáticos no simulador. A cena começa antes da primeira proposta. Exércitos, cidades e o vale ficam fora do mapa: uma fala ou aceitação registra termos, mas não desloca tropas, transfere terras ou executa um tratado. As informações acima já são conhecidas pelo seu personagem e podem ser consultadas em off; relatórios reservados de Valdren não integram este briefing.",
             "Sua cela: cama de pedra e trapos. É a mais distante da sala dos guardas.",
-            "Vestíbulo iluminado do posto neutro, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; sair da sala não executa uma retirada militar."
+            "Vestíbulo iluminado do Posto da Ponte, em Meridia, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; o salvo-conduto continua válido ao deixar a audiência. Sair da sala não executa retirada militar nem aceita ou rompe termos por si só."
           ],
           "$.perception.visible_places[].name": [
             "Cela 1",
@@ -3933,7 +3933,7 @@
             "wall"
           ],
           "$.perception.visible_scene_objects[].description": [
-            "Mesa com mapas da fronteira e da Bavária. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. Os mapas são decoração estática, sem provas secretas ou operação de coleta.",
+            "Mesa com mapas da fronteira, do vale da Bavária, do rio Linde, da Ponte de Pedra e do Passo Cinzento. Auren fica a oeste e Valdren a leste. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. São referências geográficas já conhecidas, sem provas secretas ou operação de coleta.",
             "Tocha acesa, fixada à parede leste do corredor."
           ],
           "$.perception.visible_scene_objects[].id": [
@@ -4097,14 +4097,14 @@
           "$.world.map.scene.areas[].description": [
             "Corredor com duas casas (3 m) de largura, iluminado por tochas. Quatro celas ficam a oeste.",
             "O caminho para fora da dungeon. Alcançá-lo conclui a fuga.",
-            "Sala iluminada de um posto fronteiriço neutro, preparada para uma audiência sob salvo-conduto. Você representa o general de Auren; à sua frente está o general Konrad Voss, de Valdren. Os reinos estão em guerra há três anos e Valdren ocupa a Bavária, território disputado. Ambos vieram conversar antes de retomar a campanha. Não há acordo prévio, custódia ou obrigação de aceitar termos. Uma mesa de mapas separa os interlocutores; a porta leva ao vestíbulo.",
+            "Sala iluminada do Posto da Ponte, território neutro da cidade livre de Meridia, onde as credenciais foram conferidas antes da audiência. Você é o general que comanda a frente oriental de Auren, reino a oeste; diante de você está Konrad Voss, general de Valdren, reino montanhoso a leste. A mesa de mapas separa vocês; a porta aberta leva ao vestíbulo. A cidade garante o salvo-conduto e não há guardas ou outros participantes dentro da sala. Ambos estão desarmados. Seu nome, suas opiniões e suas decisões são seus.\n\nA Bavária é um vale fronteiriço fictício do rio Linde, com aldeias agrícolas, moinhos e a Ponte de Pedra, passagem de carroças para o Passo Cinzento. Sua colheita abastece as cidades orientais de Auren; sua estrada liga Valdren aos mercados da planície. Pelo Tratado da Ponte, firmado há quarenta anos, a administração civil e os impostos cabem a Auren, que deve garantir trânsito comercial desarmado a Valdren. Valdren reivindica segurança nessa rota, não possui soberania reconhecida sobre o vale. Hoje suas tropas ocupam a Bavária, controlam a ponte e os acessos; as aldeias continuam habitadas, com deslocados dos dois lados.\n\nHá três anos, ataques a comboios de Valdren foram seguidos pelo fechamento da rota por Auren, que alegou combater contrabando e banditismo. Valdren exigiu a reabertura e invadiu o vale, alegando proteger o trânsito previsto no tratado. Auren combate a ocupação. A autoria dos ataques aos comboios nunca foi esclarecida. Há um ano, uma trégua levou Valdren a recuar para postos de fronteira; esses postos foram atacados depois da retirada, a trégua fracassou e Valdren reocupou o vale. Nenhuma investigação identificou com segurança os mandantes.\n\nVocê assumiu este comando há oito meses, depois da trégua fracassada; na época comandava a defesa de outra passagem, não negociou aquela retirada e não recebeu prova de quem ordenou os ataques. Conhece os relatórios inconclusivos. Você e Voss já se encontraram em duas trocas de prisioneiros sob salvo-conduto, sem amizade ou acordo pessoal anterior. Ele conhece sua nomeação recente. A última campanha terminou com Valdren mantendo o vale e ambos sofrendo perdas. Seu exército conteve o avanço para o interior de Auren, mas retomar a ponte exige atravessar posições fortificadas e arriscar outro cerco. Ninguém dispõe de vitória rápida assegurada; a colheita se aproxima e outra campanha ameaça civis e comércio.\n\nSeu mandato da Coroa de Auren é buscar uma trégua verificável, proteger moradores e deslocados, reabrir a rota e negociar a recuperação da administração civil do vale. Você pode assinar uma trégua de até noventa dias, combinar recuos locais por etapas, troca simultânea de prisioneiros, retorno voluntário de deslocados e trânsito comercial desarmado sem pedágio extraordinário durante a trégua. Pode convidar observadores de Meridia, cuja participação ainda depende de aceite. Não pode reconhecer anexação, ceder soberania, prometer tributo permanente ou reparações do tesouro. Um tratado definitivo exige ratificação da Coroa. Buscar ao menos trinta dias de pausa e proteção civil é uma orientação recebida, não uma escolha ou emoção imposta a você.\n\nAs credenciais de ambos e esses limites de negociação foram lidos antes da reunião. Voss pode negociar cessar-fogo, recuos e acesso civil temporários; uma fronteira definitiva exige ratificação do conselho de Valdren. Ele ainda não ofereceu retirada ou aceitou fiscalização. Meridia sediou a audiência, mas não garantiu observadores, tropas ou suprimentos para um acordo futuro. Nenhuma condição isolada obriga Voss a aceitar. Você pode propor algo diferente, exigir garantias, pedir consulta ao seu governo ou sair sem acordo.\n\nSe a audiência terminar sem acordo, o salvo-conduto permite a saída segura dos dois e a ocupação permanece; os comandos voltarão aos preparativos de campanha, com risco de novas perdas e atraso na colheita. Isso é uma consequência ficcional possível, sem ataque, prazo ou passagem de dias automáticos no simulador. A cena começa antes da primeira proposta. Exércitos, cidades e o vale ficam fora do mapa: uma fala ou aceitação registra termos, mas não desloca tropas, transfere terras ou executa um tratado. As informações acima já são conhecidas pelo seu personagem e podem ser consultadas em off; relatórios reservados de Valdren não integram este briefing.",
             "Sala iluminada por tochas; uma mesa de madeira e um único guarda de serviço.",
             "Sua cela: cama de pedra e trapos. É a mais distante da sala dos guardas.",
             "Um pequeno banheiro, separado por uma porta de madeira.",
             "Um prisioneiro dorme sobre uma cama de pedra.",
             "Uma cama de pedra e um monte de panos no chão.",
             "Uma cela vazia, com cama e panos velhos.",
-            "Vestíbulo iluminado do posto neutro, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; sair da sala não executa uma retirada militar."
+            "Vestíbulo iluminado do Posto da Ponte, em Meridia, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; o salvo-conduto continua válido ao deixar a audiência. Sair da sala não executa retirada militar nem aceita ou rompe termos por si só."
           ],
           "$.world.map.scene.areas[].id": [
             "bathroom",
@@ -4138,7 +4138,7 @@
             "wall"
           ],
           "$.world.map.scene.objects[].description": [
-            "Mesa com mapas da fronteira e da Bavária. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. Os mapas são decoração estática, sem provas secretas ou operação de coleta.",
+            "Mesa com mapas da fronteira, do vale da Bavária, do rio Linde, da Ponte de Pedra e do Passo Cinzento. Auren fica a oeste e Valdren a leste. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. São referências geográficas já conhecidas, sem provas secretas ou operação de coleta.",
             "Tocha acesa, fixada à parede leste do corredor."
           ],
           "$.world.map.scene.objects[].id": [
@@ -8021,7 +8021,7 @@
             "",
             "Corredor com duas casas (3 m) de largura, iluminado por tochas. Quatro celas ficam a oeste.",
             "Sala de pedra separada da sala leste por uma porta de madeira.",
-            "Sala iluminada de um posto fronteiriço neutro, preparada para uma audiência sob salvo-conduto. Você representa o general de Auren; à sua frente está o general Konrad Voss, de Valdren. Os reinos estão em guerra há três anos e Valdren ocupa a Bavária, território disputado. Ambos vieram conversar antes de retomar a campanha. Não há acordo prévio, custódia ou obrigação de aceitar termos. Uma mesa de mapas separa os interlocutores; a porta leva ao vestíbulo.",
+            "Sala iluminada do Posto da Ponte, território neutro da cidade livre de Meridia, onde as credenciais foram conferidas antes da audiência. Você é o general que comanda a frente oriental de Auren, reino a oeste; diante de você está Konrad Voss, general de Valdren, reino montanhoso a leste. A mesa de mapas separa vocês; a porta aberta leva ao vestíbulo. A cidade garante o salvo-conduto e não há guardas ou outros participantes dentro da sala. Ambos estão desarmados. Seu nome, suas opiniões e suas decisões são seus.\n\nA Bavária é um vale fronteiriço fictício do rio Linde, com aldeias agrícolas, moinhos e a Ponte de Pedra, passagem de carroças para o Passo Cinzento. Sua colheita abastece as cidades orientais de Auren; sua estrada liga Valdren aos mercados da planície. Pelo Tratado da Ponte, firmado há quarenta anos, a administração civil e os impostos cabem a Auren, que deve garantir trânsito comercial desarmado a Valdren. Valdren reivindica segurança nessa rota, não possui soberania reconhecida sobre o vale. Hoje suas tropas ocupam a Bavária, controlam a ponte e os acessos; as aldeias continuam habitadas, com deslocados dos dois lados.\n\nHá três anos, ataques a comboios de Valdren foram seguidos pelo fechamento da rota por Auren, que alegou combater contrabando e banditismo. Valdren exigiu a reabertura e invadiu o vale, alegando proteger o trânsito previsto no tratado. Auren combate a ocupação. A autoria dos ataques aos comboios nunca foi esclarecida. Há um ano, uma trégua levou Valdren a recuar para postos de fronteira; esses postos foram atacados depois da retirada, a trégua fracassou e Valdren reocupou o vale. Nenhuma investigação identificou com segurança os mandantes.\n\nVocê assumiu este comando há oito meses, depois da trégua fracassada; na época comandava a defesa de outra passagem, não negociou aquela retirada e não recebeu prova de quem ordenou os ataques. Conhece os relatórios inconclusivos. Você e Voss já se encontraram em duas trocas de prisioneiros sob salvo-conduto, sem amizade ou acordo pessoal anterior. Ele conhece sua nomeação recente. A última campanha terminou com Valdren mantendo o vale e ambos sofrendo perdas. Seu exército conteve o avanço para o interior de Auren, mas retomar a ponte exige atravessar posições fortificadas e arriscar outro cerco. Ninguém dispõe de vitória rápida assegurada; a colheita se aproxima e outra campanha ameaça civis e comércio.\n\nSeu mandato da Coroa de Auren é buscar uma trégua verificável, proteger moradores e deslocados, reabrir a rota e negociar a recuperação da administração civil do vale. Você pode assinar uma trégua de até noventa dias, combinar recuos locais por etapas, troca simultânea de prisioneiros, retorno voluntário de deslocados e trânsito comercial desarmado sem pedágio extraordinário durante a trégua. Pode convidar observadores de Meridia, cuja participação ainda depende de aceite. Não pode reconhecer anexação, ceder soberania, prometer tributo permanente ou reparações do tesouro. Um tratado definitivo exige ratificação da Coroa. Buscar ao menos trinta dias de pausa e proteção civil é uma orientação recebida, não uma escolha ou emoção imposta a você.\n\nAs credenciais de ambos e esses limites de negociação foram lidos antes da reunião. Voss pode negociar cessar-fogo, recuos e acesso civil temporários; uma fronteira definitiva exige ratificação do conselho de Valdren. Ele ainda não ofereceu retirada ou aceitou fiscalização. Meridia sediou a audiência, mas não garantiu observadores, tropas ou suprimentos para um acordo futuro. Nenhuma condição isolada obriga Voss a aceitar. Você pode propor algo diferente, exigir garantias, pedir consulta ao seu governo ou sair sem acordo.\n\nSe a audiência terminar sem acordo, o salvo-conduto permite a saída segura dos dois e a ocupação permanece; os comandos voltarão aos preparativos de campanha, com risco de novas perdas e atraso na colheita. Isso é uma consequência ficcional possível, sem ataque, prazo ou passagem de dias automáticos no simulador. A cena começa antes da primeira proposta. Exércitos, cidades e o vale ficam fora do mapa: uma fala ou aceitação registra termos, mas não desloca tropas, transfere terras ou executa um tratado. As informações acima já são conhecidas pelo seu personagem e podem ser consultadas em off; relatórios reservados de Valdren não integram este briefing.",
             "Um jardim iluminado e tranquilo, com um banco à sombra. Lia, sua amiga de outros encontros, está por perto. Há espaço para conversar, escutar ou simplesmente ficar em companhia; nenhum assunto foi combinado.",
             "Um pátio iluminado junto ao largo. Marina, que você conhece de encontros anteriores, está perto. Houve pequenos gestos de ajuda nas duas direções, antes deste encontro. Há espaço para conversar sem assunto ou compromisso combinado.",
             "Uma cama de pedra e um monte de panos no chão.",
@@ -8206,7 +8206,7 @@
           "$.perception.visible_places[].description": [
             "Corredor com duas casas (3 m) de largura, iluminado por tochas. Quatro celas ficam a oeste.",
             "Sala de pedra separada da sala leste por uma porta de madeira.",
-            "Sala iluminada de um posto fronteiriço neutro, preparada para uma audiência sob salvo-conduto. Você representa o general de Auren; à sua frente está o general Konrad Voss, de Valdren. Os reinos estão em guerra há três anos e Valdren ocupa a Bavária, território disputado. Ambos vieram conversar antes de retomar a campanha. Não há acordo prévio, custódia ou obrigação de aceitar termos. Uma mesa de mapas separa os interlocutores; a porta leva ao vestíbulo.",
+            "Sala iluminada do Posto da Ponte, território neutro da cidade livre de Meridia, onde as credenciais foram conferidas antes da audiência. Você é o general que comanda a frente oriental de Auren, reino a oeste; diante de você está Konrad Voss, general de Valdren, reino montanhoso a leste. A mesa de mapas separa vocês; a porta aberta leva ao vestíbulo. A cidade garante o salvo-conduto e não há guardas ou outros participantes dentro da sala. Ambos estão desarmados. Seu nome, suas opiniões e suas decisões são seus.\n\nA Bavária é um vale fronteiriço fictício do rio Linde, com aldeias agrícolas, moinhos e a Ponte de Pedra, passagem de carroças para o Passo Cinzento. Sua colheita abastece as cidades orientais de Auren; sua estrada liga Valdren aos mercados da planície. Pelo Tratado da Ponte, firmado há quarenta anos, a administração civil e os impostos cabem a Auren, que deve garantir trânsito comercial desarmado a Valdren. Valdren reivindica segurança nessa rota, não possui soberania reconhecida sobre o vale. Hoje suas tropas ocupam a Bavária, controlam a ponte e os acessos; as aldeias continuam habitadas, com deslocados dos dois lados.\n\nHá três anos, ataques a comboios de Valdren foram seguidos pelo fechamento da rota por Auren, que alegou combater contrabando e banditismo. Valdren exigiu a reabertura e invadiu o vale, alegando proteger o trânsito previsto no tratado. Auren combate a ocupação. A autoria dos ataques aos comboios nunca foi esclarecida. Há um ano, uma trégua levou Valdren a recuar para postos de fronteira; esses postos foram atacados depois da retirada, a trégua fracassou e Valdren reocupou o vale. Nenhuma investigação identificou com segurança os mandantes.\n\nVocê assumiu este comando há oito meses, depois da trégua fracassada; na época comandava a defesa de outra passagem, não negociou aquela retirada e não recebeu prova de quem ordenou os ataques. Conhece os relatórios inconclusivos. Você e Voss já se encontraram em duas trocas de prisioneiros sob salvo-conduto, sem amizade ou acordo pessoal anterior. Ele conhece sua nomeação recente. A última campanha terminou com Valdren mantendo o vale e ambos sofrendo perdas. Seu exército conteve o avanço para o interior de Auren, mas retomar a ponte exige atravessar posições fortificadas e arriscar outro cerco. Ninguém dispõe de vitória rápida assegurada; a colheita se aproxima e outra campanha ameaça civis e comércio.\n\nSeu mandato da Coroa de Auren é buscar uma trégua verificável, proteger moradores e deslocados, reabrir a rota e negociar a recuperação da administração civil do vale. Você pode assinar uma trégua de até noventa dias, combinar recuos locais por etapas, troca simultânea de prisioneiros, retorno voluntário de deslocados e trânsito comercial desarmado sem pedágio extraordinário durante a trégua. Pode convidar observadores de Meridia, cuja participação ainda depende de aceite. Não pode reconhecer anexação, ceder soberania, prometer tributo permanente ou reparações do tesouro. Um tratado definitivo exige ratificação da Coroa. Buscar ao menos trinta dias de pausa e proteção civil é uma orientação recebida, não uma escolha ou emoção imposta a você.\n\nAs credenciais de ambos e esses limites de negociação foram lidos antes da reunião. Voss pode negociar cessar-fogo, recuos e acesso civil temporários; uma fronteira definitiva exige ratificação do conselho de Valdren. Ele ainda não ofereceu retirada ou aceitou fiscalização. Meridia sediou a audiência, mas não garantiu observadores, tropas ou suprimentos para um acordo futuro. Nenhuma condição isolada obriga Voss a aceitar. Você pode propor algo diferente, exigir garantias, pedir consulta ao seu governo ou sair sem acordo.\n\nSe a audiência terminar sem acordo, o salvo-conduto permite a saída segura dos dois e a ocupação permanece; os comandos voltarão aos preparativos de campanha, com risco de novas perdas e atraso na colheita. Isso é uma consequência ficcional possível, sem ataque, prazo ou passagem de dias automáticos no simulador. A cena começa antes da primeira proposta. Exércitos, cidades e o vale ficam fora do mapa: uma fala ou aceitação registra termos, mas não desloca tropas, transfere terras ou executa um tratado. As informações acima já são conhecidas pelo seu personagem e podem ser consultadas em off; relatórios reservados de Valdren não integram este briefing.",
             "Trecho visível da alameda que segue para outro bairro. O poço público fica adiante, fora deste trecho.",
             "Um corredor de paredes de pedra com musgo e uma porta para a Sala dos Guardas. Mede 10,5 m de largura.",
             "Um jardim iluminado e tranquilo, com um banco à sombra. Lia, sua amiga de outros encontros, está por perto. Há espaço para conversar, escutar ou simplesmente ficar em companhia; nenhum assunto foi combinado.",
@@ -8217,7 +8217,7 @@
             "Uma sala de pedra ocupada pelos guardas.",
             "Uma sala iluminada, com um arquivista e seu aprendiz.",
             "Uma varanda iluminada, ligada ao pátio por uma porta.",
-            "Vestíbulo iluminado do posto neutro, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; sair da sala não executa uma retirada militar."
+            "Vestíbulo iluminado do Posto da Ponte, em Meridia, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; o salvo-conduto continua válido ao deixar a audiência. Sair da sala não executa retirada militar nem aceita ou rompe termos por si só."
           ],
           "$.perception.visible_places[].name": [
             "Alameda norte",
@@ -8241,7 +8241,7 @@
             "wall"
           ],
           "$.perception.visible_scene_objects[].description": [
-            "Mesa com mapas da fronteira e da Bavária. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. Os mapas são decoração estática, sem provas secretas ou operação de coleta.",
+            "Mesa com mapas da fronteira, do vale da Bavária, do rio Linde, da Ponte de Pedra e do Passo Cinzento. Auren fica a oeste e Valdren a leste. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. São referências geográficas já conhecidas, sem provas secretas ou operação de coleta.",
             "Tocha acesa, fixada à parede leste do corredor.",
             "Um banco de madeira sob uma árvore.",
             "Uma placa indicando a alameda norte e o caminho do poço público."
@@ -8682,7 +8682,7 @@
             "Corredor com duas casas (3 m) de largura, iluminado por tochas. Quatro celas ficam a oeste.",
             "O caminho para fora da dungeon. Alcançá-lo conclui a fuga.",
             "Sala de pedra separada da sala leste por uma porta de madeira.",
-            "Sala iluminada de um posto fronteiriço neutro, preparada para uma audiência sob salvo-conduto. Você representa o general de Auren; à sua frente está o general Konrad Voss, de Valdren. Os reinos estão em guerra há três anos e Valdren ocupa a Bavária, território disputado. Ambos vieram conversar antes de retomar a campanha. Não há acordo prévio, custódia ou obrigação de aceitar termos. Uma mesa de mapas separa os interlocutores; a porta leva ao vestíbulo.",
+            "Sala iluminada do Posto da Ponte, território neutro da cidade livre de Meridia, onde as credenciais foram conferidas antes da audiência. Você é o general que comanda a frente oriental de Auren, reino a oeste; diante de você está Konrad Voss, general de Valdren, reino montanhoso a leste. A mesa de mapas separa vocês; a porta aberta leva ao vestíbulo. A cidade garante o salvo-conduto e não há guardas ou outros participantes dentro da sala. Ambos estão desarmados. Seu nome, suas opiniões e suas decisões são seus.\n\nA Bavária é um vale fronteiriço fictício do rio Linde, com aldeias agrícolas, moinhos e a Ponte de Pedra, passagem de carroças para o Passo Cinzento. Sua colheita abastece as cidades orientais de Auren; sua estrada liga Valdren aos mercados da planície. Pelo Tratado da Ponte, firmado há quarenta anos, a administração civil e os impostos cabem a Auren, que deve garantir trânsito comercial desarmado a Valdren. Valdren reivindica segurança nessa rota, não possui soberania reconhecida sobre o vale. Hoje suas tropas ocupam a Bavária, controlam a ponte e os acessos; as aldeias continuam habitadas, com deslocados dos dois lados.\n\nHá três anos, ataques a comboios de Valdren foram seguidos pelo fechamento da rota por Auren, que alegou combater contrabando e banditismo. Valdren exigiu a reabertura e invadiu o vale, alegando proteger o trânsito previsto no tratado. Auren combate a ocupação. A autoria dos ataques aos comboios nunca foi esclarecida. Há um ano, uma trégua levou Valdren a recuar para postos de fronteira; esses postos foram atacados depois da retirada, a trégua fracassou e Valdren reocupou o vale. Nenhuma investigação identificou com segurança os mandantes.\n\nVocê assumiu este comando há oito meses, depois da trégua fracassada; na época comandava a defesa de outra passagem, não negociou aquela retirada e não recebeu prova de quem ordenou os ataques. Conhece os relatórios inconclusivos. Você e Voss já se encontraram em duas trocas de prisioneiros sob salvo-conduto, sem amizade ou acordo pessoal anterior. Ele conhece sua nomeação recente. A última campanha terminou com Valdren mantendo o vale e ambos sofrendo perdas. Seu exército conteve o avanço para o interior de Auren, mas retomar a ponte exige atravessar posições fortificadas e arriscar outro cerco. Ninguém dispõe de vitória rápida assegurada; a colheita se aproxima e outra campanha ameaça civis e comércio.\n\nSeu mandato da Coroa de Auren é buscar uma trégua verificável, proteger moradores e deslocados, reabrir a rota e negociar a recuperação da administração civil do vale. Você pode assinar uma trégua de até noventa dias, combinar recuos locais por etapas, troca simultânea de prisioneiros, retorno voluntário de deslocados e trânsito comercial desarmado sem pedágio extraordinário durante a trégua. Pode convidar observadores de Meridia, cuja participação ainda depende de aceite. Não pode reconhecer anexação, ceder soberania, prometer tributo permanente ou reparações do tesouro. Um tratado definitivo exige ratificação da Coroa. Buscar ao menos trinta dias de pausa e proteção civil é uma orientação recebida, não uma escolha ou emoção imposta a você.\n\nAs credenciais de ambos e esses limites de negociação foram lidos antes da reunião. Voss pode negociar cessar-fogo, recuos e acesso civil temporários; uma fronteira definitiva exige ratificação do conselho de Valdren. Ele ainda não ofereceu retirada ou aceitou fiscalização. Meridia sediou a audiência, mas não garantiu observadores, tropas ou suprimentos para um acordo futuro. Nenhuma condição isolada obriga Voss a aceitar. Você pode propor algo diferente, exigir garantias, pedir consulta ao seu governo ou sair sem acordo.\n\nSe a audiência terminar sem acordo, o salvo-conduto permite a saída segura dos dois e a ocupação permanece; os comandos voltarão aos preparativos de campanha, com risco de novas perdas e atraso na colheita. Isso é uma consequência ficcional possível, sem ataque, prazo ou passagem de dias automáticos no simulador. A cena começa antes da primeira proposta. Exércitos, cidades e o vale ficam fora do mapa: uma fala ou aceitação registra termos, mas não desloca tropas, transfere terras ou executa um tratado. As informações acima já são conhecidas pelo seu personagem e podem ser consultadas em off; relatórios reservados de Valdren não integram este briefing.",
             "Sala iluminada por tochas; uma mesa de madeira e um único guarda de serviço.",
             "Sala onde um vigia pode observar ou procurar sons.",
             "Sua cela: cama de pedra e trapos. É a mais distante da sala dos guardas.",
@@ -8700,7 +8700,7 @@
             "Uma sala de trabalho separada por uma porta de madeira.",
             "Uma sala iluminada, com um arquivista e seu aprendiz.",
             "Uma varanda iluminada, ligada ao pátio por uma porta.",
-            "Vestíbulo iluminado do posto neutro, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; sair da sala não executa uma retirada militar."
+            "Vestíbulo iluminado do Posto da Ponte, em Meridia, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; o salvo-conduto continua válido ao deixar a audiência. Sair da sala não executa retirada militar nem aceita ou rompe termos por si só."
           ],
           "$.world.map.scene.areas[].id": [
             "bathroom",
@@ -8750,7 +8750,7 @@
             "wall"
           ],
           "$.world.map.scene.objects[].description": [
-            "Mesa com mapas da fronteira e da Bavária. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. Os mapas são decoração estática, sem provas secretas ou operação de coleta.",
+            "Mesa com mapas da fronteira, do vale da Bavária, do rio Linde, da Ponte de Pedra e do Passo Cinzento. Auren fica a oeste e Valdren a leste. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. São referências geográficas já conhecidas, sem provas secretas ou operação de coleta.",
             "Tocha acesa, fixada à parede leste do corredor.",
             "Um banco de madeira sob uma árvore.",
             "Uma pequena chave de ferro.",
@@ -9723,9 +9723,9 @@
           ],
           "$.knowledge[].claim.predicate": [
             "aftermath",
-            "campaign_outcome",
             "care_history",
             "duration",
+            "meeting_terms",
             "occupied_by",
             "open",
             "plans",
@@ -9742,10 +9742,9 @@
             "bavaria",
             "bond:player:friendship",
             "border_war",
-            "council_door",
+            "council_credentials",
             "courtyard_door",
             "episode_1",
-            "last_campaign",
             "last_truce",
             "lia",
             "lia_care",
@@ -9773,10 +9772,10 @@
             "one_copper_given_before_scene",
             "promise_failed",
             "promise_kept",
+            "temporary_terms_subject_to_ratification",
             "three_years",
             "true",
-            "valdren",
-            "valdren_held_bavaria_with_losses"
+            "valdren"
           ],
           "$.knowledge[].context": [
             "Afirmação do jogador; veracidade não confirmada.",
@@ -9784,26 +9783,28 @@
             "Antecedente autoral; não define a intenção atual do jogador.",
             "Avaliação privada com história preservada; relato/suspeita não comprova a verdade global.",
             "Caminho que Davi já percorreu. O poço fica além do trecho visível do mapa.",
-            "Comandou essa campanha; não conhece os planos atuais do exército de Auren.",
-            "Conhece a ocupação; nenhuma fala na sala executa ordens militares.",
+            "Credenciais públicas lidas; não são oferta ou compromisso aceito.",
             "Declaração própria anterior; não atribui sentimentos ao interlocutor.",
             "Declaração própria sobre disponibilidade; não comprova sentimentos ou reciprocidade.",
             "Episódio inicial autoral. Não registra transferência durante o jogo nem altera um saldo atual.",
             "Estado de uma passagem observado diretamente.",
             "História de amizade declarada pelo autor, anterior à abertura.",
-            "Participou das campanhas; a duração é conhecida pelos dois lados.",
+            "O tratado e a inspeção fundamentam a lembrança; nenhuma fala executa ordens militares.",
+            "Participou das três campanhas; os motivos declarados por cada reino são públicos, sem comprovar as acusações de responsabilidade pelos ataques.",
             "Pensamento próprio, ainda não comunicado.",
             "Perspectiva do NPC; não atribui sentimento ou escolha ao destinatário.",
             "Relatório reservado ainda não confirmado por inspeção própria. Não é informação pública.",
-            "Viu os postos destruídos; isso não identifica mandante nem prova traição do interlocutor."
+            "Viu os postos destruídos; mandante desconhecido. O interlocutor assumiu depois da trégua."
           ],
           "$.knowledge[].entities[]": [
             "bavaria",
             "border_war",
+            "council_credentials",
             "council_hall",
             "courtyard",
             "episode_1",
             "garden",
+            "general_voss",
             "last_truce",
             "lia",
             "marina",
@@ -9812,17 +9813,15 @@
             "public_well",
             "small_square",
             "valdren",
-            "veranda",
-            "vestibule"
+            "veranda"
           ],
           "$.knowledge[].id": [
             "general_voss:bavaria-occupation",
             "general_voss:broken-truce",
-            "general_voss:memory:1",
             "general_voss:memory:8",
             "general_voss:memory:9",
             "general_voss:private-supply-report",
-            "general_voss:recent-campaign",
+            "general_voss:read-credentials",
             "general_voss:war-duration",
             "lia:lia_care",
             "lia:player_care",
@@ -9861,21 +9860,20 @@
             "general_voss:memory:6"
           ],
           "$.knowledge[].text": [
-            "A guerra entre Auren e Valdren dura três anos.",
+            "A guerra dura três anos. Após ataques a comboios de Valdren, Auren fechou a rota alegando combater contrabando e banditismo; Valdren invadiu a Bavária alegando garantir trânsito. A autoria dos ataques não foi esclarecida.",
+            "Ambos podem negociar trégua de até noventa dias e recuos. Auren pode trocar prisioneiros, autorizar retorno voluntário de deslocados e trânsito desarmado sem pedágio extraordinário na trégua. Soberania, tributos e tratado definitivo exigem ratificação. Observadores dependem de Meridia.",
             "Após a retirada de Valdren na última trégua, postos de fronteira foram atacados. Não sabe quem ordenou os ataques.",
             "Lia e o interlocutor já conversaram e passearam juntos em outras ocasiões.",
             "Lia está pensando em visitar a feira mais tarde, mas ainda não decidiu.",
             "Marina declarou que prefere conservar a amizade sem romance neste momento.",
-            "Na última campanha, Valdren conservou a Bavária, mas perdeu soldados. Não foi uma vitória sem custo.",
             "O intendente relatou que as reservas de grãos podem não durar até o fim do inverno.",
             "O interlocutor entregou a Davi uma moeda de cobre antes desta conversa, sem cobrar nada.",
             "Para chegar ao poço público, siga pela alameda norte até a próxima praça.",
             "Porta da varanda está aberta.",
-            "Porta do Conselho está aberta.",
             "Porta lateral da varanda está aberta.",
             "Recebi notícia de que o comboio de alimentos está bloqueado.",
             "Uma promessa anterior do interlocutor não foi cumprida; Marina observou a falha.",
-            "Valdren mantém tropas na Bavária; sua devolução ainda não foi acordada.",
+            "Valdren ocupa o vale agrícola da Bavária, no rio Linde, controlando a Ponte de Pedra e o acesso ao Passo Cinzento. O tratado reconhece administração civil de Auren e trânsito comercial desarmado de Valdren; o controle atual não é título de soberania.",
             "friendship: História de cuidado percebido nas duas direções.",
             "lia ajudou player a encontrar um caminho seguro em um encontro anterior.",
             "marina ajudou player a encontrar um caminho seguro em um encontro anterior.",
@@ -9893,7 +9891,6 @@
             "bonds",
             "boundaries",
             "caminhos",
-            "campanha",
             "care",
             "conselho",
             "episodes",
@@ -9904,10 +9901,12 @@
             "personal_encounter",
             "planos",
             "relationships",
+            "salvo-conduto",
             "trégua"
           ],
           "$.knowledge[].when": [
             "Antes da abertura desta situação.",
+            "Antes da audiência.",
             "Antes desta conversa.",
             "Antes deste encontro.",
             "Ao longo das três campanhas anuais.",
@@ -9918,7 +9917,6 @@
             "Interpretação de um episódio percebido durante a partida.",
             "Interpretação privada com fontes e antes/depois no histórico.",
             "Limite declarado em fala efetivamente executada.",
-            "Na campanha recém-encerrada.",
             "Na inspeção anterior à audiência.",
             "Na véspera da audiência.",
             "Observado durante a partida.",
@@ -10080,10 +10078,10 @@
             "general_voss"
           ],
           "$.opinions[].basis_key": [
-            "0edc104e611a8c324a46d96731eb5316a0a160e861bbb066e38b8b5b0f360e0d",
-            "5b8b50a853d68ee1ae5879620fd9d7b3220a4133946ee3f8d63b52baca5d4230",
-            "7884401c6e4cd664aaf3cc3fde74aa1c46e9a11fe68d9aa17e0a5bee3c3c41d8",
-            "fe23225da81204279c2ab51308f2777609aeb25f7d02c44f0d06a5965dde5166"
+            "169b76ac84cd7695421e6f2a12132756817d1625c46ebad11bdcadb1de11bd9f",
+            "5b617cea8ce8a246f2149deddaf6a1f6465b79953f601bea9f0176572af026a8",
+            "879efe1eda9a1abc1a4152bf2ee52a1bb18a8f12bee79d4d05fde119ae6df60a",
+            "a64d6504fe6d7bdf7cfccaeaa7fd87fffbb6304e1abae1e7724c3ca53e16fd16"
           ],
           "$.opinions[].conversation_id": [
             "conversation_1"
@@ -10097,12 +10095,12 @@
             "Retirada unilateral seguida da promessa de retirada."
           ],
           "$.opinions[].fingerprint": [
-            "34fc21ed93e7fc9738439c90fbba9ce74a517727d3d5637d440e7791e7f71890",
-            "531748b665407581620fea387b16570d614e36f7fbf7833bc0a17166bac1291b",
-            "602bbb9286c5c44a7c4ba280eba299ce35cfbf1c9ac886916023ad6a071fba3d",
-            "64626c2355167e7d64f4db5e346f681e79251ba93e87bb6d175985f284e0bdb8",
-            "c98e70fc81818c1dfcfee8ee1eff7a88358e35d023b01315952b6da33f5813d8",
-            "ee2985a133af1a52aad22550152c21b09f3fd4e3f1c4a657761108e18d6bf643"
+            "0f01f763776f07dec7ffa3d9858e890dcce9acfd40701c5abe2ff18ddf2d2e57",
+            "163c93dc5a0805f72f96c45e35ba2f4b733561b630c2f865cf2b82a35e1c4c6b",
+            "6aa9ee415c14d252fdd48f856446353a65e7e1c39d51eec7950e3643f2bf132d",
+            "7ec15b46d551b9818aaca98b9b8d040ecaa03d47159d1affb99eaa5b775a4a7c",
+            "98c892561648c4e781ddb78a3c1e70475963c92c41fe69ab8c3939f428c214f4",
+            "dd67c8144b3e972d57aca10e7f0cf95587ce9bfe53132a62e15b5184d40809ac"
           ],
           "$.opinions[].id": [
             "opinion_1",
@@ -10160,7 +10158,7 @@
             "term_2"
           ],
           "$.opinions[].relationship_effects[].origin_reason": [
-            "Cautela inicial perante o representante adversário, sem histórico pessoal verificável; não atribui ao jogador a autoria dos ataques da última trégua.",
+            "Cautela perante o representante adversário. Conhece-o de duas trocas de prisioneiros, mas não tem histórico de compromissos pessoais com ele; sabe que sua nomeação é posterior à trégua e não lhe atribui os ataques.",
             "Não há vínculo afetivo pessoal estabelecido com este interlocutor.",
             "Observou o responsável fechar a porta após o compromisso aceito."
           ],
@@ -10289,7 +10287,7 @@
             "Lia conhece o interlocutor de encontros anteriores e aprecia sua companhia. É calorosa, paciente e também tem seus próprios limites e assuntos. Pode ouvir, aconselhar se houver abertura, fazer uma pergunta ou encerrar com gentileza quando a conversa se esgotar. Amizade não lhe dá acesso ao que o outro sente ou pretende; não há atração declarada.",
             "Marina é uma adulta franca e cuidadosa. Conhece o interlocutor de ocasiões anteriores e já houve ajuda nas duas direções. Tem seus próprios limites; amizade, atração e amor não obrigam confiança ou aceitação. Considera o que percebeu e pode recusar sem hostilidade. Os sentimentos do jogador pertencem ao jogador.",
             "Preserva sua integridade.",
-            "Veterano contido e direto; respeita o salvo-conduto, evita bravatas e pede explicações concretas. Seu objetivo central é preservar a população e a autonomia de Valdren. Nesta audiência quer descobrir se Auren oferece garantias executáveis para encerrar a guerra sem expor seu reino a uma nova quebra de palavra. Deve prestar contas ao conselho, mas não é obrigado a preferir guerra ou paz por princípio. Pode ouvir, discordar, perguntar ou sugerir termos; não existe oferta certa que imponha sua resposta."
+            "Veterano contido e direto; respeita o salvo-conduto e busca garantias executáveis para proteger Valdren. Conhece o tratado: administração civil de Auren e trânsito comercial de Valdren na Bavária. Seu mandato permite trégua de até noventa dias, recuos graduais e retorno da administração civil a Auren sob garantias que julgue suficientes; fronteiras definitivas e tributos exigem ratificação do conselho. Não prometeu retirada. Observadores de Meridia dependem de consulta. Conhece o interlocutor de duas trocas de prisioneiros e sabe que assumiu após a trégua fracassada; não lhe atribui os ataques. Pode discordar, perguntar ou sugerir termos; nenhuma oferta impõe aceitação. Não conhece planos privados de Auren."
           ],
           "$.profile.persona.interests[].description": [
             "Compartilhar caminhos conhecidos quando isso for útil, sem impor companhia.",
@@ -10677,7 +10675,7 @@
           ],
           "$.relationships[].trust.reason": [
             "A pequena ajuda anterior favorece confiança inicial, sem lealdade automática.",
-            "Cautela inicial perante o representante adversário, sem histórico pessoal verificável; não atribui ao jogador a autoria dos ataques da última trégua.",
+            "Cautela perante o representante adversário. Conhece-o de duas trocas de prisioneiros, mas não tem histórico de compromissos pessoais com ele; sabe que sua nomeação é posterior à trégua e não lhe atribui os ataques.",
             "Confiança inicial declarada pela história de amizade, sem obrigação de concordar.",
             "Conhece atitudes confiáveis anteriores, sem obrigação de aceitar.",
             "Nenhuma relação inicial declarada.",
@@ -11258,6 +11256,7 @@
             "aftermath",
             "campaign_outcome",
             "care_history",
+            "meeting_terms",
             "occupied_by",
             "open",
             "relationship_bond",
@@ -11269,6 +11268,7 @@
           "$.knowledge[].claim.subject_id": [
             "bavaria",
             "bond:player:friendship",
+            "council_credentials",
             "courtyard_door",
             "episode_1",
             "last_campaign",
@@ -11291,6 +11291,7 @@
             "grain_reserves_may_not_last_winter",
             "promise_failed",
             "promise_kept",
+            "temporary_terms_subject_to_ratification",
             "true",
             "valdren",
             "valdren_held_bavaria_with_losses"
@@ -11300,20 +11301,23 @@
             "Antecedente autoral de cuidado concreto; não declara sentimento do destinatário.",
             "Antecedente autoral; não define a intenção atual do jogador.",
             "Avaliação privada com história preservada; relato/suspeita não comprova a verdade global.",
-            "Comandou essa campanha; não conhece os planos atuais do exército de Auren.",
-            "Conhece a ocupação; nenhuma fala na sala executa ordens militares.",
+            "Comandou a campanha; não conhece planos privados ou reservas exatas de Auren.",
+            "Credenciais públicas lidas; não são oferta ou compromisso aceito.",
             "Declaração própria anterior; não atribui sentimentos ao interlocutor.",
             "Declaração própria sobre disponibilidade; não comprova sentimentos ou reciprocidade.",
             "Estado de uma passagem observado diretamente.",
+            "O tratado e a inspeção fundamentam a lembrança; nenhuma fala executa ordens militares.",
             "Perspectiva do NPC; não atribui sentimento ou escolha ao destinatário.",
             "Relatório reservado ainda não confirmado por inspeção própria. Não é informação pública.",
-            "Viu os postos destruídos; isso não identifica mandante nem prova traição do interlocutor."
+            "Viu os postos destruídos; mandante desconhecido. O interlocutor assumiu depois da trégua."
           ],
           "$.knowledge[].entities[]": [
             "bavaria",
+            "council_credentials",
             "council_hall",
             "courtyard",
             "episode_1",
+            "general_voss",
             "last_truce",
             "marina",
             "player",
@@ -11326,6 +11330,7 @@
             "general_voss:memory:8",
             "general_voss:memory:9",
             "general_voss:private-supply-report",
+            "general_voss:read-credentials",
             "general_voss:recent-campaign",
             "marina:broken_promise",
             "marina:marina_care",
@@ -11355,15 +11360,16 @@
             "general_voss:memory:6"
           ],
           "$.knowledge[].text": [
+            "Ambos podem negociar trégua de até noventa dias e recuos. Auren pode trocar prisioneiros, autorizar retorno voluntário de deslocados e trânsito desarmado sem pedágio extraordinário na trégua. Soberania, tributos e tratado definitivo exigem ratificação. Observadores dependem de Meridia.",
             "Após a retirada de Valdren na última trégua, postos de fronteira foram atacados. Não sabe quem ordenou os ataques.",
             "Marina declarou que prefere conservar a amizade sem romance neste momento.",
-            "Na última campanha, Valdren conservou a Bavária, mas perdeu soldados. Não foi uma vitória sem custo.",
             "O intendente relatou que as reservas de grãos podem não durar até o fim do inverno.",
             "Porta da varanda está aberta.",
             "Porta lateral da varanda está aberta.",
             "Recebi notícia de que o comboio de alimentos está bloqueado.",
             "Uma promessa anterior do interlocutor não foi cumprida; Marina observou a falha.",
-            "Valdren mantém tropas na Bavária; sua devolução ainda não foi acordada.",
+            "Valdren conservou a Bavária, mas perdeu soldados. Auren conteve o avanço além do vale; outro ataque à ponte enfrentaria posições fortificadas. A colheita se aproxima e nenhum lado tem vitória rápida assegurada.",
+            "Valdren ocupa o vale agrícola da Bavária, no rio Linde, controlando a Ponte de Pedra e o acesso ao Passo Cinzento. O tratado reconhece administração civil de Auren e trânsito comercial desarmado de Valdren; o controle atual não é título de soberania.",
             "friendship: História de cuidado percebido nas duas direções.",
             "marina ajudou player a encontrar um caminho seguro em um encontro anterior.",
             "não quero romance",
@@ -11386,9 +11392,11 @@
             "inverno",
             "personal_encounter",
             "relationships",
+            "salvo-conduto",
             "trégua"
           ],
           "$.knowledge[].when": [
+            "Antes da audiência.",
             "Antes desta conversa.",
             "Depois da última trégua, há um ano.",
             "Em uma ocasião anterior à abertura.",
@@ -11530,9 +11538,9 @@
             "general_voss"
           ],
           "$.opinions[].basis_key": [
-            "0edc104e611a8c324a46d96731eb5316a0a160e861bbb066e38b8b5b0f360e0d",
-            "5b8b50a853d68ee1ae5879620fd9d7b3220a4133946ee3f8d63b52baca5d4230",
-            "7884401c6e4cd664aaf3cc3fde74aa1c46e9a11fe68d9aa17e0a5bee3c3c41d8"
+            "169b76ac84cd7695421e6f2a12132756817d1625c46ebad11bdcadb1de11bd9f",
+            "879efe1eda9a1abc1a4152bf2ee52a1bb18a8f12bee79d4d05fde119ae6df60a",
+            "a64d6504fe6d7bdf7cfccaeaa7fd87fffbb6304e1abae1e7724c3ca53e16fd16"
           ],
           "$.opinions[].conversation_id": [
             "conversation_1"
@@ -11543,9 +11551,9 @@
             "Reavaliar com a relação atual."
           ],
           "$.opinions[].fingerprint": [
-            "34fc21ed93e7fc9738439c90fbba9ce74a517727d3d5637d440e7791e7f71890",
-            "531748b665407581620fea387b16570d614e36f7fbf7833bc0a17166bac1291b",
-            "ee2985a133af1a52aad22550152c21b09f3fd4e3f1c4a657761108e18d6bf643"
+            "163c93dc5a0805f72f96c45e35ba2f4b733561b630c2f865cf2b82a35e1c4c6b",
+            "6aa9ee415c14d252fdd48f856446353a65e7e1c39d51eec7950e3643f2bf132d",
+            "7ec15b46d551b9818aaca98b9b8d040ecaa03d47159d1affb99eaa5b775a4a7c"
           ],
           "$.opinions[].id": [
             "opinion_1",
@@ -11654,7 +11662,7 @@
           ],
           "$.profile.persona.background": [
             "Marina é uma adulta franca e cuidadosa. Conhece o interlocutor de ocasiões anteriores e já houve ajuda nas duas direções. Tem seus próprios limites; amizade, atração e amor não obrigam confiança ou aceitação. Considera o que percebeu e pode recusar sem hostilidade. Os sentimentos do jogador pertencem ao jogador.",
-            "Veterano contido e direto; respeita o salvo-conduto, evita bravatas e pede explicações concretas. Seu objetivo central é preservar a população e a autonomia de Valdren. Nesta audiência quer descobrir se Auren oferece garantias executáveis para encerrar a guerra sem expor seu reino a uma nova quebra de palavra. Deve prestar contas ao conselho, mas não é obrigado a preferir guerra ou paz por princípio. Pode ouvir, discordar, perguntar ou sugerir termos; não existe oferta certa que imponha sua resposta."
+            "Veterano contido e direto; respeita o salvo-conduto e busca garantias executáveis para proteger Valdren. Conhece o tratado: administração civil de Auren e trânsito comercial de Valdren na Bavária. Seu mandato permite trégua de até noventa dias, recuos graduais e retorno da administração civil a Auren sob garantias que julgue suficientes; fronteiras definitivas e tributos exigem ratificação do conselho. Não prometeu retirada. Observadores de Meridia dependem de consulta. Conhece o interlocutor de duas trocas de prisioneiros e sabe que assumiu após a trégua fracassada; não lhe atribui os ataques. Pode discordar, perguntar ou sugerir termos; nenhuma oferta impõe aceitação. Não conhece planos privados de Auren."
           ],
           "$.profile.persona.interests[].description": [
             "Distinguir carinho de confiabilidade e pedir garantias quando necessário.",
@@ -13304,7 +13312,7 @@
           "$.map.scene.areas[].description": [
             "Corredor com duas casas (3 m) de largura, iluminado por tochas. Quatro celas ficam a oeste.",
             "O caminho para fora da dungeon. Alcançá-lo conclui a fuga.",
-            "Sala iluminada de um posto fronteiriço neutro, preparada para uma audiência sob salvo-conduto. Você representa o general de Auren; à sua frente está o general Konrad Voss, de Valdren. Os reinos estão em guerra há três anos e Valdren ocupa a Bavária, território disputado. Ambos vieram conversar antes de retomar a campanha. Não há acordo prévio, custódia ou obrigação de aceitar termos. Uma mesa de mapas separa os interlocutores; a porta leva ao vestíbulo.",
+            "Sala iluminada do Posto da Ponte, território neutro da cidade livre de Meridia, onde as credenciais foram conferidas antes da audiência. Você é o general que comanda a frente oriental de Auren, reino a oeste; diante de você está Konrad Voss, general de Valdren, reino montanhoso a leste. A mesa de mapas separa vocês; a porta aberta leva ao vestíbulo. A cidade garante o salvo-conduto e não há guardas ou outros participantes dentro da sala. Ambos estão desarmados. Seu nome, suas opiniões e suas decisões são seus.\n\nA Bavária é um vale fronteiriço fictício do rio Linde, com aldeias agrícolas, moinhos e a Ponte de Pedra, passagem de carroças para o Passo Cinzento. Sua colheita abastece as cidades orientais de Auren; sua estrada liga Valdren aos mercados da planície. Pelo Tratado da Ponte, firmado há quarenta anos, a administração civil e os impostos cabem a Auren, que deve garantir trânsito comercial desarmado a Valdren. Valdren reivindica segurança nessa rota, não possui soberania reconhecida sobre o vale. Hoje suas tropas ocupam a Bavária, controlam a ponte e os acessos; as aldeias continuam habitadas, com deslocados dos dois lados.\n\nHá três anos, ataques a comboios de Valdren foram seguidos pelo fechamento da rota por Auren, que alegou combater contrabando e banditismo. Valdren exigiu a reabertura e invadiu o vale, alegando proteger o trânsito previsto no tratado. Auren combate a ocupação. A autoria dos ataques aos comboios nunca foi esclarecida. Há um ano, uma trégua levou Valdren a recuar para postos de fronteira; esses postos foram atacados depois da retirada, a trégua fracassou e Valdren reocupou o vale. Nenhuma investigação identificou com segurança os mandantes.\n\nVocê assumiu este comando há oito meses, depois da trégua fracassada; na época comandava a defesa de outra passagem, não negociou aquela retirada e não recebeu prova de quem ordenou os ataques. Conhece os relatórios inconclusivos. Você e Voss já se encontraram em duas trocas de prisioneiros sob salvo-conduto, sem amizade ou acordo pessoal anterior. Ele conhece sua nomeação recente. A última campanha terminou com Valdren mantendo o vale e ambos sofrendo perdas. Seu exército conteve o avanço para o interior de Auren, mas retomar a ponte exige atravessar posições fortificadas e arriscar outro cerco. Ninguém dispõe de vitória rápida assegurada; a colheita se aproxima e outra campanha ameaça civis e comércio.\n\nSeu mandato da Coroa de Auren é buscar uma trégua verificável, proteger moradores e deslocados, reabrir a rota e negociar a recuperação da administração civil do vale. Você pode assinar uma trégua de até noventa dias, combinar recuos locais por etapas, troca simultânea de prisioneiros, retorno voluntário de deslocados e trânsito comercial desarmado sem pedágio extraordinário durante a trégua. Pode convidar observadores de Meridia, cuja participação ainda depende de aceite. Não pode reconhecer anexação, ceder soberania, prometer tributo permanente ou reparações do tesouro. Um tratado definitivo exige ratificação da Coroa. Buscar ao menos trinta dias de pausa e proteção civil é uma orientação recebida, não uma escolha ou emoção imposta a você.\n\nAs credenciais de ambos e esses limites de negociação foram lidos antes da reunião. Voss pode negociar cessar-fogo, recuos e acesso civil temporários; uma fronteira definitiva exige ratificação do conselho de Valdren. Ele ainda não ofereceu retirada ou aceitou fiscalização. Meridia sediou a audiência, mas não garantiu observadores, tropas ou suprimentos para um acordo futuro. Nenhuma condição isolada obriga Voss a aceitar. Você pode propor algo diferente, exigir garantias, pedir consulta ao seu governo ou sair sem acordo.\n\nSe a audiência terminar sem acordo, o salvo-conduto permite a saída segura dos dois e a ocupação permanece; os comandos voltarão aos preparativos de campanha, com risco de novas perdas e atraso na colheita. Isso é uma consequência ficcional possível, sem ataque, prazo ou passagem de dias automáticos no simulador. A cena começa antes da primeira proposta. Exércitos, cidades e o vale ficam fora do mapa: uma fala ou aceitação registra termos, mas não desloca tropas, transfere terras ou executa um tratado. As informações acima já são conhecidas pelo seu personagem e podem ser consultadas em off; relatórios reservados de Valdren não integram este briefing.",
             "Sala iluminada por tochas; uma mesa de madeira e um único guarda de serviço.",
             "Sua cela: cama de pedra e trapos. É a mais distante da sala dos guardas.",
             "Um corredor de paredes de pedra com musgo e uma porta para a Sala dos Guardas. Mede 10,5 m de largura.",
@@ -13316,7 +13324,7 @@
             "Uma cela vazia, com cama e panos velhos.",
             "Uma sala de pedra ocupada pelos guardas.",
             "Uma varanda iluminada, ligada ao pátio por uma porta.",
-            "Vestíbulo iluminado do posto neutro, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; sair da sala não executa uma retirada militar."
+            "Vestíbulo iluminado do Posto da Ponte, em Meridia, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; o salvo-conduto continua válido ao deixar a audiência. Sair da sala não executa retirada militar nem aceita ou rompe termos por si só."
           ],
           "$.map.scene.areas[].id": [
             "bathroom",
@@ -13356,7 +13364,7 @@
             "wall"
           ],
           "$.map.scene.objects[].description": [
-            "Mesa com mapas da fronteira e da Bavária. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. Os mapas são decoração estática, sem provas secretas ou operação de coleta.",
+            "Mesa com mapas da fronteira, do vale da Bavária, do rio Linde, da Ponte de Pedra e do Passo Cinzento. Auren fica a oeste e Valdren a leste. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. São referências geográficas já conhecidas, sem provas secretas ou operação de coleta.",
             "Tocha acesa, fixada à parede leste do corredor."
           ],
           "$.map.scene.objects[].id": [
@@ -13859,15 +13867,15 @@
           ],
           "$.world.knowledge.actors[].memories[].context": [
             "A origem nobre é apenas uma suspeita do guarda. Ele associa essa dúvida ao prisioneiro encarcerado por seu chefe; o parentesco não está confirmado.",
-            "Comandou essa campanha; não conhece os planos atuais do exército de Auren.",
-            "Conhece a ocupação; nenhuma fala na sala executa ordens militares.",
+            "Comandou a campanha; não conhece planos privados ou reservas exatas de Auren.",
             "Declaração própria anterior; não atribui sentimentos ao interlocutor.",
             "Estado de uma passagem observado diretamente.",
             "Foi o chefe quem colocou o prisioneiro na dungeon, mas o guarda teme sofrer represálias caso ele seja mesmo filho de um lorde importante. O receio é condicional, não uma ameaça já recebida.",
             "O encarceramento partiu do chefe do guarda. O guarda está preocupado com as possíveis consequências dessa prisão.",
+            "O tratado e a inspeção fundamentam a lembrança; nenhuma fala executa ordens militares.",
             "Registro selecionado do encontro; compromisso verbal não comprova cumprimento.",
             "Relatório reservado ainda não confirmado por inspeção própria. Não é informação pública.",
-            "Viu os postos destruídos; isso não identifica mandante nem prova traição do interlocutor."
+            "Viu os postos destruídos; mandante desconhecido. O interlocutor assumiu depois da trégua."
           ],
           "$.world.knowledge.actors[].memories[].entities[]": [
             "bavaria",
@@ -13922,7 +13930,6 @@
             "Após a retirada de Valdren na última trégua, postos de fronteira foram atacados. Não sabe quem ordenou os ataques.",
             "Foi meu chefe quem colocou um dos prisioneiros nesta dungeon.",
             "Marina declarou que prefere conservar a amizade sem romance neste momento.",
-            "Na última campanha, Valdren conservou a Bavária, mas perdeu soldados. Não foi uma vitória sem custo.",
             "O intendente relatou que as reservas de grãos podem não durar até o fim do inverno.",
             "Porta da varanda está aberta.",
             "Porta do Conselho está aberta.",
@@ -13930,7 +13937,8 @@
             "Registro verbal; não comprova cumprimento. Proposta de player, versão 1: Fecharei a porta do Conselho. (responsável: player; resposta: accept).",
             "Se esse prisioneiro for realmente filho desse lorde, tenho medo de sofrer represálias.",
             "Suspeito que um dos prisioneiros seja filho de um lorde importante, mas não tenho confirmação disso.",
-            "Valdren mantém tropas na Bavária; sua devolução ainda não foi acordada.",
+            "Valdren conservou a Bavária, mas perdeu soldados. Auren conteve o avanço além do vale; outro ataque à ponte enfrentaria posições fortificadas. A colheita se aproxima e nenhum lado tem vitória rápida assegurada.",
+            "Valdren ocupa o vale agrícola da Bavária, no rio Linde, controlando a Ponte de Pedra e o acesso ao Passo Cinzento. O tratado reconhece administração civil de Auren e trânsito comercial desarmado de Valdren; o controle atual não é título de soberania.",
             "question: Quem garante a retirada? — pendente ao encerrar."
           ],
           "$.world.knowledge.actors[].memories[].topics[]": [
@@ -13976,7 +13984,7 @@
           "$.world.map.scene.areas[].description": [
             "Corredor com duas casas (3 m) de largura, iluminado por tochas. Quatro celas ficam a oeste.",
             "O caminho para fora da dungeon. Alcançá-lo conclui a fuga.",
-            "Sala iluminada de um posto fronteiriço neutro, preparada para uma audiência sob salvo-conduto. Você representa o general de Auren; à sua frente está o general Konrad Voss, de Valdren. Os reinos estão em guerra há três anos e Valdren ocupa a Bavária, território disputado. Ambos vieram conversar antes de retomar a campanha. Não há acordo prévio, custódia ou obrigação de aceitar termos. Uma mesa de mapas separa os interlocutores; a porta leva ao vestíbulo.",
+            "Sala iluminada do Posto da Ponte, território neutro da cidade livre de Meridia, onde as credenciais foram conferidas antes da audiência. Você é o general que comanda a frente oriental de Auren, reino a oeste; diante de você está Konrad Voss, general de Valdren, reino montanhoso a leste. A mesa de mapas separa vocês; a porta aberta leva ao vestíbulo. A cidade garante o salvo-conduto e não há guardas ou outros participantes dentro da sala. Ambos estão desarmados. Seu nome, suas opiniões e suas decisões são seus.\n\nA Bavária é um vale fronteiriço fictício do rio Linde, com aldeias agrícolas, moinhos e a Ponte de Pedra, passagem de carroças para o Passo Cinzento. Sua colheita abastece as cidades orientais de Auren; sua estrada liga Valdren aos mercados da planície. Pelo Tratado da Ponte, firmado há quarenta anos, a administração civil e os impostos cabem a Auren, que deve garantir trânsito comercial desarmado a Valdren. Valdren reivindica segurança nessa rota, não possui soberania reconhecida sobre o vale. Hoje suas tropas ocupam a Bavária, controlam a ponte e os acessos; as aldeias continuam habitadas, com deslocados dos dois lados.\n\nHá três anos, ataques a comboios de Valdren foram seguidos pelo fechamento da rota por Auren, que alegou combater contrabando e banditismo. Valdren exigiu a reabertura e invadiu o vale, alegando proteger o trânsito previsto no tratado. Auren combate a ocupação. A autoria dos ataques aos comboios nunca foi esclarecida. Há um ano, uma trégua levou Valdren a recuar para postos de fronteira; esses postos foram atacados depois da retirada, a trégua fracassou e Valdren reocupou o vale. Nenhuma investigação identificou com segurança os mandantes.\n\nVocê assumiu este comando há oito meses, depois da trégua fracassada; na época comandava a defesa de outra passagem, não negociou aquela retirada e não recebeu prova de quem ordenou os ataques. Conhece os relatórios inconclusivos. Você e Voss já se encontraram em duas trocas de prisioneiros sob salvo-conduto, sem amizade ou acordo pessoal anterior. Ele conhece sua nomeação recente. A última campanha terminou com Valdren mantendo o vale e ambos sofrendo perdas. Seu exército conteve o avanço para o interior de Auren, mas retomar a ponte exige atravessar posições fortificadas e arriscar outro cerco. Ninguém dispõe de vitória rápida assegurada; a colheita se aproxima e outra campanha ameaça civis e comércio.\n\nSeu mandato da Coroa de Auren é buscar uma trégua verificável, proteger moradores e deslocados, reabrir a rota e negociar a recuperação da administração civil do vale. Você pode assinar uma trégua de até noventa dias, combinar recuos locais por etapas, troca simultânea de prisioneiros, retorno voluntário de deslocados e trânsito comercial desarmado sem pedágio extraordinário durante a trégua. Pode convidar observadores de Meridia, cuja participação ainda depende de aceite. Não pode reconhecer anexação, ceder soberania, prometer tributo permanente ou reparações do tesouro. Um tratado definitivo exige ratificação da Coroa. Buscar ao menos trinta dias de pausa e proteção civil é uma orientação recebida, não uma escolha ou emoção imposta a você.\n\nAs credenciais de ambos e esses limites de negociação foram lidos antes da reunião. Voss pode negociar cessar-fogo, recuos e acesso civil temporários; uma fronteira definitiva exige ratificação do conselho de Valdren. Ele ainda não ofereceu retirada ou aceitou fiscalização. Meridia sediou a audiência, mas não garantiu observadores, tropas ou suprimentos para um acordo futuro. Nenhuma condição isolada obriga Voss a aceitar. Você pode propor algo diferente, exigir garantias, pedir consulta ao seu governo ou sair sem acordo.\n\nSe a audiência terminar sem acordo, o salvo-conduto permite a saída segura dos dois e a ocupação permanece; os comandos voltarão aos preparativos de campanha, com risco de novas perdas e atraso na colheita. Isso é uma consequência ficcional possível, sem ataque, prazo ou passagem de dias automáticos no simulador. A cena começa antes da primeira proposta. Exércitos, cidades e o vale ficam fora do mapa: uma fala ou aceitação registra termos, mas não desloca tropas, transfere terras ou executa um tratado. As informações acima já são conhecidas pelo seu personagem e podem ser consultadas em off; relatórios reservados de Valdren não integram este briefing.",
             "Sala iluminada por tochas; uma mesa de madeira e um único guarda de serviço.",
             "Sua cela: cama de pedra e trapos. É a mais distante da sala dos guardas.",
             "Um corredor de paredes de pedra com musgo e uma porta para a Sala dos Guardas. Mede 10,5 m de largura.",
@@ -13988,7 +13996,7 @@
             "Uma cela vazia, com cama e panos velhos.",
             "Uma sala de pedra ocupada pelos guardas.",
             "Uma varanda iluminada, ligada ao pátio por uma porta.",
-            "Vestíbulo iluminado do posto neutro, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; sair da sala não executa uma retirada militar."
+            "Vestíbulo iluminado do Posto da Ponte, em Meridia, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; o salvo-conduto continua válido ao deixar a audiência. Sair da sala não executa retirada militar nem aceita ou rompe termos por si só."
           ],
           "$.world.map.scene.areas[].id": [
             "bathroom",
@@ -14028,7 +14036,7 @@
             "wall"
           ],
           "$.world.map.scene.objects[].description": [
-            "Mesa com mapas da fronteira e da Bavária. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. Os mapas são decoração estática, sem provas secretas ou operação de coleta.",
+            "Mesa com mapas da fronteira, do vale da Bavária, do rio Linde, da Ponte de Pedra e do Passo Cinzento. Auren fica a oeste e Valdren a leste. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. São referências geográficas já conhecidas, sem provas secretas ou operação de coleta.",
             "Tocha acesa, fixada à parede leste do corredor."
           ],
           "$.world.map.scene.objects[].id": [
@@ -14324,10 +14332,10 @@
             "general_voss"
           ],
           "$.world.social.opinions[].basis_key": [
-            "0edc104e611a8c324a46d96731eb5316a0a160e861bbb066e38b8b5b0f360e0d",
-            "5b8b50a853d68ee1ae5879620fd9d7b3220a4133946ee3f8d63b52baca5d4230",
-            "7884401c6e4cd664aaf3cc3fde74aa1c46e9a11fe68d9aa17e0a5bee3c3c41d8",
-            "fe23225da81204279c2ab51308f2777609aeb25f7d02c44f0d06a5965dde5166"
+            "169b76ac84cd7695421e6f2a12132756817d1625c46ebad11bdcadb1de11bd9f",
+            "5b617cea8ce8a246f2149deddaf6a1f6465b79953f601bea9f0176572af026a8",
+            "879efe1eda9a1abc1a4152bf2ee52a1bb18a8f12bee79d4d05fde119ae6df60a",
+            "a64d6504fe6d7bdf7cfccaeaa7fd87fffbb6304e1abae1e7724c3ca53e16fd16"
           ],
           "$.world.social.opinions[].conversation_id": [
             "conversation_1"
@@ -14341,12 +14349,12 @@
             "Retirada unilateral seguida da promessa de retirada."
           ],
           "$.world.social.opinions[].fingerprint": [
-            "34fc21ed93e7fc9738439c90fbba9ce74a517727d3d5637d440e7791e7f71890",
-            "531748b665407581620fea387b16570d614e36f7fbf7833bc0a17166bac1291b",
-            "602bbb9286c5c44a7c4ba280eba299ce35cfbf1c9ac886916023ad6a071fba3d",
-            "64626c2355167e7d64f4db5e346f681e79251ba93e87bb6d175985f284e0bdb8",
-            "c98e70fc81818c1dfcfee8ee1eff7a88358e35d023b01315952b6da33f5813d8",
-            "ee2985a133af1a52aad22550152c21b09f3fd4e3f1c4a657761108e18d6bf643"
+            "0f01f763776f07dec7ffa3d9858e890dcce9acfd40701c5abe2ff18ddf2d2e57",
+            "163c93dc5a0805f72f96c45e35ba2f4b733561b630c2f865cf2b82a35e1c4c6b",
+            "6aa9ee415c14d252fdd48f856446353a65e7e1c39d51eec7950e3643f2bf132d",
+            "7ec15b46d551b9818aaca98b9b8d040ecaa03d47159d1affb99eaa5b775a4a7c",
+            "98c892561648c4e781ddb78a3c1e70475963c92c41fe69ab8c3939f428c214f4",
+            "dd67c8144b3e972d57aca10e7f0cf95587ce9bfe53132a62e15b5184d40809ac"
           ],
           "$.world.social.opinions[].id": [
             "opinion_1",
@@ -14404,7 +14412,7 @@
             "term_2"
           ],
           "$.world.social.opinions[].relationship_effects[].origin_reason": [
-            "Cautela inicial perante o representante adversário, sem histórico pessoal verificável; não atribui ao jogador a autoria dos ataques da última trégua.",
+            "Cautela perante o representante adversário. Conhece-o de duas trocas de prisioneiros, mas não tem histórico de compromissos pessoais com ele; sabe que sua nomeação é posterior à trégua e não lhe atribui os ataques.",
             "Não há vínculo afetivo pessoal estabelecido com este interlocutor.",
             "Observou o responsável fechar a porta após o compromisso aceito."
           ],
@@ -14531,7 +14539,7 @@
             "Marina é uma adulta franca e cuidadosa. Conhece o interlocutor de ocasiões anteriores e já houve ajuda nas duas direções. Tem seus próprios limites; amizade, atração e amor não obrigam confiança ou aceitação. Considera o que percebeu e pode recusar sem hostilidade. Os sentimentos do jogador pertencem ao jogador.",
             "Preserva sua integridade.",
             "Sustenta a família com o salário de guarda e costuma aceitar propinas para obter vantagens pessoais. Põe o próprio ganho acima do dever, mas evita perder o emprego, ser denunciado ou sofrer represálias.",
-            "Veterano contido e direto; respeita o salvo-conduto, evita bravatas e pede explicações concretas. Seu objetivo central é preservar a população e a autonomia de Valdren. Nesta audiência quer descobrir se Auren oferece garantias executáveis para encerrar a guerra sem expor seu reino a uma nova quebra de palavra. Deve prestar contas ao conselho, mas não é obrigado a preferir guerra ou paz por princípio. Pode ouvir, discordar, perguntar ou sugerir termos; não existe oferta certa que imponha sua resposta."
+            "Veterano contido e direto; respeita o salvo-conduto e busca garantias executáveis para proteger Valdren. Conhece o tratado: administração civil de Auren e trânsito comercial de Valdren na Bavária. Seu mandato permite trégua de até noventa dias, recuos graduais e retorno da administração civil a Auren sob garantias que julgue suficientes; fronteiras definitivas e tributos exigem ratificação do conselho. Não prometeu retirada. Observadores de Meridia dependem de consulta. Conhece o interlocutor de duas trocas de prisioneiros e sabe que assumiu após a trégua fracassada; não lhe atribui os ataques. Pode discordar, perguntar ou sugerir termos; nenhuma oferta impõe aceitação. Não conhece planos privados de Auren."
           ],
           "$.world.social.profiles[].persona.interests[].description": [
             "Distinguir carinho de confiabilidade e pedir garantias quando necessário.",
@@ -14837,7 +14845,7 @@
             "player"
           ],
           "$.world.social.relationships[].trust.reason": [
-            "Cautela inicial perante o representante adversário, sem histórico pessoal verificável; não atribui ao jogador a autoria dos ataques da última trégua.",
+            "Cautela perante o representante adversário. Conhece-o de duas trocas de prisioneiros, mas não tem histórico de compromissos pessoais com ele; sabe que sua nomeação é posterior à trégua e não lhe atribui os ataques.",
             "Conhece atitudes confiáveis anteriores, sem obrigação de aceitar.",
             "Nenhuma relação inicial declarada.",
             "Observou o responsável fechar a porta após o compromisso aceito.",
@@ -16502,7 +16510,7 @@
             "Corredor com duas casas (3 m) de largura, iluminado por tochas. Quatro celas ficam a oeste.",
             "O caminho para fora da dungeon. Alcançá-lo conclui a fuga.",
             "Sala de pedra separada da sala leste por uma porta de madeira.",
-            "Sala iluminada de um posto fronteiriço neutro, preparada para uma audiência sob salvo-conduto. Você representa o general de Auren; à sua frente está o general Konrad Voss, de Valdren. Os reinos estão em guerra há três anos e Valdren ocupa a Bavária, território disputado. Ambos vieram conversar antes de retomar a campanha. Não há acordo prévio, custódia ou obrigação de aceitar termos. Uma mesa de mapas separa os interlocutores; a porta leva ao vestíbulo.",
+            "Sala iluminada do Posto da Ponte, território neutro da cidade livre de Meridia, onde as credenciais foram conferidas antes da audiência. Você é o general que comanda a frente oriental de Auren, reino a oeste; diante de você está Konrad Voss, general de Valdren, reino montanhoso a leste. A mesa de mapas separa vocês; a porta aberta leva ao vestíbulo. A cidade garante o salvo-conduto e não há guardas ou outros participantes dentro da sala. Ambos estão desarmados. Seu nome, suas opiniões e suas decisões são seus.\n\nA Bavária é um vale fronteiriço fictício do rio Linde, com aldeias agrícolas, moinhos e a Ponte de Pedra, passagem de carroças para o Passo Cinzento. Sua colheita abastece as cidades orientais de Auren; sua estrada liga Valdren aos mercados da planície. Pelo Tratado da Ponte, firmado há quarenta anos, a administração civil e os impostos cabem a Auren, que deve garantir trânsito comercial desarmado a Valdren. Valdren reivindica segurança nessa rota, não possui soberania reconhecida sobre o vale. Hoje suas tropas ocupam a Bavária, controlam a ponte e os acessos; as aldeias continuam habitadas, com deslocados dos dois lados.\n\nHá três anos, ataques a comboios de Valdren foram seguidos pelo fechamento da rota por Auren, que alegou combater contrabando e banditismo. Valdren exigiu a reabertura e invadiu o vale, alegando proteger o trânsito previsto no tratado. Auren combate a ocupação. A autoria dos ataques aos comboios nunca foi esclarecida. Há um ano, uma trégua levou Valdren a recuar para postos de fronteira; esses postos foram atacados depois da retirada, a trégua fracassou e Valdren reocupou o vale. Nenhuma investigação identificou com segurança os mandantes.\n\nVocê assumiu este comando há oito meses, depois da trégua fracassada; na época comandava a defesa de outra passagem, não negociou aquela retirada e não recebeu prova de quem ordenou os ataques. Conhece os relatórios inconclusivos. Você e Voss já se encontraram em duas trocas de prisioneiros sob salvo-conduto, sem amizade ou acordo pessoal anterior. Ele conhece sua nomeação recente. A última campanha terminou com Valdren mantendo o vale e ambos sofrendo perdas. Seu exército conteve o avanço para o interior de Auren, mas retomar a ponte exige atravessar posições fortificadas e arriscar outro cerco. Ninguém dispõe de vitória rápida assegurada; a colheita se aproxima e outra campanha ameaça civis e comércio.\n\nSeu mandato da Coroa de Auren é buscar uma trégua verificável, proteger moradores e deslocados, reabrir a rota e negociar a recuperação da administração civil do vale. Você pode assinar uma trégua de até noventa dias, combinar recuos locais por etapas, troca simultânea de prisioneiros, retorno voluntário de deslocados e trânsito comercial desarmado sem pedágio extraordinário durante a trégua. Pode convidar observadores de Meridia, cuja participação ainda depende de aceite. Não pode reconhecer anexação, ceder soberania, prometer tributo permanente ou reparações do tesouro. Um tratado definitivo exige ratificação da Coroa. Buscar ao menos trinta dias de pausa e proteção civil é uma orientação recebida, não uma escolha ou emoção imposta a você.\n\nAs credenciais de ambos e esses limites de negociação foram lidos antes da reunião. Voss pode negociar cessar-fogo, recuos e acesso civil temporários; uma fronteira definitiva exige ratificação do conselho de Valdren. Ele ainda não ofereceu retirada ou aceitou fiscalização. Meridia sediou a audiência, mas não garantiu observadores, tropas ou suprimentos para um acordo futuro. Nenhuma condição isolada obriga Voss a aceitar. Você pode propor algo diferente, exigir garantias, pedir consulta ao seu governo ou sair sem acordo.\n\nSe a audiência terminar sem acordo, o salvo-conduto permite a saída segura dos dois e a ocupação permanece; os comandos voltarão aos preparativos de campanha, com risco de novas perdas e atraso na colheita. Isso é uma consequência ficcional possível, sem ataque, prazo ou passagem de dias automáticos no simulador. A cena começa antes da primeira proposta. Exércitos, cidades e o vale ficam fora do mapa: uma fala ou aceitação registra termos, mas não desloca tropas, transfere terras ou executa um tratado. As informações acima já são conhecidas pelo seu personagem e podem ser consultadas em off; relatórios reservados de Valdren não integram este briefing.",
             "Sala iluminada por tochas; uma mesa de madeira e um único guarda de serviço.",
             "Sala onde um vigia pode observar ou procurar sons.",
             "Sua cela: cama de pedra e trapos. É a mais distante da sala dos guardas.",
@@ -16520,7 +16528,7 @@
             "Uma sala de trabalho separada por uma porta de madeira.",
             "Uma sala iluminada, com um arquivista e seu aprendiz.",
             "Uma varanda iluminada, ligada ao pátio por uma porta.",
-            "Vestíbulo iluminado do posto neutro, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; sair da sala não executa uma retirada militar."
+            "Vestíbulo iluminado do Posto da Ponte, em Meridia, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; o salvo-conduto continua válido ao deixar a audiência. Sair da sala não executa retirada militar nem aceita ou rompe termos por si só."
           ],
           "$.map.scene.areas[].id": [
             "bathroom",
@@ -16570,7 +16578,7 @@
             "wall"
           ],
           "$.map.scene.objects[].description": [
-            "Mesa com mapas da fronteira e da Bavária. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. Os mapas são decoração estática, sem provas secretas ou operação de coleta.",
+            "Mesa com mapas da fronteira, do vale da Bavária, do rio Linde, da Ponte de Pedra e do Passo Cinzento. Auren fica a oeste e Valdren a leste. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. São referências geográficas já conhecidas, sem provas secretas ou operação de coleta.",
             "Tocha acesa, fixada à parede leste do corredor.",
             "Um banco de madeira sob uma árvore.",
             "Uma pequena chave de ferro.",
@@ -17336,10 +17344,10 @@
             "campaign_outcome",
             "care_history",
             "custodian",
-            "duration",
             "fears_if_suspicion_confirmed",
             "imprisoned_by",
             "location",
+            "meeting_terms",
             "observed_injury",
             "occupied_by",
             "open",
@@ -17356,8 +17364,8 @@
             "archive_key",
             "bavaria",
             "bond:player:friendship",
-            "border_war",
             "cell_key",
+            "council_credentials",
             "council_door",
             "courtyard_door",
             "door",
@@ -17392,7 +17400,7 @@
             "position:18,3",
             "promise_failed",
             "reprisals_from_lord",
-            "three_years",
+            "temporary_terms_subject_to_ratification",
             "true",
             "valdren",
             "valdren_held_bavaria_with_losses"
@@ -17403,8 +17411,8 @@
             "Antecedente autoral de cuidado concreto; não declara sentimento do destinatário.",
             "Antecedente autoral; não define a intenção atual do jogador.",
             "Autor e resultado vistos; não é uma promessa ou cumprimento de termos fora do motor.",
-            "Comandou essa campanha; não conhece os planos atuais do exército de Auren.",
-            "Conhece a ocupação; nenhuma fala na sala executa ordens militares.",
+            "Comandou a campanha; não conhece planos privados ou reservas exatas de Auren.",
+            "Credenciais públicas lidas; não são oferta ou compromisso aceito.",
             "Declaração própria anterior; não atribui sentimentos ao interlocutor.",
             "Declaração própria sobre disponibilidade; não comprova sentimentos ou reciprocidade.",
             "Episódio inicial autoral. Não registra transferência durante o jogo nem altera um saldo atual.",
@@ -17414,24 +17422,25 @@
             "O arquivista inspecionou a sala leste e depois voltou para a sala oeste. Pode ajudar visitantes com informações do arquivo.",
             "O encarceramento partiu do chefe do guarda. O guarda está preocupado com as possíveis consequências dessa prisão.",
             "O prisioneiro sabe que precisa obter a chave com o guarda para escapar, mas desconhece onde o guarda a guarda.",
-            "Participou das campanhas; a duração é conhecida pelos dois lados.",
+            "O tratado e a inspeção fundamentam a lembrança; nenhuma fala executa ordens militares.",
             "Perspectiva do NPC; não atribui sentimento ou escolha ao destinatário.",
             "Relatório reservado ainda não confirmado por inspeção própria. Não é informação pública.",
-            "Viu os postos destruídos; isso não identifica mandante nem prova traição do interlocutor.",
+            "Viu os postos destruídos; mandante desconhecido. O interlocutor assumiu depois da trégua.",
             "archivist disse: Na última inspeção, vi a chave na mesa."
           ],
           "$.world.knowledge.actors[].memories[].entities[]": [
             "archive_key",
             "bavaria",
-            "border_war",
             "cell_2",
             "corridor",
+            "council_credentials",
             "council_hall",
             "courtyard",
             "desk",
             "east",
             "garden",
             "gate_2",
+            "general_voss",
             "guard_1",
             "guard_room",
             "guard_superior",
@@ -17457,8 +17466,8 @@
             "general_voss:broken-truce",
             "general_voss:memory:1",
             "general_voss:private-supply-report",
+            "general_voss:read-credentials",
             "general_voss:recent-campaign",
-            "general_voss:war-duration",
             "guard_1:fear-of-reprisals",
             "guard_1:memory:1",
             "guard_1:possible-lords-son",
@@ -17506,14 +17515,13 @@
             "archivist:key-on-desk"
           ],
           "$.world.knowledge.actors[].memories[].text": [
-            "A guerra entre Auren e Valdren dura três anos.",
+            "Ambos podem negociar trégua de até noventa dias e recuos. Auren pode trocar prisioneiros, autorizar retorno voluntário de deslocados e trânsito desarmado sem pedágio extraordinário na trégua. Soberania, tributos e tratado definitivo exigem ratificação. Observadores dependem de Meridia.",
             "Após a retirada de Valdren na última trégua, postos de fronteira foram atacados. Não sabe quem ordenou os ataques.",
             "Ataque contra Guarda 1: erro, 3 de dano; 9 PV restantes.",
             "Disseram que a chave foi para a coluna 18, linha 3.",
             "Foi meu chefe quem colocou um dos prisioneiros nesta dungeon.",
             "Lia e o interlocutor já conversaram e passearam juntos em outras ocasiões.",
             "Marina declarou que prefere conservar a amizade sem romance neste momento.",
-            "Na última campanha, Valdren conservou a Bavária, mas perdeu soldados. Não foi uma vitória sem custo.",
             "Na última inspeção, vi a chave do arquivo sobre a mesa, na coluna 13, linha 3. Não sei se continua lá.",
             "O intendente relatou que as reservas de grãos podem não durar até o fim do inverno.",
             "O interlocutor entregou a Davi uma moeda de cobre antes desta conversa, sem cobrar nada.",
@@ -17525,7 +17533,8 @@
             "Sou herdeiro de um nobre; ouça minha explicação.",
             "Suspeito que um dos prisioneiros seja filho de um lorde importante, mas não tenho confirmação disso.",
             "Uma promessa anterior do interlocutor não foi cumprida; Marina observou a falha.",
-            "Valdren mantém tropas na Bavária; sua devolução ainda não foi acordada.",
+            "Valdren conservou a Bavária, mas perdeu soldados. Auren conteve o avanço além do vale; outro ataque à ponte enfrentaria posições fortificadas. A colheita se aproxima e nenhum lado tem vitória rápida assegurada.",
+            "Valdren ocupa o vale agrícola da Bavária, no rio Linde, controlando a Ponte de Pedra e o acesso ao Passo Cinzento. O tratado reconhece administração civil de Auren e trânsito comercial desarmado de Valdren; o controle atual não é título de soberania.",
             "friendship: História de cuidado percebido nas duas direções.",
             "marina ajudou player a encontrar um caminho seguro em um encontro anterior.",
             "não quero romance",
@@ -17565,14 +17574,15 @@
             "prisão",
             "relationships",
             "represálias",
+            "salvo-conduto",
             "suspeita",
             "trégua"
           ],
           "$.world.knowledge.actors[].memories[].when": [
             "Antes da abertura desta situação.",
+            "Antes da audiência.",
             "Antes desta conversa.",
             "Ao considerar sua suspeita sobre o prisioneiro.",
-            "Ao longo das três campanhas anuais.",
             "Ação efetivamente observada durante a partida.",
             "Depois da última trégua, há um ano.",
             "Depois que seu chefe colocou esse prisioneiro na dungeon.",
@@ -17596,7 +17606,7 @@
             "Corredor com duas casas (3 m) de largura, iluminado por tochas. Quatro celas ficam a oeste.",
             "O caminho para fora da dungeon. Alcançá-lo conclui a fuga.",
             "Sala de pedra separada da sala leste por uma porta de madeira.",
-            "Sala iluminada de um posto fronteiriço neutro, preparada para uma audiência sob salvo-conduto. Você representa o general de Auren; à sua frente está o general Konrad Voss, de Valdren. Os reinos estão em guerra há três anos e Valdren ocupa a Bavária, território disputado. Ambos vieram conversar antes de retomar a campanha. Não há acordo prévio, custódia ou obrigação de aceitar termos. Uma mesa de mapas separa os interlocutores; a porta leva ao vestíbulo.",
+            "Sala iluminada do Posto da Ponte, território neutro da cidade livre de Meridia, onde as credenciais foram conferidas antes da audiência. Você é o general que comanda a frente oriental de Auren, reino a oeste; diante de você está Konrad Voss, general de Valdren, reino montanhoso a leste. A mesa de mapas separa vocês; a porta aberta leva ao vestíbulo. A cidade garante o salvo-conduto e não há guardas ou outros participantes dentro da sala. Ambos estão desarmados. Seu nome, suas opiniões e suas decisões são seus.\n\nA Bavária é um vale fronteiriço fictício do rio Linde, com aldeias agrícolas, moinhos e a Ponte de Pedra, passagem de carroças para o Passo Cinzento. Sua colheita abastece as cidades orientais de Auren; sua estrada liga Valdren aos mercados da planície. Pelo Tratado da Ponte, firmado há quarenta anos, a administração civil e os impostos cabem a Auren, que deve garantir trânsito comercial desarmado a Valdren. Valdren reivindica segurança nessa rota, não possui soberania reconhecida sobre o vale. Hoje suas tropas ocupam a Bavária, controlam a ponte e os acessos; as aldeias continuam habitadas, com deslocados dos dois lados.\n\nHá três anos, ataques a comboios de Valdren foram seguidos pelo fechamento da rota por Auren, que alegou combater contrabando e banditismo. Valdren exigiu a reabertura e invadiu o vale, alegando proteger o trânsito previsto no tratado. Auren combate a ocupação. A autoria dos ataques aos comboios nunca foi esclarecida. Há um ano, uma trégua levou Valdren a recuar para postos de fronteira; esses postos foram atacados depois da retirada, a trégua fracassou e Valdren reocupou o vale. Nenhuma investigação identificou com segurança os mandantes.\n\nVocê assumiu este comando há oito meses, depois da trégua fracassada; na época comandava a defesa de outra passagem, não negociou aquela retirada e não recebeu prova de quem ordenou os ataques. Conhece os relatórios inconclusivos. Você e Voss já se encontraram em duas trocas de prisioneiros sob salvo-conduto, sem amizade ou acordo pessoal anterior. Ele conhece sua nomeação recente. A última campanha terminou com Valdren mantendo o vale e ambos sofrendo perdas. Seu exército conteve o avanço para o interior de Auren, mas retomar a ponte exige atravessar posições fortificadas e arriscar outro cerco. Ninguém dispõe de vitória rápida assegurada; a colheita se aproxima e outra campanha ameaça civis e comércio.\n\nSeu mandato da Coroa de Auren é buscar uma trégua verificável, proteger moradores e deslocados, reabrir a rota e negociar a recuperação da administração civil do vale. Você pode assinar uma trégua de até noventa dias, combinar recuos locais por etapas, troca simultânea de prisioneiros, retorno voluntário de deslocados e trânsito comercial desarmado sem pedágio extraordinário durante a trégua. Pode convidar observadores de Meridia, cuja participação ainda depende de aceite. Não pode reconhecer anexação, ceder soberania, prometer tributo permanente ou reparações do tesouro. Um tratado definitivo exige ratificação da Coroa. Buscar ao menos trinta dias de pausa e proteção civil é uma orientação recebida, não uma escolha ou emoção imposta a você.\n\nAs credenciais de ambos e esses limites de negociação foram lidos antes da reunião. Voss pode negociar cessar-fogo, recuos e acesso civil temporários; uma fronteira definitiva exige ratificação do conselho de Valdren. Ele ainda não ofereceu retirada ou aceitou fiscalização. Meridia sediou a audiência, mas não garantiu observadores, tropas ou suprimentos para um acordo futuro. Nenhuma condição isolada obriga Voss a aceitar. Você pode propor algo diferente, exigir garantias, pedir consulta ao seu governo ou sair sem acordo.\n\nSe a audiência terminar sem acordo, o salvo-conduto permite a saída segura dos dois e a ocupação permanece; os comandos voltarão aos preparativos de campanha, com risco de novas perdas e atraso na colheita. Isso é uma consequência ficcional possível, sem ataque, prazo ou passagem de dias automáticos no simulador. A cena começa antes da primeira proposta. Exércitos, cidades e o vale ficam fora do mapa: uma fala ou aceitação registra termos, mas não desloca tropas, transfere terras ou executa um tratado. As informações acima já são conhecidas pelo seu personagem e podem ser consultadas em off; relatórios reservados de Valdren não integram este briefing.",
             "Sala iluminada por tochas; uma mesa de madeira e um único guarda de serviço.",
             "Sala onde um vigia pode observar ou procurar sons.",
             "Sua cela: cama de pedra e trapos. É a mais distante da sala dos guardas.",
@@ -17614,7 +17624,7 @@
             "Uma sala de trabalho separada por uma porta de madeira.",
             "Uma sala iluminada, com um arquivista e seu aprendiz.",
             "Uma varanda iluminada, ligada ao pátio por uma porta.",
-            "Vestíbulo iluminado do posto neutro, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; sair da sala não executa uma retirada militar."
+            "Vestíbulo iluminado do Posto da Ponte, em Meridia, sem outros participantes presentes. A passagem dá acesso à Sala do Conselho; o salvo-conduto continua válido ao deixar a audiência. Sair da sala não executa retirada militar nem aceita ou rompe termos por si só."
           ],
           "$.world.map.scene.areas[].id": [
             "bathroom",
@@ -17664,7 +17674,7 @@
             "wall"
           ],
           "$.world.map.scene.objects[].description": [
-            "Mesa com mapas da fronteira e da Bavária. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. Os mapas são decoração estática, sem provas secretas ou operação de coleta.",
+            "Mesa com mapas da fronteira, do vale da Bavária, do rio Linde, da Ponte de Pedra e do Passo Cinzento. Auren fica a oeste e Valdren a leste. Ocupa uma casa; é possível contorná-la e ver o interlocutor do outro lado. São referências geográficas já conhecidas, sem provas secretas ou operação de coleta.",
             "Tocha acesa, fixada à parede leste do corredor.",
             "Um banco de madeira sob uma árvore.",
             "Uma pequena chave de ferro.",
@@ -18091,10 +18101,10 @@
             "general_voss"
           ],
           "$.world.social.opinions[].basis_key": [
-            "0edc104e611a8c324a46d96731eb5316a0a160e861bbb066e38b8b5b0f360e0d",
-            "4e6ad37e0470b837e9c7f75601bf57e443edf379a98c798625f29a64b1e11bac",
-            "7884401c6e4cd664aaf3cc3fde74aa1c46e9a11fe68d9aa17e0a5bee3c3c41d8",
-            "fe23225da81204279c2ab51308f2777609aeb25f7d02c44f0d06a5965dde5166"
+            "10a7cdcf0e6c6bfa599b96f43329332288e89564903433698e37fde1cecd89df",
+            "5b617cea8ce8a246f2149deddaf6a1f6465b79953f601bea9f0176572af026a8",
+            "879efe1eda9a1abc1a4152bf2ee52a1bb18a8f12bee79d4d05fde119ae6df60a",
+            "a64d6504fe6d7bdf7cfccaeaa7fd87fffbb6304e1abae1e7724c3ca53e16fd16"
           ],
           "$.world.social.opinions[].conversation_id": [
             "conversation_1"
@@ -18108,12 +18118,12 @@
             "Retirada unilateral seguida da promessa de retirada."
           ],
           "$.world.social.opinions[].fingerprint": [
-            "31bac305607c1dff50fda55f7063f2f54d2875e790f38023bb69a8f6623de0ab",
-            "34fc21ed93e7fc9738439c90fbba9ce74a517727d3d5637d440e7791e7f71890",
-            "602bbb9286c5c44a7c4ba280eba299ce35cfbf1c9ac886916023ad6a071fba3d",
-            "64626c2355167e7d64f4db5e346f681e79251ba93e87bb6d175985f284e0bdb8",
-            "c98e70fc81818c1dfcfee8ee1eff7a88358e35d023b01315952b6da33f5813d8",
-            "ee2985a133af1a52aad22550152c21b09f3fd4e3f1c4a657761108e18d6bf643"
+            "0f01f763776f07dec7ffa3d9858e890dcce9acfd40701c5abe2ff18ddf2d2e57",
+            "479844000ca51010e63d94b27dfaf7af6baa7991d30b50b7a4c499fc504c2fd9",
+            "6aa9ee415c14d252fdd48f856446353a65e7e1c39d51eec7950e3643f2bf132d",
+            "7ec15b46d551b9818aaca98b9b8d040ecaa03d47159d1affb99eaa5b775a4a7c",
+            "98c892561648c4e781ddb78a3c1e70475963c92c41fe69ab8c3939f428c214f4",
+            "dd67c8144b3e972d57aca10e7f0cf95587ce9bfe53132a62e15b5184d40809ac"
           ],
           "$.world.social.opinions[].id": [
             "opinion_1",
@@ -18174,7 +18184,7 @@
           ],
           "$.world.social.opinions[].relationship_effects[].origin_reason": [
             "Cautela do cenário baseada na trégua, sem provar culpa do interlocutor.",
-            "Cautela inicial perante o representante adversário, sem histórico pessoal verificável; não atribui ao jogador a autoria dos ataques da última trégua.",
+            "Cautela perante o representante adversário. Conhece-o de duas trocas de prisioneiros, mas não tem histórico de compromissos pessoais com ele; sabe que sua nomeação é posterior à trégua e não lhe atribui os ataques.",
             "Não há vínculo afetivo pessoal estabelecido com este interlocutor.",
             "Observou o responsável fechar a porta após o compromisso aceito."
           ],
@@ -18327,7 +18337,7 @@
             "Preserva sua integridade.",
             "Protege sua integridade e emprego.",
             "Sustenta a família com o salário de guarda e costuma aceitar propinas para obter vantagens pessoais. Põe o próprio ganho acima do dever, mas evita perder o emprego, ser denunciado ou sofrer represálias.",
-            "Veterano contido e direto; respeita o salvo-conduto, evita bravatas e pede explicações concretas. Seu objetivo central é preservar a população e a autonomia de Valdren. Nesta audiência quer descobrir se Auren oferece garantias executáveis para encerrar a guerra sem expor seu reino a uma nova quebra de palavra. Deve prestar contas ao conselho, mas não é obrigado a preferir guerra ou paz por princípio. Pode ouvir, discordar, perguntar ou sugerir termos; não existe oferta certa que imponha sua resposta."
+            "Veterano contido e direto; respeita o salvo-conduto e busca garantias executáveis para proteger Valdren. Conhece o tratado: administração civil de Auren e trânsito comercial de Valdren na Bavária. Seu mandato permite trégua de até noventa dias, recuos graduais e retorno da administração civil a Auren sob garantias que julgue suficientes; fronteiras definitivas e tributos exigem ratificação do conselho. Não prometeu retirada. Observadores de Meridia dependem de consulta. Conhece o interlocutor de duas trocas de prisioneiros e sabe que assumiu após a trégua fracassada; não lhe atribui os ataques. Pode discordar, perguntar ou sugerir termos; nenhuma oferta impõe aceitação. Não conhece planos privados de Auren."
           ],
           "$.world.social.profiles[].persona.interests[].description": [
             "Compartilhar caminhos conhecidos quando isso for útil, sem impor companhia.",
@@ -18759,7 +18769,7 @@
           "$.world.social.relationships[].trust.reason": [
             "A pequena ajuda anterior favorece confiança inicial, sem lealdade automática.",
             "Cautela do cenário baseada na trégua, sem provar culpa do interlocutor.",
-            "Cautela inicial perante o representante adversário, sem histórico pessoal verificável; não atribui ao jogador a autoria dos ataques da última trégua.",
+            "Cautela perante o representante adversário. Conhece-o de duas trocas de prisioneiros, mas não tem histórico de compromissos pessoais com ele; sabe que sua nomeação é posterior à trégua e não lhe atribui os ataques.",
             "Confiança inicial declarada pela história de amizade, sem obrigação de concordar.",
             "Conhece atitudes confiáveis anteriores, sem obrigação de aceitar.",
             "Nenhuma relação inicial declarada.",
@@ -19856,8 +19866,8 @@
   },
   "format_version": 1,
   "review": {
-    "previous_sha256": "876b9017a82172f154d69190a17a77236d80eb512c60a85711687393dbb2641c",
-    "reason": "Revisão complementar do passo 9: apenas as instruções compartilhadas de fala mudaram. Disponibilidade afetiva exige declaração própria literal por conversation; claims e memory_ids não podem reapresentar uma declaração antiga para contornar limite posterior. Bloqueio determinístico e regressão específica verificados; demais campos, esquemas e projeções preservados.",
-    "sha256": "d5daf04daa1a67007aed3435b66a189c278d5291fa5186441c4cd054f272cf8f"
+    "previous_sha256": "d5daf04daa1a67007aed3435b66a189c278d5291fa5186441c4cd054f272cf8f",
+    "reason": "Briefing ficcional do conselho dos generais completado: geografia e valor da Bavária, tratado, origem da guerra, histórico do jogador, mandatos e consequências sem acordo. Revisadas 66 alterações apenas em textos das amostras, incluindo memórias públicas, persona e identidades de bases derivadas. Relato reservado preservado; abertura, off e reinício conferidos pelo runner com narração fixa. Contratos, esquemas, instruções e estruturas preservados; reconstrução idêntica e seleção de memórias mantém a cobertura de fontes anteriores.",
+    "sha256": "c532951c0d7b218b49c00de03462b541a35b51f0feab73c805dc876e69b056ae"
   }
 }

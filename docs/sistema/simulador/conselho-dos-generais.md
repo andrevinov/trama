@@ -21,6 +21,105 @@ Não há acordo inicial nem proposta obrigatória para o jogador. Ambos usam o
 recorte mecânico existente de Humano/Guerreiro de nível 3, sem armadura ou armas;
 “general” é um papel ficcional, não uma classe ou regra nova de D&D.
 
+## Briefing do jogador
+
+Este contexto foi completado em 19/11/2026 para permitir decisões informadas na
+audiência. É ficção própria do cenário. A Bavária aqui é o vale descrito abaixo,
+sem depender de história ou geografia reais. O texto está na descrição da Sala
+do Conselho no JSON: chega à percepção do narrador na abertura e nas consultas
+off, além do contexto do Mundo. Não há novo motor de guerra ou de tratados.
+
+### O que é a Bavária
+
+Auren fica a oeste e Valdren, reino montanhoso, a leste. Entre eles está o vale
+agrícola da Bavária, ao longo do **rio Linde**. Aldeias, lavouras e moinhos
+abastecem as cidades orientais de Auren. A **Ponte de Pedra** permite a passagem
+de carroças para o **Passo Cinzento**, ligando Valdren aos mercados da planície.
+
+O **Tratado da Ponte**, firmado há quarenta anos, reconhece a administração civil
+e os impostos de Auren, com obrigação de garantir trânsito comercial desarmado
+a Valdren. Assim, Auren pretende recuperar o governo do vale; Valdren quer uma
+rota segura. A ocupação atual é controle militar, sem soberania reconhecida de
+Valdren. Moradores continuam no vale, e há deslocados dos dois lados.
+
+### Por que houve guerra e por que a trégua fracassou
+
+Há três anos, comboios de Valdren sofreram ataques. Auren fechou a rota alegando
+combater contrabando e banditismo. Valdren exigiu reabertura e invadiu o vale,
+alegando defender o trânsito previsto no tratado. Auren combate a ocupação.
+Não foi esclarecido quem ordenou os ataques aos comboios.
+
+Há um ano, uma trégua levou Valdren a recuar para postos de fronteira. Esses
+postos foram atacados depois da retirada; a trégua fracassou e Valdren reocupou
+o vale. Os mandantes também não foram identificados com segurança. Essa história
+explica a exigência de garantias sem determinar culpa ou a resposta à negociação.
+
+### Quem você é e o que sabe
+
+Você comanda a frente oriental de Auren há oito meses. Na última trégua,
+comandava a defesa de outra passagem: não negociou aquela retirada e conhece
+somente os relatórios inconclusivos sobre os ataques. Seu nome e suas opiniões
+continuam à sua escolha; não existe sentimento ou decisão inicial impostos.
+
+Você e Voss já se encontraram em duas trocas de prisioneiros sob salvo-conduto.
+Não são amigos e não firmaram acordo pessoal anterior. Ele sabe que você assumiu
+depois do fracasso da trégua; a cautela inicial não é uma acusação de autoria.
+
+Na campanha recente, Auren conteve o avanço além do vale, mas Valdren manteve a
+Bavária e sofreu baixas. Atacar a ponte exige enfrentar posições fortificadas e
+arriscar outro cerco. Não há vitória rápida assegurada para nenhum lado. Outra
+campanha ameaça a colheita, os moradores e o comércio. Você não conhece relatórios
+reservados, reservas exatas ou planos secretos de Valdren.
+
+### Seu mandato e suas opções
+
+A Coroa de Auren o orienta a buscar trégua verificável, proteção de moradores e
+deslocados, reabertura da rota e recuperação da administração civil. Procurar
+ao menos trinta dias de pausa e proteção civil é uma orientação recebida, não
+um resultado obrigatório ou um desejo atribuído ao personagem.
+
+| Você está autorizado a negociar | Depende de ratificação ou de outra parte |
+| --- | --- |
+| Trégua de até noventa dias e recuos locais por etapas. | Tratado definitivo: ratificação da Coroa. |
+| Troca simultânea de prisioneiros e retorno voluntário de deslocados. | Reconhecer anexação ou ceder soberania: fora do seu mandato. |
+| Trânsito comercial desarmado sem pedágio extraordinário durante a trégua. | Tributos permanentes ou reparações do tesouro: fora do seu mandato. |
+| Convidar observadores da cidade livre de Meridia. | Participação dos observadores: aceite de Meridia, ainda não concedido. |
+
+Você pode combinar essas possibilidades, formular outra proposta, pedir consulta
+ao seu governo, exigir garantias ou sair sem acordo. O mandato é contexto
+ficcional, sem validação determinística de competência diplomática: falar algo
+fora desses limites não transfere soberania nem obriga sua Coroa.
+
+### O que Voss pode decidir e o que acontece sem acordo
+
+As credenciais dos dois foram lidas antes da audiência. Voss pode pactuar trégua
+de até noventa dias, recuos graduais e retorno da administração civil a Auren
+sob garantias que julgue suficientes. Alterar permanentemente fronteiras ou
+comprometer tributos exige ratificação do conselho de Valdren. Isso é competência,
+sem oferta, retirada prometida ou condição que imponha aceitação.
+
+A reunião ocorre no **Posto da Ponte**, pertencente à cidade livre de **Meridia**.
+Ela garante a segurança da audiência e a saída dos dois. Não prometeu soldados,
+observadores ou suprimentos para um futuro acordo. Não há terceiro participante
+presente dentro do mapa.
+
+Sem acordo, o salvo-conduto permanece válido, a ocupação continua e os comandos
+voltam aos preparativos de campanha. Novas perdas e atraso na colheita são riscos
+ficcionais; não há ofensiva ou passagem de dias executada automaticamente.
+
+Para consultar durante o jogo, use, por exemplo:
+
+```text
+[O que é a Bavária e por que cada reino a considera importante?]
+[Qual é meu mandato e o que depende da Coroa ou de Meridia?]
+[O que meu personagem sabe sobre a última trégua e sobre Voss?]
+```
+
+O narrador recebe o briefing conhecido, mas pode resumir a abertura. A apresentação
+completa está nesta referência; a formulação exata das respostas continua sujeita
+à avaliação manual da IA. Informações novas inventadas pelo jogador são relatos,
+sem se tornarem automaticamente fatos do cenário.
+
 ## Persona e memórias
 
 Voss é leal e neutro, contido e direto. Seu objetivo central é preservar a
@@ -33,8 +132,8 @@ dos acordos (3) e dever diante do conselho e do salvo-conduto (2). São dados da
 [política social existente](../aplicacao/disposicao-social.md), não uma pontuação
 nova de negociação. Não há oferta ou frase que determine a resposta.
 
-Cinco memórias registram duração da guerra, ocupação da Bavária, consequências
-da última trégua, campanha recente e um relato reservado. Voss viu postos destruídos
+Seis memórias registram origem/duração da guerra, situação da Bavária, consequências
+da última trégua, campanha recente, credenciais públicas e um relato reservado. Voss viu postos destruídos
 após a retirada, mas não sabe quem ordenou os ataques; isso não comprova traição
 do jogador. Cada lembrança preserva fonte, ocasião e contexto.
 
@@ -86,8 +185,9 @@ a iniciativa após essas notas na mesma interação, sem exigir abordagem.
 As [relações iniciais](../aplicacao/relacoes-iniciais.md) definem confiança -1 e
 afeto 0 do general para o jogador: cautela perante o representante adversário
 sem atribuir-lhe os ataques da trégua. A pertinência de uma promessa pode alterar
-a avaliação; isso não obriga aceitar ou recusar. Evolução da relação permanece no
-[roadmap](../../roadmaps/implementados/2026-11-19-conversacao-contextual/plano.md).
+a avaliação; isso não obriga aceitar ou recusar. A
+[evolução por episódios percebidos](../aplicacao/evolucao-das-relacoes.md)
+usa evidências próprias, sem pontos por quantidade de falas.
 
 Exércitos, territórios e abastecimento são informações fora do mapa. Falar não
 movimenta tropas, devolve terras, autentica documentos ou transfere itens.
