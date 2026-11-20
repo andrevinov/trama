@@ -71,6 +71,11 @@ de `conversation` em falas executadas, não por história ou texto narrado. Veja
 `conversation.focus` é rótulo semântico, podendo resumir a fala e seu contexto
 percebido sem ser uma citação literal. Pontos, termos, motivos de transição e
 declarações de limites conservam validação literal. As amostras do conselho
+incluem trechos com ponto final reconstruído a partir de fala entre aspas. A
+comparação admite apenas variações de superfície documentadas no contrato da
+conversa, preservando palavras, números, negações e pontuação interna. Erros
+informam trecho/campo e fonte da comparação à correção limitada do interpretador.
+As amostras também
 exercitam foco resumido do jogador e de Voss nas mesmas projeções reais; isso
 não permite criar compromissos ou resolver pendências apenas por mudar o foco.
 

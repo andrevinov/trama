@@ -41,8 +41,12 @@ registro conhecido em conversations ou é null para selecionar/iniciar a convers
 focus é um rótulo semântico curto do assunto, sustentado pela fala atual e pelo
 contexto percebido da conversa; pode resumir sem copiar palavras literalmente.
 Não é citação, novo fato, compromisso ou objetivo privado do interlocutor.
-points.text contém trechos LITERAIS da fala em text. points distingue statement,
-question, request, offer, condition, objection e topic. Registre assuntos laterais
+points.text contém trechos LITERAIS da fala em text.
+Na conferência das citações, o código tolera espaços, aspas tipográficas e um
+ponto final simples no fim do trecho. Preserve palavras, maiúsculas, acentos,
+números, negações e pontuação interna; não converta pergunta em afirmação.
+No jogador, confira o trecho também na mensagem original, além de steps[].text.
+points distingue statement, question, request, offer, condition, objection e topic. Registre assuntos laterais
 como topic; uma pergunta não respondida continua pendente ao mudar o foco.
 resolves lista ids de pendências realmente respondidas/retiradas nesta fala.
 'latest' referencia a última pendência conhecida de OUTRO participante após as

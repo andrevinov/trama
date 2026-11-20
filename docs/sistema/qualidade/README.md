@@ -91,6 +91,7 @@ preserva essa distinção. Uma execução por situação não mede repetibilidad
 | Dificuldades contextuais e memórias live | [Casos, critérios e orçamento](dificuldade-live.md) |
 | Agência e narração live | [Casos, orçamento e revisão](agencia-live.md) |
 | Foco semântico e resposta executada no conselho | [Regressão, critérios e orçamento](foco-conversa-live.md) |
+| Pontuação em falas citadas e preservação de conteúdo | [Casos, critérios e orçamento](pontuacao-conversa-live.md) |
 | Comunicação por gestos live | [Casos, critérios e orçamento](gestos-live.md) |
 | Inspeção de passagens live | [Casos, critérios e orçamento](inspecao-live.md) |
 | Política dos live tests | [politica-live-tests](politica-live-tests.md) |

@@ -22,6 +22,7 @@ from trama.observability import log_context
 ROOT = Path(__file__).resolve().parents[2]
 SCENARIO = ROOT / 'src/trama/scenarios/generals_council.json'
 CASES = json.loads((ROOT / 'tests/fixtures/conversation_focus/cases.json').read_text())
+PUNCTUATION_CASES = json.loads((ROOT / 'tests/fixtures/conversation_punctuation/cases.json').read_text())
 RUN_ID = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S') + '-' + uuid4().hex[:8]
 pytestmark = [pytest.mark.live, pytest.mark.skipif(
     os.environ.get('RUN_OPENAI_LIVE_TESTS') != '1',
@@ -76,7 +77,7 @@ def evaluate(case, before, after, result, *, off=False, initial=False):
             terms = ' '.join(t['text'].casefold() for p in own for v in p['versions'] for t in v['terms'])
             if not all(word in terms for word in ('trinta', 'dias', 'recuo', 'simultâneo')):
                 errors.append('Os termos perderam duração ou simultaneidade da oferta.')
-    elif proposals:
+    elif case['proposal'] is False and proposals:
         errors.append('A saudação criou uma proposta não apresentada.')
     for request in result.requests:
         if request.stage == 'narrate':
@@ -94,14 +95,14 @@ def record(result, game):
         reply=asdict(result.reply) if result.reply else None, error=str(result.error) if result.error else None)
 
 
-@pytest.mark.parametrize('case', CASES, ids=[c['id'] for c in CASES])
-def test_live_conversation_focus(case, capture_logs):
+def run_case(case, capture_logs, *, evaluator=evaluate, group='conversation_focus',
+             artifacts_env='TRAMA_FOCUS_ARTIFACTS', cap_env='TRAMA_FOCUS_CALL_CAP'):
     if not os.environ.get('OPENAI_API_KEY'):
         pytest.skip('OPENAI_API_KEY não configurada')
-    output = Path(os.environ.get('TRAMA_FOCUS_ARTIFACTS', ROOT / 'logs/live/conversation_focus')) / RUN_ID / case['id']
+    output = Path(os.environ.get(artifacts_env, ROOT / 'logs/live' / group)) / RUN_ID / case['id']
     output.mkdir(parents=True, exist_ok=False)
     # Permite reduzir o teto para respeitar saldo autorizado após falha de ambiente.
-    cap = min(case['max_sdk_calls'], int(os.environ.get('TRAMA_FOCUS_CALL_CAP', case['max_sdk_calls'])))
+    cap = min(case['max_sdk_calls'], int(os.environ.get(cap_env, case['max_sdk_calls'])))
     budget, roller = CallBudget(cap), ScriptedRoller([])
     evidence = dict(case=case, scenario=str(SCENARIO.relative_to(ROOT)), session_id=uuid4().hex,
         outcome='failed', runs=[], narrative_review=(
@@ -120,7 +121,7 @@ def test_live_conversation_focus(case, capture_logs):
                 after = snapshot(game.flow.session)
                 observed = dict(phase=phase, before=before, after=after, **record(result, game))
                 evidence['runs'].append(observed)
-                observed['errors'] = evaluate(case, before, after, result, off=phase == 'off', initial=phase == 'initial')
+                observed['errors'] = evaluator(case, before, after, result, off=phase == 'off', initial=phase == 'initial')
                 assert not observed['errors'], '; '.join(observed['errors'])
                 before = after
             assert not roller.used and not budget.context()['exceeded']
@@ -131,3 +132,30 @@ def test_live_conversation_focus(case, capture_logs):
     finally:
         evidence['call_budget'], evidence['dice_used'] = budget.context(), roller.used
         (output / 'result.json').write_text(json.dumps(evidence, ensure_ascii=False, indent=2, default=str) + '\n')
+
+
+def evaluate_punctuation(case, before, after, result, *, off=False, initial=False):
+    errors = evaluate(case, before, after, result, off=off, initial=initial)
+    if off or initial:
+        return errors
+    spoken = ' '.join(e.get('text', '') for e in result.report.events if e['operation'] == 'speak')
+    if any(' '.join(fragment.casefold().split()) not in ' '.join(spoken.casefold().split())
+           for fragment in case['required_speech']):
+        errors.append('A fala executada perdeu conteúdo, negação, prazo ou condição do jogador.')
+    own = [p for c in after['conversations']['player'] for p in c['proposals'] if p['actor_id'] == 'player']
+    terms = ' '.join(t['text'] for p in own for v in p['versions'] for t in v['terms'])
+    if any(' '.join(fragment.casefold().split()) not in ' '.join(terms.casefold().split())
+           for fragment in case['required_terms']):
+        errors.append('A proposta registrada perdeu duração, simultaneidade ou condição explícita.')
+    return errors
+
+
+@pytest.mark.parametrize('case', CASES, ids=[c['id'] for c in CASES])
+def test_live_conversation_focus(case, capture_logs):
+    run_case(case, capture_logs)
+
+
+@pytest.mark.parametrize('case', PUNCTUATION_CASES, ids=[c['id'] for c in PUNCTUATION_CASES])
+def test_live_conversation_punctuation(case, capture_logs):
+    run_case(case, capture_logs, evaluator=evaluate_punctuation, group='conversation_punctuation',
+             artifacts_env='TRAMA_PUNCTUATION_ARTIFACTS', cap_env='TRAMA_PUNCTUATION_CALL_CAP')

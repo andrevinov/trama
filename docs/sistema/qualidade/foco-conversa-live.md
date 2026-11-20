@@ -79,8 +79,8 @@ falha de serviço ou decisão pendente são execução incompleta, preservada co
 falha/inconclusivo, sem trocar o resultado por uma resposta conhecida.
 
 ```bash
-poetry run pytest tests/live/test_conversation_focus_live.py --collect-only -q
-RUN_OPENAI_LIVE_TESTS=1 poetry run pytest tests/live/test_conversation_focus_live.py -m live -v
+poetry run pytest tests/live/test_conversation_focus_live.py::test_live_conversation_focus --collect-only -q
+RUN_OPENAI_LIVE_TESTS=1 poetry run pytest tests/live/test_conversation_focus_live.py::test_live_conversation_focus -m live -v
 ```
 
 ## Evidências e alcance
@@ -104,3 +104,8 @@ a falha anterior preservada. Total: **22 de 30 chamadas**, incluindo três abert
 impedidas por DNS. Veja o
 [relatório com falhas, consumo e limites](../../evidencias/2026-11-19-foco-conversa/relatorio.md).
 Essas observações não garantem todas as respostas futuras.
+
+A regressão posterior de [pontuação em falas citadas](pontuacao-conversa-live.md)
+tem três casos adicionais em outra função do mesmo módulo, com orçamento e
+autorização próprios. Executar o módulo inteiro seleciona ambas as baterias;
+use os seletores explícitos acima para limitar esta execução aos casos de foco.

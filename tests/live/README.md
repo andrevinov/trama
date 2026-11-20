@@ -1,5 +1,11 @@
 # Testes live
 
+A [regressão de pontuação em falas citadas](../../docs/sistema/qualidade/pontuacao-conversa-live.md)
+tem três casos adicionais em `test_conversation_focus_live.py::test_live_conversation_punctuation`:
+duas falas separadas por “falo”, aspas tipográficas com condição e negação/prazo.
+O teto separado é de 30 chamadas e exige autorização própria. O módulo inteiro
+seleciona também os casos anteriores de foco; use a função indicada para esta bateria.
+
 A [regressão de foco semântico](../../docs/sistema/qualidade/foco-conversa-live.md)
 tem três casos no conselho dos generais, com abertura, resposta executada de Voss
 e consulta off pelo runner oficial. Uma tentativa por caso, teto separado de

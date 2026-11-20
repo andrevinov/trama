@@ -53,7 +53,18 @@ visual existente; este recorte estrutura as falas, sem presumir compreensão ges
 
 Pontos, termos novos/alterados, motivo de transição e declarações de limites
 precisam ser trechos literais da fala executada. No jogador, também devem
-pertencer ao on atual. Foco pode resumir o assunto: “propósito da audiência” é
+pertencer ao on atual. Essa conferência preserva palavras, maiúsculas, números,
+negações e pontuação interna, tolerando espaços, equivalência Unicode NFC,
+formatos de aspas e um ponto final simples acrescentado/omitido ao fim do trecho.
+Não é comparação semântica: não troca interrogação por afirmação, não elimina
+vírgulas internas ou condições e não corta palavras, decimais ou milhares.
+Os textos armazenados não são reescritos por essa comparação.
+
+Uma rejeição identifica o ponto/termo/motivo/limite, seu conteúdo e a fonte
+conferida. No jogador, distingue fala proposta da mensagem original, de modo
+que a tentativa de correção receba a discrepância precisa.
+
+Foco pode resumir o assunto: “propósito da audiência” é
 válido para “O que o traz até mim hoje?”. Tem limite de 160 caracteres e não
 cria afirmação, compromisso, resolução de pendência ou objetivo privado. Sua
 pertinência é semântica e depende da interpretação; o código não prova essa

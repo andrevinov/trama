@@ -1,0 +1,29 @@
+[
+  {
+    "id": "pontuacao-posicao-de-auren",
+    "max_sdk_calls": 10,
+    "prompt": "\"A posição de Auren é a mesma de antes da invasão, general. Queremos a manutenção do Tratado da Ponte, a reintegração dos cidadãos removidos e a convivência pacífica entre nossos reinos\", falo. \"Acredito que esse também é o desejo de Valdren e de seus cidadãos.\"",
+    "off": "[O que eu disse e qual foi a resposta efetivamente dada por Voss? Houve algum acordo aceito?]",
+    "proposal": null,
+    "required_speech": ["manutenção do Tratado da Ponte", "reintegração dos cidadãos removidos", "convivência pacífica entre nossos reinos"],
+    "required_terms": []
+  },
+  {
+    "id": "pontuacao-aspas-e-condicao",
+    "max_sdk_calls": 10,
+    "prompt": "“Proponho uma trégua de trinta dias com recuo simultâneo”, digo.\n“O recuo só começaria se houver fiscalização aceita pelos dois lados.”",
+    "off": "[Quais foram os termos e a condição que apresentei? O general aceitou algo?]",
+    "proposal": true,
+    "required_speech": ["trinta dias", "recuo simultâneo", "se houver fiscalização"],
+    "required_terms": ["trinta dias", "recuo simultâneo", "se houver fiscalização"]
+  },
+  {
+    "id": "pontuacao-negacao-e-prazo",
+    "max_sdk_calls": 10,
+    "prompt": "\"Não aceito uma retirada unilateral\", respondo. \"Proponho trinta dias de trégua, não trezentos, com recuo simultâneo apenas se houver fiscalização.\"",
+    "off": "[O que recusei, qual prazo propus e qual condição mantive?]",
+    "proposal": true,
+    "required_speech": ["Não aceito uma retirada unilateral", "trinta dias", "não trezentos", "se houver fiscalização"],
+    "required_terms": ["trinta dias", "recuo simultâneo", "se houver fiscalização"]
+  }
+]

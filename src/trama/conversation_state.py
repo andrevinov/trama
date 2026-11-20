@@ -7,6 +7,8 @@ ouvintes reais; a interpretação do significado continua sendo uma proposta da 
 from copy import deepcopy
 from dataclasses import dataclass, fields, replace
 import json
+import re
+import unicodedata
 
 
 POINT_KINDS = ('statement', 'question', 'request', 'offer', 'condition', 'objection', 'topic')
@@ -30,6 +32,38 @@ def _optional(value, maximum=160):
 def _ids(value, maximum=8):
     return (isinstance(value, tuple) and len(value) <= maximum
             and all(_text(v, 120) for v in value) and len(set(value)) == len(value))
+
+
+def _speech_surface(value):
+    quotes = str.maketrans({'“': '"', '”': '"', '‘': "'", '’': "'"})
+    return ' '.join(unicodedata.normalize('NFC', value).translate(quotes).split())
+
+
+def _spoken_fragment(fragment, text):
+    """Compara conteúdo sem apagar pontuação interna ou alterar palavras/números."""
+    fragment, text = _speech_surface(fragment), _speech_surface(text)
+    def word(char):
+        return bool(char) and (char.isalnum() or char == '_')
+    variants = [(fragment, False)]
+    if fragment.endswith('.') and len(fragment) > 1 and fragment[-2].isalnum():
+        variants.append((fragment[:-1], True))
+    for candidate, dropped_stop in variants:
+        for match in re.finditer(re.escape(candidate), text):
+            start, end = match.span()
+            before, after = text[start-1:start], text[end:end+1]
+            if word(candidate[0]) and word(before) or word(candidate[-1]) and word(after):
+                continue
+            # Um trecho não pode cortar decimal/milhar nem tratar reticências como ponto.
+            if candidate[-1].isdigit() and after in {'.', ','} and text[end+1:end+2].isdigit():
+                continue
+            if candidate[0].isdigit() and before in {'.', ','} and text[max(0, start-2):start-1].isdigit():
+                continue
+            if candidate.endswith('.') and (after == '.' or candidate[-2:-1].isdigit() and after.isdigit()):
+                continue
+            if dropped_stop and text[end:].lstrip(' \"\'').startswith(('?', '!', '…', '.')):
+                continue
+            return True
+    return False
 
 
 @dataclass(frozen=True)
@@ -122,17 +156,18 @@ class ConversationUpdate:
                 or (self.romance_boundary is not None or self.romantic_expression) and len(self.target_ids) != 1):
             raise ConversationStateError('Contribuição de conversa inválida.')
 
-    def validate_source(self, text, *, actor_id, player_id):
+    def validate_source(self, text, *, actor_id, player_id, source_label='fala executada'):
         # Foco é um rótulo do assunto, não uma citação ou compromisso falado.
-        fragments = [p.text for p in self.points]
+        fragments = [(f'Ponto {i} da conversa', p.text) for i, p in enumerate(self.points, 1)]
         if self.reason is not None:
-            fragments.append(self.reason)
+            fragments.append(('Motivo da transição', self.reason))
         if self.boundary_text:
-            fragments.append(self.boundary_text)
+            fragments.append(('Limite declarado', self.boundary_text))
         if self.proposal:
-            fragments += [t.text for t in self.proposal.terms]
-        if any(fragment not in text for fragment in fragments):
-            raise ConversationStateError('Ponto, motivo, limite ou termo não pertence à fala executada.')
+            fragments += [(f'Termo {i} da proposta', t.text) for i, t in enumerate(self.proposal.terms, 1)]
+        for field, fragment in fragments:
+            if not _spoken_fragment(fragment, text):
+                raise ConversationStateError(f'{field} não pertence à {source_label}. Trecho: {fragment!r}')
         if actor_id == player_id and (self.goal is not None or self.waiting_for is not None):
             raise ConversationStateError('A interpretação não atribui objetivos privados ao jogador.')
 

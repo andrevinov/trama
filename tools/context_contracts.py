@@ -28,6 +28,7 @@ from trama.opinions import OptionAssessment, TermAssessment
 from trama.relationships import RelationshipEffect, RelationshipEpisode
 from trama.bonds import BondUpdate
 from trama.application.situations import load_situation
+from trama.application.authorization import validate_player_plan
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / 'docs/contracts/ai-contexts.json'
@@ -430,6 +431,16 @@ def sample_contexts():
         encounter.session.emit_noise('player', encounter.session.state.position, 'loud')
         assert encounter.session.agency.next_review(set()) == 'marina'
         samples.append(encounter.agency_context('marina', review=True))
+    # Citação com intervenção narrativa: ponto reconstruído sem alterar palavras.
+    quoted = Conversation(load_session(ROOT / 'src/trama/scenarios/generals_council.json'))
+    speech, plan = action(quoted, '“Quero discutir a trégua”, digo.', NarrativeIntent('Quero discutir a trégua.', 'speak',
+        conversation=ConversationUpdate(target_ids=('general_voss',), focus='negociação da trégua',
+            points=(ConversationPoint('statement', 'Quero discutir a trégua.'),))))
+    validate_player_plan(speech.on, plan, quoted.interpretation_context(), stage='context_review')
+    samples.extend((quoted.interpretation_context(), quoted.world_context(plan)))
+    report = quoted.execute(plan)
+    assert not report.failures
+    samples.append(quoted.narration_context(speech, report))
     return samples
 
 

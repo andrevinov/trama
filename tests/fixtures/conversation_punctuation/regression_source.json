@@ -1,0 +1,148 @@
+[
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 1047,
+    "source_line_sha256": "093b4a278be9ab2f4bf51918d7aa1dfc3aba48f0b21fb3524195b4838f11841f",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:55:13.392+00:00",
+      "level": "DEBUG",
+      "component": "trama.application.conversation",
+      "event": "conversation.player_message",
+      "session_id": "1f95c02239944972924d59049217ae32",
+      "interaction_id": "7053277b1c2848feb3536be984a29bab",
+      "operation_id": null,
+      "ai_call_id": null,
+      "data": {
+        "text": "\"A posição de Auren é a mesma de antes da invasão, general. Queremos a manutenção do Tratado da Ponte, a reintegração dos cidadãos removidos e a convivência pacífica entre nossos reinos\", falo. \"Acredito que esse também é o desejo de Valdren e de seus cidadãos.\""
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 1057,
+    "source_line_sha256": "8fabfadaafa0d2c49b43557ee5f5cb5e4dcfdcae398d5b4c974e0040615ed865",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:55:21.752+00:00",
+      "level": "DEBUG",
+      "component": "trama.infrastructure.openai_json",
+      "event": "ai.response_payload",
+      "session_id": "1f95c02239944972924d59049217ae32",
+      "interaction_id": "7053277b1c2848feb3536be984a29bab",
+      "operation_id": null,
+      "ai_call_id": "8c00f8c870c64fdcbf2e912d1c5d744f",
+      "data": {
+        "output_text": "{\"request_parts\":[{\"text\":\"\\\"A posição de Auren é a mesma de antes da invasão, general. Queremos a manutenção do Tratado da Ponte, a reintegração dos cidadãos removidos e a convivência pacífica entre nossos reinos\\\", falo. \\\"Acredito que esse também é o desejo de Valdren e de seus cidadãos.\\\"\",\"kind\":\"execute\",\"operations\":[\"speak\"],\"step_indices\":[0]}],\"steps\":[{\"operation\":\"speak\",\"text\":\"A posição de Auren é a mesma de antes da invasão, general. Queremos a manutenção do Tratado da Ponte, a reintegração dos cidadãos removidos e a convivência pacífica entre nossos reinos. Acredito que esse também é o desejo de Valdren e de seus cidadãos.\",\"volume\":\"normal\",\"claims\":[],\"conversation\":{\"conversation_id\":\"conversation_1\",\"target_ids\":[\"general_voss\"],\"focus\":\"posição de Auren e paz entre os reinos\",\"points\":[{\"kind\":\"statement\",\"text\":\"A posição de Auren é a mesma de antes da invasão, general.\"},{\"kind\":\"request\",\"text\":\"Queremos a manutenção do Tratado da Ponte, a reintegração dos cidadãos removidos e a convivência pacífica entre nossos reinos.\"},{\"kind\":\"statement\",\"text\":\"Acredito que esse também é o desejo de Valdren e de seus cidadãos.\"}],\"resolves\":[\"point_8\"],\"proposal\":null,\"goal\":null,\"waiting_for\":null,\"status\":null,\"reason\":null,\"romance_boundary\":null,\"boundary_text\":null,\"romantic_expression\":false}}]}"
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 1060,
+    "source_line_sha256": "06c669d6a3484f8d68781adbcf8a921e7e657a6b51323be2aafd3a11cf40663f",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:55:21.754+00:00",
+      "level": "WARNING",
+      "component": "trama.application.authorization",
+      "event": "player.plan_authorization_rejected",
+      "session_id": "1f95c02239944972924d59049217ae32",
+      "interaction_id": "7053277b1c2848feb3536be984a29bab",
+      "operation_id": null,
+      "ai_call_id": "8c00f8c870c64fdcbf2e912d1c5d744f",
+      "data": {
+        "stage": "interpretation",
+        "validation": "declarative",
+        "reason": "Ponto, motivo, limite ou termo não pertence à fala executada."
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 1061,
+    "source_line_sha256": "e187db193392bafc750ca229b27398dfc33fba9c719c591ecf956e71deb22ef9",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:55:21.754+00:00",
+      "level": "WARNING",
+      "component": "trama.infrastructure.openai_intent_interpreter",
+      "event": "ai.plan_correction_requested",
+      "session_id": "1f95c02239944972924d59049217ae32",
+      "interaction_id": "7053277b1c2848feb3536be984a29bab",
+      "operation_id": null,
+      "ai_call_id": "8c00f8c870c64fdcbf2e912d1c5d744f",
+      "data": {
+        "attempt": 1,
+        "reason": "Ponto, motivo, limite ou termo não pertence à fala executada."
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 1066,
+    "source_line_sha256": "cec4bf12df417c93ab6cd96ecb0f5ba26b32f23c134ce0725cb126e12d17c5d1",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:55:33.818+00:00",
+      "level": "DEBUG",
+      "component": "trama.infrastructure.openai_json",
+      "event": "ai.response_payload",
+      "session_id": "1f95c02239944972924d59049217ae32",
+      "interaction_id": "7053277b1c2848feb3536be984a29bab",
+      "operation_id": null,
+      "ai_call_id": "a817fbc5e4ef4fbcaf92d568089aa713",
+      "data": {
+        "output_text": "{\"request_parts\":[{\"text\":\"\\\"A posição de Auren é a mesma de antes da invasão, general. Queremos a manutenção do Tratado da Ponte, a reintegração dos cidadãos removidos e a convivência pacífica entre nossos reinos\\\", falo. \\\"Acredito que esse também é o desejo de Valdren e de seus cidadãos.\\\"\",\"kind\":\"execute\",\"operations\":[\"speak\"],\"step_indices\":[0]}],\"steps\":[{\"operation\":\"speak\",\"text\":\"A posição de Auren é a mesma de antes da invasão, general. Queremos a manutenção do Tratado da Ponte, a reintegração dos cidadãos removidos e a convivência pacífica entre nossos reinos. Acredito que esse também é o desejo de Valdren e de seus cidadãos.\",\"volume\":\"normal\",\"claims\":[],\"conversation\":{\"conversation_id\":\"conversation_1\",\"target_ids\":[\"general_voss\"],\"focus\":\"posição de Auren e termos de paz\",\"points\":[{\"kind\":\"statement\",\"text\":\"A posição de Auren é a mesma de antes da invasão, general.\"},{\"kind\":\"request\",\"text\":\"Queremos a manutenção do Tratado da Ponte, a reintegração dos cidadãos removidos e a convivência pacífica entre nossos reinos.\"},{\"kind\":\"statement\",\"text\":\"Acredito que esse também é o desejo de Valdren e de seus cidadãos.\"}],\"resolves\":[\"point_8\"],\"proposal\":null,\"goal\":null,\"waiting_for\":null,\"status\":null,\"reason\":null,\"romance_boundary\":null,\"boundary_text\":null,\"romantic_expression\":false}}]}"
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 1069,
+    "source_line_sha256": "bf8eafba42588645b3cc04966570b3e4f1404e0d1b8c77ff2819f7c3784ce78d",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:55:33.818+00:00",
+      "level": "WARNING",
+      "component": "trama.application.authorization",
+      "event": "player.plan_authorization_rejected",
+      "session_id": "1f95c02239944972924d59049217ae32",
+      "interaction_id": "7053277b1c2848feb3536be984a29bab",
+      "operation_id": null,
+      "ai_call_id": "a817fbc5e4ef4fbcaf92d568089aa713",
+      "data": {
+        "stage": "interpretation",
+        "validation": "declarative",
+        "reason": "Ponto, motivo, limite ou termo não pertence à fala executada."
+      },
+      "error": null
+    }
+  },
+  {
+    "source": "logs/trama.jsonl",
+    "source_line": 1070,
+    "source_line_sha256": "29402b9b7b5ae54295d5cee95817b1e3f8c97dd8554125ba02ae8b2d8d22688d",
+    "record": {
+      "schema_version": 1,
+      "timestamp": "2026-11-19T17:55:33.819+00:00",
+      "level": "ERROR",
+      "component": "trama.infrastructure.openai_intent_interpreter",
+      "event": "ai.plan_authorization_failed",
+      "session_id": "1f95c02239944972924d59049217ae32",
+      "interaction_id": "7053277b1c2848feb3536be984a29bab",
+      "operation_id": null,
+      "ai_call_id": "a817fbc5e4ef4fbcaf92d568089aa713",
+      "data": {
+        "attempts": 2,
+        "reason": "Ponto, motivo, limite ou termo não pertence à fala executada."
+      },
+      "error": null
+    }
+  }
+]
