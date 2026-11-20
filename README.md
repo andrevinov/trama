@@ -371,6 +371,7 @@ registra resultados, configuração e ressalvas de narração.
 | `docs/evidencias/` | Relatórios e manifestos datados de experimentos. |
 | `docs/contracts/` | Referências técnicas revisadas dos contratos de contexto. |
 | `tools/` | Ferramentas auxiliares, como verificação de contratos e análise com lnav. |
+| `explorations/` | Pasta local para scripts pessoais de estudo dos módulos, ignorada pelo Git. |
 | `logs/` | Evidências locais de execução, ignoradas pelo Git. |
 
 ## Como vamos construir e documentar
